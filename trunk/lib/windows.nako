@@ -1,0 +1,803 @@
+#------------------------------------------------------------
+# Windows.nako なでしこ用 Windows サポートライブラリ
+#------------------------------------------------------------
+
+#------------------------------------------------------------
+# ウィンドウ一般
+#------------------------------------------------------------
+# メッセージ定数 Message.pas より引用
+!WM_NULL             = $0000;
+!WM_CREATE           = $0001;
+!WM_DESTROY          = $0002;
+!WM_MOVE             = $0003;
+!WM_SIZE             = $0005;
+!WM_ACTIVATE         = $0006;
+!WM_SETFOCUS         = $0007;
+!WM_KILLFOCUS        = $0008;
+!WM_ENABLE           = $000A;
+!WM_SETREDRAW        = $000B;
+!WM_SETTEXT          = $000C;
+!WM_GETTEXT          = $000D;
+!WM_GETTEXTLENGTH    = $000E;
+!WM_PAINT            = $000F;
+!WM_CLOSE            = $0010;
+!WM_QUERYENDSESSION  = $0011;
+!WM_QUIT             = $0012;
+!WM_QUERYOPEN        = $0013;
+!WM_ERASEBKGND       = $0014;
+!WM_SYSCOLORCHANGE   = $0015;
+!WM_ENDSESSION       = $0016;
+!WM_SYSTEMERROR      = $0017;
+!WM_SHOWWINDOW       = $0018;
+!WM_CTLCOLOR         = $0019;
+!WM_WININICHANGE     = $001A;
+!WM_SETTINGCHANGE    = $001A;
+!WM_DEVMODECHANGE    = $001B;
+!WM_ACTIVATEAPP      = $001C;
+!WM_FONTCHANGE       = $001D;
+!WM_TIMECHANGE       = $001E;
+!WM_CANCELMODE       = $001F;
+!WM_SETCURSOR        = $0020;
+!WM_MOUSEACTIVATE    = $0021;
+!WM_CHILDACTIVATE    = $0022;
+!WM_QUEUESYNC        = $0023;
+!WM_GETMINMAXINFO    = $0024;
+!WM_PAINTICON        = $0026;
+!WM_ICONERASEBKGND   = $0027;
+!WM_NEXTDLGCTL       = $0028;
+!WM_SPOOLERSTATUS    = $002A;
+!WM_DRAWITEM         = $002B;
+!WM_MEASUREITEM      = $002C;
+!WM_DELETEITEM       = $002D;
+!WM_VKEYTOITEM       = $002E;
+!WM_CHARTOITEM       = $002F;
+!WM_SETFONT          = $0030;
+!WM_GETFONT          = $0031;
+!WM_SETHOTKEY        = $0032;
+!WM_GETHOTKEY        = $0033;
+!WM_QUERYDRAGICON    = $0037;
+!WM_COMPAREITEM      = $0039;
+!WM_GETOBJECT        = $003D;
+!WM_COMPACTING       = $0041;
+!WM_COMMNOTIFY       = $0044; # obsolete in Win32
+!WM_WINDOWPOSCHANGING = $0046;
+!WM_WINDOWPOSCHANGED = $0047;
+!WM_POWER            = $0048;
+!WM_COPYDATA         = $004A;
+!WM_CANCELJOURNAL    = $004B;
+!WM_NOTIFY           = $004E;
+!WM_INPUTLANGCHANGEREQUEST = $0050;
+!WM_INPUTLANGCHANGE  = $0051;
+!WM_TCARD            = $0052;
+!WM_HELP             = $0053;
+!WM_USERCHANGED      = $0054;
+!WM_NOTIFYFORMAT     = $0055;
+!WM_CONTEXTMENU      = $007B;
+!WM_STYLECHANGING    = $007C;
+!WM_STYLECHANGED     = $007D;
+!WM_DISPLAYCHANGE    = $007E;
+!WM_GETICON          = $007F;
+!WM_SETICON          = $0080;
+!WM_NCCREATE         = $0081;
+!WM_NCDESTROY        = $0082;
+!WM_NCCALCSIZE       = $0083;
+!WM_NCHITTEST        = $0084;
+!WM_NCPAINT          = $0085;
+!WM_NCACTIVATE       = $0086;
+!WM_GETDLGCODE       = $0087;
+!WM_NCMOUSEMOVE      = $00A0;
+!WM_NCLBUTTONDOWN    = $00A1;
+!WM_NCLBUTTONUP      = $00A2;
+!WM_NCLBUTTONDBLCLK  = $00A3;
+!WM_NCRBUTTONDOWN    = $00A4;
+!WM_NCRBUTTONUP      = $00A5;
+!WM_NCRBUTTONDBLCLK  = $00A6;
+!WM_NCMBUTTONDOWN    = $00A7;
+!WM_NCMBUTTONUP      = $00A8;
+!WM_NCMBUTTONDBLCLK  = $00A9;
+!WM_NCXBUTTONDOWN    = $00AB;
+!WM_NCXBUTTONUP      = $00AC;
+!WM_NCXBUTTONDBLCLK  = $00AD;
+!WM_INPUT            = $00FF;
+!WM_KEYFIRST         = $0100;
+!WM_KEYDOWN          = $0100;
+!WM_KEYUP            = $0101;
+!WM_CHAR             = $0102;
+!WM_DEADCHAR         = $0103;
+!WM_SYSKEYDOWN       = $0104;
+!WM_SYSKEYUP         = $0105;
+!WM_SYSCHAR          = $0106;
+!WM_SYSDEADCHAR      = $0107;
+!WM_KEYLAST          = $0108;
+!WM_INITDIALOG       = $0110;
+!WM_COMMAND          = $0111;
+!WM_SYSCOMMAND       = $0112;
+!WM_TIMER            = $0113;
+!WM_HSCROLL          = $0114;
+!WM_VSCROLL          = $0115;
+!WM_INITMENU         = $0116;
+!WM_INITMENUPOPUP    = $0117;
+!WM_MENUSELECT       = $011F;
+!WM_MENUCHAR         = $0120;
+!WM_ENTERIDLE        = $0121;
+!WM_MENURBUTTONUP    = $0122;
+!WM_MENUDRAG         = $0123;
+!WM_MENUGETOBJECT    = $0124;
+!WM_UNINITMENUPOPUP  = $0125;
+!WM_MENUCOMMAND      = $0126;
+!WM_CHANGEUISTATE    = $0127;
+!WM_UPDATEUISTATE    = $0128;
+!WM_QUERYUISTATE     = $0129;
+!WM_CTLCOLORMSGBOX   = $0132;
+!WM_CTLCOLOREDIT     = $0133;
+!WM_CTLCOLORLISTBOX  = $0134;
+!WM_CTLCOLORBTN      = $0135;
+!WM_CTLCOLORDLG      = $0136;
+!WM_CTLCOLORSCROLLBAR= $0137;
+!WM_CTLCOLORSTATIC   = $0138;
+!WM_MOUSEFIRST       = $0200;
+!WM_MOUSEMOVE        = $0200;
+!WM_LBUTTONDOWN      = $0201;
+!WM_LBUTTONUP        = $0202;
+!WM_LBUTTONDBLCLK    = $0203;
+!WM_RBUTTONDOWN      = $0204;
+!WM_RBUTTONUP        = $0205;
+!WM_RBUTTONDBLCLK    = $0206;
+!WM_MBUTTONDOWN      = $0207;
+!WM_MBUTTONUP        = $0208;
+!WM_MBUTTONDBLCLK    = $0209;
+!WM_MOUSEWHEEL       = $020A;
+!WM_MOUSELAST        = $020A;
+!WM_PARENTNOTIFY     = $0210;
+!WM_ENTERMENULOOP    = $0211;
+!WM_EXITMENULOOP     = $0212;
+!WM_NEXTMENU         = $0213;
+!WM_SIZING           = 532;
+!WM_CAPTURECHANGED   = 533;
+!WM_MOVING           = 534;
+!WM_POWERBROADCAST   = 536;
+!WM_DEVICECHANGE     = 537;
+!WM_IME_STARTCOMPOSITION        = $010D;
+!WM_IME_ENDCOMPOSITION          = $010E;
+!WM_IME_COMPOSITION             = $010F;
+!WM_IME_KEYLAST                 = $010F;
+!WM_IME_SETCONTEXT              = $0281;
+!WM_IME_NOTIFY                  = $0282;
+!WM_IME_CONTROL                 = $0283;
+!WM_IME_COMPOSITIONFULL         = $0284;
+!WM_IME_SELECT                  = $0285;
+!WM_IME_CHAR                    = $0286;
+!WM_IME_REQUEST                 = $0288;
+!WM_IME_KEYDOWN                 = $0290;
+!WM_IME_KEYUP                   = $0291;
+!WM_MDICREATE        = $0220;
+!WM_MDIDESTROY       = $0221;
+!WM_MDIACTIVATE      = $0222;
+!WM_MDIRESTORE       = $0223;
+!WM_MDINEXT          = $0224;
+!WM_MDIMAXIMIZE      = $0225;
+!WM_MDITILE          = $0226;
+!WM_MDICASCADE       = $0227;
+!WM_MDIICONARRANGE   = $0228;
+!WM_MDIGETACTIVE     = $0229;
+!WM_MDISETMENU       = $0230;
+!WM_ENTERSIZEMOVE    = $0231;
+!WM_EXITSIZEMOVE     = $0232;
+!WM_DROPFILES        = $0233;
+!WM_MDIREFRESHMENU   = $0234;
+!WM_MOUSEHOVER       = $02A1;
+!WM_MOUSELEAVE       = $02A3;
+!WM_NCMOUSEHOVER     = $02A0;
+!WM_NCMOUSELEAVE     = $02A2;
+!WM_WTSSESSION_CHANGE = $02B1;
+!WM_TABLET_FIRST     = $02C0;
+!WM_TABLET_LAST      = $02DF;
+!WM_CUT              = $0300;
+!WM_COPY             = $0301;
+!WM_PASTE            = $0302;
+!WM_CLEAR            = $0303;
+!WM_UNDO             = $0304;
+!WM_RENDERFORMAT     = $0305;
+!WM_RENDERALLFORMATS = $0306;
+!WM_DESTROYCLIPBOARD = $0307;
+!WM_DRAWCLIPBOARD    = $0308;
+!WM_PAINTCLIPBOARD   = $0309;
+!WM_VSCROLLCLIPBOARD = $030A;
+!WM_SIZECLIPBOARD    = $030B;
+!WM_ASKCBFORMATNAME  = $030C;
+!WM_CHANGECBCHAIN    = $030D;
+!WM_HSCROLLCLIPBOARD = $030E;
+!WM_QUERYNEWPALETTE  = $030F;
+!WM_PALETTEISCHANGING= $0310;
+!WM_PALETTECHANGED   = $0311;
+!WM_HOTKEY           = $0312;
+!WM_PRINT            = 791;
+!WM_PRINTCLIENT      = 792;
+!WM_APPCOMMAND       = $0319;
+!WM_THEMECHANGED     = $031A;
+!WM_HANDHELDFIRST    = 856;
+!WM_HANDHELDLAST     = 863;
+!WM_PENWINFIRST      = $0380;
+!WM_PENWINLAST       = $038F;
+!WM_COALESCE_FIRST   = $0390;
+!WM_COALESCE_LAST    = $039F;
+!WM_APP = $8000;
+
+#------------------------------------------------------------
+# ウィンドウスタイル Windows.pas より抜粋
+!WS_TABSTOP = $10000
+!WS_HSCROLL = $100000
+!WS_VSCROLL = $200000
+!WS_BORDER = $800000
+!WS_CLIPCHILDREN = $2000000
+!WS_CLIPSIBLINGS = $4000000
+!WS_VISIBLE = $10000000
+!WS_CHILD = $40000000
+# 拡張ウィンドウスタイル
+!WS_EX_WINDOWEDGE = $100
+!WS_EX_CLIENTEDGE = $200
+
+#------------------------------------------------------------
+# ボタン・チェックボックス・ラジオ用
+#------------------------------------------------------------
+# メッセージ定数
+!BM_GETCHECK = $00F0;  // チェック状態の取得
+!BM_SETCHECK = $00F1;  // チェック状態の設定
+#!BM_GETSTATE = $00F2;  // チェック・プッシュ・押し下げ状態の取得
+#!BM_SETSTATE = $00F3;  // 押し下げ状態の設定
+#!BM_SETSTYLE = $00F4;  // ボタンスタイルの設定
+#!BM_CLICK    = $00F5;  // クリック動作のシミュレート。WM_COMMAND も発生する
+#!BM_GETIMAGE = $00F6;  // ビットマップやアイコンのハンドルを取得
+#!BM_SETIMAGE = $00F7;  // ビットマップやアイコンのハンドルを設定
+
+#------------------------------------------------------------
+# ウィンドウスタイル
+!BS_PUSHBUTTON = 0;      // プッシュボタン
+#!BS_DEFPUSHBUTTON = 1;  // ダイアログボックス内で Enter キーで選択できるボタン
+#!BS_CHECKBOX = 2;       // チェックボックス
+!BS_AUTOCHECKBOX = 3;    // チェックマークが自動的に変更されるチェックボックス
+#!BS_RADIOBUTTON = 4;    // ラジオボタン
+#!BS_3STATE = 5;         // チェック・アンチェックのほか不定を表示するチェックボックス
+#!BS_AUTO3STATE = 6;     // 三つの状態が自動的に巡回するチェックボックス
+#!BS_GROUPBOX = 7;       // グループボックス
+#!BS_USERBUTTON = 8;     // Win32 では使わない
+#!BS_AUTORADIOBUTTON = 9;// グループ内で自動的に一つだけチェック状態にするラジオボタン
+#!BS_OWNERDRAW = 11;     // オーナー描画ボタン
+
+#!BS_TEXT = 0;           // ボタンはテキストを表示する（デフォルト）
+#!BS_LEFTTEXT = $20;     // チェックボックスとラジオボタンのチェック欄を右に配置する
+#!BS_ICON = $40;         // ボタンはアイコンを表示する
+#!BS_BITMAP = $80;       // ボタンはビットマップを表示する
+#!BS_LEFT = $100;        // テキストを左寄せ
+#!BS_RIGHT = $200;       // テキストを右寄せ
+#!BS_CENTER = $300;      // テキストを水平方向で中央寄せ
+#!BS_TOP = $400;         // テキストを上寄せ
+#!BS_BOTTOM = $800;      // テキストを下寄せ
+#!BS_VCENTER = $C00;     // テキストを垂直方向で中央寄せ
+#!BS_PUSHLIKE = $1000;   // プッシュボタンのようなチェックボックスまたはラジオボタン
+#!BS_MULTILINE = $2000;  // 複数行テキストを表示
+#!BS_NOTIFY = $4000;     // BN_DBLCLK,BN_KILLFOCUS,BN_SETFOCUS 通知メッセージを親に送る
+#!BS_FLAT = $8000;       // 平坦なボタン
+
+#-----------------------------------------------------------------------
+#ボタンステータス(BM_SETCHECK)
+!BST_UNCHECKED = 0
+!BST_CHECKED = 1
+!BST_INDETERMINATE = 2
+
+#------------------------------------------------------------
+# エディタ・メモ用
+#------------------------------------------------------------
+# メッセージ定数
+!EM_GETSEL              = $00B0; //選択開始位置と終了位置の取得
+!EM_SETSEL              = $00B1; //選択開始位置と終了位置の設定
+!EM_REPLACESEL          = $00C2; //選択文字列を指定の文字列に置換
+!EM_UNDO                = $00C7; //「元に戻す」の実行
+
+#------------------------------------------------------------
+# ウィンドウスタイル
+!ES_LEFT = 0;
+!ES_CENTER = 1;
+!ES_RIGHT = 2;
+!ES_MULTILINE = 4;
+!ES_UPPERCASE = 8;
+!ES_LOWERCASE = $10;
+!ES_PASSWORD = $20;
+!ES_AUTOVSCROLL = $40;
+!ES_AUTOHSCROLL = $80;
+!ES_NOHIDESEL = $100;
+!ES_OEMCONVERT = $400;
+!ES_READONLY = $800;
+!ES_WANTRETURN = $1000;
+!ES_NUMBER = $2000;
+
+#------------------------------------------------------------
+# 通知コード(Notification)
+!EN_SETFOCUS  = $0100;
+!EN_KILLFOCUS = $0200;
+!EN_CHANGE    = $0300;
+!EN_UPDATE    = $0400;
+!EN_ERRSPACE  = $0500;
+!EN_MAXTEXT   = $0501;
+!EN_HSCROLL   = $0601;
+!EN_VSCROLL   = $0602;
+
+#------------------------------------------------------------
+# スクロールバー用
+#------------------------------------------------------------
+# メッセージ定数
+#!SBM_SETPOS = 224;
+#!SBM_GETPOS = 225;
+#!SBM_SETRANGE = 226;
+#!SBM_SETRANGEREDRAW = 230;
+#!SBM_GETRANGE = 227;
+#!SBM_ENABLE_ARROWS = 228;
+#!SBM_SETSCROLLINFO = 233;
+#!SBM_GETSCROLLINFO = 234;
+
+#------------------------------------------------------------
+# ウィンドウスタイル
+!SBS_HORZ = 0;
+!SBS_VERT = 1;
+#!SBS_TOPALIGN = 2;
+#!SBS_LEFTALIGN = 2;
+#!SBS_BOTTOMALIGN = 4;
+#!SBS_RIGHTALIGN = 4;
+#!SBS_SIZEBOXTOPLEFTALIGN = 2;
+#!SBS_SIZEBOXBOTTOMRIGHTALIGN = 4;
+#!SBS_SIZEBOX = 8;
+#!SBS_SIZEGRIP = $10;
+  
+#------------------------------------------------------------
+# スクロールバーの種類(nBar)
+#!SB_HORZ = 0;     // 標準水平スクロールバーを指定する
+#!SB_VERT = 1;     // 標準垂直スクロールバーを指定する
+!SB_CTL = 2;      // スクロールバーコントロールを指定する
+#!SB_BOTH = 3;     // 標準スクロールバーの水平・垂直両方
+
+#------------------------------------------------------------
+# WM_VSCROLLメッセージのLOWORD(wParam) (=nScrollCode)
+!SB_LINEUP = 0;        //上ボタン押した時
+!SB_LINEDOWN = 1;      //下ボタン押した時
+!SB_PAGEUP = 2;        //上ページした時
+!SB_PAGEDOWN = 3;      //下ページした時
+!SB_THUMBPOSITION = 4; //ドラッグ終了時
+!SB_THUMBTRACK = 5;    //ドラッグ開始時
+!SB_TOP = 6;           //HOMEキー
+!SB_BOTTOM = 7;        //ENDキー
+!SB_ENDSCROLL = 8;     //変更完了時
+
+#------------------------------------------------------------
+# コンボボックス用
+#------------------------------------------------------------
+# メッセージ定数
+#!CB_GETEDITSEL            = $0140; // エディットの選択領域の取得
+#!CB_LIMITTEXT             = $0141; // エディットに入力できる文字数の設定
+#!CB_SETEDITSEL            = $0142; // エディットの選択領域の設定
+!CB_ADDSTRING             = $0143; // リストボックスへの文字列の追加 
+!CB_DELETESTRING          = $0144; // リストボックスの文字列の削除
+#!CB_DIR                   = $0145; // リストボックスへのファイル一覧の設定
+#!CB_GETCOUNT              = $0146; // リストボックスの項目数の取得
+!CB_GETCURSEL             = $0147; // リストボックスの選択項目インデックスの取得
+#!CB_GETLBTEXT             = $0148; // 任意リスト項目の文字列を取得
+#!CB_GETLBTEXTLEN          = $0149; // 任意リスト項目の文字列の長さを取得
+#!CB_INSERTSTRING          = $014A; // リストボックスへの文字列の挿入
+!CB_RESETCONTENT          = $014B; // リストボックスとエディットの全内容をクリア
+#!CB_FINDSTRING            = $014C; // リストボックス項目内の文字列検索
+#!CB_SELECTSTRING          = $014D; // 文字列を検索し見つかったら選択してエディットに表示
+!CB_SETCURSEL             = $014E; // 特定項目を選択してエディットに表示
+#!CB_SHOWDROPDOWN          = $014F; // ドロップダウンリストの表示のスイッチ
+#!CB_GETITEMDATA           = $0150; // 項目に関連づけられた３２ビットデータの取得
+#!CB_SETITEMDATA           = $0151; // 項目に関連づける３２ビットデータの設定
+#!CB_GETDROPPEDCONTROLRECT = $0152; // ドロップダウンリストの座標を取得 
+#!CB_SETITEMHEIGHT         = $0153; // 項目の高さの設定
+#!CB_GETITEMHEIGHT         = $0154; // 項目の高さの取得
+#!CB_SETEXTENDEDUI         = $0155; // 拡張ＵＩの設定
+#!CB_GETEXTENDEDUI         = $0156; // 拡張ＵＩの取得
+#!CB_GETDROPPEDSTATE       = $0157; // ドロップダウンリストの表示状況の取得
+#!CB_FINDSTRINGEXACT       = $0158; // リストボックス項目内の文字列検索
+#!CB_SETLOCALE             = 345;   // ロケールの設定
+#!CB_GETLOCALE             = 346;   // ロケールの取得
+#!CB_GETTOPINDEX           = 347;   // リストボックスの可視領域の最初の項目インデックスの取得
+#!CB_SETTOPINDEX           = 348;   // リストボックスの可視領域の最初の項目インデックスの設定
+#!CB_GETHORIZONTALEXTENT   = 349;   // リストボックスの水平スクロール領域の取得
+#!CB_SETHORIZONTALEXTENT   = 350;   // リストボックスの水平スクロール領域の設定
+#!CB_GETDROPPEDWIDTH       = 351;   // ドロップダウンリストの横幅の取得
+#!CB_SETDROPPEDWIDTH       = 352;   // ドロップダウンリストの横幅の設定
+#!CB_INITSTORAGE           = 353;   // リストボックスのメモリの初期化
+#!CB_MSGMAX                = 354;   //  
+
+#------------------------------------------------------------
+# ウィンドウスタイル
+#!CBS_SIMPLE = 1;              //単純なコンボボックス。リストは常にドロップダウンされている。
+!CBS_DROPDOWN = 2;　　　     　//CBS_SIMPLEで、リストはドロップダウンアイコンで表示する。
+!CBS_DROPDOWNLIST = 3;　　　 　//CBS_DROPDOWNと同じであるが､ 選択フィールドには入力不可。
+#!CBS_OWNERDRAWFIXED = $10;　　//項目の高さが一定のオーナー描画。
+#!CBS_OWNERDRAWVARIABLE = $20; //項目の高さが可変のオーナー描画。
+!CBS_AUTOHSCROLL = $40;　　　　//選択フィールドの水平スクロールを自動的に行う｡
+#!CBS_OEMCONVERT = $80;　　　　//入力文字をＯＥＭ文字セットに変換する｡
+#!CBS_SORT = $100;             //リスト項目の文字列をソートする。
+!CBS_HASSTRINGS = $200;　　　　//文字列を保持する。
+#!CBS_NOINTEGRALHEIGHT = $400; //項目の高さの途中でも表示できる。
+#!CBS_DISABLENOSCROLL = $800;  //スクロール不要なときに、スクロールバーを使用不可にする。
+#!CBS_UPPERCASE = $2000;   　  //入力文字を大文字に変換する。
+#!CBS_LOWERCASE = $4000;　  　 //入力文字を小文字に変換する。
+
+#------------------------------------------------------------
+# リストボックス用
+#------------------------------------------------------------
+# メッセージ定数 Message.pas より引用
+!LB_ADDSTRING    = $0180
+!LB_INSERTSTRING = $0181
+!LB_DELETESTRING = $0182
+!LB_RESETCONTENT = $0184
+!LB_SETCURSEL    = $0186
+!LB_GETCURSEL    = $0188
+!LB_GETTEXT      = $0189
+!LB_GETTEXTLEN   = $018A
+!LB_GETCOUNT     = $018B
+
+#------------------------------------------------------------
+# ウィンドウスタイル
+!LBS_NOTIFY = 1;                //クリックやダブルクリックを親に通知する
+#!LBS_SORT = 2;                 //項目の文字列をソートする
+#!LBS_NOREDRAW = 4;             //再描画の一次停止。WM_SETREDRAW で解除できる
+#!LBS_MULTIPLESEL = 8;          //一度に複数の項目を選択できる
+!LBS_OWNERDRAWFIXED = $10;      //項目の高さが一定のオーナー描画
+#!LBS_OWNERDRAWVARIABLE = $20;  //項目の高さが一定ではないオーナー描画
+!LBS_HASSTRINGS = $40;          //文字列リストを保持する
+#!LBS_USETABSTOPS = $80;        //タブの展開をする 
+!LBS_NOINTEGRALHEIGHT = $100;   //指定通りの高さで作る（項目の高さの整数倍にはしない）
+#!LBS_MULTICOLUMN = $200;       //複数列のリストを表示する。水平スクロールをする
+#!LBS_WANTKEYBOARDINPUT = $400; //フォーカスがあるときキー入力を親に通知する 
+#!LBS_EXTENDEDSEL = $800;       //シフトキーなどを使って一度に複数の項目を選択できる
+#!LBS_DISABLENOSCROLL = $1000;  //リストが少ないとき使用不可のスクロールバーを表示する
+#!LBS_NODATA = $2000;           //データを保持しない。 オーナー描画に使う
+#!LBS_NOSEL = $4000;            //項目を選択できない
+
+#------------------------------------------------------------
+# 通知コード(Notification)
+#!LBN_ERRSPACE  = (-2); // メモリの割り当てに失敗した
+!LBN_SELCHANGE = 1;    // 選択状態が変更された
+#!LBN_DBLCLK    = 2;    // 項目がダブルクリックされた
+#!LBN_SELCANCEL = 3;    // ユーザが選択をキャンセルした
+#!LBN_SETFOCUS  = 4;    // キーボードフォーカスを受け取った
+#!LBN_KILLFOCUS = 5;    // キーボードフォーカスを失った
+
+#------------------------------------------------------------
+# Windows API のインポート
+
+# コントロールを作成
+●CreateWindowEx(ex,{参照渡し}n,{参照渡し}wn,s,x,y,w,h,p,m,i,{参照渡し}lp)=DLL("user32.dll", "HWND CreateWindowExA(
+  DWORD dwExStyle,      // extended window style
+  LPCTSTR lpClassName,  // pointer to registered class name
+  LPCTSTR lpWindowName, // pointer to window name
+  DWORD dwStyle,        // window style
+  int x,                // horizontal position of window
+  int y,                // vertical position of window
+  int nWidth,           // window width
+  int nHeight,          // window height
+  HWND hWndParent,      // handle to parent or owner window
+  int hMenu,            // handle to menu, or child-window identifier
+  int hInstance,        // handle to application instance
+  LPVOID lpParam        // pointer to window-creation data
+)") //"
+
+# コントロールを破棄
+●DestroyWindow(hWnd) =DLL("user32.dll",
+"BOOL DestroyWindow(
+  HWND hWnd   // 破棄するウィンドウのハンドル
+)")
+
+# サイズを取得
+●GetWindowRect(HWND, {参照渡し}LPRECT) = DLL("user32.dll","long GetWindowRect(long HWND, pointer LPRECT)")
+
+# 位置とZオーダーを設定
+●SetWindowPos(hWnd,hWndInsertAfter,X,Y,CX,CY,FLAGS) = DLL("user32.dll",
+　　"long SetWindowPos(long,long,long,long,long,long,long)")
+!SWP_NOSIZE = 1;
+!SWP_NOMOVE = 2;
+!SWP_NOZORDER = 4;
+!SWP_NOREDRAW = 8;
+!SWP_NOACTIVATE = $10;
+!SWP_FRAMECHANGED = $20;
+!SWP_SHOWWINDOW = $40;
+!SWP_HIDEWINDOW = $80;
+!SWP_NOCOPYBITS = $100;
+!SWP_NOOWNERZORDER = $200;
+!SWP_NOSENDCHANGING = $400;
+!SWP_DRAWFRAME = $20;
+!SWP_NOREPOSITION =  $200;
+!SWP_DEFERERASE = $2000;
+!SWP_ASYNCWINDOWPOS = $4000;
+
+# サイズを設定
+●MoveWindow(hw,x,y,w,h,b) = DLL("user32.dll","BOOL MoveWindow(HWND hWnd, int X, int Y, int nWidth, int nHeight, BOOL bRepaint)")
+
+# クライアント領域を取得
+●GetClientRect(h,{参照渡し}r)=DLL("user32.dll","BOOL GetClientRect(HWND hWnd, POINTER lpRect")
+
+# メッセージ送信
+●SendMessage(HWND,MSG,WP,LP) = DLL("user32.dll",
+  "long SendMessageA(long HWND, long MSG, long WP, long LP)")
+●PostMessage(H,MSG,W,L) = DLL("user32.dll","int PostMessageA(HWND hWnd,UINT Msg,int wParam,int lParam)")
+
+# テキストを設定
+●SetWindowText(HWND, {参照渡し}LPSTR) = DLL("user32.dll",
+  "long SetWindowTextA(long HWND, char* LPSTR)")
+
+# テキストを取得
+●GetWindowText(HWND,{参照渡し}LPSTR,CNT) = DLL("user32.dll",
+  "long GetWindowTextA(long HWND, char* LPSTR, long CNT)")
+
+# テキスト長を取得
+●GetWindowTextLength(HWND) = DLL("user32.dll",
+  "long GetWindowTextLengthA(long HWND)")
+
+# システムストックオブジェクトのハンドルを取得
+●GetStockObject(i) = DLL("gdi32.dll", "HGDIOBJ GetStockObject(int fnObject);")
+
+# 親ウィンドウを設定
+●SetParent(c,p) = DLL("user32.dll","HWND SetParent(
+    HWND  hwndChild,     // 子ウィンドウのハンドル
+    HWND  hwndNewParent  // 新しい親ウィンドウのハンドル
+)") //"
+
+# ウィンドウの表示方法/可視を設定
+●ShowWindow(H, C) = DLL("user32.dll","BOOL ShowWindow(HWND hWndn, int CmdShow)")
+!SW_HIDE = 0;
+!SW_SHOWNORMAL = 1;
+!SW_NORMAL = 1;
+!SW_SHOWMINIMIZED = 2;
+!SW_SHOWMAXIMIZED = 3;
+!SW_MAXIMIZE = 3;
+!SW_SHOWNOACTIVATE = 4;
+!SW_SHOW = 5;
+!SW_MINIMIZE = 6;
+!SW_SHOWMINNOACTIVE = 7;
+!SW_SHOWNA = 8;
+!SW_RESTORE = 9;
+!SW_SHOWDEFAULT = 10;
+!SW_MAX = 10;
+
+# ウィンドウ情報を取得
+●GetWindowLong(HWND,IDX) = DLL("user32.dll","LONG GetWindowLongA(
+    HWND hWnd, // handle of window
+    int nIndex // offset of value to retrieve
+)"); //"
+!GWL_WNDPROC = -4;
+!GWL_HINSTANCE = -6;
+!GWL_HWNDPARENT = -8;
+!GWL_ID = -12;
+!GWL_STYLE = -16;
+!GWL_EXSTYLE = -20;
+!GWL_USERDATA = -21;
+
+# ウィンドウ情報を設定
+●SetWindowLong(hWnd,nIndex,dwNewLong) =DLL("user32.dll",
+"LONG SetWindowLongA(
+    HWND  hWnd,       // ウィンドウハンドル
+    int   nIndex,     // 変更するデータの指定
+    LONG  dwNewLong   // 新しい値
+)")
+
+# ウィンドウの可視状態を取得
+●IsWindowVisible(h) = DLL("user32.dll", "BOOL IsWindowVisible(HWND hWnd)");
+
+# ウィンドウの有効/無効を設定
+●EnableWindow(H, C) = DLL("user32.dll","BOOL EnableWindow(HWND hWnd, BOOL bEnable)");
+
+# ウィンドウの有効/無効を取得
+●IsWindowEnabled(h) = DLL("user32.dll", "BOOL IsWindowEnabled(HWND hWnd)");
+
+# スクリーン座標系をクライアント座標系に変換
+●ScreenToClient(h,{参照渡し}p) = DLL("user32.dll", "BOOL ScreenToClient(HWND hWnd, LPVOID point)");
+
+# フォーカスを与える
+●SetFocus(H) = DLL("user32.dll","HWND SetFocus(HWND hWnd)")
+
+#------------------------------------------------------------
+# スクロールバー関連
+
+# スクロール位置を取得
+●GetScrollPos(h,b) = DLL("USER32.DLL","Int GetScrollPos(HWND hWnd,Int nBar)")
+
+# スクロール位置を設定
+●SetScrollPos(h,b,p,r) = DLL("USER32.DLL","Int SetScrollPos(
+    HWND hWnd,   //コントロールのハンドル
+    Int nBar,    //種類
+    Int nPos,    //位置
+    BOOL bRedraw //再描画するか
+)") //"
+
+# 最大値/最小値を設定
+●SetScrollRange(h,b,min,max,r) = DLL("USER32.DLL","BOOL SetScrollRange(
+    HWND hWnd,   //コントロールのハンドル
+    Int nBar,    //種類
+    Int nMinPos, //最小値
+    Int nMaxPos, //最大値
+    BOOL bRedraw //再描画するか
+)") //"
+
+# スクロールバーを有効/無効に設定
+●EnableScrollBar(h,b,arrow) = DLL("USER32.DLL","BOOL EnableScrollBar(
+    HWND hWnd,       //コントロールのハンドル
+    DWORD wSBflags,  //種類：nBar
+    DWORD wArrows    //設定する矢印ボタン
+)") //"
+!ESB_ENABLE_BOTH = 0;  //有効
+!ESB_DISABLE_BOTH = 3; //無効
+
+#-----------------------------------------------------------------------
+# メニュー関連
+
+# トップレベルメニューを作成
+●CreateMenu() = DLL("USER32.DLL","HMENU CreateMenu(VOID)")
+
+# ポップアップメニューを作成
+●CreatePopupMenu() = DLL("USER32.DLL","HMENU CreatePopupMenu(VOID)")
+
+# メニュー項目追加
+●AppendMenu(h,f,id,{参照渡し}s) = DLL("user32.dll","BOOL AppendMenuA(
+    HMENU  hMenu,      // メニューハンドル
+    UINT   uFlags,     // オプションフラグ
+    UINT   uIDNewItem, // アイテム ID またはサブメニューのハンドル
+    LPCTSTR pNewItem   // 表示する文字列
+)") //"
+
+# ウィンドウに関連付けされているメニューのハンドルを取得
+●GetMenu(h) = DLL("user32.dll","HMENU GetMenu(HWND  hWnd)")
+
+# メニューをウィンドウに関連付け
+●SetMenu(w,m) = DLL("user32.dll","BOOL SetMenu(
+    HWND  hWnd,    // ウィンドウハンドル
+    HMENU hMenu    // メニューハンドル
+)") //"
+
+# メニュー破棄
+●DestroyMenu(h) = DLL("user32.dll","BOOL DestroyMenu(HMENU hMenu);")
+
+# メニューのチェックマークを設定
+●CheckMenuItem(a,b,c) = DLL("user32.dll","DWORD CheckMenuItem(
+    HMENU hMenu,    // メニューハンドル
+    UINT  uItemID,  // アイテムのIDまたは位置
+    UINT  uCheck    // チェックマークの表示状態
+)") //"
+
+# メニューアイテムの有効/無効を設定
+●EnableMenuItem(a,b,c) = DLL("user32.dll","BOOL EnableMenuItem(
+    HMENU hMenu,    // メニューハンドル
+    UINT  uItemID,  // アイテムのIDまたは位置
+    UINT  uEnable   // 表示状態
+)") //"
+
+!MF_UNCHECKED  = 0         #チェックなし
+!MF_CHECKED    = 8         #チェックあり
+
+!MF_ENABLED  = 0;
+!MF_GRAYED   = 1;
+!MF_DISABLED = 2;
+
+!MF_STRING       =   0; #文字列
+!MF_BITMAP       =   4;
+!MF_POPUP        = $10; #親メニュー
+!MF_MENUBARBREAK = $20;
+!MF_MENUBREAK   =  $40;
+!MF_OWNERDRAW   = $100;
+!MF_BYPOSITION  = $400; #チェックラジオの位置を指定
+!MF_SEPARATOR   = $800; #区切り線
+
+# メニューアイテムを変更
+●ModifyMenu(h,p,f,o,{参照渡し}lp) = DLL("user32.dll", "BOOL ModifyMenuA(
+    HMENU hMnu,         // handle of menu 
+    UINT uPosition,     // menu item to modify
+    UINT uFlags,        // menu item flags 
+    UINT uIDNewItem,    // menu item identifier or handle of drop-down menu or submenu
+    LPCTSTR lpNewItem   // menu item content 
+)") //"
+
+# メニューアイテムのテキストを取得
+●GetMenuString(h,id,{参照渡し}str,len,flag) = DLL("user32.dll","int GetMenuStringA(
+    HMENU hMenu,        // handle to the menu
+    UINT uIDItem,       // menu item identifier
+    LPTSTR lpString,    // pointer to the buffer for the string
+    int nMaxCount,      // maximum length of the string
+    UINT uFlag          // menu flags
+)") //"
+
+# メニューバーの再描画
+●DrawMenuBar(hWnd) = DLL("user32.dll","BOOL DrawMenuBar(long hWnd)")
+
+# メニューアイテム数を取得
+●GetMenuItemCount(hMneu) = DLL("user32.dll","int GetMenuItemCount(long hMenu)")
+
+# ポップアップメニューを表示
+●TrackPopupMenu(hm,f,x,y,r,h,p) = DLL("USER32.DLL","LONG TrackPopupMenu(
+    HMENU hMenu,    //メニューのハンドル
+    DWORD wFlags,   //表示モード
+    LONG X,         //X座標:デスクトップ座標系
+    LONG Y,         //Y座標:デスクトップ座標系
+    LONG nReserved, //予約:常に0
+    HWND hWnd,      //母艦のハンドル
+    LONG lprc       //メニュー回避領域:0で使用
+)") //"
+
+#-----------------------------------------------------------------------
+# メッセージボックスを表示
+●MessageBox(h,{参照渡し}t,{参照渡し}c,u) =DLL("user32.dll", "int MessageBoxA(
+    HWND hWnd,         // handle of owner window
+    LPCTSTR lpText,    // address of text in message box
+    LPCTSTR lpCaption, // address of title of message box  
+    UINT uType         // style of message box
+)") //"
+
+# ボタンの組み合わせ
+!MB_OK               = $00000000;
+!MB_OKCANCEL         = $00000001;
+!MB_ABORTRETRYIGNORE = $00000002;
+!MB_YESNOCANCEL      = $00000003;
+!MB_YESNO            = $00000004;
+!MB_RETRYCANCEL      = $00000005;
+!MB_ICONHAND         = $00000010;
+!MB_ICONQUESTION     = $00000020;
+!MB_ICONEXCLAMATION  = $00000030;
+!MB_ICONASTERISK     = $00000040;
+!MB_USERICON         = $00000080;
+!MB_ICONWARNING      = $00000020;
+!MB_ICONERROR        = $00000010;
+!MB_ICONINFORMATION  = $00000040;
+!MB_ICONSTOP         = $00000010;
+# アイコン番号
+!IDOK = 1;
+!IDCANCEL = 2;
+!IDABORT = 3;
+!IDRETRY = 4;
+!IDIGNORE = 5;
+!IDYES = 6;
+!IDNO = 7;
+!IDCLOSE = 8;
+!IDHELP = 9;
+!IDTRYAGAIN = 10;
+!IDCONTINUE = 11;
+
+# システム情報を取得
+●GetSystemMetrics(a) = DLL("user32.dll","long GetSystemMetrics(long nIndex)")
+!SM_SECURE = 44;
+!SM_CXEDGE = 45;
+!SM_CYEDGE = 46;
+!SM_CXMINSPACING = 47;
+!SM_CYMINSPACING = 48;
+!SM_CXSMICON = 49;
+!SM_CYSMICON = 50;
+!SM_CYSMCAPTION = 51;
+!SM_CXSMSIZE = 52;
+!SM_CYSMSIZE = 53;
+!SM_CXMENUSIZE = 54;
+!SM_CYMENUSIZE = 55;
+!SM_ARRANGE = 56;
+!SM_CXMINIMIZED = 57;
+!SM_CYMINIMIZED = 58;
+!SM_CXMAXTRACK = 59;
+!SM_CYMAXTRACK = 60;
+!SM_CXMAXIMIZED = 61;
+!SM_CYMAXIMIZED = 62;
+!SM_NETWORK = 63;
+!SM_CLEANBOOT = 67;
+!SM_CXDRAG = 68;
+!SM_CYDRAG = 69;
+!SM_SHOWSOUNDS = 70;
+!SM_CXMENUCHECK = 71;
+!SM_CYMENUCHECK = 72;
+!SM_SLOWMACHINE = 73;
+!SM_MIDEASTENABLED = 74;
+!SM_MOUSEWHEELPRESENT = 75;
+!SM_CMETRICS = 76;
+!SM_XVIRTUALSCREEN = 76;
+!SM_YVIRTUALSCREEN = 77;
+!SM_CXVIRTUALSCREEN = 78;
+!SM_CYVIRTUALSCREEN = 79;
+!SM_CMONITORS = 80;
+!SM_SAMEDISPLAYFORMAT = 81;
+!SM_IMMENABLED = 82;
+!SM_CXFOCUSBORDER = 83;
+!SM_CYFOCUSBORDER = 84;
