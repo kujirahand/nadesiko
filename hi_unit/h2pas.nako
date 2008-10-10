@@ -1,0 +1,21 @@
+RES="unit nako_dialog_const;
+interface
+const
+"
+「resource.h」を開く
+反復
+  RE(それ, "m#(\S+)\s+(\S+)\s+(\S+)#g;")
+  CMD=それ[1]
+  ID =それ[2]
+  NUM=それ[3]
+  もし、CMD="#define"ならば
+  　　RES=RES&"  {ID} = {NUM};{改行}"
+
+
+RES=RES&"
+implementation
+end.
+"
+RESを表示
+RESを「nako_dialog_const.pas」へ保存。
+おわり。

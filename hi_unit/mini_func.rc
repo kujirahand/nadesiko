@@ -1,0 +1,15 @@
+//----------------------------------
+// ダイアログ (IDD_INPUTBOX)
+//----------------------------------
+INPUTBOX DIALOG DISCARDABLE 0, 0, 222, 62
+EXSTYLE  WS_EX_DLGMODALFRAME
+STYLE    WS_POPUP | WS_DLGFRAME | WS_CAPTION | WS_SYSMENU | DS_SETFONT
+CAPTION  "入力"
+FONT 9, "ＭＳ ゴシック"
+{
+  CONTROL "...", 4, "STATIC", WS_CHILD | WS_VISIBLE | SS_NOTIFY, 5, 5, 210, 15
+  CONTROL "", 3, "EDIT", WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT | WS_BORDER, 5, 20, 210, 15
+  PUSHBUTTON "OK(&O)",    1,    120,40,45,16
+  PUSHBUTTON "取消(&C)",    2,  170,40,45,16
+}
+
