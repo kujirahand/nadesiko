@@ -1,0 +1,13 @@
+# remove old
+EXE=「{母艦パス}nadesiko_setup.exe」
+もし、EXEが存在するならば
+　　EXEをファイル完全削除。
+# make
+ＳＲＣ＝「..\nadesiko」を母艦パスで相対パス展開。
+ＳＲＣを、
+「{母艦パス}arc.yz1」へ、圧縮。
+０．５秒待つ
+# to exe
+「"{母艦パス}comp.exe" "{母艦パス}arc.yz1" "{EXE}"」を起動待機。
+終わる。
+
