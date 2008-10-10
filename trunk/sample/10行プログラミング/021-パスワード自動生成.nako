@@ -1,0 +1,9 @@
+長さは10 #1
+利用字は「0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.-」 #2
+結果は空。 #3
+１から長さまで繰り返す #4
+　　R=(利用字の文字数)の乱数+1 #5
+　　C=利用字のRから1文字抜き出したもの #6
+　　結果は結果＆C #7
+結果を言う。 #8 
+
