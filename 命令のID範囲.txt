@@ -1,0 +1,22 @@
+dnako.dll,    1-499, 5000-5999
+nakofile.dll, 500-699
+nakostr.dll,  700-899
+--
+cnako.exe, 3000-3099
+gnako.exe, 1000-1499
+vnako.exe, 2000-2999 / GUI(6000-6499)
+--
+nakonet.dll,  4000-4199
+nakoctrl.dll, 4200-4299
+nakooffice.dll, 4300-4399, 4700-4799
+nakors232c.dll, 4400-4499
+audiotag.dll, 4500-4519
+msagent.dll,4520-4599
+nakodate.dll,4600-4650
+nakomidi.dll,7000-7030
+nako_exif.dll,7100-7199
+---
+---pro
+nako_pdf.dll,6500-6549
+nako_twain.dll,6550-6559
+nako_qrcode.dll,6560-6569
