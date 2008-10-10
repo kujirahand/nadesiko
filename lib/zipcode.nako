@@ -1,0 +1,120 @@
+#<zipcode>
+#=======================================================================
+# 郵便番号検索のためのユニット
+#-------------------------------------------------------------------------------
+_ZIPDB = 0
+●ZIPデータCSV変換(CSV_FILEからDB_FILEへ|CSV_FILEを) # 郵便局のページで配布しているCSVデータ(KEN_ALL.CSV)をデータファイルに変換する
+　　# ローカル変数の宣言
+　　郵便番号とは文字列
+　　県とは文字列
+　　市とは文字列
+　　町とは文字列
+　　市カナとは文字列
+　　町カナとは文字列
+　　SQL文とは文字列
+　　旧タイトルとは文字列
+　　# データベースのチェック
+　　もし、DB_FILEが存在するならば
+　　　　DB_FILEをファイル削除。
+　　# データベースの作成
+　　SQL文は「CREATE TABLE zip (code, ken, shi, cho, shikana, chokana)」
+　　DB_FILEをSQLITE開いて_ZIPDBに代入。
+　　_ZIPDBでSQL文をSQLITE実行。
+　　# 続いてデータの挿入
+　　旧タイトル＝母艦のタイトル
+　　_ZIPDBで「begin」をSQLITE実行。
+　　CSV_FILEを毎行読む。
+　　それを反復 
+　　　　「"」を「」に置換。
+　　　　「,」で区切る。
+　　　　郵便番号はそれ[2] 
+　　　　県はそれ[6] 
+    　　市はそれ[7] 
+　　　　町はそれ[8] 
+　　　　市カナはそれ[4] 
+　　　　町カナはそれ[5] 
+　　　　SQL文は「INSERT INTO zip (code, ken, shi, cho, 
+                 shikana, chokana) VALUES ("{郵便番号}","{県}","{市}",
+                 "{町}","{市カナ}","{町カナ}")」
+　　　　_ZIPDBでSQL文をSQLITE実行。
+　　　　もし、(回数％500＝0)ならば
+　　　　　　母艦は「変換中：しばらくお待ち下さい。」＆回数＆「：」＆県＆市
+　　ここまで
+　　_ZIPDBで「commit」をSQLITE実行。
+　　_ZIPDBのSQLITE閉じる。
+　　母艦のタイトルは旧タイトル。
+
+●ZIPデータ作成(CSV_FILEからDB_FILEへ) # 郵便局のページで配布しているCSVデータ(KEN_ALL.CSV)をデータファイルに変換する
+　　CSV_FILEからDB_FILEへZIPデータCSV変換。
+
+●ZIPデータ開く(Fを|Fで|Fの) # 郵便番号データファイルを開く。
+　　ＦをSQLITE開く
+　　_ZIPDBはそれ。
+
+●ZIP閉じる
+　　_ZIPDBのSQLITE閉じる。
+
+●ZIP住所検索(ZIPで|ZIPを|ZIPの) # 郵便番号から住所を検索する
+    _SQLとは文字列
+    _RESとは文字列
+    ZIPの「-」を「」に置換。
+    半角変換して、ZIPに代入。
+    _SQL=「SELECT code,ken,shi,cho FROM zip WHERE code="{ZIP}"」
+    _ZIPDBで_SQLをSQLITE実行。
+　　_RESに代入。_RESの0を配列削除。
+　　それは_RES
+
+●ZIP番号検索(KEN,SHI,CHOから|CHOの) # KEN,SHI,CHOから郵便番号を調べる
+    SQLとは文字列
+　　ZIPとは文字列
+    SQL=「SELECT code FROM zip
+          WHERE ken="{KEN}" AND shi="{SHI}" AND cho="{CHO}"」
+    _ZIPDBでSQLをSQLITE実行。
+    ZIPに代入。ZIPの0を配列削除。
+    それはZIP
+
+●ZIP都道府県取得
+　　SQLとは文字列
+　　県一覧とは文字列
+　　SQL=「SELECT DISTINCT(ken) FROM zip」
+　　_ZIPDBでSQLをSQLITE実行。
+　　県一覧に代入。県一覧の0を配列削除。
+　　それは県一覧
+　　
+●ZIP市区取得(KENの|KENから)
+    SQLとは文字列
+　　市一覧とは文字列
+    SQL=「SELECT DISTINCT(shi) FROM zip
+          WHERE ken="{KEN}"」
+    _ZIPDBでSQLをSQLITE実行。
+    市一覧に代入。市一覧の0を配列削除。
+    それは市一覧
+
+●ZIP町村取得(KEN,SHIの|SHIから)
+    SQLとは文字列
+　　町一覧とは文字列
+    SQL=「SELECT cho FROM zip
+          WHERE ken="{KEN}" AND shi="{SHI}"」
+    _ZIPDBでSQLをSQLITE実行。
+    町一覧に代入。町一覧の0を配列削除。
+    それは町一覧
+
+●ZIP番号リスト選択 # ダイアログで都道府県から選んでいくことで郵便番号を得る
+　　県とは文字列
+　　市とは文字列
+　　町とは文字列
+　　ZIP都道府県取得
+　　それからリスト選択して県に代入。
+　　もし、県が空ならば
+　　　　空を戻す
+　　県からZIP市区取得
+　　それからリスト選択して市に代入。
+　　もし、市が空ならば
+　　　　空を戻す
+　　県、市からZIP町村取得
+　　それからリスト選択して町に代入。
+　　もし、町が空ならば
+　　　　空を戻す
+　　県、市、町からZIP番号検索
+#</zipcode>
+

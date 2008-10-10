@@ -1,0 +1,47 @@
+# aquestalk.nako
+#---------------------------------
+# [作者]むくさんが作られたものをクジラ飛行机が手を加えました。
+# [概要]
+#  AquesTalk (http://www.a-quest.com/aquestalk/index_win.html)
+#  音声合成エンジン「AquesTalk」を利用します。
+#-----------------------------------------------------------------------
+# ネイティブメソッド
+●AQUESTALK_PlaySync(char, iSpeed)=DLL("AquesTalkDa.dll","int AquesTalkDa_PlaySync(char *koe, int iSpeed)")
+●AQUESTALK_Play(hMe, char, iSpeed, hWnd, msg, dwUser)=DLL("AquesTalkDa.dll","int AquesTalkDa_Play(H_AQTKDA hMe, char *koe, int iSpeed, HWND hWnd, long msg, long dwUser)")
+●AQUESTALK_Create()=DLL("AquesTalkDa.dll","H_AQTKDA AquesTalkDa_Create()")
+●AQUESTALK_Release(hMe)=DLL("AquesTalkDa.dll","void AquesTalkDa_Release(H_AQTKDA hMe)")
+●AQUESTALK_Stop(hMe)=DLL("AquesTalkDa.dll","void AquesTalkDa_Stop(H_AQTKDA hMe)")
+●AQUESTALK_isPlay(hMe)=DLL("AquesTalkDa.dll","int AquesTalkDa_IsPlay(H_AQTKDA hMe)")
+#-----------------------------------------------------------------------
+＃同期発声の場合は、ハンドルの取得は不要。
+●AQT話す（Mと｜Mを）
+　　AQUESTALK_PlaySync(M,90)
+＃非同期発声の場合はAqTalk開くでハンドルを取得すること。不要になったらAqTalk閉じるでハンドルを開放。
+●AQT非同期話す（HでMと｜Mを）
+　　AQUESTALK_Play(H,M,90,母艦ハンドル,0,0)
+●AQT開く
+　　AQUESTALK_Create()で戻る
+●AQT閉じる（Hの）
+　　AQUESTALK_Release(H)
+●AQT話し中か(Hが)
+　　AQUESTALK_isPlay(H)
+#-----------------------------------------------------------------------
+/*
+＃同期発声のサンプル
+!「aquestalk.nako」を取り込む。
+｢げ'ん/きー？｣をAQT話す
+*/
+
+/*
+＃非同期発声のサンプル
+!「aquestalk.nako」を取り込む。
+＃ハンドルの取得
+H=AQT開く
+＃非同期発声
+Hで「<NUMK VAL=7 COUNTER=じ>/<NUMK VAL=20 COUNTER=ふん>に、え'きで/ま'ってます。」をAQT非同期話す
+＃終了時にハンドル開放。（終了時なら不要かも）。isPlayを使って発声が終了するのを待たないと発声途中でも終わる。
+母艦の閉じた時は～
+　　(HがAQT話し中)の間
+　　HのAQT閉じる
+*/
+
