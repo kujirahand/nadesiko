@@ -1,0 +1,14 @@
+#-----------------------------------------------------------------------
+# SQLite3 のテスト
+#-----------------------------------------------------------------------
+「{デスクトップ}テスト.db」をSQLITE3開く
+「drop table if exists test」をSQLITE3実行
+「create table test (id integer primary key, value text)」をSQLITE3実行
+「insert into test (value) values ("abcd")」をSQLITE3実行
+SQLITE3今挿入したIDを表示
+「insert into test (value) values ("abcd")」をSQLITE3実行
+SQLITE3今挿入したIDを表示
+「insert into test (value) values ("abcd")」をSQLITE3実行
+SQLITE3今挿入したIDを表示
+「select * from test」をSQLITE3実行。
+表示。

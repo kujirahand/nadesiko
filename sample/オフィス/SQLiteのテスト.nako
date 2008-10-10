@@ -1,0 +1,36 @@
+#-----------------------------------------------------------------------
+# SQLite の簡単なテスト（SQLを使う場合）
+#-----------------------------------------------------------------------
+# SQLを使わない簡単なのは .. 簡単データベースSQLite.nako を見てください。
+#-----------------------------------------------------------------------
+ファイルDBはデスクトップ＆「test.db」
+
+もし、ファイルDBが存在するならば
+　　ファイルDBのSQLITE開いてHに代入。
+違えば
+　　ファイルDBのSQLITE開いてHに代入。
+　　# DB作成
+　　Hで「CREATE TABLE member (name TEXT,memo TEXT)」をSQLITE実行
+ここまで
+
+# データ挿入
+Hで「INSERT INTO member (name,memo) VALUES ("山田","大きい")」をSQLITE実行
+Hで「INSERT INTO member (name,memo) VALUES ("村田","小さい")」をSQLITE実行
+Hで「SELECT count(*) FROM member」をSQLITE実行
+表示
+
+# SQL実行
+Hで「SELECT * FROM member」をSQLITE実行
+表示。
+「---」を表示。
+# 曖昧検索
+Hの「member」で「name」から「田」をSQLITE曖昧検索
+表示。
+「---」を表示。
+
+# 検索
+Hの「member」で「name」から「山田」をSQLITE検索
+「---」を表示。
+
+HのSQLITE閉じる
+

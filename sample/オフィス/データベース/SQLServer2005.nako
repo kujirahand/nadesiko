@@ -1,0 +1,16 @@
+# 簡単に接続する例
+DBユーザーID＝「sa」
+DBパスワード=「xxxx」
+「KUJIRAX60\SQLEXPRESS」の「testdb」でSQLSERVER2005開く。
+/*
+直接 ADO 文字列を指定して接続する例
+『Driver={SQL Server};
+server=KUJIRAX60\SQLEXPRESS;
+database=testdb;
+uid=sa;
+pwd=kodomo2k;』でADO開く
+*/
+「select * from test」をSQL実行。
+DB結果全部取得して表示。
+
+

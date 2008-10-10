@@ -1,0 +1,23 @@
+#-----------------------------------------------------------------------
+# MySQL と簡単に接続する例
+#-----------------------------------------------------------------------
+# ※MySQLの他に、MyODBC という名前のドライバーが必要です。
+# http://dev.mysql.com/downloads/connector/odbc/3.51.html
+#-----------------------------------------------------------------------
+『Driver={MySQL ODBC 3.51 Driver};
+SERVER=localhost;
+DATABASE=test;
+USER=ｘｘｘｘ;
+PASSWORD=ｘｘｘｘ;
+』でADO開く。
+「CREATE TABLE meibo(
+  id INTEGER PRIMARY KEY AUTO_INCREMENT,
+  name TEXT,
+  age INTEGER
+)/*DEFAULT CHARACTER SET utf8*/」をSQL実行。
+「INSERT INTO meibo (name,age)VALUES("佐藤",30)」をSQL実行。
+「INSERT INTO meibo (name,age)VALUES("加藤",40)」をSQL実行。
+「INSERT INTO meibo (name,age)VALUES("大川",50)」をSQL実行。
+「select * from meibo」をSQL実行。
+DB結果全部取得して表示。
+

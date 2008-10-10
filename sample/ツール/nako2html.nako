@@ -1,0 +1,33 @@
+結果は「」
+もし、「.nako」のファイル選択＝空ならば、終わり。
+それをＳに読む。
+#Sへ「HTML変換.nako」を読む。
+Ｓを反復
+    Ａはそれ。
+    Ａを記号置換。それはＡ
+　　それを「s/(\".*?\")/\<SPAN class="code-string"\>$1\<\/SPAN\>/g」で正規表現置換
+　　それを『s/(「.*?」)/\<SPAN class="code-string"\>$1\<\/SPAN\>/g』で正規表現置換
+　　それを「s/(『.*?』)/\<SPAN class="code-string"\>$1\<\/SPAN\>/g」で正規表現置換
+　　それを「s/(\#.*)$/\<SPAN class="code-comment"\>$1\<\/SPAN\>/g」で正規表現置換
+　　それを「s/(\＃.*)$/\<SPAN class="code-comment"\>$1\<\/SPAN\>/g」で正規表現置換
+　　それを「s/(\'.*)$/\<SPAN class="code-comment"\>$1\<\/SPAN\>/g」で正規表現置換
+　　それを「s/(\’.*)$/\<SPAN class="code-comment"\>$1\<\/SPAN\>/g」で正規表現置換
+　　それを「s/^(●.*)$/\<SPAN class="code-function"\>$1\<\/SPAN\>/g」で正規表現置換
+　　それを「s/^(＊.*)$/\<SPAN class="code-function"\>$1\<\/SPAN\>/g」で正規表現置換
+　　それを「s/^(■.*)$/\<SPAN class="code-function"\>$1\<\/SPAN\>/g」で正規表現置換
+    結果＝結果＆それ＆「<BR>{改行}」。
+    表示。
+「<html><head>
+<LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</head>
+<body>｛結果｝</body></html>」を「temp.htm」へ保存。
+「temp.htm」を起動。
+
+＊記号置換（｛参照渡し｝Ｓの｜Ｓを）
+　　Ｓの「&」を「&amp;」に置換。
+    「<」を「&lt;」に置換。
+    「>」を「&gt;」に置換
+    「"」を「&quot;」に置換
+    「{改行}」を「<BR>{改行}」に置換。
+    「 」を「&nbsp;」に置換。
+　　Ｓ＝それ。
