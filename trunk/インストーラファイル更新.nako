@@ -1,0 +1,12 @@
+BASE=「{母艦パス}nadesiko\」
+RES=「」
+BASEの全ファイル列挙
+反復
+　　F＝対象
+　　Fの１から（BASEの文字数）文字削除。
+　　RES=RES&「{回数}={F}」&改行
+「{BASE}setup_template.ini」を開く。
+それの「__FILES__」をRESに置換。
+「{BASE}setup.ini」へ保存。
+#「{BASE}setup.ini」を起動。
+終わる。
