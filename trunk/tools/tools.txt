@@ -1,0 +1,5 @@
+ツール名称, ショートカット, パス
+ひらがな→カタカナ,,user\hira2kata.nako
+タブ→全角スペース,,user\tab2spc.nako
+一括置換,Ctrl+H,user\replace.nako
+マニュアル探査艦,,action\manual_searcher\manual_searcher.nako
