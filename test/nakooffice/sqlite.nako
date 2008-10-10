@@ -1,0 +1,56 @@
+●テスト_NAKOOFFICE_SQLITE_DEF
+　　DBFILE = "{テンポラリフォルダ}test.db"
+　　もし、DBFILEが存在するならば
+　　　　DBFILEをファイル削除。
+　　DB=DBFILEをSQLITE開く。
+　　DBで「create table test (id integer primary key,
+key text, value integer)」をSQLITE実行
+　　DBで「insert into test (key,value)values('aa',3)」をSQLITE実行。
+　　CSV=DBで「select key,value from test」をSQLITE実行。
+　　Ａ＝CSVをCSV取得
+　　（Ａ￥１￥０）と「aa」でテスト実行。
+　　（Ａ￥１￥１）と3でテスト実行。
+　　ＤＢのSQLITE閉じる
+　　ＤＢＦＩＬＥをファイル削除。
+　　
+●テスト_NAKOOFFICE_SQLITE_EASY
+　　DBFILE = "{テンポラリフォルダ}test.db"
+　　DB=DBFILEをSQLITE開く。
+　　「meibo」を「id,name,age」でSQLITEテーブル作成。
+　　「meibo」に「name=hoge1{~}age=20」をSQLITEデータ挿入
+　　「meibo」に「name=hoge2{~}age=30」をSQLITEデータ挿入
+　　「meibo」に「name=hoge3{~}age=40」をSQLITEデータ挿入
+　　CSV=「meibo」で「id」から「2」をSQLITE検索。
+　　A=CSVをCSV取得
+　　（A\1\1）と「hoge2」でテスト実行。
+　　CSV=「meibo」から「id=2」でSQLITEデータ取得
+　　A=CSVをCSV取得
+　　（A\1\1）と「hoge2」でテスト実行。
+　　ＤＢのSQLITE閉じる
+　　ＤＢＦＩＬＥをファイル削除。
+　　
+●テスト_NAKOOFFICE_SQLITE3_DEF
+　　# sqlite3.dll の存在チェック
+　　もし、（SQLITE3インストールチェック＝オン）ならば
+　　　　「SQLite3.dllがある」でテスト成功。
+　　違えば
+　　　　「SQLite3.dllがない」でテスト失敗。
+　　# ファイルチェック
+　　DBFILE = "{テンポラリフォルダ}test3.db"
+　　もし、DBFILEが存在するならば
+　　　　DBFILEをファイル削除。
+　　# 適当なSQLを実行する
+　　DB=DBFILEをSQLITE3開く。
+　　「drop table if exists test」をSQLITE3実行。
+　　「create table test (id integer primary key,
+		key text, value integer)」をSQLITE3実行
+　　「insert into test (key,value)values('aa',3)」をSQLITE3実行。
+　　CSV=DBで「select key,value from test」をSQLITE3実行。
+　　A＝CSVをCSV取得
+　　（A￥1￥0）と「aa」でテスト実行。
+　　（A￥1￥1）と3でテスト実行。
+　　SQLITE3閉じる;
+　　DBFILEをファイル削除。
+
+
+

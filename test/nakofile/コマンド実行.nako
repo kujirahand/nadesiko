@@ -1,0 +1,10 @@
+●テスト_NAKOFILE_コマンド実行_コマンド実行
+　　「{COMSPEC} /c echo abc」をコマンド実行
+　　それと「abc」&改行でテスト実行。
+　　S=「あいうえお」を１０００だけリフレイン
+　　それを「{テンポラリフォルダ}commandtest.txt」に保存
+　　#「{COMSPEC} /c echo {S}」をコマンド実行
+　　「{COMSPEC} /c type "{テンポラリフォルダ}commandtest.txt"」をコマンド実行
+　　それとSでテスト実行。
+　　"{テンポラリフォルダ}commandtest.txt"をファイル完全削除
+　　
