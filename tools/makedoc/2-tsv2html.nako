@@ -1,0 +1,80 @@
+#-----------------------------------------------------------------------
+# なでしこ命令一覧の作成～機能順
+#-----------------------------------------------------------------------
+# input : {ランタイムパス}command.tsv
+# output: doc\cmd-func.html
+#-----------------------------------------------------------------------
+索引＝「」
+結果＝「」
+最終小見出し＝「」
+最終大見出し＝「」
+旧URL=「http://nadesi.com/doc/cmd/doc.cgi?mode=cmd&id=」
+飛URL=「http://nadesi.com/man/page/jump/nadesiko?id=」
+直URL=「http://nadesi.com/man/page/」
+C=1
+「{ランタイムパス}command.tsv」を開く。TSV取得
+Ｓ＝それ
+Ｓを反復
+　　ＩＤ＝対象￥０
+    大見出し＝対象￥１
+    小見出し＝対象￥２
+    種類＝対象￥３
+    名前＝対象￥４
+    カナ＝対象￥５
+    引数＝対象￥６
+    解説＝対象￥７
+    #
+    もし、種類＜＞「命令」ならば、引数＝「【{種類}】」
+    もし、引数＝「」ならば、引数＝「なし」
+    #
+    もし、最終大見出し＜＞大見出しならば
+    　　母艦＝大見出し
+    　　索引＝索引＆「</td></tr><tr><td><A href="#o{C}">■{大見出し}</A></td><td>」
+        結果＝結果＆「<TR class="cmdh1">」＆
+　　　　「<TD colspan="3"><A name="o{C}">{大見出し}</A></TD>」＆
+　　　　「</TR>」＆改行
+　　　　C=C+1
+    もし、最終小見出し＜＞小見出しならば
+    　　索引＝索引＆「[<A href="#k{C}">{小見出し}</A>]」
+        結果＝結果＆「<TR class="cmdh2">」＆
+　　　　「<TD colspan="3"><A name="k{C}">{小見出し}</A></TD>」＆
+　　　　「</TR>」＆改行
+    　　C=C+1
+    最終小見出し＝小見出し
+    最終大見出し＝大見出し
+    #
+    ENC=名前をSJIS_UTF8N変換
+    ENC=ENCをURLエンコード
+    結果＝結果＆「<TR>」＆
+    「<TD><A href="{直URL}{ENC}">{名前}</A></TD><TD>{解説}</TD>」＆
+　　「</TR>」
+＃雛型を適用する
+結果＝「<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+  "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<TITLE>なでしこ命令一覧～機能順</TITLE>
+<LINK rel="stylesheet" type="text/css" href="nako_man.css">
+</HEAD>
+<BODY>
+<H1>なでしこ命令一覧～機能順</H1>
+<DIV align="right">({ナデシコ最終更新日} version.{ナデシコバージョン} に対応)
+<A href="cmd-kana.htm">→50音順の一覧</A></DIV>
+<table class="mini" border=0><tr><td>ジャンル</td><td>項目
+{索引}</td></tr></table>
+<H3>命令一覧</H3>
+<!-- 命令テーブル -->
+<TABLE border="1" cellspacing="0" cellpadding="4">
+<TR bgcolor="blue">
+  <TD><FONT color="white">名前</FONT></TD>
+  <TD><FONT color="white">解説</FONT></TD>
+</TR>
+{結果}
+</TABLE>
+<!-- ここまで -->
+</BODY>
+</HTML>
+」
+結果を「{ランタイムパス}doc\cmd-func.htm」へ保存。
+終わり。

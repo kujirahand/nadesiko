@@ -1,0 +1,79 @@
+#-----------------------------------------------------------------------
+# 50音順マニュアルを生成する
+#-----------------------------------------------------------------------
+# in : {ランタイムパス}command.tsv
+# out: doc\cmd-kana.htm
+#-----------------------------------------------------------------------
+索引＝「」
+結果＝「」
+最終カナ＝「」
+旧URL=「http://nadesi.com/doc/cmd/doc.cgi?mode=cmd&id=」
+飛URL=「http://nadesi.com/man/page/jump/nadesiko?id=」
+直URL=「http://nadesi.com/man/page/」
+「{ランタイムパス}command.tsv」を開く。TSV取得
+C=1
+Ｓ＝それ
+Ｓの5を表ソート
+Ｓを反復
+　　ＩＤ＝対象￥０
+    大見出し＝対象￥１
+    小見出し＝対象￥２
+    種類＝対象￥３
+    名前＝対象￥４
+    カナ＝対象￥５
+    引数＝対象￥６
+    解説＝対象￥７
+    #
+    もし、種類＜＞「命令」ならば、引数＝「【{種類}】」
+    もし、引数＝「」ならば、引数＝「なし」
+    カナ＝カナの１から１文字抜き出す
+    カナ＝カナを全角変換
+    #
+    
+    もし、カナ＜＞最終カナならば
+    　　母艦＝カナ
+        索引＝索引＆「[<A href="#k{C}">{カナ}</A>] 」
+        結果＝結果＆「<TR class="cmdh1"><TD colspan="2"><A name="k{C}">{カナ}</A></TD></TR>{改行}」
+        C=C+1
+    #
+    最終カナ＝カナ
+    最終大見出し＝大見出し
+    #
+    ENC=名前をUTF8N変換
+    ENC=ENCをURLエンコード
+    結果＝結果＆「
+<TR>
+  <TD><A href="{直URL}{ENC}">{名前}</A></TD>
+  <TD>{解説}</TD>
+</TR>
+」
+結果＝「<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<TITLE>なでしこ命令一覧～50音順</TITLE>
+<LINK rel="stylesheet" type="text/css" href="nako_man.css">
+</HEAD>
+<BODY>
+<H1>なでしこ命令一覧</H1>
+<CODE class="mini">
+{索引}
+</CODE>
+<DIV align="right">({ナデシコ最終更新日} version.{ナデシコバージョン})<A href="cmd-func.htm">→機能順の一覧</A></DIV>
+<H3>命令一覧</H3>
+<!-- 命令テーブル -->
+<TABLE border="1" cellspacing="0" cellpadding="4">
+<TR bgcolor="blue">
+  <TD><FONT color="white">名前</FONT></TD>
+  <TD><FONT color="white">解説</FONT></TD>
+</TR>
+{結果}
+</TABLE>
+<!-- ここまで -->
+</BODY>
+</HTML>
+」
+結果を「{ランタイムパス}doc\cmd-kana.htm」へ保存。
+＃「{ランタイムパス}doc\cmd-kana.htm」を起動。
+終わり。
