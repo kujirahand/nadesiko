@@ -437,6 +437,11 @@ var
   psub, ps: PChar;
   i, len: Integer;
 begin
+  // Pos('','ABC') = 0 Ç…èKÇ§
+  if sub = '' then
+  begin
+    Result := 0; Exit;
+  end;
   psub := PChar(sub);
   ps   := PChar(s);
   len  := Length(sub);
@@ -465,6 +470,12 @@ var
   psub, ps: PChar;
   i, len: Integer;
 begin
+  // Pos('','ABC') = 0 Ç…èKÇ§
+  if sub = '' then
+  begin
+    Result := 0; Exit;
+  end;
+  
   if FromI <= 0 then FromI := 1;
   s := JCopy(s, FromI, Length(s)); // êÿÇËèoÇµ
 
