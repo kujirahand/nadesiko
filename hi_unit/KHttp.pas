@@ -75,7 +75,6 @@ implementation
 
 uses unit_string2, Registry, jconvert, md5;
 
-
 procedure SplitUrl(url:string;
   var domain: string; var port: string; var dir: string);
 var s: string;
