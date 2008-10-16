@@ -462,10 +462,13 @@ function TfrmNako.Nadesiko_Load: Boolean;
 var
   s, err   : string;
   res, len : Integer;
+  flag_out_error : Boolean;
 
   procedure errLoad;
   var s: string;
   begin
+    if flag_out_error then Exit;
+    flag_out_error := True;
       s :=  '「===========================================================」と表示。'#13#10+
             '『日本語プログラミング言語「なでしこ」』と表示。'#13#10+
             '「===========================================================」と表示。'#13#10+
@@ -473,7 +476,11 @@ var
             '「　」と表示。'#13#10+
             '「> ナデシコバージョン = {ナデシコバージョン}」と表示。'#13#10+
             '「> ナデシコ最終更新日 = {ナデシコ最終更新日}」と表示。'#13#10;
-      nako_eval_str2(s);
+      try
+        nako_eval_str2(s);
+      except
+        ShowWarn(s);
+      end;
   end;
 
 
@@ -621,6 +628,8 @@ begin
   // todo: メインプログラムのロード
   //--------------------------------
   Result := True;
+  res    := nako_OK;
+  flag_out_error := False;
   try
     _dnako_loader := TDnakoLoader.Create(Self.Handle);
   except
