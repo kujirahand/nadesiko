@@ -42,6 +42,7 @@ type
   end;
 
 function NetDialog:TNetDialog;
+function get_on_off(str: string): Boolean;
 
 procedure RegistFunction;
 
@@ -283,6 +284,17 @@ end;
 var _kskFtp: TkskFtp = nil;
 var _idftp: Tidftp = nil;
 
+function get_on_off(str: string): Boolean;
+begin
+  str := JReplace_(str, 'オン','1');
+  str := JReplace_(str, 'オフ','0');
+  str := JReplace_(str, 'はい','1');
+  str := JReplace_(str, 'いいえ','0');
+  str := JReplace_(str, '１','1');
+  str := JReplace_(str, '０','0');
+  Result := (StrToIntDef(str, 0) <> 0);
+end;
+
 function sys_ftp_connect(args: DWORD): PHiValue; stdcall;
 var
   ps: PHiValue;
@@ -292,27 +304,6 @@ begin
   s  := TStringList.Create;
   s.Text := hi_str(ps);
 
-  {
-  FreeAndNil(_kskFtp);
-
-  _kskFtp := TkskFtp.Create;
-  _kskFtp.UserID   := Trim(s.Values['ID']);
-  _kskFtp.Password := Trim(s.Values['パスワード']);
-  if _kskFtp.Password = '' then _kskFtp.Password := Trim(s.Values['PASSWORD']);
-  _kskFtp.Host     := Trim(s.Values['ホスト']);
-  if _kskFtp.Host = '' then _kskFtp.Host     := Trim(s.Values['HOST']);
-  _kskFtp.Port     := StrToIntDef(Trim(s.Values['PORT']), 21);
-
-  if _kskFtp.UserID   = '' then raise Exception.Create('FTPの設定でIDが未設定です。');
-  if _kskFtp.Password = '' then raise Exception.Create('FTPの設定でPASSWORDが未設定です。');
-  if _kskFtp.Host     = '' then raise Exception.Create('FTPの設定でHOSTが未設定です。');
-
-  if _kskFtp.Connect = False then
-  begin
-    raise Exception.Create('FTPで接続ができませんでした。');
-  end;
-  }
-
   _idftp := Tidftp.Create(nil);
 
   _idftp.Username  := Trim(s.Values['ID']);
@@ -321,11 +312,11 @@ begin
   _idftp.Host      := Trim(s.Values['ホスト']);
   if _idftp.Host = '' then _idftp.Host := Trim(s.Values['HOST']);
   _idftp.Port      := StrToIntDef(Trim(s.Values['PORT']), 21);
+  _idftp.Passive   := get_on_off(Trim(s.Values['PASV']));
   if _idftp.Username = '' then raise Exception.Create('FTPの設定でIDが未設定です。');
   if _idftp.Password = '' then raise Exception.Create('FTPの設定でPASSWORDが未設定です。');
   if _idftp.Host     = '' then raise Exception.Create('FTPの設定でHOSTが未設定です。');
   try
-    _idftp.Passive     := True;
     _idftp.Connect(True);
     _idftp.OnWorkBegin := NetDialog.WorkBegin;
     _idftp.OnWork      := NetDialog.Work;
@@ -1758,7 +1749,7 @@ begin
   AddStrVar('HTTPオプション',   '',                4018, 'HTTPに関するオプションをハッシュ形式で設定する。BASIC認証は「BASIC認証=オン{~}ID=xxx{~}パスワード=xxx」と書く。','HTTPおぷしょん');
 
   //-FTP
-  AddFunc  ('FTP接続',          'Sで',                        4020, sys_ftp_connect,        '接続情報「ホスト=xxx{~}ID=xxx{~}パスワード=xxx{~}PORT=xx」でFTPに接続する', 'FTPせつぞく');
+  AddFunc  ('FTP接続',          'Sで',                        4020, sys_ftp_connect,        '接続情報「ホスト=xxx{~}ID=xxx{~}パスワード=xxx{~}PORT=xx{~}PASV=オン|オフ」でFTPに接続する', 'FTPせつぞく');
   AddFunc  ('FTP切断',          '',                           4021, sys_ftp_disconnect,     'FTPの接続を切断する',                                      'FTPせつだん');
   AddFunc  ('FTPアップロード',  'AをBへ|AからBに',            4022, sys_ftp_upload,         'ローカルファイルAをリモードファイルBへアップロードする',   'FTPあっぷろーど');
   AddFunc  ('FTPフォルダアップロード',  'AをBへ|AからBに',    4038, sys_ftp_uploadDir,      'ローカルフォルダAをリモードフォルダBへアップロードする',   'FTPふぉるだあっぷろーど');
