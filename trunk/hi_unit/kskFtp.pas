@@ -121,11 +121,12 @@ type
     FOnError: TNotifyEvent;
     FOnProgress: TkskProgress;
     Stream: TStream;
+    FUser, FPass: string;
   protected
     procedure Execute; override;
   public
     ErrorMsg: string;
-    constructor Create(aUserAgent, aURL, aHeaders: String; aStream: TStream;
+    constructor Create(aUserAgent, aURL, aHeaders, user, pass: String; aStream: TStream;
       AOnComplete, AOnError: TNotifyEvent; AOnProgress: TkskProgress);
   end;
 
@@ -144,6 +145,8 @@ type
     id: string;
     password: string;
     UseBasicAuth: Boolean;
+    UseDialog: Boolean;
+    UserAgent: string;
     constructor Create;
     destructor Destroy; override;
     function DownloadDialog(const URL: string): Boolean;
@@ -151,10 +154,26 @@ type
 
 var MainWindowHandle: THandle = 0;
 
+function IsGlobalOffline: boolean;
+
 implementation
 
 uses nako_dialog_const, unit_windows_api, unit_string,
   nako_dialog_function, jconvert;
+
+// 参考)
+// http://www.ichibachi.com/delphi/wininet.html
+function IsGlobalOffline: boolean;
+var
+  State, Size: DWORD;
+begin
+  Result := False;
+  State := 0;
+  Size := SizeOf(DWORD);
+  if InternetQueryOption(nil, INTERNET_OPTION_CONNECTED_STATE, @State, Size) then
+    if (State and INTERNET_STATE_DISCONNECTED_BY_USER) <> 0 then
+      Result := True;
+end;
 
 function getMainWindowHandle: THandle;
 begin
@@ -665,8 +684,8 @@ end;
 
 { THTTPSyncFileDownloader }
 
-constructor THTTPSyncFileDownloader.Create(aUserAgent, aURL,
-  aHeaders: String; aStream: TStream; AOnComplete, AOnError: TNotifyEvent;
+constructor THTTPSyncFileDownloader.Create(aUserAgent, aURL, aHeaders,
+  user, pass: String; aStream: TStream; AOnComplete, AOnError: TNotifyEvent;
   AOnProgress: TkskProgress);
 begin
   inherited Create(False);
@@ -676,6 +695,9 @@ begin
   FUserAgent := aUserAgent;
   FURL       := aURL;
   FHeaders   := aHeaders;
+
+  FUser := user;
+  FPass := pass;
 
   Stream     := aStream;
   ErrorMsg   := '';
@@ -689,91 +711,188 @@ procedure THTTPSyncFileDownloader.Execute;
 var
   hSession: HINTERNET;
   hRequest: HINTERNET;
+  hcon: HINTERNET;
   lpBuffer: array[0..65535] of Byte;
   dwBytesRead: DWORD;
   szHeader: string;
   dwTotal, dwRead, Reserved: DWORD;
   flagStop: Boolean;
+  dwFlags: DWORD;
+  dwBuffLen: DWORD;
+  domain, path: string;
+  b: BOOL;
+
+  procedure closeHandleAll;
+  begin
+    if Assigned(hcon) then InternetCloseHandle(hcon);
+    if Assigned(hRequest) then InternetCloseHandle(hRequest);
+    if Assigned(hSession) then InternetCloseHandle(hSession);
+  end;
+
+  procedure err(msg: string);
+  begin
+    //
+    closeHandleAll;
+    ErrorMsg := msg;
+    if Assigned(FOnError) then FOnError(Self);
+  end;
+
+  procedure splitURL(url:string; var domain:string; var path:string);
+  begin
+    getToken_s(url, '://');
+    domain := getToken_s(url, '/');
+    path   := '/' + url;
+  end;
+
+  function GetHttpStatus: Integer; //StatusCodeの取得
+  var
+    Len, Reserved: DWORD;
+  begin
+    Reserved := 0;
+    Len := SizeOf(Result);
+    HttpQueryInfo(hRequest, HTTP_QUERY_STATUS_CODE or HTTP_QUERY_FLAG_NUMBER,
+      @Result, Len, Reserved);
+  end;
+
+
+  function _httpsDownload: Boolean;
+  var code: Integer;
+  begin
+    Result := False;
+    splitURL(FUrl, domain, path);
+    // connect
+    hcon := InternetConnect(hSession, PChar(domain),
+      INTERNET_DEFAULT_HTTPS_PORT,
+      '',// username
+      '',// password
+      INTERNET_SERVICE_HTTP, 0, 0);
+    if not Assigned(hcon) then begin err('接続エラー'); Exit; end;
+    // request
+    hRequest := HttpOpenRequest(
+      hcon,
+      'GET',
+      PChar(path),
+      nil, nil, nil, INTERNET_FLAG_SECURE, 0);
+    if not Assigned(hRequest) then
+    begin
+      err('リクエスト時のエラー'); Exit;
+    end;
+    // request option
+    dwFlags := 0;
+    dwBuffLen := sizeof(dwFlags);
+    InternetQueryOption(hRequest, INTERNET_OPTION_SECURITY_FLAGS,
+      @dwFlags, dwBuffLen);
+    dwFlags := dwFlags or SECURITY_FLAG_IGNORE_UNKNOWN_CA;
+    dwFlags := dwFlags or SECURITY_FLAG_IGNORE_CERT_CN_INVALID;
+    dwFlags := dwFlags or SECURITY_FLAG_IGNORE_CERT_DATE_INVALID;
+    dwFlags := dwFlags or SECURITY_FLAG_IGNORE_REDIRECT_TO_HTTP;
+    dwFlags := dwFlags or SECURITY_FLAG_IGNORE_REDIRECT_TO_HTTPS;
+    if not InternetSetOption (hRequest, INTERNET_OPTION_SECURITY_FLAGS,
+      @dwFlags, sizeof(dwFlags)) then
+    begin
+      err('認証に関するエラー'); Exit;
+    end;
+
+    if FHeaders <> '' then
+    begin
+      b := HttpAddRequestHeaders(hRequest, PChar(FHeaders), Length(FHeaders),
+        HTTP_ADDREQ_FLAG_REPLACE or HTTP_ADDREQ_FLAG_ADD);
+      if not b then begin err('ヘッダの設定に失敗しました。'); exit; end;
+    end;
+
+    if not HttpSendRequest(hRequest, nil, 0, nil, 0) then
+    begin
+      err('リクエスト送信時のエラー'); Exit;
+    end;
+
+    code := GetHttpStatus;
+    if code <> HTTP_STATUS_OK then
+    begin
+      err('ステータスコードの異常:' + IntToStr(code)); Exit;
+    end;
+
+    Result := True;
+  end;
+
 begin
   inherited;
 
   flagStop := False;
   hSession := InternetOpen(PChar(FUserAgent), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0);
-  try
-    if Assigned(hSession) then
+  if not Assigned(hSession) then
+  begin
+    err('セッションが開けません。'); Exit;
+  end;
+
+  // InternetOpenUrl
+  szheader := FHeaders;
+  SetLength(szHeader, Length(szHeader));
+  hRequest := InternetOpenUrl(hSession, PChar(FUrl),
+                PChar(szheader), Length(szheader),
+                INTERNET_FLAG_RELOAD, 0);
+
+  // CA(認証)エラーの場合、無視オプションをセットする
+  if not Assigned(hRequest) then
+  begin
+    if (GetLastError = ERROR_INTERNET_INVALID_CA) or
+       (GetLastError = ERROR_INTERNET_CLIENT_AUTH_CERT_NEEDED) then
     begin
-      szheader := FHeaders;
-      SetLength(szHeader, Length(szHeader));
-      hRequest := InternetOpenUrl(hSession, PChar(FUrl),
-          PChar(szheader), Length(szheader),
-          INTERNET_FLAG_RELOAD, 0);
-      try
-        if Assigned(hRequest) then
-        begin
-          // ヘッダの取得
-          dwBytesRead := Length(lpBuffer);
-          ZeroMemory(@lpBuffer, dwBytesRead);
-          HttpQueryInfo(hRequest, HTTP_QUERY_CONTENT_LENGTH,
-              @lpBuffer, dwBytesRead, Reserved);
-          dwTotal := StrToIntDef(string( @lpBuffer ), 0);
-          dwRead  := 0;
+      if not _httpsDownload then Exit;
+    end;
+  end;
+  if not Assigned(hRequest) then
+  begin
+    err('リクエスト時のエラー'); Exit;
+  end;
 
-          dwBytesRead := Length(lpBuffer);
-          while dwBytesRead <> 0 do
-          begin
+  // ヘッダの取得
+  dwBytesRead := Length(lpBuffer);
+  ZeroMemory(@lpBuffer, dwBytesRead);
+  HttpQueryInfo(hRequest, HTTP_QUERY_CONTENT_LENGTH,
+      @lpBuffer, dwBytesRead, Reserved);
+  dwTotal := StrToIntDef(string( @lpBuffer ), 0);
+  dwRead  := 0;
 
-            if Terminated or kskFlagStop then
-            begin
-              ErrorMsg := 'ユーザーによる中断';
-              if Assigned(FOnError) then FOnError(Self);
-              Break;
-            end;
+  dwBytesRead := Length(lpBuffer);
+  while dwBytesRead <> 0 do
+  begin
 
-            if Assigned(FOnProgress) then
-            begin
-              FOnProgress(dwRead, dwTotal, flagStop);
-              if flagStop then
-              begin
-                ErrorMsg := 'ユーザーによる中断';
-                if Assigned(FOnError) then FOnError(Self);
-                Break;
-              end;
-            end;
+    if Terminated or kskFlagStop then
+    begin
+      err('ユーザーによる中断');
+      Break;
+    end;
 
-            if InternetReadFile(hRequest, @lpBuffer, Length(lpBuffer), dwBytesRead) then
-            begin
-              stream.WriteBuffer(lpBuffer, dwBytesRead);
-              Inc(dwRead, dwBytesRead);
-            end else
-            begin
-              ErrorMsg := 'データが読み取れません。';
-              if Assigned(FOnError) then FOnError(Self);
-            end;
-
-            Sleep(80);
-          end;
-
-          if Assigned(OnTerminate) then
-          begin
-            OnTerminate(Self);
-            Exit;
-          end;
-        end else
-        begin
-          ErrorMsg := 'URLが開けません。';
-          if Assigned(FOnError) then FOnError(Self);
-        end;
-      finally
-        InternetCloseHandle(hRequest);
+    if Assigned(FOnProgress) then
+    begin
+      FOnProgress(dwRead, dwTotal, flagStop);
+      if flagStop then
+      begin
+        err('ユーザーによる中断');
+        Break;
+        Break;
       end;
+    end;
+
+    if InternetReadFile(hRequest, @lpBuffer, Length(lpBuffer), dwBytesRead) then
+    begin
+      stream.WriteBuffer(lpBuffer, dwBytesRead);
+      Inc(dwRead, dwBytesRead);
     end else
     begin
-      ErrorMsg := 'セッションが開けません。';
-      if Assigned(FOnError) then FOnError(Self);
+      err('データが読み取れません。');
+      Break;
     end;
-  finally
-    InternetCloseHandle(hSession);
+
+    Sleep(10);
   end;
+
+  if Assigned(OnTerminate) then
+  begin
+    OnTerminate(Self);
+    Exit;
+  end;
+  closeHandleAll;
 end;
 
 
@@ -781,9 +900,11 @@ end;
 
 constructor TkskHttpDialog.Create;
 begin
+  UserAgent := '';
   downloader := nil;
   FCancel := False;
   Stream := TMemoryStream.Create;
+  UseDialog := True;
 end;
 
 destructor TkskHttpDialog.Destroy;
@@ -805,48 +926,62 @@ begin
   FCancel := False;
   kskFlagStop := False;
 
-  // ダイアログの表示
-  hProgress  := CreateDialog(
-      hInstance, PChar(IDD_DIALOG_PROGRESS), hParent, @procProgress);
+  if UseDialog then
+  begin
+    // ダイアログの表示
+    hProgress  := CreateDialog(
+        hInstance, PChar(IDD_DIALOG_PROGRESS), hParent, @procProgress);
 
-  // ダイアログに情報を表示
-  SetDlgWinText(hProgress, IDC_EDIT_TEXT, 'ダウンロード準備中');
-  SetDlgWinText(hProgress, IDC_EDIT_INFO, URL);
-  ShowWindow(hProgress, SW_SHOW);
+    // ダイアログに情報を表示
+    SetDlgWinText(hProgress, IDC_EDIT_TEXT, 'ダウンロード準備中');
+    SetDlgWinText(hProgress, IDC_EDIT_INFO, URL);
+    ShowWindow(hProgress, SW_SHOW);
+  end;
 
   // ダウンロード用のスレッドの作成
   if UseBasicAuth then
   begin
     head := 'Authorization: Basic ' + EncodeBase64(id + ':' + password) + #0;
   end;
-  downloader := THTTPSyncFileDownloader.Create('nadesiko', url, head, Stream,
+  downloader := THTTPSyncFileDownloader.Create(UserAgent, url, head, id, password, Stream,
       OnComplete, OnError, OnProgress);
-
-  // ダウンロードが終了するまでダイアログを表示
-  while FCompleteFlag = False do
-  begin
-    if PeekMessage(msg, hProgress, 0, 0, PM_REMOVE) then
+  try
+    // ダウンロードが終了するまでダイアログを表示
+    if UseDialog then
     begin
-      if not IsDialogMessage(hProgress, msg) then
+      while FCompleteFlag = False do
       begin
-        TranslateMessage(msg);
-        DispatchMessage (msg);
+        if PeekMessage(msg, hProgress, 0, 0, PM_REMOVE) then
+        begin
+          if not IsDialogMessage(hProgress, msg) then
+          begin
+            TranslateMessage(msg);
+            DispatchMessage (msg);
+          end;
+        end else
+        begin
+          // アイドル
+          sleep(1);
+        end;
       end;
+
+      DestroyWindow(hProgress);
+      hProgress := 0;
     end else
     begin
-      // アイドル
-      sleep(1);
+      while FCompleteFlag = False do
+      begin
+        sleep(200);
+      end;
     end;
-  end;
 
-  DestroyWindow(hProgress);
-  hProgress := 0;
-  downloader.Free;
-
-  if FCancel then
-  begin
-    Stream.Clear;
-    raise Exception.Create('ダウロードに失敗しました。');
+    if FCancel then
+    begin
+      Stream.Clear;
+      raise Exception.Create('ダウンロードに失敗しました。' + downloader.ErrorMsg);
+    end;
+  finally
+    downloader.Free;
   end;
   Result := True;
 end;

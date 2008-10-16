@@ -10,7 +10,7 @@ uses
   IdFTP, IdFTPList, IdHttp, IdTcpServer, IdSNTP;
 
 const
-  NAKONET_DLL_VERSION = '1.5041';
+  NAKONET_DLL_VERSION = '1.509';
 
 type
   TNetDialog = class(TComponent)
@@ -109,42 +109,21 @@ begin
   end;
 end;
 
+function http_opt_getUA: string;
+begin
+  Result := nako_http_opt_get('UA');
+  if Result = '' then
+  begin
+    Result := 'nadesiko';
+  end;
+end;
+
 
 function sys_http_download(args: DWORD): PHiValue; stdcall;
 var
   a, b: PHiValue;
   url, local: string;
-
-  procedure _sub;
-  begin
-    if URLDownloadToFile(nil, PChar(url), PChar(local), 0, nil) <> s_ok then
-    begin
-      raise Exception.Create(url+'をダウンロードできませんでした。');
-    end;
-  end;
-
-  procedure _main;
-  var
-    h: TkskHttpDialog;
-  begin
-    // スレッドを使ってアクセス
-    h := TkskHttpDialog.Create;
-    try
-      kskFtp.MainWindowHandle := nako_getMainWindowHandle;
-      h.UseBasicAuth := http_opt_useBasicAuth;
-      h.id       := http_opt_getId;
-      h.password := http_opt_getPassword;
-      h.DownloadDialog(url);
-      h.Stream.SaveToFile(local);
-    finally
-      h.Free;
-    end;
-  end;
-
-  procedure _mainNoDlg;
-  begin
-    _sub;
-  end;
+  h: TkskHttpDialog;
 
 begin
   a := nako_getFuncArg(args, 0);
@@ -153,10 +132,19 @@ begin
   url   := hi_str(a);
   local := hi_str(b);
 
+  // スレッドを使ってアクセス
+  h := TkskHttpDialog.Create;
   try
-    if hi_bool(pProgDialog) then _main else _mainNoDlg;
-  except
-    _sub;
+    kskFtp.MainWindowHandle := nako_getMainWindowHandle;
+    h.UseBasicAuth  := http_opt_useBasicAuth;
+    h.id            := http_opt_getId;
+    h.password      := http_opt_getPassword;
+    h.UserAgent     := http_opt_getUA;
+    h.UseDialog     := hi_bool(pProgDialog);
+    h.DownloadDialog(url);
+    h.Stream.SaveToFile(local);
+  finally
+    h.Free;
   end;
 
   Result := nil;
@@ -166,6 +154,7 @@ function sys_http_downloaddata(args: DWORD): PHiValue; stdcall;
 var
   a: PHiValue;
   url, local, s: string;
+  h: TkskHttpDialog;
 
   procedure subDownload;
   begin
@@ -179,17 +168,19 @@ var
     if FileExists(local) then DeleteFile(local);
   end;
 
-  procedure mainDownloadDlg;
+  procedure _download;
   var
     h: TkskHttpDialog;
   begin
     // スレッドを使ってアクセス
     h := TkskHttpDialog.Create;
     try
+      kskFtp.MainWindowHandle := nako_getMainWindowHandle;
       h.UseBasicAuth := http_opt_useBasicAuth;
       h.id       := http_opt_getId;
       h.password := http_opt_getPassword;
-      kskFtp.MainWindowHandle := nako_getMainWindowHandle;
+      h.UserAgent     := http_opt_getUA;
+      h.UseDialog     := hi_bool(pProgDialog);
       if h.DownloadDialog(url) then
       begin
         SetLength(s, h.Stream.Size);
@@ -204,34 +195,18 @@ var
     end;
   end;
 
-  procedure mainDownload;
-  var h: TkskHttp;
-  begin
-    // ダイアログなし
-    h := TkskHttp.Create;
-    try
-      s := h.GetAsText(url);
-    finally
-      h.Free;
-    end;
-  end;
-
 begin
   a := nako_getFuncArg(args, 0);
 
   url   := hi_str(a);
 
   try
-    if hi_bool(pProgDialog) then mainDownloadDlg else mainDownload;
+    _download;
   except
     subDownload;
   end;
   Result := hi_newStr(s);
-  // [備考]
-  //--------------
-  // IEのプロキシは以下のキーにある
-  // HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings\ProxyServer
-  //--------------
+  
 end;
 
 function sys_http_downloadhead(args: DWORD): PHiValue; stdcall;
@@ -1746,7 +1721,7 @@ begin
   AddFunc  ('HTTPポスト','{文字列=?}HEADとBODYをURLへ|BODYで',4015, sys_http_post, 'ポストしたい内容のHEADとBODYをURLへポストしその結果を返す。', 'HTTPぽすと');
   AddFunc  ('HTTPゲット','{文字列=?}HEADをURLへ|HEADで',      4016, sys_http_get, '送信ヘッダHEADを指定してURLへGETコマンドを発行する。そしてその結果を返す。', 'HTTPげっと');
   AddFunc  ('HTTP簡易ポスト','URLへVALUESを|URLに',4017, sys_http_post_easy, 'ポストしたい値(ハッシュ形式)VALUESをURLへポストしその結果を返す。', 'HTTPかんいぽすと');
-  AddStrVar('HTTPオプション',   '',                4018, 'HTTPに関するオプションをハッシュ形式で設定する。BASIC認証は「BASIC認証=オン{~}ID=xxx{~}パスワード=xxx」と書く。','HTTPおぷしょん');
+  AddStrVar('HTTPオプション',   '',                4018, 'HTTPに関するオプションをハッシュ形式で設定する。BASIC認証は「BASIC認証=オン{~}ID=xxx{~}パスワード=xxx」と書く。UAの変更は「UA=nadesiko」のように書く。','HTTPおぷしょん');
 
   //-FTP
   AddFunc  ('FTP接続',          'Sで',                        4020, sys_ftp_connect,        '接続情報「ホスト=xxx{~}ID=xxx{~}パスワード=xxx{~}PORT=xx{~}PASV=オン|オフ」でFTPに接続する', 'FTPせつぞく');
