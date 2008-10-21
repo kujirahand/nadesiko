@@ -108,6 +108,10 @@ type
   TkskHttp = class
   public
     procProgress: TkskProgress;
+    UserAgent: string;
+    HTTP_VERSION: string;
+    TimeOut: Integer;
+    constructor Create;
     function Get(const URL, FileName: string): Boolean;
     function GetAsText(const URL: string): string;
     function GetAsMem(const URL: string; mem: TMemoryStream): Boolean;
@@ -121,12 +125,12 @@ type
     FOnError: TNotifyEvent;
     FOnProgress: TkskProgress;
     Stream: TStream;
-    FUser, FPass: string;
+    FHttpVersion: string;
   protected
     procedure Execute; override;
   public
     ErrorMsg: string;
-    constructor Create(aUserAgent, aURL, aHeaders, user, pass: String; aStream: TStream;
+    constructor Create(aUserAgent, aURL, aHeaders, aHttpVersion: String; aStream: TStream;
       AOnComplete, AOnError: TNotifyEvent; AOnProgress: TkskProgress);
   end;
 
@@ -147,6 +151,7 @@ type
     UseBasicAuth: Boolean;
     UseDialog: Boolean;
     UserAgent: string;
+    httpVersion: string;
     constructor Create;
     destructor Destroy; override;
     function DownloadDialog(const URL: string): Boolean;
@@ -155,6 +160,8 @@ type
 var MainWindowHandle: THandle = 0;
 
 function IsGlobalOffline: boolean;
+procedure splitURL(url:string; var protocol:string; var domain:string; var path:string; var port:Integer);
+procedure SetTimeOut(hSession:HINTERNET; Seconds: Integer); //TimeOutの設定
 
 implementation
 
@@ -182,6 +189,49 @@ begin
     MainWindowHandle := GetForegroundWindow;
   end;
   Result := MainWindowHandle;
+end;
+
+function GetHttpStatus(hRequest:HINTERNET): Integer;
+var
+  Len, r: DWORD;
+begin
+  Len := SizeOf(Result);
+  r := 0;
+  HttpQueryInfo(hRequest, HTTP_QUERY_STATUS_CODE or HTTP_QUERY_FLAG_NUMBER,
+    @Result, Len, r);
+end;
+
+procedure SetTimeOut(hSession:HINTERNET; Seconds: Integer); //TimeOutの設定
+var
+  TimeOut: integer;
+begin
+  TimeOut := Seconds * 1000; //単位はms -> 秒に変換
+  InternetSetOption(
+    hSession,
+    INTERNET_OPTION_RECEIVE_TIMEOUT,
+    @TimeOut,
+    SizeOf(TimeOut));
+end;
+
+procedure splitURL(url:string; var protocol:string; var domain:string; var path:string; var port:Integer);
+var
+  sport: string;
+begin
+  protocol := getToken_s(url, '://');
+  domain   := getToken_s(url, '/');
+  path     := '/' + url;
+  // Check Port
+  port := INTERNET_DEFAULT_HTTP_PORT;
+  if protocol = 'https' then
+  begin
+    port := INTERNET_DEFAULT_HTTPS_PORT;
+  end;
+  if Pos(':', domain) > 0 then
+  begin
+    sport  := domain;
+    domain := getToken_s(sport, ':');
+    port   := StrToIntDef(sport, port);
+  end;
 end;
 
 type
@@ -535,7 +585,7 @@ begin
       // Query Head
       nRead := Length(Buffer);
       HttpQueryInfo(hReqUrl, HTTP_QUERY_CONTENT_LENGTH, @Buffer[0], nRead, d);
-      nTotal := StrToIntDef(PChar(@Buffer[0]), 0); // ヘッダから長さを取得
+      nTotal := StrToIntDef(PChar(@Buffer[0]), 0); // ?w?b?_?(c)?c,???^(3)?????3/4
       nCount := 0;
       // get data
       repeat
@@ -549,7 +599,7 @@ begin
         res := InternetReadFile(hReqUrl, @Buffer, sizeof(Buffer), nRead);
         if res then
         begin
-          mem.Write(buffer, nRead); // バッファへ追加
+          mem.Write(buffer, nRead); // ?o?b?t?@?O"?C,?A'
           Inc(nCount, nRead);
         end else
         begin
@@ -682,10 +732,17 @@ begin
 
 end;
 
+constructor TkskHttp.Create;
+begin
+  UserAgent := 'kskHttp';
+  HTTP_VERSION := 'HTTP/1.1';
+  TimeOut := 60;
+end;
+
 { THTTPSyncFileDownloader }
 
 constructor THTTPSyncFileDownloader.Create(aUserAgent, aURL, aHeaders,
-  user, pass: String; aStream: TStream; AOnComplete, AOnError: TNotifyEvent;
+  aHttpVersion: String; aStream: TStream; AOnComplete, AOnError: TNotifyEvent;
   AOnProgress: TkskProgress);
 begin
   inherited Create(False);
@@ -695,10 +752,7 @@ begin
   FUserAgent := aUserAgent;
   FURL       := aURL;
   FHeaders   := aHeaders;
-
-  FUser := user;
-  FPass := pass;
-
+  FHttpVersion := aHttpVersion;
   Stream     := aStream;
   ErrorMsg   := '';
 
@@ -719,7 +773,7 @@ var
   flagStop: Boolean;
   dwFlags: DWORD;
   dwBuffLen: DWORD;
-  domain, path: string;
+  protocol, domain, path: string;
   b: BOOL;
 
   procedure closeHandleAll;
@@ -737,32 +791,14 @@ var
     if Assigned(FOnError) then FOnError(Self);
   end;
 
-  procedure splitURL(url:string; var domain:string; var path:string);
-  begin
-    getToken_s(url, '://');
-    domain := getToken_s(url, '/');
-    path   := '/' + url;
-  end;
-
-  function GetHttpStatus: Integer; //StatusCodeの取得
-  var
-    Len, Reserved: DWORD;
-  begin
-    Reserved := 0;
-    Len := SizeOf(Result);
-    HttpQueryInfo(hRequest, HTTP_QUERY_STATUS_CODE or HTTP_QUERY_FLAG_NUMBER,
-      @Result, Len, Reserved);
-  end;
-
-
   function _httpsDownload: Boolean;
-  var code: Integer;
+  var code, port: Integer;
   begin
     Result := False;
-    splitURL(FUrl, domain, path);
+    splitURL(FUrl, protocol, domain, path, port);
     // connect
     hcon := InternetConnect(hSession, PChar(domain),
-      INTERNET_DEFAULT_HTTPS_PORT,
+      port,
       '',// username
       '',// password
       INTERNET_SERVICE_HTTP, 0, 0);
@@ -772,7 +808,11 @@ var
       hcon,
       'GET',
       PChar(path),
-      nil, nil, nil, INTERNET_FLAG_SECURE, 0);
+      PChar(FHttpVersion),
+      nil,
+      nil,
+      INTERNET_FLAG_SECURE,
+      0);
     if not Assigned(hRequest) then
     begin
       err('リクエスト時のエラー'); Exit;
@@ -805,7 +845,7 @@ var
       err('リクエスト送信時のエラー'); Exit;
     end;
 
-    code := GetHttpStatus;
+    code := GetHttpStatus(hRequest);
     if code <> HTTP_STATUS_OK then
     begin
       err('ステータスコードの異常:' + IntToStr(code)); Exit;
@@ -943,8 +983,8 @@ begin
   begin
     head := 'Authorization: Basic ' + EncodeBase64(id + ':' + password) + #0;
   end;
-  downloader := THTTPSyncFileDownloader.Create(UserAgent, url, head, id, password, Stream,
-      OnComplete, OnError, OnProgress);
+  downloader := THTTPSyncFileDownloader.Create(UserAgent, url, head, httpVersion,
+    Stream, OnComplete, OnError, OnProgress);
   try
     // ダウンロードが終了するまでダイアログを表示
     if UseDialog then
