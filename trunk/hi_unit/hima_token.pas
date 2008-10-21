@@ -411,6 +411,16 @@ function HimaGetWord(var p: PChar; var tokenJosi: string): string;
     HimaGetToJosi;
   end;
 
+var
+  i, len: Integer;
+const
+  reigaiku:Array[0..7] of string = (
+    'または','もし','違えば','違えばもし','かつ','また',
+    'なでしこ','ひらがな'
+  );
+  matubiku:Array[0..2] of string = (
+    '回','以上','以下'
+  );
 begin
   // アルファベット ('A'..'Z'|'a'..'z'|'_')+ ('A'..'Z'|'a'..'z'|'0'..'9'|'_')*
   // 漢字カタカナ   ('ァ'..|'ー')+ [$8340 .. $FCFC]
@@ -420,68 +430,44 @@ begin
 
   //============================================================================
   // 特別な予約語句から始まっていればそこで必ず語句を区切る
-  if StrLComp(p,'または',6)=0 then
+  for i := 0 to High(reigaiku) do
   begin
-    Result := 'または'; Inc(p,6);
-    tokenJosi := '';
-    Exit;
-  end else
-  if StrLComp(p,'もし',4)=0 then
-  begin
-    Result := 'もし'; Inc(p,4);
-    tokenJosi := '';
-    Exit;
-  end else
-  if StrLComp(p,'違えばもし',10)=0 then
-  begin
-    Result := '違'; Inc(p,6);
-    tokenJosi := '';
-    Exit;
-  end else
-  if StrLComp(p,'かつ',4)=0 then
-  begin
-    Result := 'かつ'; Inc(p,4);
-    tokenJosi := '';
-    Exit;
-  end else
-  if StrLComp(p,'また',4)=0 then
-  begin
-    Result := 'また'; Inc(p,4);
-    tokenJosi := '';
-    Exit;
-  end else
-  if StrLComp(p,'について',8)=0 then
-  begin
-    Result := 'について'; Inc(p,8);
-    tokenJosi := '';
-    Exit;
-  end else
-  if StrLComp(p,'なでしこ',8)=0 then
-  begin
-    Result := 'なでしこ'; Inc(p,8);
-    tokenJosi := '';
-    Exit;
-  end else
-  if StrLComp(p,'ひらがな',8)=0 then
-  begin
-    Result := 'ひらがな'; Inc(p,8);
-    tokenJosi := '';
-    Exit;
-  end else
-  ;
+    len := Length(reigaiku[i]);
+    if StrLComp(p, PChar(reigaiku[i]), len) = 0 then
+    begin
+      Result := reigaiku[i]; Inc(p, len);
+      tokenJosi := '';
+      Exit;
+    end;
+  end;
+
   //============================================================================
   // アルファベットか？
   if (p^ in AlphabetChars1) then
   begin
     HimaGetAlphabet;
-    Exit;
-  end;
+  end else
   // 漢字カタカナひらがなから始まる語は助詞まで切り取る
   if CharInRange(p, 'ぁ', '') then
   begin
     HimaGetToJosi;
-    Exit;
   end else
+  begin
+  end;
+  // 特別語句
+  for i := 0 to High(matubiku) do
+  begin
+    len := Length(matubiku[i]);
+    if
+      (Length(Result) > len) and
+      (Copy(Result, Length(Result) - len + 1, len) = matubiku[i]) then
+    begin
+      Dec(p, len);
+      Result := Copy(Result, 1, Length(Result) - len);
+      Break;
+    end;
+  end;
+
   // これ以外は記号とみなす
   Exit;
 end;
@@ -817,7 +803,7 @@ var
       Result := True;
       if
         chkWord('もし') or
-        chkWord('ならば') or chkWord('なら') or chkWord('ちごたら') or
+        chkWord('ならば') or chkWord('なら') or
         chkWord('違えば') or chkWord('違') or
         chkWord('せやなかったら') or chkWord('ちごたら') or
         chkWord('でなければ') or
