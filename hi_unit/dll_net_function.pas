@@ -118,7 +118,24 @@ begin
   end;
 end;
 
+function http_opt_getHttpVersion: string;
+begin
+  Result := nako_http_opt_get('HTTP_VERSION');
+  if Result = '' then
+  begin
+    Result := 'HTTP/1.1';
+  end;
+end;
 
+function http_opt_getTimeout: Integer;
+var
+  s: string;
+begin
+  s := nako_http_opt_get('TIMEOUT');
+  Result := StrToIntDef(s, 60);
+end;
+
+// HTTP/HTTPS 対応
 function sys_http_download(args: DWORD): PHiValue; stdcall;
 var
   a, b: PHiValue;
@@ -141,6 +158,7 @@ begin
     h.password      := http_opt_getPassword;
     h.UserAgent     := http_opt_getUA;
     h.UseDialog     := hi_bool(pProgDialog);
+    h.httpVersion   := http_opt_getHttpVersion;
     h.DownloadDialog(url);
     h.Stream.SaveToFile(local);
   finally
@@ -150,11 +168,11 @@ begin
   Result := nil;
 end;
 
+// HTTP/HTTPS 対応
 function sys_http_downloaddata(args: DWORD): PHiValue; stdcall;
 var
   a: PHiValue;
   url, local, s: string;
-  h: TkskHttpDialog;
 
   procedure subDownload;
   begin
@@ -1656,6 +1674,11 @@ begin
   IdNTP.Free;
 end;
 
+function sys_checkOnline(args: DWORD): PHiValue; stdcall;
+begin
+  Result := hi_newBool(not IsGlobalOffline);
+end;
+
 
 var kabin_server:TKabin = nil;
 
@@ -1721,7 +1744,8 @@ begin
   AddFunc  ('HTTPポスト','{文字列=?}HEADとBODYをURLへ|BODYで',4015, sys_http_post, 'ポストしたい内容のHEADとBODYをURLへポストしその結果を返す。', 'HTTPぽすと');
   AddFunc  ('HTTPゲット','{文字列=?}HEADをURLへ|HEADで',      4016, sys_http_get, '送信ヘッダHEADを指定してURLへGETコマンドを発行する。そしてその結果を返す。', 'HTTPげっと');
   AddFunc  ('HTTP簡易ポスト','URLへVALUESを|URLに',4017, sys_http_post_easy, 'ポストしたい値(ハッシュ形式)VALUESをURLへポストしその結果を返す。', 'HTTPかんいぽすと');
-  AddStrVar('HTTPオプション',   '',                4018, 'HTTPに関するオプションをハッシュ形式で設定する。BASIC認証は「BASIC認証=オン{~}ID=xxx{~}パスワード=xxx」と書く。UAの変更は「UA=nadesiko」のように書く。','HTTPおぷしょん');
+  AddStrVar('HTTPオプション',   '',                4018, 'HTTPに関するオプションをハッシュ形式で設定する。BASIC認証は「BASIC認証=オン{~}ID=xxx{~}パスワード=xxx」と書く。他に、「UA=nadesiko{~}HTTP_VERSION=HTTP/1.1」。','HTTPおぷしょん');
+  AddFunc  ('オンライン判定','',4019, sys_checkOnline, 'オンラインかどうか判別し結果を1(オンライン)か0(オフライン)で返す。', 'おんらいんはんてい');
 
   //-FTP
   AddFunc  ('FTP接続',          'Sで',                        4020, sys_ftp_connect,        '接続情報「ホスト=xxx{~}ID=xxx{~}パスワード=xxx{~}PORT=xx{~}PASV=オン|オフ」でFTPに接続する', 'FTPせつぞく');
