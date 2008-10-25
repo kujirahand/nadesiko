@@ -19,6 +19,7 @@ const
   COMMAND_TXT   = 'tools\command.txt';
   REPORT_TXT    = 'report.txt';
   DIR_TOOLS     = 'tools\';
+  DIR_TEMPLATE  = 'tools\template\';
   MODE_HINT_STR = '※【なでしこ実行モード】';
 
 type
@@ -371,6 +372,16 @@ type
     lblLinkToWebMan: TLabel;
     memCommand: TRichEdit;
     lblLinkToLocalMan: TLabel;
+    mnuEnumUserFunction: TMenuItem;
+    N62: TMenuItem;
+    mnuEnumUserVar: TMenuItem;
+    mnuInsertTemplate: TMenuItem;
+    dlgOpenTemplate: TOpenDialog;
+    N63: TMenuItem;
+    mnuSaveAsTemplate: TMenuItem;
+    dlgSaveTemplate: TSaveDialog;
+    mnuMakeBatchFile: TMenuItem;
+    dlgSaveBatchFile: TSaveDialog;
     procedure mnuCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure mnuViewLeftPanelClick(Sender: TObject);
@@ -575,6 +586,11 @@ type
     procedure edtGroupFilterKeyPress(Sender: TObject; var Key: Char);
     procedure lblLinkToWebManClick(Sender: TObject);
     procedure lblLinkToLocalManClick(Sender: TObject);
+    procedure mnuEnumUserFunctionClick(Sender: TObject);
+    procedure mnuEnumUserVarClick(Sender: TObject);
+    procedure mnuInsertTemplateClick(Sender: TObject);
+    procedure mnuSaveAsTemplateClick(Sender: TObject);
+    procedure mnuMakeBatchFileClick(Sender: TObject);
   private
     { Private 宣言 }
     ini: TIniFile;
@@ -3139,6 +3155,28 @@ begin
   if s = '' then Exit;
 
   //----------------------------------------------------------------------------
+  // もしかして命令？
+  cmbCmd.Text := s;
+  chkCmdDescript.Checked := False;
+  btnCmdEnumClick(nil);
+  if lstCmd.Items.Count > 0 then
+  begin
+    pageLeft.ActivePage := sheetCmd;
+    for i := 0 to lstCmd.Count - 1 do
+    begin
+      s := lstCmd.Items.Strings[i];
+      c := getToken_s(s, #9);
+      if Copy(s,1,1) <> '+' then
+      begin
+        lstCmd.ItemIndex := i;
+        lstCmdClick(nil);
+        Break;
+      end;
+    end;
+    lstCmd.SetFocus;
+  end;
+  
+  //----------------------------------------------------------------------------
   // もしかして変数？
   cmbVar.Text := s;
   chkVarLocal.Checked := True;
@@ -3203,29 +3241,6 @@ begin
     pageLeft.ActivePage := sheetGroup;
     Exit;
   end;
-
-  //----------------------------------------------------------------------------
-  // もしかして命令？
-  cmbCmd.Text := s;
-  chkCmdDescript.Checked := False;
-  btnCmdEnumClick(nil);
-  if lstCmd.Items.Count > 0 then
-  begin
-    pageLeft.ActivePage := sheetCmd;
-    for i := 0 to lstCmd.Count - 1 do
-    begin
-      s := lstCmd.Items.Strings[i];
-      c := getToken_s(s, #9);
-      if Copy(s,1,1) <> '+' then
-      begin
-        lstCmd.ItemIndex := i;
-        lstCmdClick(nil);
-        Break;
-      end;
-    end;
-    lstCmd.SetFocus;
-  end;
-
 
 end;
 
@@ -5725,6 +5740,64 @@ end;
 procedure TfrmNakopad.lblLinkToLocalManClick(Sender: TObject);
 begin
   mnuViewManClick(nil);
+end;
+
+procedure TfrmNakopad.mnuEnumUserFunctionClick(Sender: TObject);
+begin
+  TangoSelect;
+  cmbVar.Text := edtActive.SelText;
+  pageLeft.ActivePage := sheetVar;
+  btnFuncEnumClick(nil);
+end;
+
+procedure TfrmNakopad.mnuEnumUserVarClick(Sender: TObject);
+begin
+  TangoSelect;
+  cmbVar.Text := edtActive.SelText;
+  pageLeft.ActivePage := sheetVar;
+  btnVarEnumClick(nil);
+end;
+
+procedure TfrmNakopad.mnuInsertTemplateClick(Sender: TObject);
+var
+  txt: string;
+begin
+  ForceDirectories(FUserDir + DIR_TEMPLATE);
+  dlgOpenTemplate.InitialDir := FUserDir + DIR_TEMPLATE;
+  if not dlgOpenTemplate.Execute then Exit;
+  ReadTextFile(dlgOpenTemplate.FileName, txt);
+  edtActive.SelText := txt + #13#10;
+end;
+
+procedure TfrmNakopad.mnuSaveAsTemplateClick(Sender: TObject);
+var
+  txt: string;
+begin
+  ForceDirectories(FUserDir + DIR_TEMPLATE);
+  dlgSaveTemplate.InitialDir := FUserDir + DIR_TEMPLATE;
+  if not dlgSaveTemplate.Execute then Exit;
+  txt := edtActive.Lines.Text;
+  WriteTextFile(dlgSaveTemplate.FileName, txt);
+end;
+
+procedure TfrmNakopad.mnuMakeBatchFileClick(Sender: TObject);
+var
+  txt: string;
+begin
+  //----------------------------------------------------------
+  if not MsgYesNo(
+    '現在編集中のなでしこプログラムを'#13#10+
+    'バッチファイルに変換します。'#13#10+
+    'なでしこがインストールされた環境で、'#13#10+
+    'D&Dを受け付けるプログラムを作るのに便利です。'#13#10+
+    '作成しますか？') then Exit;
+  //----------------------------------------------------------
+  if not dlgSaveBatchFile.Execute then Exit;
+  ReadTextFile(AppPath + 'tools\template\batfile_head.txt', txt);
+  txt := txt + #13#10 + edtActive.Lines.Text + #13#10;
+  txt := JReplaceOne(txt, 'C:\Program Files\nadesiko_lang\vnako.exe', AppPath + 'vnako.exe');
+  WriteTextFile(dlgSaveBatchFile.FileName, txt);
+  ShowMessage('作成しました。ダブルクリックやファイルドロップで起動します。');
 end;
 
 end.
