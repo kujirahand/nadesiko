@@ -111,7 +111,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 0
+            ItemHeight = 12
             PopupMenu = popFind
             TabOrder = 0
             OnEnter = cmbFindEnter
@@ -210,7 +210,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 0
+            ItemHeight = 12
             PopupMenu = popFind
             TabOrder = 2
             OnEnter = cmbGroupEnter
@@ -392,7 +392,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 0
+            ItemHeight = 12
             PopupMenu = popFind
             TabOrder = 2
             OnEnter = cmbCmdEnter
@@ -511,7 +511,7 @@ object frmNakopad: TfrmNakopad
           Width = 193
           Height = 20
           AutoComplete = False
-          ItemHeight = 0
+          ItemHeight = 12
           PopupMenu = popFind
           TabOrder = 1
           OnEnter = cmbVarEnter
@@ -1311,6 +1311,10 @@ object frmNakopad: TfrmNakopad
         Caption = #23455#34892#12501#12449#12452#12523#20316#25104'(&M)...'
         OnClick = mnuMakeExeClick
       end
+      object mnuMakeBatchFile: TMenuItem
+        Caption = #12496#12483#12481#12501#12449#12452#12523#20316#25104'(&B)..'
+        OnClick = mnuMakeBatchFileClick
+      end
       object mnuMakeInstaller: TMenuItem
         Caption = #12452#12531#12473#12488#12540#12521#12540#12398#20316#25104'['#12487#12521#12483#12463#12473#29256'](&I)...'
         Enabled = False
@@ -1559,10 +1563,17 @@ object frmNakopad: TfrmNakopad
         ShortCut = 16460
         OnClick = mnuInsLineClick
       end
-      object mnuHokan: TMenuItem
-        Caption = #21336#35486#35036#23436'...'
-        ShortCut = 16416
-        OnClick = mnuHokanClick
+      object N63: TMenuItem
+        Caption = '-'
+      end
+      object mnuInsertTemplate: TMenuItem
+        Caption = #12486#12531#12503#12524#12540#12488#12434#25407#20837'..'
+        ShortCut = 24652
+        OnClick = mnuInsertTemplateClick
+      end
+      object mnuSaveAsTemplate: TMenuItem
+        Caption = #12486#12531#12503#12524#12540#12488#12392#12375#12390#20445#23384'..'
+        OnClick = mnuSaveAsTemplateClick
       end
     end
     object F2: TMenuItem
@@ -1592,6 +1603,24 @@ object frmNakopad: TfrmNakopad
         Caption = #32622#25563'...(&R)'
         ShortCut = 16466
         OnClick = mnuReplaceClick
+      end
+      object N62: TMenuItem
+        Caption = '-'
+      end
+      object mnuHokan: TMenuItem
+        Caption = #21336#35486#35036#23436'...'
+        ShortCut = 16416
+        OnClick = mnuHokanClick
+      end
+      object mnuEnumUserFunction: TMenuItem
+        Caption = #38306#25968#19968#35239#12434#21015#25369
+        ShortCut = 16459
+        OnClick = mnuEnumUserFunctionClick
+      end
+      object mnuEnumUserVar: TMenuItem
+        Caption = #22793#25968#19968#35239#12434#21015#25369
+        ShortCut = 24651
+        OnClick = mnuEnumUserVarClick
       end
     end
     object V1: TMenuItem
@@ -4586,5 +4615,23 @@ object frmNakopad: TfrmNakopad
       Caption = #21066#38500
       OnClick = mnuDesignDeleteClick
     end
+  end
+  object dlgOpenTemplate: TOpenDialog
+    DefaultExt = '.txt'
+    Filter = #12486#12461#12473#12488#12501#12449#12452#12523'|*.nako;*.txt;*.bat|'#20840#12390'|*.*'
+    Left = 272
+    Top = 256
+  end
+  object dlgSaveTemplate: TSaveDialog
+    DefaultExt = '.txt'
+    Filter = #12486#12461#12473#12488#24418#24335'|*.nako;*.txt;*.bat|'#12377#12409#12390'|*.*'
+    Left = 272
+    Top = 288
+  end
+  object dlgSaveBatchFile: TSaveDialog
+    DefaultExt = '.bat'
+    Filter = #12496#12483#12481#12501#12449#12452#12523'|*.bat|'#20840#12390'|*.*'
+    Left = 272
+    Top = 320
   end
 end
