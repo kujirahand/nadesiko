@@ -122,11 +122,17 @@ begin
   frmNako := TfrmNako.Create(nil);
   Bokan := frmNako;
 
-  RegistCallbackFunction(frmNako.Handle);
+  vnako_function.RegistCallbackFunction(frmNako.Handle);
 
   path := nako_getPluginsDir;
   try
-    nako_eval_str2('!「'+path+'vnako.nako」を取り込む。');
+    if FileExists(path + 'vnako.nako') then
+    begin
+      nako_eval_str2('!「'+path+'vnako.nako」を取り込む。');
+    end else
+    begin
+      nako_eval_str2('!「vnako.nako」を取り込む。');
+    end;
     frmNako.SetBokanHensu;
   except
   end;
