@@ -1,4 +1,4 @@
-library nako_qrcode;
+library nako_testunit;
 
 uses
   Windows,

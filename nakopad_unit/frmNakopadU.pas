@@ -60,9 +60,6 @@ type
     Status: TStatusBar;
     NadesikoFountain: TNadesikoFountain;
     sheetVar: TTabSheet;
-    edtA: TEditorEx;
-    edtB: TEditorEx;
-    splitEdit: TSplitter;
     edtProp: TEditorExProp;
     mnuSplitEdit: TMenuItem;
     N6: TMenuItem;
@@ -309,12 +306,7 @@ type
     mnuReplace: TMenuItem;
     WEB2: TMenuItem;
     popLookWeb: TMenuItem;
-    pageMain: TPageControl;
-    tabSource: TTabSheet;
-    tabDesign: TTabSheet;
-    panelDesign: TPanel;
     sheetDesignProp: TTabSheet;
-    track: TTrackBox;
     mnuDesign: TMenuItem;
     mnuInsButton: TMenuItem;
     Panel10: TPanel;
@@ -335,7 +327,6 @@ type
     N55: TMenuItem;
     mnuDesignDel: TMenuItem;
     N56: TMenuItem;
-    edtDesignDescript: TLabel;
     N57: TMenuItem;
     mnuRegDelux: TMenuItem;
     panelGuiTop: TPanel;
@@ -350,10 +341,6 @@ type
     mnuInsCheck: TMenuItem;
     mnuInsList: TMenuItem;
     mnuRunAs: TMenuItem;
-    panelTools: TPanel;
-    Panel11: TPanel;
-    lstInsertParts: TListBox;
-    Splitter5: TSplitter;
     mnuMakeInstaller: TMenuItem;
     mnuRunTest: TMenuItem;
     mnuTestMode: TMenuItem;
@@ -382,6 +369,20 @@ type
     dlgSaveTemplate: TSaveDialog;
     mnuMakeBatchFile: TMenuItem;
     dlgSaveBatchFile: TSaveDialog;
+    tabsMain: TTabControl;
+    pageMain: TPageControl;
+    tabSource: TTabSheet;
+    splitEdit: TSplitter;
+    edtA: TEditorEx;
+    edtB: TEditorEx;
+    tabDesign: TTabSheet;
+    Splitter5: TSplitter;
+    panelDesign: TPanel;
+    edtDesignDescript: TLabel;
+    track: TTrackBox;
+    panelTools: TPanel;
+    Panel11: TPanel;
+    lstInsertParts: TListBox;
     procedure mnuCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure mnuViewLeftPanelClick(Sender: TObject);
@@ -591,6 +592,8 @@ type
     procedure mnuInsertTemplateClick(Sender: TObject);
     procedure mnuSaveAsTemplateClick(Sender: TObject);
     procedure mnuMakeBatchFileClick(Sender: TObject);
+    procedure tabsMainDrawTab(Control: TCustomTabControl;
+      TabIndex: Integer; const Rect: TRect; Active: Boolean);
   private
     { Private 宣言 }
     ini: TIniFile;
@@ -1080,6 +1083,9 @@ begin
   FGuiList := TNGuiList.Create;
   FTrackTarget := nil;
   FGuiCancelInvalidate := True;
+  // Tab
+  tabsMain.TabWidth := 130;
+  tabsMain.Tabs.Text := '';
 end;
 
 procedure TfrmNakopad.FreeVar;
@@ -5798,6 +5804,19 @@ begin
   txt := JReplaceOne(txt, 'C:\Program Files\nadesiko_lang\vnako.exe', AppPath + 'vnako.exe');
   WriteTextFile(dlgSaveBatchFile.FileName, txt);
   ShowMessage('作成しました。ダブルクリックやファイルドロップで起動します。');
+end;
+
+procedure TfrmNakopad.tabsMainDrawTab(Control: TCustomTabControl;
+  TabIndex: Integer; const Rect: TRect; Active: Boolean);
+var
+  cap: string;
+begin
+  if TabIndex < 0 then Exit;
+  cap := tabsMain.Tabs.Strings[TabIndex];
+  with Control.Canvas do
+  begin
+    TextOut(Rect.Left + 2, Rect.Top + 2, cap);
+  end;
 end;
 
 end.
