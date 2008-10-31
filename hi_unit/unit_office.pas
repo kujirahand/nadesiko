@@ -14,6 +14,8 @@ type
     E_WorkSheet    : Variant;
     FActive : Boolean;
     FVisible: Boolean;
+    FDisplayAlerts: Boolean;
+    procedure SetDisplayAlerts(v:Boolean);
     procedure SetVisible(const Value: Boolean);
     function GetVersion: Integer;
   public
@@ -43,6 +45,8 @@ type
     procedure WorkSheetActiveS(s: string);
     procedure SheetCopy(sh1, sh2: string);
     procedure SheetRename(sh1, sh2: string);
+    procedure WorkSheetMoveLast(sheet: string);
+    procedure WorkSheetMoveTop(sheet: string);
     procedure FileOpen(fname: string);
     procedure FileSave(fname: string);
     procedure FileSaveAsCsv(fname: string);
@@ -81,6 +85,7 @@ type
     property Version: Integer read GetVersion;
     function getLastRow(col:string):Integer;
     procedure UniqueRow(col:string);
+    property DisplayAlerts:Boolean read FDisplayAlerts write SetDisplayAlerts;
   end;
 
   TKWord = class
@@ -413,6 +418,7 @@ begin
   begin
     E_WorkBook.SaveAs(fname);
   end;
+  try E_Application.DisplayAlerts := FDisplayAlerts; except end;
 end;
 
 
@@ -421,6 +427,7 @@ begin
   try E_Application.DisplayAlerts := False; except end;
   E_WorkBook := E_Application.ActiveWorkBook;
   E_WorkBook.SaveAs(fname, xlCSV);
+  try E_Application.DisplayAlerts := FDisplayAlerts; except end;
 end;
 
 procedure TKExcel.FileSaveAsTsv(fname: string);
@@ -428,6 +435,7 @@ begin
   try E_Application.DisplayAlerts := False; except end;
   E_WorkBook := E_Application.ActiveWorkBook;
   E_WorkBook.SaveAs(fname, xlCurrentPlatformText);
+  try E_Application.DisplayAlerts := FDisplayAlerts; except end;
 end;
 
 function TKExcel.GetCell(row, col: Integer): string;
@@ -667,6 +675,14 @@ begin
   E_Application.Visible := Visible;
 end;
 
+procedure TKExcel.SetDisplayAlerts(v:Boolean);
+begin
+  try
+    E_Application.DisplayAlerts := v;
+  except end;
+  FDisplayAlerts := v;
+end;
+
 procedure TKExcel.WorkBookActiveClose;
 begin
   try
@@ -787,9 +803,11 @@ end;
 
 function TKExcel.DeleteSheet(sheetname: string):Boolean;
 begin
+  try E_Application.DisplayAlerts := False; except end;
   E_WorkBook :=  E_Application.ActiveWorkBook;
   E_WorkSheet := E_WorkBook.Sheets[sheetname];
   Result := E_WorkSheet.Delete;
+  try E_Application.DisplayAlerts := FDisplayAlerts; except end;
   E_WorkSheet := Unassigned;
 end;
 
@@ -809,6 +827,44 @@ procedure TKExcel.SheetRename(sh1, sh2: string);
 begin
   E_WorkBook :=  E_Application.ActiveWorkBook;
   E_WorkBook.Sheets[sh1].Name := sh2;
+end;
+
+procedure TKExcel.WorkSheetMoveLast(sheet: string);
+var
+  ASheet: Variant;
+begin
+  E_WorkBook :=  E_Application.ActiveWorkBook;
+  try
+    E_WorkSheet := E_WorkBook.Sheets[sheet];
+  except
+    raise Exception.Create('シート"'+sheet+'"が見つかりません。');
+  end;
+  ASheet:=E_WorkBook.Sheets[E_WorkBook.Sheets.Count];
+  try
+    if ASheet.Name = E_WorkSheet.Name then Exit;
+    E_WorkSheet.Move(EmptyParam, ASheet);
+  finally
+    ASheet := Unassigned;
+  end;
+end;
+
+procedure TKExcel.WorkSheetMoveTop(sheet: string);
+var
+  ASheet: Variant;
+begin
+  E_WorkBook :=  E_Application.ActiveWorkBook;
+  try
+    E_WorkSheet := E_WorkBook.Sheets[sheet];
+  except
+    raise Exception.Create('シート"'+sheet+'"が見つかりません。');
+  end;
+  ASheet:=E_WorkBook.Sheets[1];
+  try
+    if ASheet.Name = E_WorkSheet.Name then Exit;
+    E_WorkSheet.Move(ASheet, EmptyParam);
+  finally
+    ASheet := Unassigned;
+  end;
 end;
 
 function TKExcel.enumSheets: String;

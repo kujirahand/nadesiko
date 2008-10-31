@@ -345,8 +345,29 @@ begin
   Result := nil;
 end;
 
+function excel_displayAlertsOff(h: DWORD): PHiValue; stdcall;
+begin
+  excel.DisplayAlerts := False;
+  Result := nil;
+end;
 
+function excel_moveSheetLast(h: DWORD): PHiValue; stdcall;
+var
+  sheet: string;
+begin
+  sheet := getArgStr(h, 0, True);
+  excel.WorkSheetMoveLast(sheet);
+  Result := nil;
+end;
 
+function excel_moveSheetTop(h: DWORD): PHiValue; stdcall;
+var
+  sheet: string;
+begin
+  sheet := getArgStr(h, 0, True);
+  excel.WorkSheetMoveTop(sheet);
+  Result := nil;
+end;
 
 
 function excel_checkInstall(h: DWORD): PHiValue; stdcall;
@@ -1744,6 +1765,9 @@ begin
   AddFunc  ('エクセル行挿入','{=?}ROWに|ROWへ', 4720, excel_insertRow,'ExcelでROW(例えば3)番目の行に空行を挿入する','えくせるぎょうそうにゅう');
   AddFunc  ('エクセル列挿入','{=?}COLNAMEに|COLNAMEへ', 4721, excel_insertCol,'ExcelでCOLNAME(例えばF)に空列を挿入する','えくせるれつそうにゅう');
   AddFunc  ('エクセルインストールチェック','', 4713, excel_checkInstall, 'Microsoft Excelがインストールされているか確認してはい(=1)かいいえ(=0)を返す','えくせるいんすとーるちぇっく');
+  AddFunc  ('エクセル警告無視','', 4722, excel_displayAlertsOff, 'Excelの警告ダイアログの表示(DisplayAlerts)を抑制する','えくせるけいこくむし');
+  AddFunc  ('エクセルシート末尾移動','SHEETを', 4723, excel_moveSheetLast, 'ExcelのSHEETをブックの末尾に移動する','えくせるしーとまつびいどう');
+  AddFunc  ('エクセルシート先頭移動','SHEETを', 4724, excel_moveSheetTop, 'ExcelのSHEETをブックの先頭に移動する','えくせるしーとせんとういどう');
 
   //-ワード(Word)
   AddFunc  ('ワード起動','{=1}Aで', 4330, word_open,'可視A(オンかオフ)でワードを起動する','わーどきどう');
