@@ -77,6 +77,7 @@ type
     procedure AppEventDeactivate(Sender: TObject);
     procedure AppEventMinimize(Sender: TObject);
     procedure AppEventRestore(Sender: TObject);
+    procedure AppEventMessage(var Msg: tagMSG; var Handled: Boolean);
   private
     { Private 宣言 }
     FFlagFree: Boolean;
@@ -364,6 +365,7 @@ begin
 
   // 背景ビットマップ
   backBmp := TBitmap.Create;
+  
   backBmp.Width := Self.ClientWidth;
   backBmp.Height := Self.ClientHeight;
   backBmp.Canvas.Brush.Color := clWhite;
@@ -1757,6 +1759,7 @@ var
 begin
   ginfo := GuiInfos[ 0 ];
   doEvent(@ginfo, EVENT_ACTIVATE2);
+  Self.Invalidate; // Vistaで Form 上のボタンが消える問題の対処
 end;
 
 procedure TfrmNako.AppEventDeactivate(Sender: TObject);
@@ -1781,6 +1784,19 @@ var
 begin
   ginfo := GuiInfos[ 0 ];
   doEvent(@ginfo, EVENT_RESTORE);
+  Self.Invalidate; // Vista で画面のコンポーネントが消える問題に対処
+end;
+
+procedure TfrmNako.AppEventMessage(var Msg: tagMSG; var Handled: Boolean);
+begin
+  // Vista のコンポーネント消失問題(BTS:@55)
+  if WM_SYSKEYUP = Msg.message then
+  begin
+    if Msg.wParam = $12{Alt} then
+    begin
+      Self.Invalidate;
+    end;
+  end;
 end;
 
 initialization
