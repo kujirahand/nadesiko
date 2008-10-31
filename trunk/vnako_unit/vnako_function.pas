@@ -5399,7 +5399,12 @@ var
     if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
     if cmd = '文字書体SET' then setFontName(e.Font, hi_str(v)) else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size) end else
-    if cmd = '文字サイズSET' then e.Font.Size := hi_int(v) else
+    if cmd = '文字サイズSET' then begin
+      e.Style := lbOwnerDrawFixed;
+      e.Canvas.Font.Size := hi_int(v);
+      e.Font.Size := hi_int(v);
+      e.ItemHeight := e.Canvas.TextHeight('a');
+    end else
     if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
     if cmd = '文字色SET' then e.Font.Color := RGB2Color( hi_int(v) ) else
     if cmd = '背景色取得' then setRes(Color2RGB(e.Color))  else
