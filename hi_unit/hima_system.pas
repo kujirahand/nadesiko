@@ -109,6 +109,7 @@ type
     CurNode         : TSyntaxNode;
   end;
 
+  THiOutLangType = (langNako, langLua);
   //----------------------------------------------------------------------------
   // インタプリタ・システムを表す型
   THiSystem = class
@@ -199,7 +200,7 @@ type
     procedure PopScope;  // ローカルスコープの破棄
     procedure SetSetterGetter(VarName, SetterName, GetterName:string; tag: Integer; Description, yomi: string); // セッターゲッターの設定
     function AddFunction(name, argStr: string; func: THimaSysFunction; tag: Integer; IzonFiles: string): Boolean;
-    function DebugProgram(n: TSyntaxNode): string;
+    function DebugProgram(n: TSyntaxNode; lang: THiOutLangType = langNako): string;
     function DebugProgramNadesiko: string;
     function RunGroupEvent(group: PHiValue; memberId: DWORD): PHiValue;
     function RunGroupMethod(group, method: PHiValue; args: THObjectList): PHiValue;
@@ -487,6 +488,7 @@ begin
   AddStrVar('ナデシコランタイムパス',{'(起動時に決定)'}ParamStr(0),   103, 'なでしこエンジンをロードした実行ファイルのフルパス','なでしこらんたいむぱす');
   AddStrVar('OS',                    {'(起動時に決定)'}getWinVersion, 104, 'OSの種類を保持する。Windows Vista/Windows Server 2003/Windows XP/Windows 2000/Windows Me/Windows 98/Windows NT 4.0/Windows NT 3.51/Windows 95','OS');
 
+
   //-基本変数
   AddStrVar('それ',   '', 110, '命令の結果が代入される変数。省略語としても使われる。','それ');
   AddIntVar('はい',    1, 111, 'はい・いいえの選択に使われる。','はい');
@@ -530,10 +532,11 @@ begin
   Reserved ('エラーならば','',   208,'『エラー監視(文A)エラーならば(文B)』の対で使い、文Aを実行中にエラーが発生した時に文Bを実行する。','えらーならば');
   AddFunc  ('エラー発生','{文字列=?}Sで|Sと', 170, sys_except, '故意にエラーを発生させる。','えらーはっせい');
   AddFunc  ('エラー無視','', 189, sys_runtime_error_off, '実行時エラーを無視し実行し続ける。','えらーむし');
-  AddStrVar('エラーメッセージ', '', 212, 'エラー監視構文でエラーが発生した時にエラーメッセージを取得する','えらーしゅとく');
+  AddStrVar('エラーメッセージ', '', 212, 'エラー監視構文でエラーが発生した時にエラーメッセージを取得する','えらーめっせーじ');
   AddFunc  ('デバッグ', '', 213, sys_debug, 'デバッグダイアログを表示する。','でばっぐ');
   AddFunc  ('ASSERT', 'Aが|Aの|Aを', 214, sys_assert, '条件式Aが0(偽)になると例外を発する。','ASSERT');
   AddFunc  ('ググる', 'Sで|Sを', 487, sys_guguru, 'キーワードSでググる。','ぐぐる');
+  AddFunc  ('ナデシコ利用可能プラグイン列挙', '', 486, sys_plugins_enum, '利用可能なプラグインを返す','なでしこりようかのうぷらぐいんれっきょ');
 
   //-コマンドライン・環境変数
   AddStrVar('コマンドライン', '', 190, 'プログラム起動時のコマンドライン引数を配列形式で得る','こまんどらいん');
@@ -1081,14 +1084,21 @@ begin
   Global.RegistVar(Result);
 end;
 
-function THiSystem.DebugProgram(n: TSyntaxNode): string;
+function THiSystem.DebugProgram(n: TSyntaxNode; lang: THiOutLangType): string;
 begin
   Result := '';
   while n <> nil do
   begin
     try
       //Result := Result + '/*' + n.DebugStr + '*/';
-      Result := Result + n.outNadesikoProgram;
+      if lang = langNako then
+      begin
+        Result := Result + n.outNadesikoProgram;
+      end else
+      if lang = langLua then
+      begin
+        Result := Result + n.outLuaProgram;
+      end;
     except
       raise EHimaSyntax.Create(n.DebugInfo,'『%s』でパースエラー。',[n.ClassName]);
     end;
@@ -1576,12 +1586,13 @@ var
   begin
     Result := False;
     try
-      SetLength(b, 4);
+      SetLength(b, 2);
       // ↓重要：共有フォルダで実行するとき、fmShareDenyNone でないとなぜかエラーになる
       m := THFileStream.Create(s, fmOpenRead or SysUtils.fmShareDenyNone);
       try
-        m.Read(b[1], 4);
-        if b = 'MZP'#0 then
+        m.Read(b[1], 2);
+        //if b = 'MZP'#0 then
+        if b = 'MZ' then
         begin
           Result := True; Exit;
         end;

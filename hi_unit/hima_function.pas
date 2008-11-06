@@ -253,6 +253,7 @@ function sys_return(args: THiArray): PHiValue; stdcall;
 function sys_debug(args: THiArray): PHiValue; stdcall;
 function sys_assert(args: THiArray): PHiValue; stdcall;
 function sys_guguru(args: THiArray): PHiValue; stdcall;
+function sys_plugins_enum(args: THiArray): PHiValue; stdcall;
 
 (*
   AddFunc  ('変数列挙','{=?}Sの',             172, sys_EnumVar,'Sに「グローバル」か「ローカル」かを指定して変数の一覧を返す。','へんすうれっきょ');
@@ -3582,6 +3583,23 @@ begin
   url := 'http://www.google.co.jp/search?q='+key+'&lr=lang_ja&ie=utf-8&oe=utf-8';
   OpenApp(url);
   Result := nil;
+end;
+
+function sys_plugins_enum(args: THiArray): PHiValue; stdcall;
+var
+  i: Integer;
+  s: string;
+  p: THiPlugin;
+begin
+  s := '';
+  for i := 0 to HiSystem.plugins.Count - 1 do
+  begin
+    p := HiSystem.plugins.Items[i];
+    s := s + ExtractFileName(p.FullPath) + ',';
+    if p.Used then s := s + '使用中' else s := s + '';
+    s := s + #13#10;
+  end;
+  Result := hi_newStr(s);
 end;
 
 function sys_timeGettime(args: THiArray): PHiValue;

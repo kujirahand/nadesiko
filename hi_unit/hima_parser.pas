@@ -55,6 +55,7 @@ type
     function GetValueNoGetter(CanCreate:Boolean): PHiValue; virtual; // Getterなしの変数を得る
     function FindBreakLevel: Integer;             // 抜けるなどの処理に使う
     function outNadesikoProgram: string; virtual; // 構文木からなでしこのプログラムを生成する
+    function outLuaProgram: string; virtual;
     property SyntaxLevel: Integer read FSyntaxLevel write SetSyntaxLevel;
     property Parent: TSyntaxNode read FParent write SetParent;
   end;
@@ -65,6 +66,7 @@ type
     function DebugStr: string; override;
     function getValue: PHiValue; override;
     function outNadesikoProgram: string; override;
+    function outLuaProgram: string; override;
   end;
 
   TSyntaxNodeChild = class(TSyntaxNode)
@@ -72,6 +74,7 @@ type
     function DebugStr: string; override;
     function getValue: PHiValue; override;
     function outNadesikoProgram: string; override;
+    function outLuaProgram: string; override;
   end;
 
   TSyntaxNamespace = class(TSyntaxNode)
@@ -80,6 +83,7 @@ type
     function DebugStr: string; override;
     function getValue: PHiValue; override;
     function outNadesikoProgram: string; override;
+    function outLuaProgram: string; override;
   end;
 
   TSyntaxEnzansi = class(TSyntaxNode)
@@ -88,6 +92,7 @@ type
     function DebugStr: string; override;
     function getValue: PHiValue; override;
     function outNadesikoProgram: string; override;
+    function outLuaProgram: string; override;
   end;
 
   TSyntaxConst = class(TSyntaxNode)
@@ -98,6 +103,7 @@ type
     function DebugStr: string; override;
     function getValue: PHiValue; override;
     function outNadesikoProgram: string; override;
+    function outLuaProgram: string; override;
   end;
 
   //----------------------------------------------------------------------------
@@ -139,6 +145,7 @@ type
     function getValue: PHiValue; override;
     property GroupScope: THiGroup read FGroupScope;
     function outNadesikoProgram: string; override;
+    function outLuaProgram: string; override;
   end;
 
   // -1 や !true を表す
@@ -153,6 +160,7 @@ type
     function DebugStr: string; override;
     function getValue: PHiValue; override;
     function outNadesikoProgram: string; override;
+    function outLuaProgram: string; override;
   end;
 
   TSyntaxSentence = class(TSyntaxNode)
@@ -164,6 +172,7 @@ type
     function GetValueNoGetter(CanCreate:Boolean): PHiValue; override;
     function getValue: PHiValue; override;
     function outNadesikoProgram: string; override;
+    function outLuaProgram: string; override;
   end;
 
   TSyntaxCalc = class(TSyntaxNode)
@@ -173,6 +182,7 @@ type
     function DebugStr: string; override;
     function getValue: PHiValue; override;
     function outNadesikoProgram: string; override;
+    function outLuaProgram: string; override;
   end;
 
   TSyntaxLet = class(TSyntaxSentence)
@@ -189,6 +199,7 @@ type
     function DebugStr: string; override;
     function getValue: PHiValue; override;
     function outNadesikoProgram: string; override;
+    function outLuaProgram: string; override;
   end;
 
   TSyntaxCreateVar = class(TSyntaxNode)
@@ -200,6 +211,7 @@ type
     function DebugStr: string; override;
     function getValue: PHiValue; override;
     function outNadesikoProgram: string; override;
+    function outLuaProgram: string; override;
   end;
 
   TSyntaxWhile = class(TSyntaxSentence)
@@ -212,6 +224,7 @@ type
     function DebugStr: string; override;
     function getValue: PHiValue; override;
     function outNadesikoProgram: string; override;
+    function outLuaProgram: string; override;
   end;
 
   TSyntaxLoop = class(TSyntaxSentence)
@@ -224,6 +237,7 @@ type
     function DebugStr: string; override;
     function getValue: PHiValue; override;
     function outNadesikoProgram: string; override;
+    function outLuaProgram: string; override;
   end;
 
   TSyntaxFor = class(TSyntaxSentence)
@@ -235,6 +249,7 @@ type
     function DebugStr: string; override;
     function getValue: PHiValue; override;
     function outNadesikoProgram: string; override;
+    function outLuaProgram: string; override;
   end;
 
   TSyntaxEach = class(TSyntaxSentence)
@@ -248,6 +263,7 @@ type
     function DebugStr: string; override;
     function getValue: PHiValue; override;
     function outNadesikoProgram: string; override;
+    function outLuaProgram: string; override;
   end;
 
   TSyntaxIf = class(TSyntaxNode)
@@ -263,6 +279,7 @@ type
     function DebugStr: string; override;
     function getValue: PHiValue; override;
     function outNadesikoProgram: string; override;
+    function outLuaProgram: string; override;
   end;
 
   //-----------------------------------------
@@ -287,6 +304,7 @@ type
     function DebugStr: string; override;
     function getValue: PHiValue; override;
     function outNadesikoProgram: string; override;
+    function outLuaProgram: string; override;
   end;
 
   TSyntaxTryExcept = class(TSyntaxNode)
@@ -323,6 +341,7 @@ type
     function DebugStr           : string;   override;
     function getValue           : PHiValue; override;
     function outNadesikoProgram : string;   override;
+    function outLuaProgram: string; override;
   end;
 
   TSyntaxFunction = class(TSyntaxNode)
@@ -345,6 +364,7 @@ type
     function DebugStr: string; override;
     function getValue: PHiValue; override;
     function outNadesikoProgram: string; override;
+    function outLuaProgram: string; override;
   end;
 
   TSyntaxWith = class(TSyntaxSentence)
@@ -543,6 +563,11 @@ end;
 function TSyntaxNode.GetValueNoGetter(CanCreate:Boolean): PHiValue;
 begin
   Result := getValue;
+end;
+
+function TSyntaxNode.outLuaProgram: string;
+begin
+  Result := '';
 end;
 
 function TSyntaxNode.outNadesikoProgram: string;
@@ -4645,6 +4670,11 @@ begin
   Result := NodeResult;
 end;
 
+function TSyntaxConst.outLuaProgram: string;
+begin
+  raise Exception.Create('TSyntaxConst.outLuaProgram');
+end;
+
 function TSyntaxConst.outNadesikoProgram: string;
 begin
   case constValue.VType of
@@ -4862,6 +4892,56 @@ begin
 end;
 
 
+function TSyntaxValue.outLuaProgram: string;
+var
+  pe: TSyntaxValueElement;
+begin
+  //todo 3: ＝変数リンクの取得
+  //----------------------------------------------------------------------------
+  // 一次取得
+  Result := SyntaxTab(FSyntaxLevel);
+  case Element.LinkType of
+    svLinkGlobal:             Result := Result + 'g["' + hi_id2tango(Element.VarLink.VarID)+'"]';
+    svLinkLocal:              Result := Result + 'l["' + hi_id2tango(VarID) + '"]';
+    svLinkVirtualGroupMember:
+      begin
+        FGroupScope := HiSystem.GroupScope.TopItem;
+        Result := Result + '["' + hi_id2tango(VarID) + '"]';
+      end;
+    else raise Exception.CreateFmt(ERR_S_RUN_VALUE,[hi_id2tango(VarID)]);
+  end;
+
+  pe := Element.NextElement;
+  if pe = nil then Exit;
+
+  //----------------------------------------------------------------------------
+  // 要素・二次取得
+  while pe <> nil do
+  begin
+    case pe.LinkType of
+      svLinkArray:
+        begin
+          Result := Result + '[' + Trim(pe.aryIndex.outNadesikoProgram) + ']';
+          pe := pe.NextElement;
+        end;
+      svLinkHash:
+        begin
+          Result := Result + '[' + Trim(pe.aryIndex.outNadesikoProgram) + ']';
+          pe := pe.NextElement;
+        end;
+      svLinkGroup:
+        begin
+          Result := Result + '[' + Trim(hi_id2tango(pe.groupMember)) + ']';
+          pe := pe.NextElement;
+        end;
+      else
+        raise Exception.Create('リンク切れ');
+    end;
+  end;
+  //----------------------------------------------------------------------------
+  Result := Result + #13#10;
+end;
+
 function TSyntaxValue.outNadesikoProgram: string;
 var
   pe: TSyntaxValueElement;
@@ -5005,6 +5085,59 @@ begin
   Result := NodeResult;
 end;
 
+function TSyntaxCalc.outLuaProgram: string;
+var
+  node: TSyntaxNode;
+  va, vb: string;
+  // stack用変数
+  stack: array [0..255] of string;
+  sp: Integer;
+begin
+  Result := '';
+  if Children = nil then Exit;
+
+  sp := 0;
+  node := Children;
+  while node <> nil do
+  begin
+    if node.ClassType = TSyntaxEnzansi then
+    begin
+      if sp <= 1 then raise Exception.Create(ERR_RUN_CALC);
+      vb := stack[sp-1]; Dec(sp);
+      va := stack[sp-1]; Dec(sp);
+      case TSyntaxEnzansi(node).ID of
+      token_plus  : Result := va + '+' + vb;
+      token_minus : Result := va + '-' + vb;
+      token_mul   : Result := va + '*' + vb;
+      token_div   : Result := va + '/' + vb;
+      token_mod   : Result := va + '%' + vb;
+      token_Eq    : Result := va + '==' + vb;
+      token_NotEq : Result := va + '!=' + vb;
+      token_Gt    : Result := va + '>' + vb;
+      token_GtEq  : Result := va + '>=' + vb;
+      token_Lt    : Result := va + '<' + vb;
+      token_LtEq  : Result := va + '<=' + vb;
+      token_ShiftL: Result := va + '<<' + vb;
+      token_ShiftR: Result := va + '>>' + vb;
+      token_power :  Result := va + '^' + vb;
+      token_plus_str:Result := va + '&' + vb;
+      token_or    :  Result := va + '||' + vb;
+      token_and   :  Result := va + '&&' + vb;
+      end;
+      stack[sp] := Result; Inc(sp);
+    end else
+    begin
+      // 評価してスタックへ積む
+      stack[sp] := node.outNadesikoProgram; Inc(sp);
+    end;
+    node := node.Next;
+  end;
+
+  // スタックの余剰チェック
+  if sp <> 1 then raise Exception.Create(ERR_RUN_CALC);
+  Result := '(' + Trim(stack[0]) + ')';
+end;
+
 function TSyntaxCalc.outNadesikoProgram: string;
 var
   node: TSyntaxNode;
@@ -5113,6 +5246,11 @@ begin
   end;
 end;
 
+function TSyntaxSentence.outLuaProgram: string;
+begin
+  Result := 'do'#13#10 + HiSystem.DebugProgram(Children) + 'end'#13#10;
+end;
+
 function TSyntaxSentence.outNadesikoProgram: string;
 begin
   Result := SyntaxTab(FSyntaxLevel) + HiSystem.DebugProgram(Children);
@@ -5128,6 +5266,11 @@ end;
 function TSyntaxEnzansi.getValue: PHiValue;
 begin
   Result := nil;
+end;
+
+function TSyntaxEnzansi.outLuaProgram: string;
+begin
+  Result := '';
 end;
 
 function TSyntaxEnzansi.outNadesikoProgram: string;
@@ -5600,6 +5743,11 @@ begin
   end;
 end;
 
+function TSyntaxFunction.outLuaProgram: string;
+begin
+  raise Exception.Create('TSyntaxFunction.outLuaProgram');
+end;
+
 function TSyntaxFunction.outNadesikoProgram: string;
 var
   i: Integer;
@@ -5889,6 +6037,59 @@ begin
 
 end;
 
+function TSyntaxLet.outLuaProgram: string;
+
+  procedure _parseSN;
+  var
+    p: THiParser;
+    n: TSyntaxNode;
+    t: THimaToken;
+  begin
+    // 実行すべきソースを構文木に変換
+
+    p := THiParser.Create;
+    n := Children;
+    t := token;
+
+    if t <> nil then
+    begin
+      HiSystem.PushScope;
+      try
+        if Self.tokenMultiLine then
+        begin
+          p.ReadBlocks(t, n);
+        end else
+        begin
+          p.ReadLine(t, n);
+        end;
+      finally
+        HiSystem.PopScope;
+      end;
+      if Children.Next = nil then Children.Children.SetSyntaxLevel(Self.FSyntaxLevel + 1)
+      else Children.next.SetSyntaxLevel( Self.FSyntaxLevel + 1 );
+
+      Result := Result + HiSystem.DebugProgram( Children, langLua );
+    end;
+    p.Free;
+  end;
+
+begin
+
+  if Self.IsEvent then
+  begin
+    // 何に代入するのか先に得る
+    Result := SyntaxTab(Self.SyntaxLevel) + Trim(VarNode.outNadesikoProgram) + '= function()'#13#10;
+    // 実行すべきソースを構文木に変換
+    _parseSN;
+    Result := Result + 'end'#13#10;
+    Exit;
+  end;
+
+  // 何に代入するか？
+  Result := SyntaxTab(SyntaxLevel) + Trim(VarNode.outLuaProgram);
+  Result := Result + ' = ' + Trim(HiSystem.DebugProgram( Children, langLua)) + #13#10;
+end;
+
 function TSyntaxLet.outNadesikoProgram: string;
 
   procedure _parseSN;
@@ -6025,6 +6226,14 @@ begin
   Result := nil;
 end;
 
+function TSyntaxWhile.outLuaProgram: string;
+begin
+  Result := SyntaxTab(SyntaxLevel) +
+    'while(' + Trim(HiSystem.DebugProgram(jouken, langLua)) + ')do'#13#10 +
+    HiSystem.DebugProgram(Children,langLua) + #13#10 +
+    'end'#13#10;
+end;
+
 function TSyntaxWhile.outNadesikoProgram: string;
 begin
   Result := SyntaxTab(SyntaxLevel) + Trim(HiSystem.DebugProgram(jouken)) + 'の間'#13#10;
@@ -6077,6 +6286,27 @@ begin
   begin
     if FalseNode <> nil then Result := HiSystem.RunNode(FalseNode);
   end;
+end;
+
+function TSyntaxIf.outLuaProgram: string;
+var
+  cond_str: string;
+begin
+  cond_str := '';
+  if Reverse then
+  begin
+    cond_str := '!';
+  end;
+  Result := SyntaxTab(SyntaxLevel) +
+    'if '+cond_str+'(' + Trim(HiSystem.DebugProgram( Jouken, langLua )) + ')then'#13#10;
+  // --
+  Result := Result + SyntaxTab(SyntaxLevel+1) + Trim(HiSystem.DebugProgram(TrueNode,langLua)) + #13#10;
+  if FalseNode <> nil then
+  begin
+    Result := Result + SyntaxTab(SyntaxLevel) + 'else'#13#10;
+    Result := Result + SyntaxTab(SyntaxLevel+1) +Trim(HiSystem.DebugProgram(FalseNode,langLua)) + #13#10;
+  end;
+  Result := Result + 'end'#13#10;
 end;
 
 function TSyntaxIf.outNadesikoProgram: string;
@@ -6195,6 +6425,17 @@ begin
   hi_setInt(HiSystem.kaisu, tmpKaisu);
 end;
 
+function TSyntaxLoop.outLuaProgram: string;
+begin
+  Result := SyntaxTab(SyntaxLevel) +
+    'do'#13#10+
+      'local _loop'#13#10+
+      'for _loop=1,('+Trim(HiSystem.DebugProgram(kaisu)) + ')do'#13#10+
+      HiSystem.DebugProgram(Children, langLua) + #13#10 +
+      'end'#13#10+
+    'end'#13#10;
+end;
+
 function TSyntaxLoop.outNadesikoProgram: string;
 begin
   Result := SyntaxTab(SyntaxLevel) + Trim(HiSystem.DebugProgram(kaisu)) + '回'#13#10;
@@ -6219,6 +6460,11 @@ begin
   Result := inherited getValue;
 end;
 
+function TSyntaxNodeTop.outLuaProgram: string;
+begin
+  Result := '-- top'#13#10;
+end;
+
 function TSyntaxNodeTop.outNadesikoProgram: string;
 begin
   Result := '# トップ'#13#10;
@@ -6234,6 +6480,11 @@ end;
 function TSyntaxNodeChild.getValue: PHiValue;
 begin
   Result := inherited getValue;
+end;
+
+function TSyntaxNodeChild.outLuaProgram: string;
+begin
+  Result := HiSystem.DebugProgram(Self.Next, langLua) + '--Node'#13#10;
 end;
 
 function TSyntaxNodeChild.outNadesikoProgram: string;
@@ -6400,6 +6651,18 @@ begin
 end;
 
 
+function TSyntaxFor.outLuaProgram: string;
+begin
+  Result := SyntaxTab(SyntaxLevel) +
+    'do'#13#10+
+    'local i'#13#10+
+    'for i=('+ Trim(HiSystem.DebugProgram(VarFrom,langLua))+'),'+
+    '('+Trim(HiSystem.DebugProgram(VarTo))+')do'#13#10+
+    'l["'+Trim(HiSystem.DebugProgram(VarLoop))+'"]=l'#13#10+
+    HiSystem.DebugProgram(Children,langLua)+#13#10+
+    'end'#13#10;
+end;
+
 function TSyntaxFor.outNadesikoProgram: string;
 begin
   Result := SyntaxTab(SyntaxLevel) + Trim(HiSystem.DebugProgram(VarLoop)) + 'で' + Trim(HiSystem.DebugProgram(VarFrom)) + 'から';
@@ -6490,6 +6753,43 @@ begin
   Result := HiSystem.RunNode(Children);
 end;
 
+function TSyntaxDefFunction.outLuaProgram: string;
+var
+  i: Integer;
+  a: THimaArg;
+begin
+  // name
+  if GroupID > 0 then
+  begin
+    Result := 'function ' + hi_id2tango(GroupID) + '.' + hi_id2tango(FuncID);
+  end else
+  begin
+    Result := 'function ' + hi_id2tango(FuncID);
+  end;
+
+  // arg
+  if HiFunc.Args.Count > 0 then
+  begin
+    Result := Result + '(';
+    for i := 0 to HiFunc.Args.Count - 1 do
+    begin
+      a := HiFunc.Args.Items[i];
+      Result := Result + hi_id2tango(a.Name);
+      if a.JosiList.Count > 0 then
+      begin
+        Result := Result + HiSystem.JosiList.ID2Str(a.JosiList.GetAsNum(0));
+      end;
+    end;
+    Result := Result + ')'#13#10;
+  end else
+  begin
+    Result := Result + #13#10;
+  end;
+  // value
+  Result := Result + HiSystem.DebugProgram(Children,langLua) +#13#10+
+    'end'#13#10;
+end;
+
 function TSyntaxDefFunction.outNadesikoProgram: string;
 var
   i: Integer;
@@ -6503,7 +6803,7 @@ begin
   begin
     Result := '●' + hi_id2tango(FuncID);
   end;
-  
+
   // arg
   if HiFunc.Args.Count > 0 then
   begin
@@ -6773,6 +7073,16 @@ begin
 
 end;
 
+function TSyntaxEach.outLuaProgram: string;
+begin
+  Result := SyntaxTab(SyntaxLevel) +
+    'do'#13#10+
+      'for _key,_val in pair(' + Trim(HiSystem.DebugProgram(jouken,langLua)) + ') do'#13#10+
+        HiSystem.DebugProgram(Children,langLua)+#13#10+
+      'end'#13#10+
+    'end'#13#10;
+end;
+
 function TSyntaxEach.outNadesikoProgram: string;
 begin
   Result := SyntaxTab(SyntaxLevel) + Trim(HiSystem.DebugProgram(jouken)) + 'を反復'#13#10;
@@ -6833,6 +7143,14 @@ begin
   end;
 end;
 
+
+function TSyntaxCreateVar.outLuaProgram: string;
+begin
+  Result := '';
+  if template = nil then Exit;
+  Result := SyntaxTab(SyntaxLevel) + '-- ' +
+    'l[' + hi_id2tango(template.VarID) + '] as ' + hi_vtype2str(template)+#13#10;
+end;
 
 function TSyntaxCreateVar.outNadesikoProgram: string;
 begin
@@ -6914,6 +7232,31 @@ begin
   // Switch の結果があればコピー
   Result := nil;
 end;
+
+function TSyntaxSwitch.outLuaProgram: string;
+var
+  i: Integer;
+  c: TSyntaxSwitchCase;
+begin
+  Result := '';
+  Result := SyntaxTab(SyntaxLevel) + '-- switch'#13#10;
+  Result := SyntaxTab(SyntaxLevel) + 'do'#13#10 +
+    'local _case = ' + Trim( HiSystem.DebugProgram(jouken,langLua) ) + #13#10 +
+    'if false then'#13#10;
+  for i := 0 to CaseNodes.Count - 1 do
+  begin
+    c := CaseNodes.Items[i];
+    Result := Result + 'elsif(_case=='+Trim( HiSystem.DebugProgram(c.Jouken) )+')then'#13#10+
+      HiSystem.DebugProgram(c.Action) + #13#10;
+  end;
+  if ElseNode <> nil then
+  begin
+    Result := Result + 'else'#13#10;
+    Result := Result + HiSystem.DebugProgram(ElseNode);
+  end;
+  Result := Result + #13#10+'end'+#13#10;
+end;
+
 
 function TSyntaxSwitch.outNadesikoProgram: string;
 var
@@ -7033,6 +7376,11 @@ begin
   Result := nil;
 end;
 
+function TSyntaxNamespace.outLuaProgram: string;
+begin
+  Result := '-- todo:namespace'#13#10;
+end;
+
 function TSyntaxNamespace.outNadesikoProgram: string;
 begin
   if scopeID >= 0 then
@@ -7078,6 +7426,11 @@ begin
   Result := NodeResult;
 
   if res.Registered = 0 then hi_var_free(res);
+end;
+
+function TSyntaxTerm.outLuaProgram: string;
+begin
+  Result := outNadesikoProgram;
 end;
 
 function TSyntaxTerm.outNadesikoProgram: string;
