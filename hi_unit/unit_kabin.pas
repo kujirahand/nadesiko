@@ -4,7 +4,7 @@ unit unit_kabin;
 
 interface
 uses
-  SysUtils, Classes, IdTcpServer,
+  SysUtils, Classes, IdTcpServer, IdContext,
   unit_string, jconvert, md5, json,
   dnako_import, dll_plugin_helper,
   dnako_import_types;
@@ -19,8 +19,8 @@ type
     destructor Destroy; override;
     procedure Open;
     procedure Close;
-    procedure OnConnect(AThread: TIdPeerThread);
-    procedure OnExecute(AThread: TIdPeerThread);
+    procedure OnConnect(AThread:TIdContext);
+    procedure OnExecute(AThread:TIdContext);
     function getConnectionMD5: string;
   end;
 
@@ -187,7 +187,7 @@ begin
   Result := MD5StringS( str );
 end;
 
-procedure TKabin.OnConnect(AThread: TIdPeerThread);
+procedure TKabin.OnConnect(AThread:TIdContext);
 var
   cmd, line, pw, md5: string;
   json: TJsonObject;
@@ -195,18 +195,18 @@ var
 
   procedure err(msg: string);
   begin
-    AThread.Connection.Write('{"status":"error","message":"'+msg+'"}'#0);
+    AThread.Connection.IOHandler.Write('{"status":"error","message":"'+msg+'"}'#0);
     AThread.Connection.Disconnect;
   end;
 begin
   // Connect Check
-  line := AThread.Connection.ReadLn(#0);
+  line := AThread.Connection.IOHandler.ReadLn(#0);
 
   // Check Policy File
   if Copy(Trim(LowerCase(line)),1,20) = '<policy-file-request' then
   begin
     try
-      AThread.Connection.Write(crossdomain);
+      AThread.Connection.IOHandler.Write(crossdomain);
       AThread.Connection.Disconnect;
       Exit;
     except
@@ -242,7 +242,7 @@ begin
   
 end;
 
-procedure TKabin.OnExecute(AThread: TIdPeerThread);
+procedure TKabin.OnExecute(AThread: TIdContext);
 var
   line: string;
   funcid: LongWord;
@@ -253,7 +253,7 @@ var
   
   procedure err(msg: string);
   begin
-    AThread.Connection.Write('{"status":false,"message":"'+msg+'"}'#0);
+    AThread.Connection.IOHandler.Write('{"status":false,"message":"'+msg+'"}'#0);
   end;
   procedure ok_json;
   var
@@ -261,7 +261,7 @@ var
   begin
     r := PHiValue2Json(res);
     r := sjisToUtf8(r);
-    AThread.Connection.Write('{"status":true,"result":'+r+'}'#0);
+    AThread.Connection.IOHandler.Write('{"status":true,"result":'+r+'}'#0);
   end;
 begin
   //
@@ -269,7 +269,7 @@ begin
   funcid := 0;
   while AThread.Connection.Connected do
   begin
-    line := AThread.Connection.ReadLn(#0);
+    line := AThread.Connection.IOHandler.ReadLn(#0);
     if line = '' then Continue;
 
     try

@@ -7,7 +7,8 @@ uses
   dll_plugin_helper, dnako_import, dnako_import_types,
   winsock,unit_eml,
   IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdFTPCommon,
-  IdFTP, IdFTPList, IdHttp, IdTcpServer, IdSNTP;
+  IdFTP, IdFTPList, IdHttp, IdTcpServer, IdSNTP,
+  IdAllFTPListParsers;
 
 const
   NAKONET_DLL_VERSION = '1.509';
@@ -21,9 +22,9 @@ type
   public
     target: string;
     errormessage: string;
-    procedure WorkBegin(Sender: TObject; AWorkMode: TWorkMode; const AWorkCountMax: Integer);
+    procedure WorkBegin(Sender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
     procedure WorkEnd(Sender: TObject; AWorkMode: TWorkMode);
-    procedure Work(Sender: TObject; AWorkMode: TWorkMode; const AWorkCount: Integer);
+    procedure Work(Sender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
     function ShowDialog(stext, sinfo: string; Visible: Boolean): Boolean;
     procedure setInfo(s: string);
     procedure setText(s: string);
@@ -310,7 +311,7 @@ begin
   if _idftp.Password = '' then raise Exception.Create('FTPの設定でPASSWORDが未設定です。');
   if _idftp.Host     = '' then raise Exception.Create('FTPの設定でHOSTが未設定です。');
   try
-    _idftp.Connect(True);
+    _idftp.Connect;
     _idftp.OnWorkBegin := NetDialog.WorkBegin;
     _idftp.OnWork      := NetDialog.Work;
     _idftp.OnWorkEnd   := NetDialog.WorkEnd;
@@ -326,7 +327,19 @@ end;
 function sys_ftp_disconnect(args: DWORD): PHiValue; stdcall;
 begin
   //FreeAndNil(_kskFtp);
-  if _idftp <> nil then try if _idftp.Connected then _idftp.DisconnectSocket; except end;
+  if _idftp <> nil then
+  begin
+    if _idftp.Connected then
+    begin
+      try
+        begin
+          _idftp.Abort;
+        end;
+      except
+      end;
+      _idftp.Disconnect;
+    end;
+  end;
   FreeAndNil(_idftp);
   Result := nil;
 end;
@@ -334,12 +347,26 @@ end;
 procedure proc_ftp_upload(Sender: TNetThread; ptr: Tidftp);
 var
   dat: TMemoryStream;
+  pfname: PString;
   ps: PString;
 begin
+  {
   dat := TMemoryStream(Sender.arg1);
   ps  := Sender.arg2;
   ptr.Put(dat, ps^);
   net_dialog_complete := True;
+  }
+  pfname := Sender.arg1;
+  ps     := Sender.arg2;
+
+  dat := TMemoryStream.Create;
+  try
+    dat.LoadFromFile(pfname^);
+    ptr.Put(dat, ps^);
+  finally
+    FreeAndNil(dat);
+    net_dialog_complete := True;
+  end;
 end;
 
 procedure proc_ftp_uploadDir(Sender: TNetThread; ftp: Tidftp);
@@ -424,7 +451,6 @@ end;
 function sys_ftp_upload(args: DWORD): PHiValue; stdcall;
 var
   pLocal, pRemote: PHiValue;
-  dat: TMemoryStream;
   fname,remote: string;
   uploader: TNetThread;
   bShow: Boolean;
@@ -441,15 +467,12 @@ begin
       raise Exception.CreateFmt('アップロード対象ファイル"%s"がありません。',[fname]);
     end;
     remote := hi_str(pRemote);
-    dat := TMemoryStream.Create;
     try
-    try
-      dat.LoadFromFile(fname);
       if _idftp.Connected = False then raise Exception.Create('接続していません。');
       uploader := TNetThread.Create(True);
       bShow := hi_bool(nako_getVariable('経過ダイアログ'));
       uploader.arg0 := _idftp;
-      uploader.arg1 := dat;
+      uploader.arg1 := @fname;
       uploader.arg2 := @remote;
       uploader.method := @proc_ftp_upload;
       uploader.FreeOnTerminate := True;
@@ -463,9 +486,6 @@ begin
       end;
     except
       raise;
-    end;
-    finally
-      dat.Free;
     end;
   except
     on e: Exception do
@@ -803,39 +823,42 @@ begin
   Result := nil;
 end;
 
-
-
 function sys_ftp_glob(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
   s, res, tmp: string;
   sl: TStringList;
   i: Integer;
+  item: TIdFTPListItem;
 begin
   p := nako_getFuncArg(args, 0);
   s := hi_str(p);
+  Result := nil;
 
   if _idftp = nil then raise Exception.Create('FTP処理の前に『FTP接続』で接続してください。');
   sl := TStringList.Create;
   try
-    _idftp.List(sl, s);
-    res := '';
-    for i := 0 to _idftp.DirectoryListing.Count - 1 do
-    begin
-      if (_idftp.DirectoryListing.Items[i].ItemType = ditFile) and
-         (_idftp.DirectoryListing.Items[i].ModifiedDate > 0) then
+    try
+      _idftp.List(sl, s, True); // 詳細モードにしないとディレクトリかどうか判定できない
+      res := '';
+      for i := 0 to _idftp.DirectoryListing.Count - 1 do
       begin
-        tmp := _idftp.DirectoryListing.Items[i].FileName;
-        if (tmp = '.')or(tmp = '..') then Continue;
-        res := res + tmp + #13#10;
+        item := _idftp.DirectoryListing.Items[i];
+        if (_idftp.DirectoryListing.Items[i].ItemType = ditFile) then
+        begin
+          tmp := item.FileName;
+          if (tmp = '.')or(tmp = '..') then Continue;
+          res := res + tmp + #13#10;
+        end;
       end;
+      Result := hi_newStr(res);
+    except
+      on e:Exception do
+        raise Exception.Create(e.Message);
     end;
-    Result := hi_newStr(res);
-  except
-    Result := hi_newStr('');
+  finally
     sl.Free;
   end;
-  sl.Free;
 end;
 
 
@@ -844,22 +867,19 @@ function sys_ftp_glob2(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
   s, res: string;
-  sl: TStringList;
 begin
   p := nako_getFuncArg(args, 0);
   s := hi_str(p);
+  Result := nil;
 
   if _idftp = nil then raise Exception.Create('FTP処理の前に『FTP接続』で接続してください。');
-  sl := TStringList.Create;
   try
-    _idftp.List(sl, s);
-    res := sl.Text;
+    _idftp.List(s);
+    res := _idftp.ListResult.Text;
     Result := hi_newStr(res);
-  except
-    Result := hi_newStr('');
-    sl.Free;
+  except on e: Exception do
+    raise Exception.Create('FTPでディレクトリ一覧の取得に失敗しました。' + e.Message);
   end;
-  sl.Free;
 end;
 
 
@@ -873,13 +893,10 @@ begin
   p := nako_getFuncArg(args, 0);
   s := hi_str(p);
 
-  //if _kskFtp = nil then raise Exception.Create('FTP処理の前に『FTP接続』で接続してください。');
-  //Result := hi_newStr(Trim(_kskFtp.GlobDir(s)));
-
   if _idftp = nil then raise Exception.Create('FTP処理の前に『FTP接続』で接続してください。');
   sl := TStringList.Create;
   try
-    _idftp.List(sl, s);
+    _idftp.List(sl, s, True);
     res := '';
     for i := 0 to _idftp.DirectoryListing.Count - 1 do
     begin
@@ -907,8 +924,6 @@ begin
   p := nako_getFuncArg(args, 0);
   s := hi_str(p);
 
-  //if _kskFtp = nil then raise Exception.Create('FTP処理の前に『FTP接続』で接続してください。');
-  //_kskFtp.CreateDir(s);
   if _idftp = nil then raise Exception.Create('FTP処理の前に『FTP接続』で接続してください。');
   _idftp.MakeDir(s);
 
@@ -1904,8 +1919,7 @@ begin
   Result := net_dialog_complete;
 end;
 
-procedure TNetDialog.Work(Sender: TObject; AWorkMode: TWorkMode;
-  const AWorkCount: Integer);
+procedure TNetDialog.Work(Sender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
 var
   s: string;
 begin
@@ -1924,8 +1938,11 @@ begin
   // set pos
   if AWorkCount > 0 then
   begin
-    SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1),
-      PBM_SETPOS, Trunc(AWorkCount/Self.WorkCount*100) , LParam(BOOL(True)));
+    try
+      SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1),
+        PBM_SETPOS, Trunc(AWorkCount/Self.WorkCount*100) , LParam(BOOL(True)));
+    except
+    end;
   end else
   begin
     SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1),
@@ -1933,8 +1950,7 @@ begin
   end;
 end;
 
-procedure TNetDialog.WorkBegin(Sender: TObject; AWorkMode: TWorkMode;
-  const AWorkCountMax: Integer);
+procedure TNetDialog.WorkBegin(Sender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
 begin
   hParent := nako_getMainWindowHandle;
   Self.WorkCount := AWorkCountMax;

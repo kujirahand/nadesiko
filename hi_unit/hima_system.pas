@@ -1591,7 +1591,6 @@ var
       m := THFileStream.Create(s, fmOpenRead or SysUtils.fmShareDenyNone);
       try
         m.Read(b[1], 2);
-        //if b = 'MZP'#0 then
         if b = 'MZ' then
         begin
           Result := True; Exit;
