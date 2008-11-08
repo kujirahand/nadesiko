@@ -5609,72 +5609,11 @@ begin
 end;
 
 {$IFDEF DELPHI6}
-  type
-    TFormatSettings = record
-      CurrencyFormat: Byte;
-      NegCurrFormat: Byte;
-      ThousandSeparator: Char;
-      DecimalSeparator: Char;
-      CurrencyDecimals: Byte;
-      DateSeparator: Char;
-      TimeSeparator: Char;
-      ListSeparator: Char;
-      CurrencyString: string;
-      ShortDateFormat: string;
-      LongDateFormat: string;
-      TimeAMString: string;
-      TimePMString: string;
-      ShortTimeFormat: string;
-      LongTimeFormat: string;
-      ShortMonthNames: array[1..12] of string;
-      LongMonthNames: array[1..12] of string;
-      ShortDayNames: array[1..7] of string;
-      LongDayNames: array[1..7] of string;
-      TwoDigitYearCenturyWindow: Word;
-    end;
-    procedure GetLocaleFormatSettings(LCID: Integer;
-      var FormatSettings: TFormatSettings);
-    var
-      HourFormat, TimePrefix, TimePostfix: string;
-      DefaultLCID: Integer;
-    begin
-      if IsValidLocale(LCID, LCID_INSTALLED) then
-        DefaultLCID := LCID
-      else
-        DefaultLCID := GetThreadLocale;
-
-      GetLocaleMonthDayNames(LCID, FormatSettings);
-      with FormatSettings do
-      begin
-        CurrencyString := GetLocaleStr(DefaultLCID, LOCALE_SCURRENCY, '');
-        CurrencyFormat := StrToIntDef(GetLocaleStr(DefaultLCID, LOCALE_ICURRENCY, '0'), 0);
-        NegCurrFormat := StrToIntDef(GetLocaleStr(DefaultLCID, LOCALE_INEGCURR, '0'), 0);
-        ThousandSeparator := GetLocaleChar(DefaultLCID, LOCALE_STHOUSAND, ',');
-        DecimalSeparator := GetLocaleChar(DefaultLCID, LOCALE_SDECIMAL, '.');
-        CurrencyDecimals := StrToIntDef(GetLocaleStr(DefaultLCID, LOCALE_ICURRDIGITS, '0'), 0);
-        DateSeparator := GetLocaleChar(DefaultLCID, LOCALE_SDATE, '/');
-        ShortDateFormat := TranslateDateFormat(GetLocaleStr(DefaultLCID, LOCALE_SSHORTDATE, 'm/d/yy'));
-        LongDateFormat := TranslateDateFormat(GetLocaleStr(DefaultLCID, LOCALE_SLONGDATE, 'mmmm d, yyyy'));
-        TimeSeparator := GetLocaleChar(DefaultLCID, LOCALE_STIME, ':');
-        TimeAMString := GetLocaleStr(DefaultLCID, LOCALE_S1159, 'am');
-        TimePMString := GetLocaleStr(DefaultLCID, LOCALE_S2359, 'pm');
-        TimePrefix := '';
-        TimePostfix := '';
-        if StrToIntDef(GetLocaleStr(DefaultLCID, LOCALE_ITLZERO, '0'), 0) = 0 then
-          HourFormat := 'h' else
-          HourFormat := 'hh';
-        if StrToIntDef(GetLocaleStr(DefaultLCID, LOCALE_ITIME, '0'), 0) = 0 then
-          if StrToIntDef(GetLocaleStr(DefaultLCID, LOCALE_ITIMEMARKPOSN, '0'), 0) = 0 then
-            TimePostfix := ' AMPM'
-          else
-            TimePrefix := 'AMPM ';
-        ShortTimeFormat := TimePrefix + HourFormat + ':mm' + TimePostfix;
-        LongTimeFormat := TimePrefix + HourFormat + ':mm:ss' + TimePostfix;
-        ListSeparator := GetLocaleChar(DefaultLCID, LOCALE_SLIST, ',');
-      end;
-    end;
-{$ENDIF}
-
+function sys_date_format(args: THiArray): PHiValue; stdcall;
+begin
+  Result := nil;// ‚²‚ß‚ñ‚È‚³‚¢
+end;
+{$ELSE}
 function sys_date_format(args: THiArray): PHiValue; stdcall;
 var
   date_s: string;
@@ -5711,6 +5650,7 @@ begin
   end;
   Result := hi_newStr(FormatDateTime(fmt, dt, fs));
 end;
+{$ENDIF}
 
 function sys_format(args: THiArray): PHiValue; stdcall;
 var
