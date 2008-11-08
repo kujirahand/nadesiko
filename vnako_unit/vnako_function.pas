@@ -5969,7 +5969,7 @@ var
   procedure _VCL_GUI_IMAGELIST;
   var
     e, imgs: TImageList; bmp, mask, bm: TBitmap; ico: TIcon; fname: string;
-    i, w, cnt: Integer;
+    i, w, cnt,no: Integer;
   begin
     e := TImageList(obj);
     if cmd = '‰Šú‰»' then begin e.Clear; end else
@@ -6016,6 +6016,37 @@ var
             mask.Assign(bm);
             mask.Mask(mask.Canvas.Pixels[mask.Width-1, mask.Height-1]);
             imgs.Add(bm, mask);
+            mask.Free;
+          finally
+            bm.Free;
+          end;
+        end;
+      finally
+        bmp.Free;
+      end;
+    end else
+    if cmd = '’uŠ·' then
+    begin
+      no := StrToIntDef(getToken_s(fname, '@'), 0);
+      imgs  := TImageList(obj);
+      fname := hi_str(v);
+      bmp := LoadPic(fname);
+      try
+        w := imgs.Width;
+        cnt := bmp.Width div w;
+        if (bmp.Width mod w) > 1 then Inc(cnt);
+        for i := 0 to cnt - 1 do
+        begin
+          bm := TBitmap.Create;
+          try
+            bm.Width  := w;
+            bm.Height := imgs.Height;
+            BitBlt(bm.Canvas.Handle, 0, 0, w, imgs.Height,
+              bmp.Canvas.Handle, w * i, 0, SRCCOPY);
+            mask := TBitmap.Create;
+            mask.Assign(bm);
+            mask.Mask(mask.Canvas.Pixels[mask.Width-1, mask.Height-1]);
+            imgs.Replace(no, bm, mask);
             mask.Free;
           finally
             bm.Free;
