@@ -8,7 +8,8 @@ uses
   winsock,unit_eml,
   IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdFTPCommon,
   IdFTP, IdFTPList, IdHttp, IdTcpServer, IdSNTP,
-  IdAllFTPListParsers;
+  IdAllFTPListParsers, IdPOP3, IdSASLLogin,
+  IdUserPassProvider, IdSSLOpenSSL, IdExplicitTLSClientServerBase;
 
 const
   NAKONET_DLL_VERSION = '1.509';
@@ -44,6 +45,7 @@ type
 
 function NetDialog:TNetDialog;
 function get_on_off(str: string): Boolean;
+procedure alert(msg: string);
 
 procedure RegistFunction;
 
@@ -60,6 +62,11 @@ var net_dialog_cancel:   Boolean = False;
 var net_dialog_complete: Boolean = False;
 
 const NAKO_HTTP_OPTION = 'HTTPオプション';
+
+procedure alert(msg: string);
+begin
+  Windows.MessageBox(0, PChar(msg), 'Alert', MB_OK);
+end;
 
 function NetDialog:TNetDialog;
 begin
@@ -1077,6 +1084,132 @@ begin
   if pop3.Password = '' then raise Exception.Create('メールパスワードが空です。');
 end;
 
+
+procedure getPop3InfoIndy(pop3: TIdPOP3);
+var
+  option: string;
+  Login: TIdSASLLogin;
+  Provider: TIdUserPassProvider;
+  SSLHandler: TIdSSLIOHandlerSocketOpenSSL;
+begin
+  pop3.Host       := hi_str(nako_getVariable('メールホスト'));
+  pop3.Port       := StrToIntDef(hi_str(nako_getVariable('メールポート')), 110);
+  pop3.Username   := hi_str(nako_getVariable('メールID'));
+  pop3.Password   := hi_str(nako_getVariable('メールパスワード'));
+  option          := UpperCase(hi_str(nako_getVariable('メールオプション')));
+  if Pos('APOP',option) > 0 then
+  begin
+    pop3.AuthType := patAPOP;
+  end else
+  if Pos('SSL', option) > 0 then
+  begin
+    // IOHandler
+    SSLHandler := TIdSSLIOHandlerSocketOpenSSL.Create(pop3);
+    pop3.IOHandler := SSLHandler;
+    // POP3.AuthType := patSASL;
+    POP3.UseTLS := utUseImplicitTLS;
+    // Login & Provider
+    Login := TIdSASLLogin.Create(pop3);
+    Provider := TIdUserPassProvider.Create(Login);
+    Login.UserPassProvider := Provider;
+    Provider.Username := pop3.Username;
+    Provider.Password := pop3.Password;
+  end;
+  // CHECK
+  if pop3.Host = '' then raise Exception.Create('メールホストが空です。');
+  if pop3.Port < 0  then raise Exception.Create('メールポートが不正な数値です。');
+  if pop3.Username = '' then raise Exception.Create('メールユーザーが空です。');
+  if pop3.Password = '' then raise Exception.Create('メールパスワードが空です。');
+end;
+
+function sys_pop3_recv_indy10(args: DWORD): PHiValue; stdcall;
+var
+  tmpDir, dir, fname, afile, txtFile,emlFile: string;
+  from, replyto: string;
+  pop3: TIdPop3;
+  i, j, sid: Integer;
+  eml, sub: TEml;
+  txt, msgid: string;
+  msgids, msgidsNow: TStringList;
+const
+  FILE_MSGIDS = 'msgids.___';
+begin
+  //===================
+  // 引数の取得
+  dir := hi_str(nako_getFuncArg(args, 0));
+  if Copy(dir, Length(dir), 1) <> '\' then dir := dir + '\';
+
+  //===================
+  // 受信フォルダのチェック
+  if not ForceDirectories(dir) then
+  begin
+    raise Exception.Create('フォルダ『'+dir+'』が作成できませんでした。');
+  end;
+
+  //===================
+  // 一時フォルダへ受信
+  tmpDir := TempDir + 'pop3_' + FormatDateTime('yymmddhhnnsszzz',Now) + '\';
+  ForceDirectories(tmpDir);
+
+  //===================
+  msgidsNow := TStringList.Create;
+  msgids    := TStringList.Create;
+  //
+  pop3 := TIdPOP3.Create(nil);
+  try
+    // メッセージIDの一覧をチェック
+    if FileExists(dir + FILE_MSGIDS) then msgids.LoadFromFile(dir + FILE_MSGIDS);
+    //
+    // pop3.ShowDialog := hi_bool(nako_getVariable('経過ダイアログ'));
+    // nako_getVariable('メール受信時削除')
+    getPop3InfoIndy(pop3);
+    pop3.Connect;
+    // 受信処理
+    try
+      msgidsNow := TStringList.Create;
+      alert(IntToStr(pop3.CheckMessages));
+
+      if pop3.UIDL(msgidsNow) then
+      begin
+        Alert('msgids='#13#10 + msgidsNow.Text);
+        for i := 0 to msgids.Count - 1 do
+        begin
+          //j := msg
+        end;
+      end;
+      
+      //Result := hi_newInt(
+      //  pop3.Pop3RecvAll(tmpDir, hi_bool())
+      //);
+    except
+      raise;
+    end;
+    Exit;
+    // 解析処理
+    sid := 1;
+    for i := 1 to hi_int(Result) do
+    begin
+      fname := tmpDir + IntToStr(i) + '.eml';
+      try
+        txt := '';
+        eml := TEml.Create(nil);
+        eml.LoadFromFile(fname);
+        msgid := eml.Header.Items['Message-Id'];
+        if msgid = '' then begin msgid := MD5FileS(fname); end;
+        if msgids.IndexOf(msgid) >= 0 then Continue;// 既に受信済みならスキップ
+        msgids.Add(msgid);
+        // ヘッダ情報を取得
+        from    := ExtractMailAddress(eml.Header.GetDecodeValue('From'));
+        replyto := ExtractMailAddress(eml.Header.GetDecodeValue('Reply-To'));
+        txt := txt + '差出人: ' + eml.Header.GetDecodeValue('From')   + #13#10;
+      finally
+      end;
+    end;
+  finally
+    FreeAndNil(pop3);
+  end;
+end;
+
 function sys_pop3_recv(args: DWORD): PHiValue; stdcall;
 var
   tmpDir, dir, fname, afile, txtFile,emlFile: string;
@@ -1188,7 +1321,6 @@ begin
     pop3.Free;
     msgids.Free;
   end;
-
 end;
 
 function sys_pop3_list(args: DWORD): PHiValue; stdcall;
@@ -1784,7 +1916,7 @@ begin
   AddFunc  ('FTPファイル詳細列挙',  'Sの|Sを',                4036, sys_ftp_glob2,          'FTPホストのファイルSを詳細に列挙する',   'FTPふぁいるしょうさいれっきょ');
   AddFunc  ('FTPタイムアウト設定',  'Vに|Vを|Vへ',            4039, sys_ftp_setTimeout,     '接続中のFTPのタイムアウト時間をミリ秒単位で設定する',   'FTPたいむあうとせってい');
   //-メール
-  AddFunc  ('メール受信',        'DIRへ|DIRに',  4050, sys_pop3_recv, 'POP3でフォルダDIRへメールを受信し、受信したメールの件数を返す。', 'めーるじゅしん');
+  AddFunc  ('メール受信',        'DIRへ|DIRに',  4050, sys_pop3_recv_indy10, 'POP3でフォルダDIRへメールを受信し、受信したメールの件数を返す。', 'めーるじゅしん');
   AddFunc  ('メール送信',        '',             4051, sys_smtp_send, 'SMTPでメールを送信する', 'めーるそうしん');
   AddStrVar('メールホスト',      '',4052,'','めーるほすと');
   AddStrVar('メールID',          '',4053,'','めーるID');
