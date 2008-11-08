@@ -148,6 +148,7 @@ type
     FFlagEnd: Boolean;          // 終了判定フラグ
     BreakLevel: Integer;        // Break / Continue を制御する
     BreakType: THiBreakType;    // Break or Continue
+    FJumpPoint: DWORD;          // GOTO 文の実装のため
     FFuncBreakLevel: Integer;   // 関数のBreak位置
     ReturnLevel: Integer;       // Return を制御する
     FNestCheck  : Integer;
@@ -595,6 +596,7 @@ begin
   Reserved('ループ','Sの',      209,'『(条件式)のループ...』で条件式が真の時...の文を繰り返し実行する。','るーぷ');
   Reserved('条件分岐','Sで',    210,'『(条件式)で条件分岐{改行}(条件)ならば...(条件)ならば...違えば...』で条件により複数の選択肢に実行を分岐する。','じょうけんぶんき');
   Reserved('ここ','',169,'制御構文の最後で『ここまで』と構文の終わりを明示できる。','ここ');
+  AddFunc  ('飛ぶ','{=?}JUMPPOINTに|JUMPPOINTへ',161, sys_goto, 'ジャンプポイントへ実行を移す(JUMPPOINTは文字列で指定する)','とぶ');
 
   //-中断続行終了
   AddFunc  ('抜ける','',                 220, sys_break,      '繰り返しから抜ける。','ぬける');
@@ -1906,16 +1908,59 @@ function THiSystem.RunNode(node: TSyntaxNode; IsNoGetter: Boolean): PHiValue;
     //debugs(s);
   end;
 
+  function findJumpPoint(cnode: TSyntaxNode): Boolean;
+  var
+    pnode, top: TSyntaxNode;
+    jpnode: TSyntaxJumpPoint;
+    flag: Boolean;
+  begin
+    if cnode = nil then
+    begin
+      Result := False;
+      Exit;
+    end;
+    flag := False;
+    // find next from top
+    pnode := cnode.Parent;
+    if pnode = nil then
+    begin
+      pnode := TopSyntaxNode;
+      top := pnode;
+    end else
+    begin
+      top := pnode.Children;
+    end;
+    while (top <> nil) do
+    begin
+      if top is TSyntaxJumpPoint then
+      begin
+        jpnode := TSyntaxJumpPoint(top);
+        if jpnode.NameId = FJumpPoint then
+        begin
+          node := jpnode;
+          flag := True;
+          Break;
+        end;
+      end;
+      top := top.Next;
+    end;
+    if flag then
+    begin
+      Result := True;
+      Exit;
+    end;
+    Result := findJumpPoint(cnode.Parent);
+  end;
+
 var
   res: PHiValue;
   bError: Boolean;
 label
-  lblTop;
+  lblTop, lblGoto;
 begin
   //todo 1: 実行(RunNode)
   Result := nil;
   bError := False;
-
   // 次のラインで止めるか？
 
   // 再帰スタックのオーバーフローチェック
@@ -1932,8 +1977,21 @@ lblTop:
       // ブレイク判定
       if BreakLevel   < node.SyntaxLevel  then Break;
       if ReturnLevel  < FNestCheck        then Break;
-      if ReturnLevel  = FNestCheck        then begin ReturnLevel := BREAK_OFF; BreakType := btNone; end;
-
+      if ReturnLevel  = FNestCheck        then
+      begin
+        ReturnLevel := BREAK_OFF;
+        BreakType := btNone;
+      end;
+      // GOTO
+      if FJumpPoint <> 0 then
+      begin
+        if not findJumpPoint(node) then
+        begin
+          Break;
+        end;
+        FJumpPoint := 0;
+        continue;
+      end;
       // __PRINT_DEBUG_STR__;
 
       // デバッグ用エディタへ現在実行中の行番号を通知
@@ -1995,6 +2053,7 @@ lblTop:
       end;
     end;
   end;
+
   // --- エラー
   if (bError)and(HiSystem.runtime_error = False) then
   begin
