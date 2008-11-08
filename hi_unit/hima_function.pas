@@ -255,6 +255,7 @@ function sys_debug(args: THiArray): PHiValue; stdcall;
 function sys_assert(args: THiArray): PHiValue; stdcall;
 function sys_guguru(args: THiArray): PHiValue; stdcall;
 function sys_plugins_enum(args: THiArray): PHiValue; stdcall;
+function sys_goto(args: THiArray): PHiValue; stdcall;
 
 (*
   AddFunc  ('変数列挙','{=?}Sの',             172, sys_EnumVar,'Sに「グローバル」か「ローカル」かを指定して変数の一覧を返す。','へんすうれっきょ');
@@ -3497,6 +3498,20 @@ begin
   Result := hi_clone(p);
   HiSystem.ReturnLevel := HiSystem.FFuncBreakLevel;
   HiSystem.BreakType  := btBreak;
+end;
+
+function sys_goto(args: THiArray): PHiValue; stdcall;
+var
+  s: string;
+  jumppoint_id:DWORD;
+begin
+  Result := nil;
+  s := getArgStr(args, 0);
+  s := DeleteGobi(s);
+  jumppoint_id := hi_tango2id(s);
+  HiSystem.FJumpPoint := jumppoint_id;
+  HiSystem.ReturnLevel := HiSystem.CurNode.FindBreakLevel + 1;
+  HiSystem.BreakType := btBreak;
 end;
 
 function sys_nil(args: THiArray): PHiValue; stdcall;

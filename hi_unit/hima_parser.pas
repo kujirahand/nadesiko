@@ -4,7 +4,7 @@ unit hima_parser;
 // 構文木に変換する
 //------------------------------------------------------------------------------
 
-interface
+interface               
 
 uses
   Windows, SysUtils, hima_error, hima_types, hima_token,
@@ -58,6 +58,13 @@ type
     function outLuaProgram: string; virtual;
     property SyntaxLevel: Integer read FSyntaxLevel write SetSyntaxLevel;
     property Parent: TSyntaxNode read FParent write SetParent;
+  end;
+
+  TSyntaxJumpPoint = class(TSyntaxNode)
+  public
+    NameId: DWORD;
+    function DebugStr: string; override;
+    function outNadesikoProgram: string; override;
   end;
 
   // 構文の関係を示すためのノードタイプ
@@ -433,6 +440,7 @@ type
     function ReadTryExcept(var token: THimaToken; defIndent: Integer): Boolean;
     function ReadDefFunction(var token: THimaToken): Boolean;
     function ReadDefFunctionContents(var token: THimaToken): Boolean;
+    function ReadDefJumpPoint(var token: THimaToken): Boolean;
     //function ReadDefFunctionContentsSkip(var token: THimaToken): Boolean;
     function ReadDefGroup(var token: THimaToken): Boolean;
     function ReadSwitch(var token: THimaToken): Boolean;
@@ -2194,6 +2202,7 @@ begin
       if token.TokenID = token_kakko_end then Break; // ')' なら行抜け
       if token.TokenID = token_tagaeba   then Break; // '違えば'なら抜け
       if token.TokenID = token_semicolon then begin token := token.NextToken; Break; end;
+
       // いつまでも同じ場所を読んでいる場合の対策
       if lastToken <> nil then
       begin
@@ -2254,6 +2263,12 @@ begin
       begin
         raise Exception.Create('『ここまで』が制御構文と対になっていません。');
       end;
+      // GOTO
+      if token.TokenID = token_mark_sankaku then
+      begin
+        ReadDefJumpPoint(token);
+        Break;
+      end; // ジャンプポイントの宣言
 
       //--------------------------------------
       // １つ読む
@@ -4561,6 +4576,39 @@ begin
     HiSystem.Namespace.Add(scope);
   end;
   HiSystem.Namespace.CurSpace := scope;
+end;
+
+function THiParser.ReadDefJumpPoint(var token: THimaToken): Boolean;
+var
+  jump_name: DWORD;
+  node: TSyntaxJumpPoint;
+begin
+  // skip ▲
+  if token.TokenID = token_mark_sankaku then
+  begin
+    TokenNextToken(token);
+    if token = nil then raise Exception.CreateFmt(ERR_S_SYNTAX,['▲']);
+  end;
+  // get name
+  jump_name := token.TokenID;
+  if token.NextToken = nil then
+  begin
+    NextBlock(token);
+  end else
+  begin
+    TokenNextToken(token);
+  end;
+
+  // regist token
+  node := TSyntaxJumpPoint.Create(nil);
+  node.NameId := jump_name;
+  if FStack.GetLast <> nil then
+  begin
+    node.Parent := FStack.GetLast.Parent;
+  end;
+  // add jump point
+  FStack.Add(node);
+  Result := True;
 end;
 
 { THStack }
@@ -7460,6 +7508,18 @@ begin
   FreeAndNil(Stack);
   FreeAndNil(aryIndex);
   inherited;
+end;
+
+{ TSyntaxJumpPoint }
+
+function TSyntaxJumpPoint.DebugStr: string;
+begin
+  Result := '▲' + hi_id2tango(NameId) + ';';
+end;
+
+function TSyntaxJumpPoint.outNadesikoProgram: string;
+begin
+  Result := DebugStr;
 end;
 
 end.

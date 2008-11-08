@@ -215,6 +215,7 @@ const
   token_mark_at     = 99151;
   token_mark_sikaku = 99152;
   token_mark_nakaten= 99153;
+  token_mark_sankaku= 99154;
 
   // 単語は 99xxx
   token_mosi      = 99200;
@@ -229,7 +230,7 @@ const
   token_loop      = 99209;
   token_joukenbunki = 99210;
   token_koko      = 99211;
-
+  
   token_mojiretu = 99250;
   token_suuti    = 99251;
   token_seisu    = 99252;
@@ -985,7 +986,7 @@ begin
     end;
     // 解析不明な記号
     s := getOneChar(p);
-    if Pos(s, '■・←→') > 0 then
+    if Pos(s, '■・←→▲') > 0 then
     begin
       token := THimaToken.Create(block); block.Add(token);
       token.Token := s;
@@ -1628,6 +1629,7 @@ begin
     SetID('・', token_mark_nakaten);
     SetID(',',  token_comma);
     SetID('\',  token_yen);
+    SetID('▲', token_mark_sankaku);
 
     SetID('もし', token_mosi);
     SetID('ならば', token_naraba);
