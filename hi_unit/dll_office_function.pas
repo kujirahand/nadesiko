@@ -803,7 +803,7 @@ begin
     hi_str(nako_getVariable('DBユーザーID')),
     hi_str(nako_getVariable('DBパスワード')));
 
-  Result := nil;
+  Result := hi_newInt(Integer(ado));
 end;
 
 function ado_open_access2007(h: DWORD): PHiValue; stdcall;
@@ -820,7 +820,7 @@ begin
     hi_str(nako_getVariable('DBユーザーID')),
     hi_str(nako_getVariable('DBパスワード')));
 
-  Result := nil;
+  Result := hi_newInt(Integer(ado));
 end;
 
 function ado_open_oracle(h: DWORD): PHiValue; stdcall;
@@ -837,8 +837,9 @@ begin
     hi_str(nako_getVariable('DBユーザーID')),
     hi_str(nako_getVariable('DBパスワード')));
 
-  Result := nil;
+  Result := hi_newInt(Integer(ado));
 end;
+
 function ado_open_custom(h: DWORD): PHiValue; stdcall;
 var
   f: PHiValue;
@@ -849,8 +850,9 @@ begin
   FreeAndNil(ado);
   ado := TKAdo.Create;
   ado.OpenCustom(hi_str(f));
-  Result := nil;
+  Result := hi_newInt(Integer(ado));
 end;
+
 function ado_open_mssql(h: DWORD): PHiValue; stdcall;
 var
   f: PHiValue;
@@ -865,7 +867,7 @@ begin
     hi_str(nako_getVariable('DBユーザーID')),
     hi_str(nako_getVariable('DBパスワード')));
 
-  Result := nil;
+  Result := hi_newInt(Integer(ado));
 end;
 
 function ado_open_sqlserver2005(h: DWORD): PHiValue; stdcall;
@@ -882,109 +884,187 @@ begin
     hi_str(nako_getVariable('DBユーザーID')),
     hi_str(nako_getVariable('DBパスワード')));
 
-  Result := nil;
+  Result := hi_newInt(Integer(ado));
+end;
+
+function ado_getHandleFromArg(h: DWORD): TKAdo;
+var
+  p: PHiValue;
+begin
+  // 省略されたら最後に開いたＤＢを返す
+  p := nako_getFuncArg(h, 0);
+  if p = nil then
+  begin
+    Result := ado;
+  end else
+  begin
+    Result := TKAdo(Pointer(Integer(hi_int(p))));
+  end;
 end;
 
 function ado_close(h: DWORD): PHiValue; stdcall;
+var
+  ado2: TKAdo;
 begin
-  FreeAndNil(ado);
+  ado2 := ado_getHandleFromArg(h);
+  if ado = ado2 then
+  begin
+    FreeAndNil(ado);
+  end else
+  begin
+    FreeAndNil(ado2);
+  end;
   Result := nil;
 end;
+
 function ado_sql(h: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
+  ado: TKAdo;
 begin
-  s := nako_getFuncArg(h, 0);
-  if s = nil then s := nako_getSore;
+  ado := ado_getHandleFromArg(h);
+  s := nako_getFuncArg(h, 1);
   if ado = nil then raise Exception.Create('DBを操作する前にDBを開く必要があります。');
   ado.SQL(hi_str(s));
   Result := nil;
 end;
+
 function ado_moveFirst(h: DWORD): PHiValue; stdcall;
+var
+  ado: TKAdo;
 begin
+  ado := ado_getHandleFromArg(h);
   if ado = nil then raise Exception.Create('DBを操作する前にDBを開く必要があります。');
   ado.MoveFirst;
   Result := nil;
 end;
+
 function ado_moveLast(h: DWORD): PHiValue; stdcall;
+var
+  ado: TKAdo;
 begin
+  ado := ado_getHandleFromArg(h);
   if ado = nil then raise Exception.Create('DBを操作する前にDBを開く必要があります。');
   ado.MoveLast;
   Result := nil;
 end;
+
 function ado_moveNext(h: DWORD): PHiValue; stdcall;
+var
+  ado: TKAdo;
 begin
+  ado := ado_getHandleFromArg(h);
   if ado = nil then raise Exception.Create('DBを操作する前にDBを開く必要があります。');
   ado.MoveNext;
   Result := nil;
 end;
+
 function ado_movePrev(h: DWORD): PHiValue; stdcall;
+var
+  ado: TKAdo;
 begin
+  ado := ado_getHandleFromArg(h);
   if ado = nil then raise Exception.Create('DBを操作する前にDBを開く必要があります。');
   ado.MovePrev;
   Result := nil;
 end;
+
 function ado_bof(h: DWORD): PHiValue; stdcall;
+var
+  ado: TKAdo;
 begin
+  ado := ado_getHandleFromArg(h);
   if ado = nil then raise Exception.Create('DBを操作する前にDBを開く必要があります。');
   Result := hi_newBool(ado.dbBOF);
 end;
+
 function ado_eof(h: DWORD): PHiValue; stdcall;
+var
+  ado: TKAdo;
 begin
+  ado := ado_getHandleFromArg(h);
   if ado = nil then raise Exception.Create('DBを操作する前にDBを開く必要があります。');
   Result := hi_newBool(ado.dbEOF);
 end;
+
 function ado_getAllCsv(h: DWORD): PHiValue; stdcall;
+var
+  ado: TKAdo;
 begin
+  ado := ado_getHandleFromArg(h);
   if ado = nil then raise Exception.Create('DBを操作する前にDBを開く必要があります。');
   Result := hi_newStr(ado.GetSqlResultAsCsv);
 end;
+
 function ado_getAllTsv(h: DWORD): PHiValue; stdcall;
+var
+  ado: TKAdo;
 begin
+  ado := ado_getHandleFromArg(h);
   if ado = nil then raise Exception.Create('DBを操作する前にDBを開く必要があります。');
   Result := hi_newStr(ado.GetSqlResultAsTsv);
 end;
+
 function ado_find(h: DWORD): PHiValue; stdcall;
 var
   table, field, key: string;
+  ado: TKAdo;
 begin
-  table := hi_str(nako_getFuncArg(h, 0));
-  field := hi_str(nako_getFuncArg(h, 1));
-  key   := hi_str(nako_getFuncArg(h, 2));
+  ado := ado_getHandleFromArg(h);
+  table := hi_str(nako_getFuncArg(h, 1));
+  field := hi_str(nako_getFuncArg(h, 2));
+  key   := hi_str(nako_getFuncArg(h, 3));
   if ado = nil then raise Exception.Create('DBを操作する前にDBを開く必要があります。');
   ado.Find(table, field, key);
   Result := nil;
 end;
+
 function ado_getField(h: DWORD): PHiValue; stdcall;
 var
   f: string;
+  ado: TKAdo;
 begin
+  ado := ado_getHandleFromArg(h);
   f := hi_str(nako_getFuncArg(h, 0));
   if ado = nil then raise Exception.Create('DBを操作する前にDBを開く必要があります。');
 
   Result := hi_newStr(ado.GetFieldValue(f));
 end;
+
 function ado_recordCount(h: DWORD): PHiValue; stdcall;
+var
+  ado: TKAdo;
 begin
+  ado := ado_getHandleFromArg(h);
   if ado = nil then raise Exception.Create('DBを操作する前にDBを開く必要があります。');
   Result := hi_newInt(ado.GetRecordCount);
 end;
+
 function ado_getFiledNames(h: DWORD): PHiValue; stdcall;
+var
+  ado: TKAdo;
 begin
+  ado := ado_getHandleFromArg(h);
   if ado = nil then raise Exception.Create('DBを操作する前にDBを開く必要があります。');
   Result := hi_newStr(ado.GetFieldNames);
 end;
+
 function ado_getRec(h: DWORD): PHiValue; stdcall;
+var
+  ado: TKAdo;
 begin
+  ado := ado_getHandleFromArg(h);
   if ado = nil then raise Exception.Create('DBを操作する前にDBを開く必要があります。');
   Result := hi_newStr(ado.GetCurRecAsCsv);
 end;
+
 function ado_getTableAsCsv(h: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
+  ado: TKAdo;
 begin
-  p := nako_getFuncArg(h, 0);
-  if p = nil then p := nako_getSore;
+  ado := ado_getHandleFromArg(h);
+  p := nako_getFuncArg(h, 1);
   if ado = nil then raise Exception.Create('DBを操作する前にDBを開く必要があります。');
   Result := hi_newStr(ado.GetTableAsCsv(hi_str(p)));
 end;
@@ -1041,6 +1121,7 @@ begin
     raise;
   end;
 end;
+
 function sys_SQLiteClose(args: DWORD): PHiValue; stdcall;
 var
   h: Integer;
@@ -1806,25 +1887,25 @@ begin
   AddFunc  ('ORACLE開く','{=?}Fを|Fで', 4651, ado_open_oracle,'ORACLEのデータベースFを開く','ORACLEひらく');
   AddFunc  ('MSSQL開く', '{=?}Fを|Fで', 4652, ado_open_mssql,'MS SQL SERVER 2000のデータベースFを開く','MSSQLひらく');
   AddFunc  ('SQLSERVER2005開く','{=?}SERVERのDATABASEで|DATABASEへ|DATABASEに', 4685, ado_open_sqlserver2005,'MS SQL SERVER 2005のデータベースと接続する(変数「DBユーザーID」と「DBパスワード」を指定)','SQLSERVERひらく');
-  AddFunc  ('ADO開く','Sで',            4671, ado_open_custom,'ADO接続文字列Sを使ってデータベースを開く','ADOひらく');
-  AddFunc  ('DB閉じる','',          4653, ado_close,'データベースを閉じる','DBとじる');
+  AddFunc  ('ADO開く','Sで',            4671, ado_open_custom,'ADO接続文字列Sを使ってデータベースを開いてハンドルを返す','ADOひらく');
+  AddFunc  ('DB閉じる','{=?}HANDLEを',          4653, ado_close,'HANDLE(省略可能)を使ってデータベースを閉じる。ハンドルを閉じる。','DBとじる');
   AddStrVar('DBユーザーID', 'Admin',4654, '','DBゆーざーID');
   AddStrVar('DBパスワード', '',     4655, '','DBぱすわーど');
-  AddFunc  ('SQL実行',  '{=?}Sを|Sの|Sで',  4656, ado_sql,'SQL文Sを実行する。結果は『DB結果全部取得』などで得る。','SQLじっこう');
-  AddFunc  ('DB検索','AのFからSを',4666, ado_find,'テーブルAのフィールドFからキーワードSを検索する。結果は『DB結果全部取得』などで得る。','DBけんさく');
-  AddFunc  ('DB先頭移動','',        4657, ado_moveFirst,'レコードの先頭に移動','DBせんとういどう');
-  AddFunc  ('DB最後移動','',        4658, ado_moveLast, 'レコードの最後に移動(サポートしてないこともある)','DBさいごいどう');
-  AddFunc  ('DB次移動','',          4659, ado_moveNext, 'レコードを次に移動','DBつぎいどう');
-  AddFunc  ('DB前移動','',          4660, ado_movePrev, 'レコードを前に移動','DBまえいどう');
-  AddFunc  ('DB先頭判定','',        4661, ado_bof,      'レコードが先頭か判定','DBせんとうはんてい');
-  AddFunc  ('DB最後判定','',        4662, ado_eof,      'レコードが最後か判定','DBさいごはんてい');
-  AddFunc  ('DBフィールド取得','{=?}Sの',4663, ado_getField,'現在のレコードのフィールドSの値を取得して返す。','DBふぃーるどしゅとく');
-  AddFunc  ('DB結果全部取得','',4664, ado_getAllCsv,'全レコードをCSV形式で取得する。','DBけっかぜんぶしゅとく');
-  AddFunc  ('DB結果TSV取得','',4665, ado_getAllTsv,'全レコードをTSV形式で取得する。','DBけっかTSVしゅとく');
-  AddFunc  ('DBレコード数','',4667, ado_recordCount,'レコード数を取得して返す。(DBプロバイダがサポートしていないときは-1を返す)','DBれこーどすう');
-  AddFunc  ('DBフィールド名取得','',4668, ado_getFiledNames,'レコードのフィールド名の一覧をを返す。','DBふぃーるどめいしゅとく');
-  AddFunc  ('DBレコード取得','',4669, ado_getRec,'カレントレコードをCSV形式で得る。','DBれこーどしゅとく');
-  AddFunc  ('DBテーブルCSV取得','{=?}Sを|Sから|Sの',4670, ado_getTableAsCsv,'テーブルSの内容をCSVで取得して返す。','DBてーぶるCSVしゅとく');
+  AddFunc  ('SQL実行',  '{=?}HANDLEにSを|HANDLEへSの|Sで',  4656, ado_sql,'HANDLE(省略可能)を使ってSQL文Sを実行する。結果は『DB結果全部取得』などで得る。','SQLじっこう');
+  AddFunc  ('DB検索','{=?}HANDLEに|HANDLEへAのFからSを',4666, ado_find,'HANDLE(省略可能)を使ってテーブルAのフィールドFからキーワードSを検索する。結果は『DB結果全部取得』などで得る。','DBけんさく');
+  AddFunc  ('DB先頭移動','{=?}HANDLEの|HANDLEに|HANDLEへ',        4657, ado_moveFirst,'HANDLE(省略可能)を使ってレコードの先頭に移動','DBせんとういどう');
+  AddFunc  ('DB最後移動','{=?}HANDLEの|HANDLEに|HANDLEへ',        4658, ado_moveLast, 'HANDLE(省略可能)を使ってレコードの最後に移動(サポートしてないこともある)','DBさいごいどう');
+  AddFunc  ('DB次移動','{=?}HANDLEの|HANDLEに|HANDLEへ',          4659, ado_moveNext, 'HANDLE(省略可能)を使ってレコードを次に移動','DBつぎいどう');
+  AddFunc  ('DB前移動','{=?}HANDLEの|HANDLEに|HANDLEへ',          4660, ado_movePrev, 'HANDLE(省略可能)を使ってレコードを前に移動','DBまえいどう');
+  AddFunc  ('DB先頭判定','{=?}HANDLEの|HANDLEに|HANDLEへ',        4661, ado_bof,      'HANDLE(省略可能)を使ってレコードが先頭か判定','DBせんとうはんてい');
+  AddFunc  ('DB最後判定','{=?}HANDLEの|HANDLEに|HANDLEへ',        4662, ado_eof,      'HANDLE(省略可能)を使ってレコードが最後か判定','DBさいごはんてい');
+  AddFunc  ('DBフィールド取得','{=?}HANDLEに|HANDLEへSの',4663, ado_getField,'HANDLE(省略可能)を使って現在のレコードのフィールドSの値を取得して返す。','DBふぃーるどしゅとく');
+  AddFunc  ('DB結果全部取得','{=?}HANDLEの|HANDLEに|HANDLEへ',4664, ado_getAllCsv,'HANDLE(省略可能)を使って全レコードをCSV形式で取得する。','DBけっかぜんぶしゅとく');
+  AddFunc  ('DB結果TSV取得','{=?}HANDLEの|HANDLEに|HANDLEへ',4665, ado_getAllTsv,'HANDLE(省略可能)を使って全レコードをTSV形式で取得する。','DBけっかTSVしゅとく');
+  AddFunc  ('DBレコード数','{=?}HANDLEの|HANDLEに|HANDLEへ',4667, ado_recordCount,'HANDLE(省略可能)を使ってレコード数を取得して返す。(DBプロバイダがサポートしていないときは-1を返す)','DBれこーどすう');
+  AddFunc  ('DBフィールド名取得','{=?}HANDLEの|HANDLEに|HANDLEへ',4668, ado_getFiledNames,'HANDLE(省略可能)を使ってレコードのフィールド名の一覧をを返す。','DBふぃーるどめいしゅとく');
+  AddFunc  ('DBレコード取得','{=?}HANDLEの|HANDLEに|HANDLEへ',4669, ado_getRec,'HANDLE(省略可能)を使ってカレントレコードをCSV形式で得る。','DBれこーどしゅとく');
+  AddFunc  ('DBテーブルCSV取得','{=?}HANDLEに|HANDLEへSを|Sから|Sの',4670, ado_getTableAsCsv,'HANDLE(省略可能)を使ってテーブルSの内容をCSVで取得して返す。','DBてーぶるCSVしゅとく');
   //-SQLiteデータベース
   AddFunc  ('SQLITE開く','Fを|Fの|Fで', 4680, sys_SQLiteOpen,'SQLiteデータベースファイルFを開いてハンドルを返す','SQLITEひらく', 'sqlite.dll');
   AddFunc  ('SQLITE閉じる','{=0}Hの', 4681, sys_SQLiteClose,'ハンドルH(省略可能)で開いているSQLiteデータベースを閉じる','SQLITEとじる', 'sqlite.dll');
