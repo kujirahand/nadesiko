@@ -6027,32 +6027,25 @@ var
     end else
     if cmd = '’uŠ·' then
     begin
-      no := StrToIntDef(getToken_s(fname, '@'), 0);
       imgs  := TImageList(obj);
       fname := hi_str(v);
+      no := StrToIntDef(getToken_s(fname, '@'), 0);
       bmp := LoadPic(fname);
-      try
-        w := imgs.Width;
-        cnt := bmp.Width div w;
-        if (bmp.Width mod w) > 1 then Inc(cnt);
-        for i := 0 to cnt - 1 do
-        begin
-          bm := TBitmap.Create;
-          try
-            bm.Width  := w;
-            bm.Height := imgs.Height;
-            BitBlt(bm.Canvas.Handle, 0, 0, w, imgs.Height,
-              bmp.Canvas.Handle, w * i, 0, SRCCOPY);
-            mask := TBitmap.Create;
-            mask.Assign(bm);
-            mask.Mask(mask.Canvas.Pixels[mask.Width-1, mask.Height-1]);
-            imgs.Replace(no, bm, mask);
-            mask.Free;
-          finally
-            bm.Free;
-          end;
-        end;
-      finally
+      if LowerCase(ExtractFileExt(fname)) = '.ico' then
+      begin
+        ico := TIcon.Create;
+        ExtractMixFile(fname);
+        ico.LoadFromFile(fname);
+        imgs.ReplaceIcon(no, ico);
+        ico.Free;
+      end else
+      begin
+        bmp := LoadPic(fname);
+        mask := TBitmap.Create;
+        mask.Assign(bmp);
+        mask.Mask(mask.Canvas.Pixels[mask.Width-1,mask.Height-1]);
+        imgs.Replace(no, bmp, mask);
+        mask.Free;
         bmp.Free;
       end;
     end else
