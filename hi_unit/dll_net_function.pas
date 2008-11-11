@@ -3,7 +3,7 @@ unit dll_net_function;
 interface
 
 uses
-  Windows, SysUtils, Classes, UrlMon, WinInet, kskFtp,
+  Windows, SysUtils, Classes, UrlMon, WinInet, kskFtp, SyncObjs,
   dll_plugin_helper, dnako_import, dnako_import_types,
   winsock,unit_eml,
   IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdFTPCommon,
@@ -33,6 +33,7 @@ type
 
   TNetThread = class(TThread)
   protected
+    critical: TCriticalSection;
     procedure Execute; override;
   public
     method: procedure (Sender: TNetThread; ptr: Pointer);
@@ -41,6 +42,8 @@ type
     arg2: Pointer;
     arg3: Pointer;
     arg4: Pointer;
+    constructor Create(CreateSuspended: Boolean);
+    destructor Destroy; override;
   end;
 
 function NetDialog:TNetDialog;
@@ -1117,94 +1120,197 @@ begin
   end;
   // CHECK
   if pop3.Host = '' then raise Exception.Create('メールホストが空です。');
-  if pop3.Port < 0  then raise Exception.Create('メールポートが不正な数値です。');
+  if pop3.Port <= 0  then raise Exception.Create('メールポートが不正な数値です。');
   if pop3.Username = '' then raise Exception.Create('メールユーザーが空です。');
   if pop3.Password = '' then raise Exception.Create('メールパスワードが空です。');
 end;
 
-function sys_pop3_recv_indy10(args: DWORD): PHiValue; stdcall;
+
+procedure __sys_pop3_recv_indy(Sender: TNetThread; ptr: Pointer);
 var
-  tmpDir, dir, fname, afile, txtFile,emlFile: string;
-  from, replyto: string;
-  pop3: TIdPop3;
-  i, j, sid: Integer;
-  eml, sub: TEml;
-  txt, msgid: string;
-  msgids, msgidsNow: TStringList;
-const
-  FILE_MSGIDS = 'msgids.___';
+  pop3: TIdPOP3;
+  msgids, msgidsNow, raw: TStringList;
+  tmpDir, msgid, fmt: string;
+  i: Integer;
 begin
-  //===================
-  // 引数の取得
-  dir := hi_str(nako_getFuncArg(args, 0));
-  if Copy(dir, Length(dir), 1) <> '\' then dir := dir + '\';
-
-  //===================
-  // 受信フォルダのチェック
-  if not ForceDirectories(dir) then
-  begin
-    raise Exception.Create('フォルダ『'+dir+'』が作成できませんでした。');
-  end;
-
-  //===================
-  // 一時フォルダへ受信
-  tmpDir := TempDir + 'pop3_' + FormatDateTime('yymmddhhnnsszzz',Now) + '\';
-  ForceDirectories(tmpDir);
-
-  //===================
-  msgidsNow := TStringList.Create;
-  msgids    := TStringList.Create;
-  //
-  pop3 := TIdPOP3.Create(nil);
+  pop3   := TIdPOP3(ptr);
+  tmpDir := PString(Sender.arg1)^;
+  msgids := TStringList(Sender.arg2);
   try
-    // メッセージIDの一覧をチェック
-    if FileExists(dir + FILE_MSGIDS) then msgids.LoadFromFile(dir + FILE_MSGIDS);
-    //
-    // pop3.ShowDialog := hi_bool(nako_getVariable('経過ダイアログ'));
-    // nako_getVariable('メール受信時削除')
-    getPop3InfoIndy(pop3);
-    pop3.Connect;
-    // 受信処理
+    msgidsNow := TStringList.Create;
     try
-      msgidsNow := TStringList.Create;
-      alert(IntToStr(pop3.CheckMessages));
-
+      // メッセージIDの一覧を取得
       if pop3.UIDL(msgidsNow) then
       begin
-        Alert('msgids='#13#10 + msgidsNow.Text);
-        for i := 0 to msgids.Count - 1 do
+        // save to uidl
+        Sender.critical.Enter;
+        try
+          msgidsNow.SaveToFile(tmpDir + 'UIDL.txt');
+        finally
+          Sender.critical.Release;
+        end;
+        for i := 0 to msgidsNow.Count - 1 do
         begin
-          //j := msg
+          fmt := Format('メール受信中(%3d/%3d)',
+            [(i+1),msgidsNow.Count]);
+          NetDialog.setInfo(fmt);
+          // 1件ずつ受信していく
+          msgid := msgidsNow.Strings[i];
+          getToken_s(msgid, ' ');
+          if msgids.IndexOf(msgid) >= 0 then Continue; // 受信済み
+          raw := TStringList.Create;
+          try
+            if pop3.RetrieveRaw(i + 1, raw) then
+            begin
+              // save to .eml
+              Sender.critical.Enter;
+              try
+                raw.SaveToFile(tmpDir + msgid + '.eml');
+                msgids.Add(msgid);
+              finally
+                Sender.critical.Release;
+              end;
+            end;
+          finally
+            FreeAndNil(raw);
+          end;
         end;
       end;
-      
-      //Result := hi_newInt(
-      //  pop3.Pop3RecvAll(tmpDir, hi_bool())
-      //);
-    except
-      raise;
+      net_dialog_complete := True;
+    finally
+      FreeAndNil(msgidsNow);
     end;
-    Exit;
-    // 解析処理
-    sid := 1;
-    for i := 1 to hi_int(Result) do
+  except
+    on e:Exception do
     begin
-      fname := tmpDir + IntToStr(i) + '.eml';
+      NetDialog.errormessage := e.Message;
+      net_dialog_cancel := True;
+    end;
+  end;
+end;
+
+function sys_pop3_recv_indy10(args: DWORD): PHiValue; stdcall;
+var
+  tmpDir, fname, txtFile: string;
+  from, replyto: string;
+  pop3: TIdPop3;
+  eml, sub: TEml;
+  txt, msgid, afile, attach_dir: string;
+  msgids: TStringList;
+  fs: THStringList;
+  th: TNetThread;
+  cnt: Integer;
+const
+  FILE_MSGIDS = 'msgids.___';
+
+  procedure _recv;
+  var bShow: Boolean;
+  begin
+    //
+    pop3.OnWorkBegin := NetDialog.WorkBegin;
+    pop3.OnWork      := NetDialog.Work;
+    pop3.OnWorkEnd   := NetDialog.WorkEnd;
+    bShow := hi_bool(nako_getVariable('経過ダイアログ'));
+    //
+    th := TNetThread.Create(True);
+    th.arg0 := pop3;
+    th.arg1 := @tmpDir;
+    th.arg2 := msgids;
+    th.method := __sys_pop3_recv_indy;
+    th.Resume;
+    //
+    if not NetDialog.ShowDialog(
+      'メールを受信します', 'メール受信', bShow) then
+    begin
+      raise Exception.Create('メール受信に失敗。' + NetDialog.errormessage);
+    end;
+  end;
+
+  procedure _analize;
+  var i, j: Integer;
+  begin
+    Result := hi_newInt(cnt);
+    fs := EnumFiles(tmpDir + '*.eml');
+    for i := 0 to fs.Count - 1 do
+    begin
+      msgid := ChangeFileExt(fs.Strings[i], '');
+      fname := tmpDir + fs.Strings[i];
+      txtFile := ChangeFileExt(fname, '.txt');
       try
         txt := '';
         eml := TEml.Create(nil);
         eml.LoadFromFile(fname);
-        msgid := eml.Header.Items['Message-Id'];
-        if msgid = '' then begin msgid := MD5FileS(fname); end;
-        if msgids.IndexOf(msgid) >= 0 then Continue;// 既に受信済みならスキップ
-        msgids.Add(msgid);
+        // msgid := eml.Header.Items['Message-Id'];
         // ヘッダ情報を取得
         from    := ExtractMailAddress(eml.Header.GetDecodeValue('From'));
         replyto := ExtractMailAddress(eml.Header.GetDecodeValue('Reply-To'));
         txt := txt + '差出人: ' + eml.Header.GetDecodeValue('From')   + #13#10;
-      finally
+        if (from <> replyto)and(replyto <> '') then txt := txt + '返信先: ' + replyto + #13#10;
+        txt := txt + '宛先: '   + eml.Header.GetDecodeValue('To')     + #13#10;
+        txt := txt + '件名: '   + eml.Header.GetDecodeValue('Subject')+ #13#10;
+        txt := txt + '日付: '   + FormatDateTime('yyyy/mm/dd hh:nn:ss', eml.Header.GetDateTime('Date')) + #13#10;
+        // 添付ファイルがあるか
+        if eml.GetPartsCount > 0 then
+        begin
+          attach_dir := tmpDir + msgid + '\';
+          ForceDirectories(attach_dir);
+          // 添付ファイルを１つずつ保存していく
+          for j := 0 to eml.GetPartsCount - 1 do
+          begin
+            sub := eml.GetParts(j);
+            afile := sub.GetAttachFilename;
+            if afile <> '' then
+            begin
+              sub.BodySaveAsAttachment(attach_dir + afile);
+              txt := txt + '添付ファイル:' + msgid + '\' + afile + #13#10;
+            end;
+          end;
+        end;
+        txt := txt + #13#10;
+        txt := txt + ConvertJCode(eml.GetTextBody, SJIS_OUT);
+        //
+        StrWriteFile(txtFile, txt);
+        //---
+        eml.Free;
+      except on e: Exception do
+        raise Exception.Create(
+          'メール受信で受信したメール『' + msgid + '』の解析でエラー。' +
+          e.Message);
       end;
     end;
+  end;
+
+begin
+  //===================
+  // 引数の取得
+  tmpDir := hi_str(nako_getFuncArg(args, 0));
+  if Copy(tmpDir, Length(tmpDir), 1) <> '\' then tmpDir := tmpDir + '\';
+
+  //===================
+  // 受信フォルダのチェック
+  if not ForceDirectories(tmpDir) then
+  begin
+    raise Exception.Create('フォルダ『'+tmpDir+'』が作成できませんでした。');
+  end;
+
+  //
+  msgids := TStringList.Create;
+  pop3   := TIdPOP3.Create(nil);
+  try
+    // メッセージIDの一覧をチェック
+    if FileExists(tmpDir + FILE_MSGIDS) then
+    begin
+      msgids.LoadFromFile(tmpDir + FILE_MSGIDS);
+    end;
+    //
+    // nako_getVariable('メール受信時削除')
+    //
+    getPop3InfoIndy(pop3);
+    pop3.Connect;
+    // 受信処理
+    _recv;
+    _analize;
+    msgids.SaveToFile(tmpDir + FILE_MSGIDS);
   finally
     FreeAndNil(pop3);
   end;
@@ -1341,14 +1447,19 @@ end;
 function sys_ping(args: DWORD): PHiValue; stdcall;
 var
   p: TICMP;
+  i: Integer;
 begin
   p := TICMP.Create;
   try
     try
       p.Address := getArgStr(args, 0, True);
-      Result := hi_newInt(p.Ping);
+      i := p.Ping;
+      if i >= 1 then
+      begin
+        Result := hi_newBool(p.Reply.Status = IP_SUCCESS);
+      end;
     except
-      Result := hi_newInt(0);
+      Result := hi_newBool(False);
     end;
   finally
     p.Free;
@@ -2097,6 +2208,18 @@ begin
 end;
 
 { TNetThread }
+
+constructor TNetThread.Create(CreateSuspended: Boolean);
+begin
+  inherited Create(CreateSuspended);
+  critical := TCriticalSection.Create;
+end;
+
+destructor TNetThread.Destroy;
+begin
+  FreeAndNil(critical);
+  inherited;
+end;
 
 procedure TNetThread.Execute;
 begin
