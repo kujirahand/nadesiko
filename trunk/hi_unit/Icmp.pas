@@ -429,9 +429,13 @@ begin
         IPOpt.Flags := FFlags;
         Result      := IcmpSendEcho(hICMP, FIPAddress, pReqData, FSize,
                                     @IPOpt, pIPE, BufferSize, FTimeOut);
-        FLastError  := GetLastError;
-        FReply      := pIPE^;
-
+        if Result = 0 then
+        begin
+          FLastError  := GetLastError;
+        end else
+        begin
+          FReply      := pIPE^;
+        end;
         if Assigned(FOnEchoReply) then
             FOnEchoReply(Self, Result);
     finally
