@@ -1109,20 +1109,27 @@ begin
   if Pos('APOP',option) > 0 then
   begin
     pop3.AuthType := patAPOP;
-  end else
+  end;
+  if Pos('SASL', option) > 0 then
+  begin
+    pop3.AuthType := patSASL;
+  end;
   if Pos('SSL', option) > 0 then
   begin
     // IOHandler
     SSLHandler := TIdSSLIOHandlerSocketOpenSSL.Create(pop3);
     pop3.IOHandler := SSLHandler;
     // POP3.AuthType := patSASL;
-    POP3.UseTLS := utUseImplicitTLS;
+    pop3.UseTLS := utUseImplicitTLS;
     // Login & Provider
     Login := TIdSASLLogin.Create(pop3);
     Provider := TIdUserPassProvider.Create(Login);
     Login.UserPassProvider := Provider;
     Provider.Username := pop3.Username;
     Provider.Password := pop3.Password;
+    if Pos('IMPLICIT_TLS', option) > 0 then pop3.UseTLS := utUseImplicitTLS;
+    if Pos('REQUIRE_TLS', option)  > 0 then pop3.UseTLS := utUseRequireTLS;
+    if Pos('EXPLICIT_TLS', option) > 0 then pop3.UseTLS := utUseExplicitTLS;
   end;
   // CHECK
   if pop3.Host = '' then raise Exception.Create('メールホストが空です。');
@@ -1879,6 +1886,7 @@ begin
   option := UpperCase(hi_str(nako_getVariable('メールオプション')));
   if Pos('LOGIN',    option) > 0 then smtp.AuthType := satDefault;
   if Pos('PLAIN',    option) > 0 then smtp.AuthType := satDefault;
+  if Pos('SASL',     option) > 0 then smtp.AuthType := satSASL;
   if Pos('SSL',      option) > 0 then
   begin
     Login     := TIdSASLLogin.Create(SMTP);
@@ -1892,6 +1900,9 @@ begin
     SMTP.IOHandler := SSLHandler;    //TIdSSLIOHandlerSocketOpenSSL
     //SMTP.UseTLS := utUseExplicitTLS; // Explict
     SMTP.UseTLS := utUseImplicitTLS; // Explict
+    if Pos('IMPLICIT_TLS', option) > 0 then SMTP.UseTLS := utUseImplicitTLS;
+    if Pos('REQUIRE_TLS', option)  > 0 then SMTP.UseTLS := utUseRequireTLS;
+    if Pos('EXPLICIT_TLS', option) > 0 then SMTP.UseTLS := utUseExplicitTLS;
   end;
 end;
 
@@ -2328,7 +2339,7 @@ begin
   AddStrVar('メールCC',          '',4066,'','めーるCC');
   AddStrVar('メールBCC',         '',4067,'','めーるBCC');
   AddStrVar('メールヘッダ',      '',4068,'送信時に追加したいヘッダをハッシュ形式で代入しておく。','めーるへっだ');
-  AddStrVar('メールオプション',  '',4062,'メール受信時(APOP|SSL)、メール送信時(LOGIN|PLAIN|SSL)を複数指定可能。','めーるおぷしょん');
+  AddStrVar('メールオプション',  '',4062,'メール受信時(APOP|SASL|SSL)、メール送信時(LOGIN|PLAIN|SSL)を複数指定可能。加えて(IMPLICIT_TLS|REQUIRE_TLS|EXPLICIT_TLS)を指定可能。','めーるおぷしょん');
   AddFunc  ('メールリスト取得',  '',4063, sys_pop3_list_indy10, 'POP3でメールの件数とサイズの一覧を取得する', 'めーるりすとしゅとく');
   AddFunc  ('メール削除',     'Aの',4064, sys_pop3_dele_indy10, 'POP3でA番目のメールを削除する', 'めーるさくじょ');
   //-EML
