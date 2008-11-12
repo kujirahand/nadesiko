@@ -7,8 +7,8 @@ uses
   dll_plugin_helper, dnako_import, dnako_import_types,
   winsock,unit_eml,
   IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdFTPCommon,
-  IdFTP, IdFTPList, IdHttp, IdTcpServer, IdSNTP,
-  IdAllFTPListParsers, IdPOP3, IdSASLLogin,
+  IdFTP, IdFTPList, IdHttp, IdTcpServer, IdSNTP, IdSMTP, IdMessage,
+  IdAllFTPListParsers, IdPOP3, IdSASLLogin, IdAttachmentFile, IdMessageParts,
   IdUserPassProvider, IdSSLOpenSSL, IdExplicitTLSClientServerBase;
 
 const
@@ -29,6 +29,8 @@ type
     function ShowDialog(stext, sinfo: string; Visible: Boolean): Boolean;
     procedure setInfo(s: string);
     procedure setText(s: string);
+    procedure Cancel;
+    procedure Comlete;
   end;
 
   TNetThread = class(TThread)
@@ -57,7 +59,7 @@ implementation
 uses mini_file_utils, unit_file, KPop3, KSmtp, KTcp, KTCPW, unit_string2,
   WSockUtils, Icmp, KHttp, jconvert, md5, nako_dialog_function,
   nadesiko_version, messages, nako_dialog_const, CommCtrl, unit_kabin,
-  hima_types, unit_content_type;
+  hima_types, unit_content_type, IdAttachment;
 
 var pProgDialog: PHiValue = nil;
 var FNetDialog: TNetDialog = nil;
@@ -1707,6 +1709,137 @@ begin
   Result := nil;
 end;
 
+procedure getSmtpInfoIndy(smtp: TIdSMTP);
+var
+  option: string;
+  Login : TIdSASLLogin;
+  Provider : TIdUserPassProvider;
+  SSLHandler: TIdSSLIOHandlerSocketOpenSSL;
+begin
+  // サーバー情報
+  smtp.Host       := hi_str(nako_getVariable('メールホスト'));
+  smtp.Port       := StrToIntDef(hi_str(nako_getVariable('メールポート')), 25);
+  smtp.Username   := hi_str(nako_getVariable('メールID'));
+  smtp.Password   := hi_str(nako_getVariable('メールパスワード'));
+  // CHECK
+  if smtp.Host = '' then raise Exception.Create('メールホストが空です。');
+  // option
+  option := UpperCase(hi_str(nako_getVariable('メールオプション')));
+  if Pos('LOGIN',    option) > 0 then smtp.AuthType := satDefault;
+  if Pos('PLAIN',    option) > 0 then smtp.AuthType := satDefault;
+  if Pos('SSL',      option) > 0 then
+  begin
+    Login     := TIdSASLLogin.Create(SMTP);
+    Provider  := TIdUserPassProvider.Create(Login);
+    Login.UserPassProvider := Provider;
+    Provider.Username := smtp.Username;
+    Provider.Password := smtp.Password;
+    SMTP.SASLMechanisms.Add.SASL := Login;
+    SMTP.AuthType := satSASL;
+    SSLHandler := TIdSSLIOHandlerSocketOpenSSL.Create(SMTP);
+    SMTP.IOHandler := SSLHandler;    //TIdSSLIOHandlerSocketOpenSSL
+    //SMTP.UseTLS := utUseExplicitTLS; // Explict
+    SMTP.UseTLS := utUseImplicitTLS; // Explict
+  end;
+end;
+
+procedure __sys_smtp_send_indy(Sender: TNetThread; ptr: Pointer);
+var
+  smtp: TIdSMTP;
+  msg: TIdMessage;
+begin
+  smtp := TIdSMTP(ptr);
+  msg  := TIdMessage(Sender.arg1);
+  try
+    NetDialog.setInfo('サーバーに接続中→' + smtp.Host);
+    smtp.Connect;
+    NetDialog.setInfo('認証中→' + smtp.Host);
+    smtp.Authenticate;
+    NetDialog.setInfo('メール送信中');
+    smtp.Send(msg);
+    NetDialog.setInfo('メール送信完了しました。');
+    smtp.Disconnect;
+    //
+    NetDialog.Comlete;
+  except
+    on e:Exception do
+    begin
+      NetDialog.errormessage := e.Message;
+      NetDialog.Cancel;
+    end;
+  end;
+end;
+
+function sys_smtp_send_indy10(args: DWORD): PHiValue; stdcall;
+var
+  smtp: TIdSMTP;
+  msg: TIdMessage;
+  addHead, from, rcptto, title, body, attach, html, cc, bcc: string;
+  tmp: string;
+  eml: TEml;
+  th: TNetThread;
+begin
+  smtp := TIdSMTP.Create(nil);
+  try
+    // 認証
+    addHead := hi_str(nako_getVariable('メールヘッダ'));
+    // 宛先など
+    from   := hi_str(nako_getVariable('メール差出人'));
+    rcptto := hi_str(nako_getVariable('メール宛先'));
+    title  := hi_str(nako_getVariable('メール件名'));
+    body   := hi_str(nako_getVariable('メール本文'));
+    attach := hi_str(nako_getVariable('メール添付ファイル'));
+    html   := hi_str(nako_getVariable('メールHTML'));
+    cc     := hi_str(nako_getVariable('メールCC'));
+    bcc    := hi_str(nako_getVariable('メールBCC'));
+    // SMTP
+    getSmtpInfoIndy(smtp);
+    // Message
+    msg := TIdMessage.Create(smtp);
+    msg.Recipients.EMailAddresses := rcptto;
+    msg.CCList.EMailAddresses     := cc;
+    msg.BccList.EMailAddresses    := bcc;
+    msg.Subject   := jConvert.CreateHeaderStringEx(title);
+    msg.Body.Text := jConvert.ConvertJCode(body, JIS_OUT);
+    msg.NoEncode  := True;
+    // -------------------------------------------------------------------------
+    // set to eml
+    eml := TEml.Create(nil);
+    try
+      eml.SetEmlEasy(from, rcptto, title, body, attach, html, cc, addHead);
+      tmp := eml.GetAsEml.Text;
+      msg.Headers.Text := getToken_s(tmp, #13#10#13#10);
+      msg.Body.Text    := tmp;
+    finally
+      FreeAndNil(eml);
+    end;
+    // -------------------------------------------------------------------------
+    // 実際に送信
+    smtp.OnWorkBegin  := NetDialog.WorkBegin;
+    smtp.OnWork       := NetDialog.Work;
+    smtp.OnWorkEnd    := NetDialog.WorkEnd;
+    th := TNetThread.Create(True);
+    th.arg0 := smtp;
+    th.arg1 := msg;
+    th.method := __sys_smtp_send_indy;
+    th.Resume;
+    if not NetDialog.ShowDialog(
+      'メールを送信します。',
+      '送信準備中',
+      hi_bool(nako_getVariable('経過ダイアログ'))) then
+    begin
+      if net_dialog_cancel then begin
+        try smtp.Disconnect; except end;
+        NetDialog.errormessage := 'ユーザーによって中断されました。';
+      end;
+      raise Exception.Create('メール送信に失敗。' + NetDialog.errormessage);
+    end;
+  finally
+    FreeAndNil(msg);
+    FreeAndNil(smtp);
+  end;
+  Result := nil;
+end;
 
 var eml: TEml = nil; // EML処理のための変数
 
@@ -2028,7 +2161,7 @@ begin
   AddFunc  ('FTPタイムアウト設定',  'Vに|Vを|Vへ',            4039, sys_ftp_setTimeout,     '接続中のFTPのタイムアウト時間をミリ秒単位で設定する',   'FTPたいむあうとせってい');
   //-メール
   AddFunc  ('メール受信',        'DIRへ|DIRに',  4050, sys_pop3_recv_indy10, 'POP3でフォルダDIRへメールを受信し、受信したメールの件数を返す。', 'めーるじゅしん');
-  AddFunc  ('メール送信',        '',             4051, sys_smtp_send, 'SMTPでメールを送信する', 'めーるそうしん');
+  AddFunc  ('メール送信',        '',             4051, sys_smtp_send_indy10, 'SMTPでメールを送信する', 'めーるそうしん');
   AddStrVar('メールホスト',      '',4052,'','めーるほすと');
   AddStrVar('メールID',          '',4053,'','めーるID');
   AddStrVar('メールパスワード',  '',4054,'','めーるぱすわーど');
@@ -2110,6 +2243,16 @@ begin
         end;
       end;
   end;
+end;
+
+procedure TNetDialog.Cancel;
+begin
+  net_dialog_cancel := True;
+end;
+
+procedure TNetDialog.Comlete;
+begin
+  net_dialog_complete := True;
 end;
 
 procedure TNetDialog.setInfo(s: string);
