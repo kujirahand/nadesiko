@@ -8,7 +8,8 @@ uses
   winsock,unit_eml,
   IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdFTPCommon,
   IdFTP, IdFTPList, IdHttp, IdTcpServer, IdSNTP, IdSMTP, IdMessage,
-  IdAllFTPListParsers, IdPOP3, IdSASLLogin, IdAttachmentFile, IdMessageParts,
+  IdAllFTPListParsers, IdPOP3, IdReplyPOP3, IdSASLLogin, IdAttachmentFile,
+  IdMessageParts,
   IdUserPassProvider, IdSSLOpenSSL, IdExplicitTLSClientServerBase;
 
 const
@@ -22,7 +23,9 @@ type
     WorkCount: Integer;
   public
     target: string;
+    ResultData: string;
     errormessage: string;
+    Status: Integer;
     procedure WorkBegin(Sender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
     procedure WorkEnd(Sender: TObject; AWorkMode: TWorkMode);
     procedure Work(Sender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
@@ -1102,6 +1105,7 @@ begin
   pop3.Username   := hi_str(nako_getVariable('メールID'));
   pop3.Password   := hi_str(nako_getVariable('メールパスワード'));
   option          := UpperCase(hi_str(nako_getVariable('メールオプション')));
+  pop3.AuthType := patUserPass;
   if Pos('APOP',option) > 0 then
   begin
     pop3.AuthType := patAPOP;
@@ -1127,21 +1131,29 @@ begin
   if pop3.Password = '' then raise Exception.Create('メールパスワードが空です。');
 end;
 
-
 procedure __sys_pop3_recv_indy(Sender: TNetThread; ptr: Pointer);
 var
   pop3: TIdPOP3;
   msgids, msgidsNow, raw: TStringList;
   tmpDir, msgid, fmt: string;
   i: Integer;
+  bRemove: Boolean;
 begin
   pop3   := TIdPOP3(ptr);
   tmpDir := PString(Sender.arg1)^;
   msgids := TStringList(Sender.arg2);
+  bRemove:= hi_bool(nako_getVariable('メール受信時削除'));
+
+  if Sender.Terminated then Exit;
+
+  NetDialog.setInfo('サーバーと接続中:' + pop3.Host);
+  pop3.Connect;
+
   try
     msgidsNow := TStringList.Create;
     try
       // メッセージIDの一覧を取得
+      NetDialog.setInfo('UIDL一覧を取得中:' + pop3.Host);
       if pop3.UIDL(msgidsNow) then
       begin
         // save to uidl
@@ -1173,12 +1185,17 @@ begin
                 Sender.critical.Release;
               end;
             end;
+            // remove
+            if bRemove then
+            begin
+              pop3.Delete(i + 1);
+            end;
           finally
             FreeAndNil(raw);
           end;
         end;
       end;
-      net_dialog_complete := True;
+      NetDialog.Comlete;
     finally
       FreeAndNil(msgidsNow);
     end;
@@ -1186,7 +1203,7 @@ begin
     on e:Exception do
     begin
       NetDialog.errormessage := e.Message;
-      net_dialog_cancel := True;
+      NetDialog.Cancel;
     end;
   end;
 end;
@@ -1214,6 +1231,7 @@ const
     pop3.OnWorkEnd   := NetDialog.WorkEnd;
     bShow := hi_bool(nako_getVariable('経過ダイアログ'));
     //
+    NetDialog.Status := 0;
     th := TNetThread.Create(True);
     th.arg0 := pop3;
     th.arg1 := @tmpDir;
@@ -1222,16 +1240,15 @@ const
     th.Resume;
     //
     if not NetDialog.ShowDialog(
-      'メールを受信します', 'メール受信', bShow) then
+      'メールの受信を準備しています', 'メールの受信', bShow) then
     begin
       raise Exception.Create('メール受信に失敗。' + NetDialog.errormessage);
     end;
   end;
 
   procedure _analize;
-  var i, j: Integer;
+  var i, j, k: Integer;
   begin
-    Result := hi_newInt(cnt);
     fs := EnumFiles(tmpDir + '*.eml');
     for i := 0 to fs.Count - 1 do
     begin
@@ -1256,6 +1273,7 @@ const
         begin
           attach_dir := tmpDir + msgid + '\';
           ForceDirectories(attach_dir);
+          k := 0;
           // 添付ファイルを１つずつ保存していく
           for j := 0 to eml.GetPartsCount - 1 do
           begin
@@ -1265,8 +1283,10 @@ const
             begin
               sub.BodySaveAsAttachment(attach_dir + afile);
               txt := txt + '添付ファイル:' + msgid + '\' + afile + #13#10;
+              Inc(k);
             end;
           end;
+          if k = 0 then RemoveDir(attach_dir);
         end;
         txt := txt + #13#10;
         txt := txt + ConvertJCode(eml.GetTextBody, SJIS_OUT);
@@ -1280,6 +1300,7 @@ const
           e.Message);
       end;
     end;
+    cnt := fs.Count;
   end;
 
 begin
@@ -1299,20 +1320,151 @@ begin
   msgids := TStringList.Create;
   pop3   := TIdPOP3.Create(nil);
   try
+    cnt := 0;
     // メッセージIDの一覧をチェック
     if FileExists(tmpDir + FILE_MSGIDS) then
     begin
       msgids.LoadFromFile(tmpDir + FILE_MSGIDS);
     end;
-    //
-    // nako_getVariable('メール受信時削除')
-    //
     getPop3InfoIndy(pop3);
-    pop3.Connect;
     // 受信処理
     _recv;
     _analize;
     msgids.SaveToFile(tmpDir + FILE_MSGIDS);
+    Result := hi_newInt(cnt);
+  finally
+    FreeAndNil(pop3);
+  end;
+end;
+
+procedure __sys_pop3_list_indy(Sender: TNetThread; ptr: Pointer);
+var
+  pop3: TIdPOP3;
+  line, res: string;
+begin
+  pop3 := TIdPOP3(ptr);
+  //
+  res := '';
+  pop3.SendCmd('LIST', IdReplyPOP3.ST_OK);
+  while True do
+  begin
+    try
+      line := pop3.IOHandler.ReadLn;
+    except
+      NetDialog.Cancel;
+      Exit;
+    end;
+    if (line = '.')or(line = '') then
+    begin
+      Break;
+    end;
+    res := res + line + #13#10;
+  end;
+  Sender.critical.Enter;
+  NetDialog.ResultData := res;
+  Sender.critical.Release;
+  NetDialog.Comlete;
+end;
+
+function sys_pop3_list_indy10(args: DWORD): PHiValue; stdcall;
+var
+  pop3: TIdPop3;
+  th: TNetThread;
+
+  procedure _recv;
+  var bShow: Boolean;
+  begin
+    pop3.OnWorkBegin := NetDialog.WorkBegin;
+    pop3.OnWork      := NetDialog.Work;
+    pop3.OnWorkEnd   := NetDialog.WorkEnd;
+    bShow := hi_bool(nako_getVariable('経過ダイアログ'));
+    //
+    th := TNetThread.Create(True);
+    th.arg0 := pop3;
+    th.method := __sys_pop3_list_indy;
+    th.Resume;
+    //
+    if not NetDialog.ShowDialog(
+      'メール一覧を取得しています', 'メール一覧の取得', bShow) then
+    begin
+      raise Exception.Create('メール一覧の取得に失敗。' + NetDialog.errormessage);
+    end;
+  end;
+
+begin
+  pop3   := TIdPOP3.Create(nil);
+  try
+    getPop3InfoIndy(pop3);
+    pop3.Connect;
+    _recv;
+    Result := hi_newStr(NetDialog.ResultData);
+  finally
+    FreeAndNil(pop3);
+  end;
+end;
+
+procedure __sys_pop3_dele_indy(Sender: TNetThread; ptr: Pointer);
+var
+  pop3: TIdPOP3;
+  res: Boolean;
+  no: Integer;
+begin
+  pop3 := TIdPOP3(ptr);
+  no := PInteger(Sender.arg1)^;
+  try
+    res := pop3.Delete(no);
+  except
+    NetDialog.errormessage := 'メッセージの削除に失敗しました。';
+    NetDialog.Cancel;
+    Exit;
+  end;
+  Sender.critical.Enter;
+  if res then
+  begin
+    NetDialog.ResultData := '1';
+  end else begin
+    NetDialog.ResultData := '0';
+  end;
+  Sender.critical.Release;
+  NetDialog.Comlete;
+end;
+
+function sys_pop3_dele_indy10(args: DWORD): PHiValue; stdcall;
+var
+  pop3: TIdPop3;
+  th: TNetThread;
+  no: Integer;
+
+  procedure _recv;
+  var bShow: Boolean;
+  begin
+    //
+    pop3.OnWorkBegin := NetDialog.WorkBegin;
+    pop3.OnWork      := NetDialog.Work;
+    pop3.OnWorkEnd   := NetDialog.WorkEnd;
+    bShow := hi_bool(nako_getVariable('経過ダイアログ'));
+    //
+    th := TNetThread.Create(True);
+    th.arg0 := pop3;
+    th.arg1 := @no;
+    th.method := __sys_pop3_dele_indy;
+    th.Resume;
+    //
+    if not NetDialog.ShowDialog(
+      'メール一覧を取得しています', 'メール一覧の取得', bShow) then
+    begin
+      raise Exception.Create('メール一覧の取得に失敗。' + NetDialog.errormessage);
+    end;
+  end;
+
+begin
+  no := getArgInt(args, 0, True);
+  pop3 := TIdPOP3.Create(nil);
+  try
+    getPop3InfoIndy(pop3);
+    pop3.Connect;
+    _recv;
+    Result := hi_newInt(StrToIntDef(NetDialog.ResultData, 0));
   finally
     FreeAndNil(pop3);
   end;
@@ -2176,9 +2328,9 @@ begin
   AddStrVar('メールCC',          '',4066,'','めーるCC');
   AddStrVar('メールBCC',         '',4067,'','めーるBCC');
   AddStrVar('メールヘッダ',      '',4068,'送信時に追加したいヘッダをハッシュ形式で代入しておく。','めーるへっだ');
-  AddStrVar('メールオプション',  '',4062,'メール受信時(APOP)、メール送信時(LOGIN|CRAM-MD5|PLAIN)を複数指定可能。','めーるおぷしょん');
-  AddFunc  ('メールリスト取得',  '',4063, sys_pop3_list, 'POP3でメールの件数とサイズの一覧を取得する', 'めーるりすとしゅとく');
-  AddFunc  ('メール削除',     'Aの',4064, sys_pop3_dele, 'POP3でA番目のメールを削除する', 'めーるさくじょ');
+  AddStrVar('メールオプション',  '',4062,'メール受信時(APOP|SSL)、メール送信時(LOGIN|PLAIN|SSL)を複数指定可能。','めーるおぷしょん');
+  AddFunc  ('メールリスト取得',  '',4063, sys_pop3_list_indy10, 'POP3でメールの件数とサイズの一覧を取得する', 'めーるりすとしゅとく');
+  AddFunc  ('メール削除',     'Aの',4064, sys_pop3_dele_indy10, 'POP3でA番目のメールを削除する', 'めーるさくじょ');
   //-EML
   AddFunc  ('EMLファイル開く', 'Fの',4080, sys_eml_load , 'EMLファイルを開く', 'EMLふぁいるひらく');
   AddFunc  ('EMLパート数取得','',4081, sys_eml_part_count, 'EMLファイルにいくつパートがあるかを取得して返す。', 'EMLぱーとすうしゅとく');
