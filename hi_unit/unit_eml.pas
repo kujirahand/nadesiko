@@ -34,6 +34,7 @@ type
     list: TList;
     function GetItem(key: string): string;
     procedure SetItem(key: string; const Value: string);
+    function GetAsText: string;
   public
     constructor Create;
     destructor Destroy; override;
@@ -49,6 +50,7 @@ type
     function GetDecodeValue(key: string): string;
     function GetDateTime(key: string): TDateTime;
     function Count: Integer;
+    property Text:string read GetAsText;
   end;
 
   TEmlType = (typeMixed, typeText, typeHtml, typeApplication, typeImage);
@@ -480,6 +482,19 @@ begin
     list.Add(p);
   end;
   p.value := Value;
+end;
+
+function TEmlHeader.GetAsText: string;
+var
+  i: Integer;
+  e: TEmlHeaderRec;
+begin
+  Result := '';
+  for i := 0 to Count - 1 do
+  begin
+    e := Get(i);
+    Result := Result + e.GetAsEml + #13#10;
+  end;
 end;
 
 { TEml }

@@ -1623,6 +1623,7 @@ begin
   end;
   if bs <> '' then
     Result := Result + ' =?ISO-2022-JP?B?' + EncodeBase64(sjis2jis83(bs)) + '?=';
+  Result := Trim(Result);
 end;
 
 function CreateHeaderStringMail(const s: string): string;//複数行サポートのメール用
