@@ -102,7 +102,8 @@ uses
   TkZLIB in 'component\gldpng\TKZLIB.pas',
   hOleddUtils in 'component\hedit251\hOleddUtils.pas',
   hOledd in 'component\hedit251\hOledd.pas',
-  VistaAltFixUnit in 'component\VistaAltFixUnit.pas';
+  VistaAltFixUnit in 'component\VistaAltFixUnit.pas',
+  GraphicEx in 'component\GraphicEx\GraphicEx.pas';
 
 {$R *.res}
 

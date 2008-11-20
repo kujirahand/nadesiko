@@ -200,7 +200,7 @@ uses
   unit_pack_files, hima_stream, frmInputListU, frmPasswordU,
   frmSelectButtonU, dll_plugin_helper, unit_tree_list, frmSayU,
   frmInputNumU, frmHukidasiU, jvIcon, clipbrd, memoXP, SPILib,
-  MedianCut, unit_vista, frmListU, unit_nakopanel, HEdtProp;
+  MedianCut, unit_vista, frmListU, unit_nakopanel, HEdtProp, GraphicEx;
 
 type
   TRingBufferString = class
@@ -502,6 +502,27 @@ function LoadPic(fname: string): TBitmap;
     end;
   end;
 
+  procedure _graphicex;
+  var
+    GraphicClass: TGraphicExGraphicClass;
+    Graphic: TGraphic;
+  begin
+    GraphicClass := FileFormatList.GraphicFromContent(fname);
+    if GraphicClass = nil then raise Exception.Create('未対応の画像フォーマット');
+    begin
+      Graphic := GraphicClass.Create;
+      try
+        Graphic.LoadFromFile(fname);
+        Result.Width := Graphic.Width;
+        Result.Height := Graphic.Height;
+        Result.PixelFormat := pf24bit;
+        Result.Canvas.Draw(0,0,Graphic);
+      finally
+        FreeAndNil(Graphic);
+      end;
+    end;
+  end;
+  
   procedure _susie;
   var spi: TSpiLib32;
   begin
@@ -549,6 +570,7 @@ begin
   ExtractMixFile(fname);
   ext := LowerCase(ExtractFileExt(fname));
 
+  // nadesiko default support
   if ext = '.png'  then _png  else
   if ext = '.jpg'  then _jpeg else
   if ext = '.jpeg' then _jpeg else
@@ -556,6 +578,13 @@ begin
   if ext = '.bmp'  then _bmp  else
   if ext = '.ico'  then _ico  else
   if ext = '.mag'  then _mag  else
+  // use graphicex image library
+  if Pos(ext+'/',
+  '.bw/.rgb/.rgba/.sgi/.cel/.pic/.tif/.tiff/.tga/.vst/.icb/.vda/.win/.pcx/.pcc/.scr/.pcd/.ppm/.pgm/.pbm/.cut/.rla/.rpf/.psd/.pdd/.psp/.eps'
+  ) > 0 then
+  begin
+    _graphicex;
+  end else
   begin
     try
       _susie;
@@ -6030,7 +6059,6 @@ var
       imgs  := TImageList(obj);
       fname := hi_str(v);
       no := StrToIntDef(getToken_s(fname, '@'), 0);
-      bmp := LoadPic(fname);
       if LowerCase(ExtractFileExt(fname)) = '.ico' then
       begin
         ico := TIcon.Create;
