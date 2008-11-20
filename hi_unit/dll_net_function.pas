@@ -323,6 +323,8 @@ begin
   if _idftp.Host = '' then _idftp.Host := Trim(s.Values['HOST']);
   _idftp.Port      := StrToIntDef(Trim(s.Values['PORT']), 21);
   _idftp.Passive   := get_on_off(Trim(s.Values['PASV']));
+  _idftp.TransferType := ftBinary; // 重要
+  
   if _idftp.Username = '' then raise Exception.Create('FTPの設定でIDが未設定です。');
   if _idftp.Password = '' then raise Exception.Create('FTPの設定でPASSWORDが未設定です。');
   if _idftp.Host     = '' then raise Exception.Create('FTPの設定でHOSTが未設定です。');
@@ -362,25 +364,42 @@ end;
 
 procedure proc_ftp_upload(Sender: TNetThread; ptr: Tidftp);
 var
-  dat: TMemoryStream;
+  fs: TFileStream;
   pfname: PString;
   ps: PString;
+  localname: string;
+  servername: string;
 begin
-  {
-  dat := TMemoryStream(Sender.arg1);
-  ps  := Sender.arg2;
-  ptr.Put(dat, ps^);
-  net_dialog_complete := True;
-  }
   pfname := Sender.arg1;
   ps     := Sender.arg2;
+  localname  := PString(pfname)^;
+  servername := PString(ps)^;
 
-  dat := TMemoryStream.Create;
   try
-    dat.LoadFromFile(pfname^);
-    ptr.Put(dat, ps^);
+    fs := TFileStream.Create(localname, fmOpenRead or fmShareDenyWrite);
+    fs.Position := 0;
+  except
+    on e:Exception do
+    begin
+      NetDialog.errormessage := e.Message;
+      NetDialog.Cancel;
+      Exit;
+    end;
+  end;
+
+  try
+    try
+      ptr.Put(fs, servername);
+    except
+      on e:Exception do
+      begin
+        NetDialog.errormessage := e.Message;
+        NetDialog.Cancel;
+        Exit;
+      end;
+    end;
   finally
-    FreeAndNil(dat);
+    FreeAndNil(fs);
     NetDialog.Comlete;
   end;
 end;
