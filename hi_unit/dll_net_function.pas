@@ -16,6 +16,8 @@ const
   NAKONET_DLL_VERSION = '1.509';
 
 type
+  TNetDialogStatus = (statWork, statError, statComplete, statCancel);
+
   TNetDialog = class(TComponent)
   private
     hParent: HWND;
@@ -25,7 +27,7 @@ type
     target: string;
     ResultData: string;
     errormessage: string;
-    Status: Integer;
+    Status: TNetDialogStatus;
     procedure WorkBegin(Sender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
     procedure WorkEnd(Sender: TObject; AWorkMode: TWorkMode);
     procedure Work(Sender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
@@ -34,6 +36,7 @@ type
     procedure setText(s: string);
     procedure Cancel;
     procedure Comlete;
+    procedure Error;
   end;
 
   TNetThread = class(TThread)
@@ -66,8 +69,6 @@ uses mini_file_utils, unit_file, KPop3, KSmtp, KTcp, KTCPW, unit_string2,
 
 var pProgDialog: PHiValue = nil;
 var FNetDialog: TNetDialog = nil;
-var net_dialog_cancel:   Boolean = False;
-var net_dialog_complete: Boolean = False;
 
 const NAKO_HTTP_OPTION = 'HTTPオプション';
 
@@ -380,7 +381,7 @@ begin
     ptr.Put(dat, ps^);
   finally
     FreeAndNil(dat);
-    net_dialog_complete := True;
+    NetDialog.Comlete;
   end;
 end;
 
@@ -450,7 +451,7 @@ begin
 
   _upload(local, remote);
 
-  net_dialog_complete := True;
+  NetDialog.Comlete;
 end;
 
 function sys_ftp_setTimeout(args: DWORD): PHiValue; stdcall;
@@ -606,7 +607,7 @@ begin
   dat := TMemoryStream(Sender.arg1);
   ps  := Sender.arg2;
   _idftp.Get(ps^, dat);
-  net_dialog_complete := True;
+  NetDialog.Comlete;
 end;
 
 procedure proc_ftp_downloadDir(Sender: TNetThread; ftp: Tidftp);
@@ -733,7 +734,7 @@ begin
   _getDir(local, remote);
   //
   NetDialog.errormessage := errors;
-  net_dialog_complete := True;
+  NetDialog.Comlete;
 end;
 
 
@@ -757,8 +758,6 @@ begin
     remote := hi_str(pRemote);
 
     NetDialog.errormessage := '';
-    net_dialog_cancel      := False;
-    net_dialog_complete    := False;
 
     thread  := TNetThread.Create(True);
     bShow   := hi_bool(nako_getVariable('経過ダイアログ'));
@@ -806,8 +805,6 @@ begin
     remote := hi_str(pRemote);
     
     NetDialog.errormessage := '';
-    net_dialog_cancel      := False;
-    net_dialog_complete    := False;
 
     thread  := TNetThread.Create(True);
     bShow   := hi_bool(nako_getVariable('経過ダイアログ'));
@@ -1154,8 +1151,16 @@ begin
   if Sender.Terminated then Exit;
 
   NetDialog.setInfo('サーバーと接続中:' + pop3.Host);
-  pop3.Connect;
-
+  try
+    pop3.Connect;
+  except
+    on e: Exception do
+    begin
+      NetDialog.Error;
+      NetDialog.errormessage := e.Message;
+      Exit;
+    end;
+  end;
   try
     msgidsNow := TStringList.Create;
     try
@@ -1215,7 +1220,7 @@ begin
   end;
 end;
 
-function sys_pop3_recv_indy10(args: DWORD): PHiValue; stdcall;
+function __sys_pop3_recv_indy10(recv_dir: string): PHiValue; stdcall;
 var
   tmpDir, fname, txtFile: string;
   from, replyto: string;
@@ -1238,7 +1243,6 @@ const
     pop3.OnWorkEnd   := NetDialog.WorkEnd;
     bShow := hi_bool(nako_getVariable('経過ダイアログ'));
     //
-    NetDialog.Status := 0;
     th := TNetThread.Create(True);
     th.arg0 := pop3;
     th.arg1 := @tmpDir;
@@ -1313,7 +1317,7 @@ const
 begin
   //===================
   // 引数の取得
-  tmpDir := hi_str(nako_getFuncArg(args, 0));
+  tmpDir := recv_dir;
   if Copy(tmpDir, Length(tmpDir), 1) <> '\' then tmpDir := tmpDir + '\';
 
   //===================
@@ -1343,6 +1347,40 @@ begin
     FreeAndNil(pop3);
   end;
 end;
+
+function sys_pop3_recv_indy10(args: DWORD): PHiValue; stdcall;
+var
+  dir: string;
+begin
+  dir := getArgStr(args, 0);
+  Result := __sys_pop3_recv_indy10(dir);
+end;
+
+function sys_gmail_recv(args: DWORD): PHiValue; stdcall;
+var
+  account, password, dir: string;
+  p_id, p_pass, p_opt, p_port, p_host: PHiValue;
+begin
+  // get Args
+  account  := getArgStr(args, 0);
+  password := getArgStr(args, 1);
+  dir      := getArgStr(args, 2);
+  // rewrite
+  p_id   := nako_getVariable('メールID');
+  p_pass := nako_getVariable('メールパスワード');
+  p_opt  := nako_getVariable('メールオプション');
+  p_port := nako_getVariable('メールポート');
+  p_host := nako_getVariable('メールホスト');
+
+  hi_setStr(p_id,   account);
+  hi_setStr(p_pass, password);
+  hi_setStr(p_host, 'pop.gmail.com');
+  hi_setStr(p_opt,  'SSL');
+  hi_setInt(p_port, 995);
+  // recv
+  Result := __sys_pop3_recv_indy10(dir);
+end;
+
 
 procedure __sys_pop3_list_indy(Sender: TNetThread; ptr: Pointer);
 var
@@ -1605,6 +1643,7 @@ begin
   end;
 end;
 
+
 function sys_ping(args: DWORD): PHiValue; stdcall;
 var
   p: TICMP;
@@ -1625,6 +1664,59 @@ begin
   finally
     p.Free;
   end;
+end;
+
+procedure _sys_ping_async(Sender: TNetThread; ptr: Pointer);
+var
+  i: Integer;
+  p: TICMP;
+  event, tmp: string;
+  bRes: Boolean;
+  function _r: string;
+  begin
+    if bRes then Result := '1' else Result := '0';
+  end;
+begin
+  bRes := True;
+  //
+  p := TICMP(ptr);
+  event := PString(Sender.arg1)^;
+  //
+  try
+    i := p.Ping;
+    if i >= 1 then
+    begin
+      bRes := (p.Reply.Status = IP_SUCCESS);
+    end;
+  except
+  end;
+  // todo: 非同期イベントでマルチスレッドを考慮すること
+  if bRes then
+  begin
+    tmp := event + '(' + _r + ')';
+    nako_eval(PChar(tmp));
+  end;
+end;
+
+function sys_ping_async(args: DWORD): PHiValue; stdcall;
+var
+  p: TICMP;
+  event, host: string;
+  th: TNetThread;
+begin
+  Result := nil;
+  //
+  event := getArgStr(args, 0, True);
+  host  := getArgStr(args, 1);
+  //
+  p := TICMP.Create;
+  p.Address := host;
+  //
+  th := TNetThread.Create(True);
+  th.method := _sys_ping_async;
+  th.arg0 := p;
+  th.arg1 := PString(@event);
+  th.Resume;
 end;
 
 function sys_tcp_command(args: DWORD): PHiValue; stdcall;
@@ -1991,7 +2083,7 @@ begin
       '送信準備中',
       hi_bool(nako_getVariable('経過ダイアログ'))) then
     begin
-      if net_dialog_cancel then begin
+      if (NetDialog.Status = statCancel) then begin
         try smtp.Disconnect; except end;
         NetDialog.errormessage := 'ユーザーによって中断されました。';
       end;
@@ -2002,6 +2094,31 @@ begin
     FreeAndNil(smtp);
   end;
   Result := nil;
+end;
+
+function sys_gmail_send(args: DWORD): PHiValue; stdcall;
+var
+  account, password, dir: string;
+  p_id, p_pass, p_opt, p_port, p_host: PHiValue;
+begin
+  // get Args
+  account  := getArgStr(args, 0);
+  password := getArgStr(args, 1);
+  dir      := getArgStr(args, 2);
+  // rewrite
+  p_id   := nako_getVariable('メールID');
+  p_pass := nako_getVariable('メールパスワード');
+  p_opt  := nako_getVariable('メールオプション');
+  p_port := nako_getVariable('メールポート');
+  p_host := nako_getVariable('メールホスト');
+
+  hi_setStr(p_id,   account);
+  hi_setStr(p_pass, password);
+  hi_setStr(p_host, 'smtp.gmail.com');
+  hi_setStr(p_opt,  'SSL');
+  hi_setInt(p_port, 465);
+  // recv
+  Result := sys_smtp_send_indy10(args);
 end;
 
 var eml: TEml = nil; // EML処理のための変数
@@ -2342,6 +2459,8 @@ begin
   AddStrVar('メールオプション',  '',4062,'メール受信時(APOP|SASL|SSL)、メール送信時(LOGIN|PLAIN|SSL)を複数指定可能。加えて(IMPLICIT_TLS|REQUIRE_TLS|EXPLICIT_TLS)を指定可能。','めーるおぷしょん');
   AddFunc  ('メールリスト取得',  '',4063, sys_pop3_list_indy10, 'POP3でメールの件数とサイズの一覧を取得する', 'めーるりすとしゅとく');
   AddFunc  ('メール削除',     'Aの',4064, sys_pop3_dele_indy10, 'POP3でA番目のメールを削除する', 'めーるさくじょ');
+  AddFunc  ('GMAIL受信','ACCOUNTのPASSWORDでDIRへ|DIRに',4069, sys_gmail_recv, 'ACCOUNTとPASSWORDを利用してGMailを受信する。', 'GMAILじゅしん');
+  AddFunc  ('GMAIL送信','ACCOUNTのPASSWORDで',4049, sys_gmail_send, 'ACCOUNTとPASSWORDを利用してGMailへ送信する。', 'GMAILそうしん');
   //-EML
   AddFunc  ('EMLファイル開く', 'Fの',4080, sys_eml_load , 'EMLファイルを開く', 'EMLふぁいるひらく');
   AddFunc  ('EMLパート数取得','',4081, sys_eml_part_count, 'EMLファイルにいくつパートがあるかを取得して返す。', 'EMLぱーとすうしゅとく');
@@ -2362,7 +2481,8 @@ begin
   AddFunc  ('NTP時刻同期','{=?}Sで', 4076, sys_ntp_sync, 'NTPサーバーSに接続して現在時刻を修正する。引数省略すると、ringサーバーを利用する。成功すれば1、失敗すれば0を返す', 'NTPじこくどうき');
 
   //-PING
-  AddFunc  ('PING','{=?}Sへ|Sに|Sを', 4072, sys_ping, 'SへPINGが通るか確認する。通らなければ0を返す', 'PING');
+  AddFunc  ('PING','{=?}HOSTへ|HOSTに|HOSTを', 4072, sys_ping, 'HOSTへPINGが通るか確認する。通らなければ0を返す', 'PING');
+  AddFunc  ('非同期PING','{=?}EVENTでHOSTに', 4077, sys_ping_async, 'HOSTへPINGが通るか非同期で確認する。結果は第一引数に返す。', 'ひどうきPING');
   //-オプション
   AddIntVar('経過ダイアログ',1, 4090, 'FTP/HTTPで経過ダイアログを表示するかどうか。', 'けいかだいあろぐ');
 
@@ -2402,7 +2522,7 @@ begin
         id := LOWORD(wp);
         if id = IDCANCEL then
         begin
-          net_dialog_cancel := True;
+          NetDialog.Cancel;
         end;
       end;
   end;
@@ -2410,12 +2530,17 @@ end;
 
 procedure TNetDialog.Cancel;
 begin
-  net_dialog_cancel := True;
+  Status := statCancel;
 end;
 
 procedure TNetDialog.Comlete;
 begin
-  net_dialog_complete := True;
+  Status := statComplete;
+end;
+
+procedure TNetDialog.Error;
+begin
+  Status := statError;
 end;
 
 procedure TNetDialog.setInfo(s: string);
@@ -2433,7 +2558,7 @@ var
   msg: TMsg;
 begin
   if hParent = 0 then hParent := nako_getMainWindowHandle;
-  net_dialog_complete := False;
+  Status := statWork;
 
   // ダイアログの表示
   hProgress  := CreateDialog(
@@ -2448,7 +2573,7 @@ begin
     ShowWindow(hProgress, SW_HIDE);
 
   // ダウンロードが終了するまでダイアログを表示
-  while (net_dialog_cancel = False)and(net_dialog_complete = False) do
+  while (Status = statWork) do
   begin
     if PeekMessage(msg, hProgress, 0, 0, PM_REMOVE) then
     begin
@@ -2465,17 +2590,42 @@ begin
   end;
 
   DestroyWindow(hProgress);
-  Result := net_dialog_complete;
+  Result := (Status = statComplete);
 end;
+
+var zero_progress_max_count: Integer;
 
 procedure TNetDialog.Work(Sender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
 var
   s: string;
+  w_max, w_per: Integer;
+  s_max: string;
 begin
   if hProgress = 0 then Exit;
 
+  // unknown mode
+  w_max := Self.WorkCount;
+  if (w_max = 0)and(AWorkCount > 0) then
+  begin
+    if (zero_progress_max_count * 0.9) < (AWorkCount) then
+    begin
+      zero_progress_max_count := AWorkCount * 2;
+    end;
+    w_max := zero_progress_max_count;
+  end;
+  // calc percent
+  if w_max > 0 then
+  begin
+    w_per := Trunc(AWorkCount / w_max * 100);
+  end else
+  begin
+    w_per := 0;
+  end;
+
   // download text
-  s := '通信中 (' + IntToStr(Trunc(AWorkCount/1024)) + '/' + IntToStr(Trunc(Self.WorkCount/1024)) + 'KB) ' + target;
+  s_max := IntToStr(Trunc(Self.WorkCount/1024));
+  if s_max = '0KB' then s_max := '不明';
+  s := '通信中 (' + IntToStr(Trunc(AWorkCount/1024)) + '/' + s_max + ' KB) ' + target;
   setText(s);
 
   // progress bar
@@ -2485,17 +2635,24 @@ begin
   SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1),
     PBM_SETRANGE, 0, MakeLong(0, 100));
   // set pos
-  if AWorkCount > 0 then
+  if w_max > 0 then
   begin
     try
       SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1),
-        PBM_SETPOS, Trunc(AWorkCount/Self.WorkCount*100) , LParam(BOOL(True)));
+        PBM_SETPOS, w_per , LParam(BOOL(True)));
     except
     end;
   end else
   begin
-    SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1),
-      PBM_SETPOS, 100 , LParam(BOOL(True)));
+    if AWorkCount > 0 then
+    begin
+      SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1),
+        PBM_SETPOS, 100 , LParam(BOOL(True)));
+    end else
+    begin
+      SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1),
+        PBM_SETPOS, 0 , LParam(BOOL(True)));
+    end;
   end;
 end;
 
@@ -2503,9 +2660,7 @@ procedure TNetDialog.WorkBegin(Sender: TObject; AWorkMode: TWorkMode; AWorkCount
 begin
   hParent := nako_getMainWindowHandle;
   Self.WorkCount := AWorkCountMax;
-  // 初期設定
-  net_dialog_cancel   := False;
-  net_dialog_complete := False;
+  zero_progress_max_count := 0;
 end;
 
 procedure TNetDialog.WorkEnd(Sender: TObject; AWorkMode: TWorkMode);

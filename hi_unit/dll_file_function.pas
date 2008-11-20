@@ -2041,6 +2041,21 @@ begin
   Result := nil;
 end;
 
+function sys_shell_association(args: DWORD): PHiValue; stdcall;
+begin
+  Result := nil;
+  SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_FLUSH, nil, nil);
+end;
+
+function sys_shell_updatedir(args: DWORD): PHiValue; stdcall;
+var
+  dir: string;
+begin
+  Result := nil;
+  dir := getArgStr(args, 0, True);
+  SHChangeNotify(SHCNE_UPDATEDIR, SHCNF_PATH, PChar(dir), nil);
+end;
+
 function sys_file_h_open(args: DWORD): PHiValue; stdcall;
 var
   a, b: PHiValue;
@@ -2843,6 +2858,10 @@ begin
   AddFunc  ('ファイルストリームサイズ','Hの',  567, sys_file_h_size,  'ファイルストリームハンドルHで開いたファイルのサイズを返す','ふぁいるすとりーむさいず');
   AddFunc  ('ファイルストリーム一行読む',  'Hで|Hの', 568, sys_file_h_readLine,  'ファイルストリームハンドルHで一行読んで返す。','ふぁいるすとりーむいちぎょうよむ');
   AddFunc  ('ファイルストリーム一行書く',  '{=?}SをHに|Hで|Hへ', 569, sys_file_h_writeLine,  'ファイルストリームハンドルHへSを一行書く','ふぁいるすとりーむいちぎょうかく');
+  //-更新
+  AddFunc  ('関連付け反映','',575, sys_shell_association, '関連付けを変更した時、変更をシェルに伝える。','かんれんづけはんえい');
+  AddFunc  ('フォルダ内容反映','{=?}DIRの',576, sys_shell_updatedir, 'フォルダDIRの内容が変更を反映させる。','ふぉるだないようはんえい');
+
 
   //+圧縮解凍(nakofile.dll)
   //-圧縮解凍
