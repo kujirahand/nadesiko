@@ -178,7 +178,7 @@ implementation
 uses dnako_import,
   hima_stream, mini_file_utils, fileDrop, unit_windows_api, frmDebugU,
   frmErrorU, frmInputListU, UIWebBrowser, dll_plugin_helper, unit_dbt,
-  gui_benri;
+  gui_benri, VistaAltFixUnit;
 
 {$R *.dfm}
 
@@ -357,6 +357,9 @@ procedure TfrmNako.FormCreate(Sender: TObject);
 var
   p: PHiValue;
 begin
+  //----------------------------------------------------------------------------
+  // Windows Vista ALT ƒL[‚Ì–â‘è
+  TVistaAltFix.Create(Self);
   //----------------------------------------------------------------------------
   // ‰Šú‰»ˆ—
   ClientWidth  := 640;
