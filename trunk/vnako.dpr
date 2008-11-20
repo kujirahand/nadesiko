@@ -101,8 +101,9 @@ uses
   SFunc in 'component\gldpng\SFunc.pas',
   TkZLIB in 'component\gldpng\TKZLIB.pas',
   hOleddUtils in 'component\hedit251\hOleddUtils.pas',
-  hOledd in 'component\hedit251\hOledd.pas';
-  
+  hOledd in 'component\hedit251\hOledd.pas',
+  VistaAltFixUnit in 'component\VistaAltFixUnit.pas';
+
 {$R *.res}
 
 begin
