@@ -19,7 +19,8 @@ uses
   mini_file_utils in 'hi_unit\mini_file_utils.pas';
 
 var
-  is_test:Boolean = False;
+  is_test:Boolean = false;
+  is_debug: Boolean = false;
 
 procedure RunAsAdmin(hWnd: THandle; aFile: string; aParameters: string);
 var
@@ -37,6 +38,14 @@ begin
     raise Exception.Create('起動に失敗しました。(' + aFile + ')');
 end;
 
+procedure debug(s: string);
+begin
+  if is_debug then
+  begin
+    MessageBox(0, PChar(s), 'DEBUG', MB_OK);
+  end;
+end;
+
 procedure exec;
 var
   dir_temp: string;
@@ -51,6 +60,7 @@ const
   REGKEY = '\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Compatibility Assistant\Persisted';
 begin
   // パックファイルの取り出し
+  debug('packfile');
   if is_test then
     dir_temp := DesktopDir
   else
@@ -59,10 +69,11 @@ begin
   SetLength(buf, 4096);
   GetTempFileName(PChar(dir_temp), 'nak', 0, PChar(buf));
   tempPack := PChar(buf);
+  debug('tempPack='+tempPack);
   // extract
   mem := THMemoryStream.Create;
   if is_test then
-    ReadPackExeFile('unpack.exe', mem, True)
+    ReadPackExeFile('nadesiko_setup.exe', mem, True)
   else
     ReadPackExeFile(ParamStr(0), mem, True);
   mem.SaveToFile(tempPack);
@@ -70,13 +81,32 @@ begin
   //
   dirPack := tempPack + '_dir\';
   e := TFileMixReader.Create(tempPack);
-  e.ExtractAllFile(dirPack);
-  e.ReadFileAsString('config.txt', config, False);
-  config := Trim(config);
-  e.Free;
+  try
+    try
+      e.ExtractAllFile(dirPack);
+      e.ReadFileAsString('config.txt', config, False);
+      config := Trim(config);
+    except
+      MessageBox(0, 'Failed to extract.', 'SETUP ERROR', MB_OK or MB_ICONERROR);
+    end;
+  finally
+    e.Free;
+  end;
+  debug('config='+config);
   // extract
+  debug('path='+dirPack);
   unit_archive.PATH_ARCHIVE_DLL := dirPack;
-  yz1_extract(dirPack + 'arc.yz1', dirPack);
+  if (FileExists(dirPack + 'arc.yz1')) then
+  begin
+    yz1_extract(dirPack + 'arc.yz1', dirPack);
+  end else
+  if (FileExists(dirPack + 'ARC.YZ1')) then
+  begin
+    yz1_extract(dirPack + 'ARC.YZ1', dirPack);
+  end else
+  begin
+    MessageBox(0, 'ERROR','ARC.YZ1がありません。',MB_OK);
+  end;
   // read cofig
   buf := dirPack + config;
   if FileExists(buf) then
