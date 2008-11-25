@@ -10,10 +10,11 @@ uses
   IdFTP, IdFTPList, IdHttp, IdTcpServer, IdSNTP, IdSMTP, IdMessage,
   IdAllFTPListParsers, IdPOP3, IdReplyPOP3, IdSASLLogin, IdAttachmentFile,
   IdMessageParts,
-  IdUserPassProvider, IdSSLOpenSSL, IdExplicitTLSClientServerBase;
+  IdUserPassProvider, IdSSLOpenSSL, IdExplicitTLSClientServerBase,
+  IdLogFile;
 
 const
-  NAKONET_DLL_VERSION = '1.509';
+  NAKONET_DLL_VERSION = '1.511';
 
 type
   TNetDialogStatus = (statWork, statError, statComplete, statCancel);
@@ -291,8 +292,8 @@ begin
   Result := hi_newStr(s);
 end;
 
-var _kskFtp: TkskFtp = nil;
 var _idftp: Tidftp = nil;
+var _idftp_logfile:TIdLogFile = nil;
 
 function get_on_off(str: string): Boolean;
 begin
@@ -315,6 +316,11 @@ begin
   s.Text := hi_str(ps);
 
   _idftp := Tidftp.Create(nil);
+  if _idftp_logfile <> nil then // logfile
+  begin
+    _idftp.Intercept := _idftp_logfile;
+    _idftp_logfile.Active := True;
+  end;
 
   _idftp.Username  := Trim(s.Values['ID']);
   _idftp.Password  := Trim(s.Values['パスワード']);
@@ -344,21 +350,16 @@ end;
 
 function sys_ftp_disconnect(args: DWORD): PHiValue; stdcall;
 begin
-  //FreeAndNil(_kskFtp);
   if _idftp <> nil then
   begin
     if _idftp.Connected then
     begin
-      try
-        begin
-          _idftp.Abort;
-        end;
-      except
-      end;
-      _idftp.Disconnect;
+      try _idftp.Abort;      except end;
+      try _idftp.Disconnect; except end;
     end;
   end;
   FreeAndNil(_idftp);
+  FreeAndNil(_idftp_logfile);
   Result := nil;
 end;
 
@@ -1088,6 +1089,19 @@ begin
     raise Exception.Create('コマンド"' + cmd + '"に失敗。');
   end;
   //
+  Result := nil;
+end;
+
+function sys_ftp_setLogFile(args: DWORD): PHiValue; stdcall;
+var
+  f: string;
+begin
+  f := getArgStr(args, 0, True);
+  if _idftp_logfile = nil then
+  begin
+    _idftp_logfile := TIdLogFile.Create(nil);
+  end;
+  _idftp_logfile.Filename := f;
   Result := nil;
 end;
 
@@ -2369,6 +2383,10 @@ begin
   Result := hi_newBool(not IsGlobalOffline);
 end;
 
+function sys_IsInternetConnected(args: DWORD): PHiValue; stdcall;
+begin
+  Result := hi_newBool(IsInternetConnected);
+end;
 
 var kabin_server:TKabin = nil;
 
@@ -2435,7 +2453,8 @@ begin
   AddFunc  ('HTTPゲット','{文字列=?}HEADをURLへ|HEADで',      4016, sys_http_get, '送信ヘッダHEADを指定してURLへGETコマンドを発行する。そしてその結果を返す。', 'HTTPげっと');
   AddFunc  ('HTTP簡易ポスト','URLへVALUESを|URLに',4017, sys_http_post_easy, 'ポストしたい値(ハッシュ形式)VALUESをURLへポストしその結果を返す。', 'HTTPかんいぽすと');
   AddStrVar('HTTPオプション',   '',                4018, 'HTTPに関するオプションをハッシュ形式で設定する。BASIC認証は「BASIC認証=オン{~}ID=xxx{~}パスワード=xxx」と書く。他に、「UA=nadesiko{~}HTTP_VERSION=HTTP/1.1」。','HTTPおぷしょん');
-  AddFunc  ('オンライン判定','',4019, sys_checkOnline, 'オンラインかどうか判別し結果を1(オンライン)か0(オフライン)で返す。', 'おんらいんはんてい');
+  AddFunc  ('オンライン判定','',4019, sys_checkOnline, 'IEがオンラインかどうか判別し結果を1(オンライン)か0(オフライン)で返す。', 'おんらいんはんてい');
+  AddFunc  ('インターネット接続判定','',4150, sys_IsInternetConnected, 'インターネットに接続しているかどうか判別し結果を1(オンライン)か0(オフライン)で返す。', 'いんたーねっとせつぞくはんてい');
 
   //-FTP
   AddFunc  ('FTP接続',          'Sで',                        4020, sys_ftp_connect,        '接続情報「ホスト=xxx{~}ID=xxx{~}パスワード=xxx{~}PORT=xx{~}PASV=オン|オフ」でFTPに接続する', 'FTPせつぞく');
@@ -2458,6 +2477,7 @@ begin
   AddFunc  ('FTP作業フォルダ上移動',  '',                     4035, sys_ftp_upCurDir,       'FTP対象フォルダを上に移動', 'FTPさぎょうふぉるだうえいどう');
   AddFunc  ('FTPファイル詳細列挙',  'Sの|Sを',                4036, sys_ftp_glob2,          'FTPホストのファイルSを詳細に列挙する',   'FTPふぁいるしょうさいれっきょ');
   AddFunc  ('FTPタイムアウト設定',  'Vに|Vを|Vへ',            4039, sys_ftp_setTimeout,     '接続中のFTPのタイムアウト時間をミリ秒単位で設定する',   'FTPたいむあうとせってい');
+  AddFunc  ('FTPログファイル設定',  '{=?}FILEに|FILEへ',      4040, sys_ftp_setLogFile,     'FTPのコマンドログをFILEに記録する',   'FTPろぐふぁいるせってい');
   //-メール
   AddFunc  ('メール受信',        'DIRへ|DIRに',  4050, sys_pop3_recv_indy10, 'POP3でフォルダDIRへメールを受信し、受信したメールの件数を返す。', 'めーるじゅしん');
   AddFunc  ('メール送信',        '',             4051, sys_smtp_send_indy10, 'SMTPでメールを送信する', 'めーるそうしん');
@@ -2711,6 +2731,9 @@ initialization
   //
 
 finalization
+begin
+  if _idftp <> nil then sys_ftp_disconnect(0);
   FreeAndNil(FNetDialog);
+end;
 
 end.
