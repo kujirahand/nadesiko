@@ -160,6 +160,7 @@ type
 var MainWindowHandle: THandle = 0;
 
 function IsGlobalOffline: boolean;
+function IsInternetConnected: boolean;
 procedure splitURL(url:string; var protocol:string; var domain:string; var path:string; var port:Integer);
 procedure SetTimeOut(hSession:HINTERNET; Seconds: Integer); //TimeOutÇÃê›íË
 
@@ -181,6 +182,15 @@ begin
     if (State and INTERNET_STATE_DISCONNECTED_BY_USER) <> 0 then
       Result := True;
 end;
+
+function IsInternetConnected: boolean;
+var
+  ConnectType : DWORD;
+begin
+  ConnectType := INTERNET_CONNECTION_MODEM + INTERNET_CONNECTION_LAN + INTERNET_CONNECTION_PROXY;
+  Result := InternetGetConnectedState(@ConnectType, 0);
+end;
+
 
 function getMainWindowHandle: THandle;
 begin
