@@ -2370,6 +2370,7 @@ begin
   sl := THStringList.Create;
   try
     sl.Text := res;
+    hi_ary(Result).Grow(sl.Count);
     for i := 0 to sl.Count - 1 do
     begin
       hi_ary_setStr(Result, i, sl.Strings[i]);
@@ -2410,6 +2411,7 @@ begin
   sl := THStringList.Create;
   try
     sl.Text := res;
+    hi_ary(Result).Grow(sl.Count);
     for i := 0 to sl.Count - 1 do
     begin
       hi_ary_setStr(Result, i, sl.Strings[i]);

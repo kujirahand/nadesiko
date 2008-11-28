@@ -3,7 +3,7 @@ unit hima_variable_ex;
 interface
 
 uses
-  Windows, SysUtils, hima_types, hima_variable;
+  Windows, SysUtils, Classes, hima_types, hima_variable;
 
 
 //------------------------------------------------------------------------------
@@ -97,7 +97,7 @@ type
   THiHash = class(THHash)
   private
     obj_assignTo: THiHash;
-    temp: string;
+    temp: TStringList;
     FRefCount: Integer;
     function FreeItem(item: THHashItem): Boolean;
     function subGetAsString(item: THHashItem): Boolean;
@@ -117,6 +117,8 @@ type
     procedure AssignTo(Des: THiHash);
     property AsString: string read GetAsString write SetFromString;
     property RefCount: Integer read FRefCount write FRefCount;
+    constructor Create;
+    destructor Destroy;override;
   end;
 
 procedure hi_hash_create(v: PHiValue);
@@ -278,7 +280,7 @@ implementation
 
 uses
   Math, hima_string, unit_string, hima_system, hima_variable_lib,
-  hima_function,wildcard2, classes;
+  hima_function,wildcard2;
 
 function conv2float(p: PHiValue): HFloat;
 var
@@ -325,7 +327,8 @@ begin
     v.ptr   := THiArray.Create;
 
     // 配列に自動変換
-    THiArray(v.ptr).AsString := s;
+    if s <> '' then
+      THiArray(v.ptr).AsString := s;
   end;
 
   Assert( v.ptr <> nil, 'hi_ary_create()で配列の生成ができませんでした。' );
@@ -1711,17 +1714,15 @@ procedure THiArray.SetValue(Index: Integer; const Value: PHiValue);
 var
   p: PHiValue;
 begin
-  if Count <= Index then
+  if Count > Index then
   begin
-    FCount := Index + 1;
-  end;
-
-  p := Items[Index];
-  if p <> nil then
-  begin
-    try
-      hi_var_free(p);
-    except
+    p := Items[Index];
+    if p <> nil then
+    begin
+      try
+        hi_var_free(p);
+      except
+      end;
     end;
   end;
 
@@ -2687,6 +2688,18 @@ end;
 
 { THiHash }
 
+constructor THiHash.Create;
+begin
+  inherited;
+  temp := TStringList.Create;
+end;
+
+destructor THiHash.Destroy;
+begin
+  inherited;
+  temp.Free;
+end;
+
 procedure THiHash.Assign(src: THiHash);
 begin
   src.AssignTo(Self);
@@ -2715,18 +2728,16 @@ end;
 
 function THiHash.EnumKeys: string;
 begin
-  temp := '';
+  temp.Clear;
   Each(subEnumKey);
-  Delete(temp,length(temp)-1,2);//末尾の改行削除
-  Result := temp;
+  Result := temp.Text;
 end;
 
 function THiHash.EnumValues: string;
 begin
-  temp := '';
+  temp.Clear;
   Each(subEnumValue);
-  Delete(temp,length(temp)-1,2);//末尾の改行削除
-  Result := temp;
+  Result := temp.Text;
 end;
 
 function THiHash.FreeItem(item: THHashItem): Boolean;
@@ -2746,9 +2757,9 @@ end;
 
 function THiHash.GetAsString: string;
 begin
-  temp := '';
+  temp.Clear;
   Each(subGetAsString);
-  Result := temp; //trimは危険
+  Result := temp.text; //trimは危険
 end;
 
 function THiHash.GetValue(key: string): PHiValue;
@@ -2838,19 +2849,19 @@ end;
 function THiHash.subEnumKey(item: THHashItem): Boolean;
 begin
   Result := True;
-  temp := temp + item.Key + #13#10;
+  temp.add(item.Key);
 end;
 
 function THiHash.subEnumValue(item: THHashItem): Boolean;
 begin
   Result := True;
-  temp := temp + hi_str(THiHashItem(item).value) + #13#10;
+  temp.add(hi_str(THiHashItem(item).value));
 end;
 
 function THiHash.subGetAsString(item: THHashItem): Boolean;
 begin
   Result := True;
-  temp := temp + item.Key + '=' + hi_str(THiHashItem(item).value) + #13#10;
+  temp.add(item.Key + '=' + hi_str(THiHashItem(item).value));
 end;
 
 { THiGroup }
