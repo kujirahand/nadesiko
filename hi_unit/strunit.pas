@@ -297,6 +297,11 @@ begin
         Result := line;
         Exit;
     end;
+    if line = '' then
+    begin
+        Result := line;
+        Exit;
+    end;
     if kinsoku = 'dafault' then kinsoku := GYOUTOU_KINSI;
 
     len := Length(line);
