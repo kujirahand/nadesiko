@@ -307,8 +307,8 @@ begin
 
     //----------------------
     // Glow
-    SetLength(FArray, newSize);
     nowSize := Length(FArray);
+    SetLength(FArray, newSize);
     //----------------------
     // Grow ÇµÇΩÇÁèâä˙âª
     for i := nowSize to High(FArray) do
