@@ -370,6 +370,26 @@ begin
 end;
 
 
+function excel_protect_on(h: DWORD): PHiValue; stdcall;
+var
+  sheet, pw: string;
+begin
+  sheet := getArgStr(h, 0, True);
+  pw    := getArgStr(h, 1);
+  excel.WorkSheetMoveTop(sheet);
+  Result := nil;
+end;
+function excel_protect_off(h: DWORD): PHiValue; stdcall;
+var
+  sheet, pw: string;
+begin
+  sheet := getArgStr(h, 0, True);
+  pw    := getArgStr(h, 1);
+  excel.WorkSheetMoveTop(sheet);
+  Result := nil;
+end;
+
+
 function excel_checkInstall(h: DWORD): PHiValue; stdcall;
 var
   reg: TRegistry;
@@ -603,6 +623,15 @@ begin
   if word = nil then raise Exception.Create('ワードが起動していません。『ワード起動』命令で起動させてください。');
   word.BookmarkInsertText(hi_str(s), hi_str(v));
   Result := nil;
+end;
+
+function word_bookmark_get(h: DWORD): PHiValue; stdcall;
+var
+  bookmark: string;
+begin
+  bookmark := getArgStr(h, 0, True);
+  if word = nil then raise Exception.Create('ワードが起動していません。『ワード起動』命令で起動させてください。');
+  Result := hi_newStr(word.BookmarkGetText(bookmark));
 end;
 
 function word_printPreview(h: DWORD): PHiValue; stdcall;
@@ -1849,7 +1878,9 @@ begin
   AddFunc  ('エクセル警告無視','', 4722, excel_displayAlertsOff, 'Excelの警告ダイアログの表示(DisplayAlerts)を抑制する','えくせるけいこくむし');
   AddFunc  ('エクセルシート末尾移動','SHEETを', 4723, excel_moveSheetLast, 'ExcelのSHEETをブックの末尾に移動する','えくせるしーとまつびいどう');
   AddFunc  ('エクセルシート先頭移動','SHEETを', 4724, excel_moveSheetTop, 'ExcelのSHEETをブックの先頭に移動する','えくせるしーとせんとういどう');
-
+  AddFunc  ('エクセルシート保護','SHEETをPASSWORDで', 4725, excel_protect_on, 'ExcelのSHEETの保護機能をPASSWORD付きでオンにする','えくせるしーとほご');
+  AddFunc  ('エクセルシート保護解除','SHEETをPASSWORDで', 4726, excel_protect_off, 'ExcelのSHEETの保護をPASSWORDで解除する','えくせるしーとほごかいじょ');
+  
   //-ワード(Word)
   AddFunc  ('ワード起動','{=1}Aで', 4330, word_open,'可視A(オンかオフ)でワードを起動する','わーどきどう');
   AddFunc  ('ワード終了','', 4331, word_close,'ワードを終了する','わーどしゅうしょう');
@@ -1857,6 +1888,7 @@ begin
   AddFunc  ('ワード開く','Fを|Fで|Fの', 4333, word_load,'ワード文書Fをひらく','わーどひらく');
   AddFunc  ('ワード新規文書','', 4334, word_new,'新規ワード文書を作る','わーどしんきぶんしょ');
   AddFunc  ('ワードブックマーク挿入','SにVを|Sへ', 4335, word_bookmark,'ブックマークSに値Vを挿入する','わーどぶっくまーくそうにゅう');
+  AddFunc  ('ワードブックマーク取得','Sの|Sから', 4345, word_bookmark_get,'ブックマークSから値を取得する','わーどぶっくまーくしゅとく');
   AddFunc  ('ワード印刷プレビュー','', 4336, word_printPreview,'印刷プレビューを表示する','わーどいんさつぷれびゅー');
   AddFunc  ('ワード印刷','', 4337, word_print,'ワードで印刷する','わーどいんさつ');
   AddFunc  ('ワードマクロ実行','Aを{=?}Bで', 4338, word_macro,'ワードのマクロAを引数Bで実行し関数なら値を返す。','わーどまくろじっこう');

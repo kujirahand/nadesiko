@@ -85,6 +85,8 @@ type
     property Version: Integer read GetVersion;
     function getLastRow(col:string):Integer;
     procedure UniqueRow(col:string);
+    procedure ProtectOn(sheet: string; password: string);
+    procedure ProtectOff(sheet: string; password: string);
     property DisplayAlerts:Boolean read FDisplayAlerts write SetDisplayAlerts;
   end;
 
@@ -109,6 +111,7 @@ type
     procedure PrintPreview;
     procedure replace(a, b: string);
     procedure BookmarkInsertText(name, value: string);
+    function BookmarkGetText(name: string): string;
     function getAsText: string;
     procedure InsertText(s: string);
     function MacroExec(s: string; arg:string): string;
@@ -978,8 +981,39 @@ begin
     r := Unassigned;
   end;
 end;
+procedure TKExcel.ProtectOn(sheet: string; password: string);
+begin
+  // Worksheet
+  if sheet = '' then
+  begin
+    E_WorkSheet := E_Application.ActiveSheet;
+  end else begin
+    E_WorkSheet := E_Application.ActiveWorkBook.Sheets[sheet];
+  end;
+  // Protect
+  E_WorkSheet.Protect(password, True, True, True);
+end;
+procedure TKExcel.ProtectOff(sheet: string; password: string);
+begin
+  // Worksheet
+  if sheet = '' then
+  begin
+    E_WorkSheet := E_Application.ActiveSheet;
+  end else begin
+    E_WorkSheet := E_Application.ActiveWorkBook.Sheets[sheet];
+  end;
+  // Protect
+  E_WorkSheet.Unprotect(password, True, True, True);
+end;
+
 
 { TKWord }
+
+function TKWord.BookmarkGetText(name: string): string;
+begin
+  FWordDoc := FWordApp.ActiveDocument;
+  Result := FWordDoc.Bookmarks.Item(name).Range.Text;
+end;
 
 procedure TKWord.BookmarkInsertText(name, value: string);
 begin
