@@ -117,7 +117,7 @@ function getMainWinHandle: HWND;
 begin
   if ArchiveWinHandle = 0 then
   begin
-    ArchiveWinHandle := GetForegroundWindow;
+    // ArchiveWinHandle := GetForegroundWindow;
   end;
   Result := ArchiveWinHandle;
 end;

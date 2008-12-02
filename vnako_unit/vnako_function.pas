@@ -397,7 +397,6 @@ begin
   if (Parent is TForm) then
   begin
     Application.ProcessMessages;
-    //SetWindowPos(obj.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE or SWP_NOMOVE);
     b := IsTopMost(Parent.Handle);
     if b then
     begin

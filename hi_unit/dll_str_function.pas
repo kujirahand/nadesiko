@@ -862,6 +862,20 @@ begin
   );
 end;
 
+function sys_md5file(args: DWORD): PHiValue; stdcall;
+begin
+  Result := hi_newStr(
+    MD5FileS( getArgStr(args, 0, True ) )
+  );
+end;
+
+function sys_sha1file(args: DWORD): PHiValue; stdcall;
+begin
+  Result := hi_newStr(
+    SHA1StringHexFile( getArgStr(args, 0, True))
+  );
+end;
+
 function sys_crypt(args: DWORD): PHiValue; stdcall;
 var
   res, salt, s: string;
@@ -1180,7 +1194,9 @@ begin
   AddFunc  ('CRC32取得','{=?}Sから|Sで|Sの',  784, sys_crc32,   'バイナリSからCRC32文字列を返す。','CRC32しゅとく');
   AddFunc  ('CRC16取得','{=?}Sから|Sで|Sの',  785, sys_crc16a,  'バイナリSからCRC16(ASCII)文字列を返す。','CRC16しゅとく');
   AddFunc  ('CRC16I取得','{=?}Sから|Sで|Sの', 786, sys_crc16i,  'バイナリSからCRC16(ITU_T)文字列を返す。','CRC16Iしゅとく');
-  AddFunc  ('SHA1取得',  '{=?}Sから|Sで|Sの', 787, sys_sha1,    'バイナリSから改ざんの等の確認に使えるSHA1文字列(HEX形式)を返す。','SHA1しゅとく');
+  AddFunc  ('SHA1取得',  '{=?}Sから|Sで|Sの', 787, sys_sha1,    'バイナリSから改ざんの等の確認に使えるSHA-1文字列(HEX形式)を返す。','SHA1しゅとく');
+  AddFunc  ('MD5ファイル取得',  '{=?}FILEから|FILEの', 801, sys_md5file,  'FILEから改ざんの等の確認に使えるMD5文字列(HEX形式)を返す。','MD5ふぁいるしゅとく');
+  AddFunc  ('SHA1ファイル取得', '{=?}FILEから|FILEの', 802, sys_sha1file, 'FILEから改ざんの等の確認に使えるSHA-1文字列(HEX形式)を返す。','SHA1ふぁいるしゅとく');
   //-整形支援
   AddFunc  ('囲みトリム','{=?}Sの|Sから|Sで|Sを', 792, sys_trimKakomi,'文字列Sにある`S`や『S』などの囲み記号を消して返す。','かこみとりむ');
   //-nakostr.dll

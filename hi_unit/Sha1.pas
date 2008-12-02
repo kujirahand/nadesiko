@@ -35,9 +35,11 @@ procedure XorBlock(I1, I2, O1: PByteArray; Len: integer);
 procedure IncBlock(P: PByteArray; Len: integer);
 
 function SHA1String(s: string): TSHA1Digest;
+function SHA1File(N: string): TSHA1Digest;
 function SHA1StringBase64(s: string): string;
 function SHA1StringHex(s: string): string;
 function SHA1StringBin(s: string): string;
+function SHA1StringHexFile(N: string): string;
 
 //******************************************************************************
 implementation
@@ -148,6 +150,47 @@ var
   i: Integer;
 begin
   d := SHA1String(s);
+  Result := '';
+  for i := 0 to 19 do
+  begin
+    Result := Result + IntToHex(d[i], 2);
+  end;
+end;
+
+function SHA1File(N: string): TSHA1Digest;
+var
+	FileHandle: THandle;
+	MapHandle: THandle;
+	ViewPointer: pointer;
+	Context: TSHA1Context;
+begin
+  SHA1Init(Context);
+	FileHandle := CreateFile(pChar(N), GENERIC_READ, FILE_SHARE_READ or FILE_SHARE_WRITE,
+		nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, 0);
+	if FileHandle <> INVALID_HANDLE_VALUE then try
+		MapHandle := CreateFileMapping(FileHandle, nil, PAGE_READONLY, 0, 0, nil);
+		if MapHandle <> 0 then try
+			ViewPointer := MapViewOfFile(MapHandle, FILE_MAP_READ, 0, 0, 0);
+			if ViewPointer <> nil then try
+				SHA1Update(Context, ViewPointer, GetFileSize(FileHandle, nil));
+			finally
+				UnmapViewOfFile(ViewPointer);
+			end;
+		finally
+			CloseHandle(MapHandle);
+		end;
+	finally
+		CloseHandle(FileHandle);
+	end;
+	SHA1Final(Context, Result);
+end;
+
+function SHA1StringHexFile(N: string): string;
+var
+  d: TSHA1Digest;
+  i: Integer;
+begin
+  d := SHA1File(N);
   Result := '';
   for i := 0 to 19 do
   begin
