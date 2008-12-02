@@ -3627,8 +3627,13 @@ begin
       end else
       if token.TokenType = tokenNumber then
       begin
-        //hi_setIntOrFloat(v, HimaStrToNum(token.Token));
         hi_setIntOrFloat(v, token.NumberToken);
+        if vType = varNil then vType := v.VType;
+      end else
+      if (token.TokenType = tokenOperator)and((token.NextToken <> nil)and(token.NextToken.TokenType = tokenNumber)) then
+      begin
+        token := token.NextToken;
+        hi_setIntOrFloat(v, token.NumberToken * -1);
         if vType = varNil then vType := v.VType;
       end else
       begin

@@ -1536,21 +1536,17 @@ function sys_word_count(args: THiArray): PHiValue;
 var
   s, a: PHiValue;
   ss, sa: String;
-  //ps, pa:PCHar;
-  res, len, slen, i: integer;
+  res, i, len: integer;
 begin
   // (1) ˆø”‚Ìæ“¾
   s   := args.FindKey(token_s); if s = nil then s := HiSystem.Sore;
   a   := args.FindKey(token_a);
 
   ss := hi_str(s); sa := hi_str(a);
-  //ps := PChar(ss); pa := PChar(sa);
 
   // (2) ƒf[ƒ^‚Ìˆ—
   res := 0;
   len := Length(sa);
-  slen := Length(ss);
-  i := 1;
   repeat
     i := AnsiPos(sa,ss);
     if i <> 0 then
