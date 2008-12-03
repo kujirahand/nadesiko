@@ -376,16 +376,17 @@ var
 begin
   sheet := getArgStr(h, 0, True);
   pw    := getArgStr(h, 1);
-  excel.WorkSheetMoveTop(sheet);
+  excel.ProtectOn(sheet, pw);
   Result := nil;
 end;
+
 function excel_protect_off(h: DWORD): PHiValue; stdcall;
 var
   sheet, pw: string;
 begin
   sheet := getArgStr(h, 0, True);
   pw    := getArgStr(h, 1);
-  excel.WorkSheetMoveTop(sheet);
+  excel.ProtectOff(sheet, pw);
   Result := nil;
 end;
 
