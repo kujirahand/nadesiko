@@ -3630,7 +3630,7 @@ begin
         hi_setIntOrFloat(v, token.NumberToken);
         if vType = varNil then vType := v.VType;
       end else
-      if (token.TokenType = tokenOperator)and((token.NextToken <> nil)and(token.NextToken.TokenType = tokenNumber)) then
+      if (token.TokenType = tokenOperator)and(token.TokenID = token_minus)and((token.NextToken <> nil)and(token.NextToken.TokenType = tokenNumber)) then
       begin
         token := token.NextToken;
         hi_setIntOrFloat(v, token.NumberToken * -1);
