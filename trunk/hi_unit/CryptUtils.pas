@@ -8,10 +8,10 @@ uses
 type
   TCipher = class
     constructor Create; virtual;
-    function Algorithm: string; virtual; abstract;
+    function Algorithm: AnsiString; virtual; abstract;
     function BlockSize: Integer; virtual; abstract;
     procedure Initialize(const Key; KeyBytes: Integer); virtual;
-    procedure InitializeString(const Key: string); overload;
+    procedure InitializeString(const Key: AnsiString); overload;
     procedure Encode(const Src; var Dst);
     procedure Decode(const Src; var Dst);
     procedure EncodeValue(const Src; var Dst); virtual; abstract;
@@ -34,7 +34,7 @@ type
     TempBlock: array of Byte;
     BufferSize: Integer;
     AutoFree: Boolean;
-    constructor Create(Key: string; Cipher: TCipher; const IV; IVSize: Integer; PM: TPaddingMode; AutoFree: Boolean = True); overload;
+    constructor Create(Key: AnsiString; Cipher: TCipher; const IV; IVSize: Integer; PM: TPaddingMode; AutoFree: Boolean = True); overload;
     constructor Create(const Key; KeySize: Integer; Cipher: TCipher; const IV; IVSize: Integer; PM: TPaddingMode; AutoFree: Boolean = True); overload; virtual;
     destructor Destroy; override;
     procedure StartEncode; virtual;
@@ -147,7 +147,7 @@ begin
 
 end;
 
-procedure TCipher.InitializeString(const Key: string);
+procedure TCipher.InitializeString(const Key: AnsiString);
 begin
   Initialize(Key[1], Length(Key));
 end;
@@ -169,7 +169,7 @@ begin
   Result := Cipher.BlockSize;
 end;
 
-constructor TCrypt.Create(Key: string; Cipher: TCipher;
+constructor TCrypt.Create(Key: AnsiString; Cipher: TCipher;
   const IV; IVSize: Integer; PM: TPaddingMode; AutoFree: Boolean);
 begin
   Create(Key[1], Length(Key), Cipher, IV, IVSize, PM, AutoFree);

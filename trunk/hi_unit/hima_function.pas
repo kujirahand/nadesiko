@@ -89,7 +89,7 @@ type
     destructor Destroy; override;
     function  FindFromName(name: DWORD): THimaArg;
     function  Add_JosiCheck(arg: THimaArg): Integer;
-    procedure DefineArgs(s: string);
+    procedure DefineArgs(s: AnsiString);
     procedure Assign(a: THimaArgs);
   end;
 
@@ -108,10 +108,10 @@ type
     FuncType: THiFuncType;
     Args: THimaArgs;
     PFunc: Pointer; // TSyntaxNode
-    DllRetType, DllArgType: string; // for DLL
+    DllRetType, DllArgType: AnsiString; // for DLL
     DllArg: THimaRecord;
     PluginID: Integer; // Plug-inを使った命令の場合0以上
-    IzonFiles: string;
+    IzonFiles: AnsiString;
     constructor Create;
     destructor Destroy; override;
     procedure Assign(src: THiFunction);
@@ -454,21 +454,21 @@ function sys_expand_path(args: THiArray): PHiValue; stdcall;
 
 
 // DLLの引数タイプ文字列をＳＤＫ宣言からシステムネイティブに置換する
-procedure replace_dll_types(var arg: string);
+procedure replace_dll_types(var arg: AnsiString);
 function nako_getFuncArg(arg: THiArray; index: Integer): PHiValue;
 function nako_getSore: PHiValue;
-procedure GetDialogSetting(var init: string; var cancel: string;
-  var ime: string; var title: string);
+procedure GetDialogSetting(var init: AnsiString; var cancel: AnsiString;
+  var ime: AnsiString; var title: AnsiString);
 function IsDialogConvNum: Boolean;
 
 
-function GetMainWindowCaption: string;
+function GetMainWindowCaption: AnsiString;
 
 
 // 引数を簡単に取得する
 function getArg(h: THiArray; Index: Integer; UseHokan: Boolean = False): PHiValue;
 function getArgInt(h: THiArray; Index: Integer; UseHokan: Boolean = False): Integer;
-function getArgStr(h: THiArray; Index: Integer; UseHokan: Boolean = False): string;
+function getArgStr(h: THiArray; Index: Integer; UseHokan: Boolean = False): AnsiString;
 function getArgBool(h: THiArray; Index: Integer; UseHokan: Boolean = False): Boolean;
 function getArgFloat(h: THiArray; Index: Integer; UseHokan: Boolean = False): HFloat;
 
@@ -497,7 +497,7 @@ function getArgInt(h: THiArray; Index: Integer; UseHokan: Boolean = False): Inte
 begin
   Result := hi_int(getArg(h, Index,UseHokan));
 end;
-function getArgStr(h: THiArray; Index: Integer; UseHokan: Boolean = False): string;
+function getArgStr(h: THiArray; Index: Integer; UseHokan: Boolean = False): AnsiString;
 begin
   Result := hi_str(getArg(h, Index,UseHokan));
 end;
@@ -518,17 +518,17 @@ begin
   Result := hi_bool(p);
 end;
 
-function GetMainWindowCaption: string;
+function GetMainWindowCaption: AnsiString;
 var
   len: Integer;
-  s: string;
+  s: AnsiString;
 begin
   Result := '';
   len := GetWindowTextLength(MainWindowHandle);
   if len > 0 then
   begin
     SetLength(s, len);
-    GetWindowText(MainWindowHandle, PChar(s), len + 1);
+    GetWindowTextA(MainWindowHandle, PAnsiChar(s), len + 1);
   end else
   begin
     s := '';
@@ -537,19 +537,19 @@ begin
   if s = '' then Result := 'なでしこ' else Result := s;
 end;
 
-procedure replace_dll_types(var arg: string);
-var p:pchar;i:integer;
+procedure replace_dll_types(var arg: AnsiString);
+var p:PAnsiChar;i:integer;
 begin
   if arg = '' then begin
     exit;
   end;
-  p:=PChar(arg);
+  p:=PAnsiChar(arg);
   i:=Pos('*',arg);
   if i <> 0 then
     Delete(arg,i,1);
   case p^ of
     'P': begin
-      if (Length(arg)=5) and CompareMem(p+1,PChar('OINT'),4) then begin
+      if (Length(arg)=5) and CompareMem(p+1,PAnsiChar('OINT'),4) then begin
           arg := '' //POINT
       end else begin
         Delete(arg,1,1);
@@ -561,17 +561,17 @@ begin
       end;
     end;
     'H': begin
-      if (Length(arg)=7) and CompareMem(p+1,PChar('IVALUE'),6) then begin
+      if (Length(arg)=7) and CompareMem(p+1,PAnsiChar('IVALUE'),6) then begin
           arg := '' //HIVALUE
-      end else if (Length(arg)=8) and CompareMem(p+1,PChar('ALF_PTR'),7) then begin
+      end else if (Length(arg)=8) and CompareMem(p+1,PAnsiChar('ALF_PTR'),7) then begin
 {$IFDEF WIN32}
               arg := 'SHORT'  //HALF_PTR
 {$ELSE}
               arg := 'LONG'   //HALF_PTR
 {$ENDIF}
-      end else if (Length(arg)=7) and CompareMem(p+1,PChar('RESULT'),6) then begin
+      end else if (Length(arg)=7) and CompareMem(p+1,PAnsiChar('RESULT'),6) then begin
               arg := 'LONG'   //HRESULT
-      end else if (Length(arg)=5) and CompareMem(p+1,PChar('FILE'),4) then begin
+      end else if (Length(arg)=5) and CompareMem(p+1,PAnsiChar('FILE'),4) then begin
               arg := 'LONG'   //HFILE
       end else begin
         arg := 'DWORD';//HANDLE
@@ -580,7 +580,7 @@ begin
     'L': begin
       case (p+1)^ of
         'P': begin
-          if (Length(arg)=6) and CompareMem(p+2,PChar('ARAM'),4) then begin
+          if (Length(arg)=6) and CompareMem(p+2,PAnsiChar('ARAM'),4) then begin
 {$IFDEF WIN32}
               arg := 'LONG'  //LPARAM
 {$ELSE}
@@ -596,27 +596,27 @@ begin
           end;
         end;
         'A': begin
-          if (Length(arg)=6) and CompareMem(p+2,PChar('NGID'),4) then begin
+          if (Length(arg)=6) and CompareMem(p+2,PAnsiChar('NGID'),4) then begin
             arg := 'WORD';//LANGID
           end else
             Delete(arg,1,MaxInt);
         end;
         'C': begin
-          if (Length(arg)=4) and CompareMem(p+2,PChar('ID'),2) then begin
+          if (Length(arg)=4) and CompareMem(p+2,PAnsiChar('ID'),2) then begin
             arg := 'DWORD';//LCID
-          end else if (Length(arg)=6) and CompareMem(p+2,PChar('TYPE'),4) then begin
+          end else if (Length(arg)=6) and CompareMem(p+2,PAnsiChar('TYPE'),4) then begin
             arg := 'DWORD';//LCTYPE
           end else
             Delete(arg,1,MaxInt);
         end;
         'G': begin
-          if (Length(arg)=6) and CompareMem(p+2,PChar('RPID'),4) then begin
+          if (Length(arg)=6) and CompareMem(p+2,PAnsiChar('RPID'),4) then begin
             arg := 'DWORD';//LGRPID
           end else
             Delete(arg,1,MaxInt);
         end;
         'R': begin
-          if (Length(arg)=7) and CompareMem(p+2,PChar('ESULT'),5) then begin
+          if (Length(arg)=7) and CompareMem(p+2,PAnsiChar('ESULT'),5) then begin
 {$IFDEF WIN32}
               arg := 'LONG'  //LRESULT
 {$ELSE}
@@ -626,14 +626,14 @@ begin
             Delete(arg,1,MaxInt);
         end;
         else begin
-          if (Length(arg)>=4) and CompareMem(p+1,PChar('ONG'),3) then begin
-            if (Length(arg)=8) and CompareMem(p+4,PChar('LONG'),4) then
+          if (Length(arg)>=4) and CompareMem(p+1,PAnsiChar('ONG'),3) then begin
+            if (Length(arg)=8) and CompareMem(p+4,PAnsiChar('LONG'),4) then
               arg := 'INT64' else//LONGLONG
-            if (Length(arg)=6) and CompareMem(p+4,PChar('64'),2)   then
+            if (Length(arg)=6) and CompareMem(p+4,PAnsiChar('64'),2)   then
               arg := 'INT64' else//LONG64
-            if (Length(arg)=6) and CompareMem(p+4,PChar('32'),2)   then
+            if (Length(arg)=6) and CompareMem(p+4,PAnsiChar('32'),2)   then
               arg := 'LONG'  else//LONG32
-            if (Length(arg)=8) and CompareMem(p+4,PChar('_PTR'),4) then
+            if (Length(arg)=8) and CompareMem(p+4,PAnsiChar('_PTR'),4) then
 {$IFDEF WIN32}
               arg := 'LONG'  else//LONG_PTR
 {$ELSE}
@@ -651,12 +651,12 @@ begin
     'U': begin
       case (p+1)^ of
         'I': begin
-          if (Length(arg)>=4) and CompareMem(p+2,PChar('NT'),2) then begin
-            if (Length(arg)=6) and CompareMem(p+4,PChar('64'),2) then begin
+          if (Length(arg)>=4) and CompareMem(p+2,PAnsiChar('NT'),2) then begin
+            if (Length(arg)=6) and CompareMem(p+4,PAnsiChar('64'),2) then begin
               arg := 'QWORD';//UINT64
-            end else if (Length(arg)=6) and CompareMem(p+4,PChar('32'),2) then begin
+            end else if (Length(arg)=6) and CompareMem(p+4,PAnsiChar('32'),2) then begin
               arg := 'DWORD';//UINT32
-            end else if (Length(arg)=8) and CompareMem(p+4,PChar('_PTR'),4) then begin
+            end else if (Length(arg)=8) and CompareMem(p+4,PAnsiChar('_PTR'),4) then begin
 {$IFDEF WIN32}
               arg := 'DWORD' //UINT_PTR
 {$ELSE}
@@ -669,14 +669,14 @@ begin
             Delete(arg,1,MaxInt);
         end;
         'L': begin
-          if (Length(arg)>=5) and CompareMem(p+2,PChar('ONG'),3) then begin
-            if (Length(arg)=7) and CompareMem(p+5,PChar('64'),2) then begin
+          if (Length(arg)>=5) and CompareMem(p+2,PAnsiChar('ONG'),3) then begin
+            if (Length(arg)=7) and CompareMem(p+5,PAnsiChar('64'),2) then begin
               arg := 'QWORD';//ULONG64
-            end else if (Length(arg)=7) and CompareMem(p+5,PChar('32'),2) then begin
+            end else if (Length(arg)=7) and CompareMem(p+5,PAnsiChar('32'),2) then begin
               arg := 'DWORD';//ULONG32
-            end else if (Length(arg)=9) and CompareMem(p+5,PChar('LONG'),4) then begin
+            end else if (Length(arg)=9) and CompareMem(p+5,PAnsiChar('LONG'),4) then begin
               arg := 'QWORD';//ULONGLONG
-            end else if (Length(arg)=9) and CompareMem(p+5,PChar('_PTR'),4) then begin
+            end else if (Length(arg)=9) and CompareMem(p+5,PAnsiChar('_PTR'),4) then begin
 {$IFDEF WIN32}
               arg := 'DWORD' //ULONG_PTR
 {$ELSE}
@@ -690,7 +690,7 @@ begin
             Delete(arg,1,MaxInt);
         end;
         'C': begin
-          if (Length(arg)=5) and CompareMem(p+2,PChar('HAR'),3) then begin
+          if (Length(arg)=5) and CompareMem(p+2,PAnsiChar('HAR'),3) then begin
             arg := 'BYTE';//UCHAR
           end else
             Delete(arg,1,MaxInt);
@@ -698,7 +698,7 @@ begin
         'S': begin
           case (p+2)^ of
             'H': begin
-              if (Length(arg)=6) and CompareMem(p+2,PChar('ORT'),4) then begin
+              if (Length(arg)=6) and CompareMem(p+2,PAnsiChar('ORT'),4) then begin
                 arg := 'WORD';//USHORT
               end else
                 Delete(arg,1,MaxInt);
@@ -714,7 +714,7 @@ begin
           end;
         end;
         'H': begin
-          if (Length(arg)=9) and CompareMem(p+2,PChar('ALF_PTR'),7) then begin
+          if (Length(arg)=9) and CompareMem(p+2,PAnsiChar('ALF_PTR'),7) then begin
 {$IFDEF WIN32}
             arg := 'WORD'    //UHALF_PTR
 {$ELSE}
@@ -730,18 +730,18 @@ begin
     'D': begin
       case (p+1)^ of
         'W': begin
-          if (Length(arg)>=5) and CompareMem(p+2,PChar('ORD'),3) then begin
-            if (Length(arg)=9) and CompareMem(p+5,PChar('LONG'),4) then begin
+          if (Length(arg)>=5) and CompareMem(p+2,PAnsiChar('ORD'),3) then begin
+            if (Length(arg)=9) and CompareMem(p+5,PAnsiChar('LONG'),4) then begin
               arg := 'QWORD';//DWORDLONG
-            end else if (Length(arg)=9) and CompareMem(p+5,PChar('_PTR'),4) then begin
+            end else if (Length(arg)=9) and CompareMem(p+5,PAnsiChar('_PTR'),4) then begin
 {$IFDEF WIN32}
               arg := 'DWORD' //DWORD_PTR
 {$ELSE}
               arg := 'QWORD' //DWORD_PTR
 {$ENDIF}
-            end else if (Length(arg)=7) and CompareMem(p+5,PChar('32'),2) then begin
+            end else if (Length(arg)=7) and CompareMem(p+5,PAnsiChar('32'),2) then begin
               arg := 'DWORD' //DWORD32
-            end else if (Length(arg)=7) and CompareMem(p+5,PChar('64'),2) then begin
+            end else if (Length(arg)=7) and CompareMem(p+5,PAnsiChar('64'),2) then begin
               arg := 'QWORD' //DWORD64
             end else if (Length(arg)=5) then begin
               //arg := 'DWORD';//DWORD
@@ -751,7 +751,7 @@ begin
             Delete(arg,1,MaxInt);
         end;
         'O': begin
-          if (Length(arg)=6) and CompareMem(p+2,PChar('UBLE'),4) then begin
+          if (Length(arg)=6) and CompareMem(p+2,PAnsiChar('UBLE'),4) then begin
             arg := 'REAL';//DOUBLE
           end else
             Delete(arg,1,MaxInt);
@@ -763,9 +763,9 @@ begin
     'C': begin
       case (p+1)^ of
         'H': begin
-          if (Length(arg)>=4) and CompareMem(p+2,PChar('AR'),2) then begin
+          if (Length(arg)>=4) and CompareMem(p+2,PAnsiChar('AR'),2) then begin
             if (Length(arg)=5) and ((p+4)^='*') then begin
-              arg := 'PCHAR';//CHAR*
+              arg := 'PAnsiChar';//CHAR*
             end else if (Length(arg)=4) then begin
               //arg:='CHAR';//CHAR
             end else
@@ -774,13 +774,13 @@ begin
             Delete(arg,1,MaxInt);
         end;
         'A': begin
-          if (Length(arg)=8) and CompareMem(p+2,PChar('RDINAL'),6) then begin
+          if (Length(arg)=8) and CompareMem(p+2,PAnsiChar('RDINAL'),6) then begin
             arg := 'DWORD';//DOUBLE
           end else
             Delete(arg,1,MaxInt);
         end;
         'O': begin
-          if (Length(arg)=8) and CompareMem(p+2,PChar('LORREF'),6) then begin
+          if (Length(arg)=8) and CompareMem(p+2,PAnsiChar('LORREF'),6) then begin
             arg := 'DWORD';//COLORREF
           end else
             Delete(arg,1,MaxInt);
@@ -791,18 +791,18 @@ begin
     end;
     'I': begin
       //INT*
-      if (Length(arg)>=3) and CompareMem(p,PChar('INT'),3) then begin
-        if (Length(arg)=7) and CompareMem(p+3,PChar('_PTR'),4) then begin
+      if (Length(arg)>=3) and CompareMem(p,PAnsiChar('INT'),3) then begin
+        if (Length(arg)=7) and CompareMem(p+3,PAnsiChar('_PTR'),4) then begin
 {$IFDEF WIN32}
           arg := 'LONG'   //INT_PTR
 {$ELSE}
           arg := 'INT64'  //INT_PTR
 {$ENDIF}
-        end else if (Length(arg)=7) and CompareMem(p+3,PChar('EGER'),4) then begin
+        end else if (Length(arg)=7) and CompareMem(p+3,PAnsiChar('EGER'),4) then begin
           arg := 'LONG';  //INTEGER
-        end else if (Length(arg)=5) and CompareMem(p+3,PChar('64'),2) then begin
+        end else if (Length(arg)=5) and CompareMem(p+3,PAnsiChar('64'),2) then begin
           //arg := 'INT64';  //INT64
-        end else if (Length(arg)=5) and CompareMem(p+3,PChar('32'),2) then begin
+        end else if (Length(arg)=5) and CompareMem(p+3,PAnsiChar('32'),2) then begin
           arg := 'LONG';  //INT32
         end else if (Length(arg)=3) then begin
           arg := 'LONG';  //INT
@@ -814,8 +814,8 @@ begin
     'B': begin
       case (p+1)^ of
         'O': begin
-          if (Length(arg)>=4) and CompareMem(p+2,PChar('OL'),2) then begin
-            if (Length(arg)=7) and CompareMem(p+4,PChar('EAN'),3) then begin
+          if (Length(arg)>=4) and CompareMem(p+2,PAnsiChar('OL'),2) then begin
+            if (Length(arg)=7) and CompareMem(p+4,PAnsiChar('EAN'),3) then begin
               arg := 'LONG';  //BOOLEAN
             end else if (Length(arg)=4) then begin
               arg := 'LONG';  //BOOL
@@ -825,7 +825,7 @@ begin
             Delete(arg,1,MaxInt);
         end;
         'Y': begin
-          if (Length(arg)>=4) and CompareMem(p+2,PChar('TE'),2) then begin
+          if (Length(arg)>=4) and CompareMem(p+2,PAnsiChar('TE'),2) then begin
             //arg := 'BYTE';  //BYTE
           end else
             Delete(arg,1,MaxInt);
@@ -837,7 +837,7 @@ begin
     'W':begin
       case (p+1)^ of
         'P': begin
-          if (Length(arg)=6) and CompareMem(p+2,PChar('ARAM'),4) then begin
+          if (Length(arg)=6) and CompareMem(p+2,PAnsiChar('ARAM'),4) then begin
 {$IFDEF WIN32}
               arg := 'DWORD' //WPARAM
 {$ELSE}
@@ -848,7 +848,7 @@ begin
           end;
         end;
         'O': begin
-          if (Length(arg)=4) and CompareMem(p+2,PChar('RD'),2) then begin
+          if (Length(arg)=4) and CompareMem(p+2,PAnsiChar('RD'),2) then begin
             //arg := 'WORD' //WORD
           end else begin
             Delete(arg,1,MaxInt);
@@ -861,30 +861,30 @@ begin
     'S': begin
       case (p+1)^ of
         'H': begin
-          if (Length(arg)=5) and CompareMem(p+2,PChar('ORT'),3) then begin
+          if (Length(arg)=5) and CompareMem(p+2,PAnsiChar('ORT'),3) then begin
             //arg := 'SHORT' //SHORT
           end else begin
             Delete(arg,1,MaxInt);
           end;
         end;
         'C': begin
-          if (Length(arg)=9) and CompareMem(p+2,PChar('_HANDLE'),7) then begin
+          if (Length(arg)=9) and CompareMem(p+2,PAnsiChar('_HANDLE'),7) then begin
             arg := 'DWORD' //SC_HANDLE
-          end else if (Length(arg)=7) and CompareMem(p+2,PChar('_LOCK'),5) then begin
+          end else if (Length(arg)=7) and CompareMem(p+2,PAnsiChar('_LOCK'),5) then begin
             arg := 'POINTER' //SC_LOCK
           end else begin
             Delete(arg,1,MaxInt);
           end;
         end;
         'E': begin
-          if (Length(arg)=21) and CompareMem(p+2,PChar('RVICE_STATUS_HANDLE'),19) then begin
+          if (Length(arg)=21) and CompareMem(p+2,PAnsiChar('RVICE_STATUS_HANDLE'),19) then begin
             arg := 'DWORD' //SERVICE_STATUS_HANDLE
           end else begin
             Delete(arg,1,MaxInt);
           end;
         end;
         'I': begin
-          if (Length(arg)=6) and CompareMem(p+2,PChar('ZE_T'),4) then begin
+          if (Length(arg)=6) and CompareMem(p+2,PAnsiChar('ZE_T'),4) then begin
 {$IFDEF WIN32}
             arg := 'DWORD' //SIZE_T
 {$ELSE}
@@ -895,7 +895,7 @@ begin
           end;
         end;
         'S': begin
-          if (Length(arg)=7) and CompareMem(p+2,PChar('IZE_T'),5) then begin
+          if (Length(arg)=7) and CompareMem(p+2,PAnsiChar('IZE_T'),5) then begin
 {$IFDEF WIN32}
             arg := 'LONG'  //SSIZE_T
 {$ELSE}
@@ -910,28 +910,28 @@ begin
       end;
     end;
     'V': begin
-      if (Length(arg)=4) and CompareMem(p+1,PChar('OID'),3) then begin
+      if (Length(arg)=4) and CompareMem(p+1,PAnsiChar('OID'),3) then begin
         //arg := 'VOID' //VOID
       end else begin
         Delete(arg,1,MaxInt);
       end;
     end;
     'F': begin
-      if (Length(arg)=5) and CompareMem(p+1,PChar('LOAT'),4) then begin
+      if (Length(arg)=5) and CompareMem(p+1,PAnsiChar('LOAT'),4) then begin
         //arg := 'FLOAT' //FLOAT
       end else begin
         Delete(arg,1,MaxInt);
       end;
     end;
     'R': begin
-      if (Length(arg)=4) and CompareMem(p+1,PChar('EAL'),3) then begin
+      if (Length(arg)=4) and CompareMem(p+1,PAnsiChar('EAL'),3) then begin
         //arg := 'REAL' //REAL
       end else begin
         Delete(arg,1,MaxInt);
       end;
     end;
     'Q': begin
-      if (Length(arg)=5) and CompareMem(p+1,PChar('WORD'),4) then begin
+      if (Length(arg)=5) and CompareMem(p+1,PAnsiChar('WORD'),4) then begin
         //arg := 'QWORD' //QWORD
       end else begin
         Delete(arg,1,MaxInt);
@@ -940,14 +940,14 @@ begin
     'T': begin
       case (p+1)^ of
         'B': begin
-          if (Length(arg)=5) and CompareMem(p+2,PChar('YTE'),3) then begin
+          if (Length(arg)=5) and CompareMem(p+2,PAnsiChar('YTE'),3) then begin
               arg := 'BYTE' //TBYTE
           end else begin
             Delete(arg,1,MaxInt);
           end;
         end;
         'C': begin
-          if (Length(arg)=5) and CompareMem(p+2,PChar('HAR'),3) then begin
+          if (Length(arg)=5) and CompareMem(p+2,PAnsiChar('HAR'),3) then begin
             arg := 'CHAR' //TCHAR
           end else begin
             Delete(arg,1,MaxInt);
@@ -966,7 +966,7 @@ begin
     arg:='P'+arg;
     {i:=Length(arg);
     SetLength(arg,i+1);
-    p:=PChar(arg);
+    p:=PAnsiChar(arg);
     Move(p^,(p+1)^,i);
     p^:='*';}
   end;
@@ -1114,7 +1114,7 @@ end;
 function sys_getToken(args: THiArray): PHiValue;
 var
   s, a: PHiValue;
-  str,kugiri,token: string;
+  str,kugiri,token: AnsiString;
 begin
   Result := hi_var_new;
 
@@ -1136,7 +1136,7 @@ end;
 function sys_getTokenRange(args: THiArray): PHiValue; stdcall;
 var
   s, a, b: PHiValue;
-  str, sa, sb, res, rem: string;
+  str, sa, sb, res, rem: AnsiString;
 begin
   // (1) 引数の取得
   s := args.FindKey(token_s);
@@ -1167,7 +1167,7 @@ end;
 function sys_getTokenInRange(args: THiArray): PHiValue; stdcall;
 var
   s, a, b: PHiValue;
-  str, sa, sb, res: string;
+  str, sa, sb, res: AnsiString;
   idx1, idx2: Integer;
 begin
   // (1) 引数の取得
@@ -1205,7 +1205,7 @@ end;
 
 function sys_RangeReplace(args: THiArray): PHiValue; stdcall;
 var
-  str, mae: string;
+  str, mae: AnsiString;
   s, a, b, c: PHiValue;
 begin
   // (1) 引数の取得
@@ -1229,7 +1229,7 @@ end;
 
 function sys_InRangeReplace(args: THiArray): PHiValue; stdcall;
 var
-  str, res, sa, sb, sc: string;
+  str, res, sa, sb, sc: AnsiString;
   s, a, b, c: PHiValue;
   idx1, idx2: Integer;
 begin
@@ -1311,7 +1311,7 @@ begin
 end;
 function sys_strCountM(args: THiArray): PHiValue;
 var
-  s: PHiValue; str: string;
+  s: PHiValue; str: AnsiString;
 begin
   Result := hi_var_new;
 
@@ -1327,7 +1327,7 @@ end;
 
 function sys_strCountB(args: THiArray): PHiValue;
 var
-  s: PHiValue; str: string;
+  s: PHiValue; str: AnsiString;
 begin
   Result := hi_var_new;
 
@@ -1353,7 +1353,7 @@ end;
 
 function sys_replace(args: THiArray): PHiValue;
 var
-  s, a, b: String;
+  s, a, b: AnsiString;
 begin
   Result := hi_var_new;
 
@@ -1479,12 +1479,12 @@ end;
 
 function sys_str_splitArray(args: THiArray): PHiValue; stdcall;
 var
-  s: string;
-  p,p_last: PChar;
-  c: string;
+  s: AnsiString;
+  p,p_last: PAnsiChar;
+  c: AnsiString;
 begin
   s := getArgStr(args, 0, True);
-  p := PChar(s);
+  p := PAnsiChar(s);
   p_last := p + Length(s);
   // 新規文字列を作成
   Result := hi_var_new;
@@ -1505,7 +1505,7 @@ end;
 function sys_refrain(args: THiArray): PHiValue;
 var
   s: PHiValue;
-  res, str: String;
+  res, str: AnsiString;
   cnt, i, len: Integer;
 begin
   Result := hi_var_new;
@@ -1535,7 +1535,7 @@ end;
 function sys_word_count(args: THiArray): PHiValue;
 var
   s, a: PHiValue;
-  ss, sa: String;
+  ss, sa: AnsiString;
   res, i, len: integer;
 begin
   // (1) 引数の取得
@@ -1596,7 +1596,7 @@ end;
 
 function sys_mid_sjis(args: THiArray): PHiValue; stdcall;
 var
-  s, tmp: string;
+  s, tmp: AnsiString;
   a, cnt: Integer;
 begin
   // (1) 引数の取得
@@ -1605,7 +1605,7 @@ begin
   cnt := getArgInt(args, 2);
 
   // (2) データの処理
-  tmp := sjis_copyB(PChar(s), a, cnt);
+  tmp := sjis_copyB(PAnsiChar(s), a, cnt);
 
   // (3) 戻り値を設定
   Result := hi_newStr(tmp);
@@ -1633,7 +1633,7 @@ end;
 
 function sys_insertB(args: THiArray): PHiValue;
 var
-  s, cnt, a: PHiValue; str: string;
+  s, cnt, a: PHiValue; str: AnsiString;
 begin
   Result := hi_var_new;
 
@@ -1680,7 +1680,7 @@ end;
 
 function sys_deleteRightB(args: THiArray): PHiValue; stdcall;
 var
-  s, a: PHiValue; str: string;
+  s, a: PHiValue; str: AnsiString;
 begin
   Result := hi_var_new;
 
@@ -1725,7 +1725,7 @@ end;
 
 function sys_deleteB(args: THiArray): PHiValue;
 var
-  s, a, b: PHiValue; str: string;
+  s, a, b: PHiValue; str: AnsiString;
 begin
   Result := hi_var_new;
 
@@ -2044,7 +2044,7 @@ var
   ary, v: PHiValue;
   sl  : THStringList;
   i   : Integer;
-  s, vname : string;
+  s, vname : AnsiString;
 begin
   Result := nil;
   ary := args.Items[0]; if (ary = nil) then ary := HiSystem.Sore;
@@ -2196,7 +2196,7 @@ end;
 function sys_csv2ary(args: THiArray): PHiValue; stdcall;
 var
   ps: PHiValue;
-  s: string;
+  s: AnsiString;
 begin
   ps := args.Items[0]; if ps=nil then ps := HiSystem.Sore;
   s  := hi_str(ps);
@@ -2208,7 +2208,7 @@ end;
 function sys_tsv2ary(args: THiArray): PHiValue; stdcall;
 var
   ps: PHiValue;
-  s: string;
+  s: AnsiString;
 begin
   ps := args.Items[0]; if ps=nil then ps := HiSystem.Sore;
   s  := hi_str(ps);
@@ -2351,7 +2351,7 @@ function sys_hash_enumkey(args: THiArray): PHiValue; stdcall;
 var
   a: PHiValue;
   i: Integer;
-  res: string;
+  res: AnsiString;
   sl: THStringList;
 begin
   a := args.Items[0]; if a=nil then a := HiSystem.Sore;
@@ -2392,7 +2392,7 @@ end;
 function sys_hash_enumvalue(args: THiArray): PHiValue; stdcall;
 var
   a: PHiValue;
-  res: string;
+  res: AnsiString;
   i: Integer;
   sl: THStringList;
 begin
@@ -2476,7 +2476,7 @@ end;
 
 function sys_include(args: THiArray): PHiValue; stdcall;
 var
-  fname: string;
+  fname: AnsiString;
   n: TSyntaxNode;
 begin
   // (1) 引数の取得
@@ -2494,7 +2494,7 @@ end;
 
 function sys_def_dll(args: THiArray): PHiValue; stdcall;
 var
-  dll, cdef, ndef, s: string;
+  dll, cdef, ndef, s: AnsiString;
 begin
   // (1) 引数の取得
   // DLLのCをNで
@@ -2545,11 +2545,11 @@ end;
 function sys_unpointer(args: THiArray): PHiValue; stdcall;
 var
   a,b: PHiValue;
-  vtype:string;
+  vtype: AnsiString;
   ptr:Pointer;
   i:int64;
   size:integer;
-  str:string;
+  str: AnsiString;
 begin
   Result := hi_var_new;
 
@@ -2563,7 +2563,7 @@ begin
   if b.VType = varInt then begin
     size:=hi_int(b);
     SetLength(str,size);
-    Move(ptr^,PChar(str)^,size);
+    Move(ptr^,PAnsiChar(str)^,size);
     hi_setStr(Result,str)
   end else begin
     vtype:= UpperCase(hi_str(b));
@@ -2595,7 +2595,7 @@ begin
         getToken_s(vtype,'(');
         size := StrToIntDef(getToken_s(vtype,')'), 0);
         SetLength(str,size);
-        Move(ptr^,PChar(str)^,size);
+        Move(ptr^,PAnsiChar(str)^,size);
         hi_setStr(Result,str)
       end;
       else
@@ -2608,7 +2608,7 @@ end;
 function sys_typeof(args: THiArray): PHiValue; stdcall;
 var
   a: PHiValue;
-  s: string;
+  s: AnsiString;
 begin
   Result := hi_var_new;
 
@@ -2628,7 +2628,7 @@ var
   rec: THimaRecord;
   g: THiGroup;
   i: Integer;
-  p: PChar;
+  p: PAnsiChar;
 begin
   // (1) 引数の取得
   a   := args.FindKey(token_a); // group ->
@@ -2727,7 +2727,7 @@ begin
   Result := nil;
 end;
 
-function getRegExpOpt: string;
+function getRegExpOpt: AnsiString;
 var
   v: PHiValue;
 begin
@@ -2735,7 +2735,7 @@ begin
   Result := Trim(hi_str(v));
 end;
 
-function __reMatch(s, pat: string; var res: string): Boolean;
+function __reMatch(s, pat: AnsiString; var res: AnsiString): Boolean;
 var
   re: TBRegExp;
   i: Integer;
@@ -2810,7 +2810,7 @@ end;
 
 function sys_reMatchBool(args: THiArray): PHiValue; stdcall;
 var
-  pat, s, res: string;
+  pat, s, res: AnsiString;
   b:Boolean;
 begin
   s   := getArgStr(args, 0, True );
@@ -2825,7 +2825,7 @@ end;
 
 function sys_reMatch(args: THiArray): PHiValue; stdcall;
 var
-  pat, s, res: string;
+  pat, s, res: AnsiString;
 begin
   s   := getArgStr(args, 0, True );
   pat := getArgStr(args, 1, False);
@@ -2841,7 +2841,7 @@ function sys_reSplit(args: THiArray): PHiValue; stdcall;
 var
   a, b: PHiValue;
   re: TBRegExp;
-  pat, s, ret: string;
+  pat, s, ret: AnsiString;
   i: Integer;
 begin
   Result := hi_var_new;
@@ -2900,7 +2900,7 @@ end;
 function sys_reTR(args: THiArray): PHiValue; stdcall;
 var
   re: TBRegExp;
-  s, a, b, pat: string;
+  s, a, b, pat: AnsiString;
 begin
   Result := hi_var_new;
 
@@ -2936,10 +2936,10 @@ begin
 
 end;
 
-function __reSub(s, a, b: string; IsGlobal: Boolean): string;
+function __reSub(s, a, b: AnsiString; IsGlobal: Boolean): AnsiString;
 var
   re: TBRegExp;
-  pat, ss: string;
+  pat, ss: AnsiString;
 begin
   re := TBRegExp.Create;
   // レポートに追加
@@ -2985,7 +2985,7 @@ end;
 
 function sys_reSubOne(args: THiArray): PHiValue; stdcall;
 var
-  s, a, b: string;
+  s, a, b: AnsiString;
 begin
   // (1) 引数の取得
   s := getArgStr(args, 0, True);
@@ -2998,7 +2998,7 @@ end;
 
 function sys_reSub(args: THiArray): PHiValue; stdcall;
 var
-  s, a, b: string;
+  s, a, b: AnsiString;
 begin
   // (1) 引数の取得
   s := getArgStr(args, 0, True);
@@ -3013,7 +3013,7 @@ end;
 function sys_DeleteGobi(args: THiArray): PHiValue; stdcall;
 var
   s: PHiValue;
-  str: string;
+  str: AnsiString;
 begin
 
   // (1) 引数の取得
@@ -3033,7 +3033,7 @@ end;
 function sys_tokenSplit(args: THiArray): PHiValue; stdcall;
 var
   s, p: PHiValue;
-  str: string;
+  str: AnsiString;
   hf: THimaFile; token: THimaToken;
 begin
 
@@ -3103,8 +3103,8 @@ end;
 function sys_getBinary(args: THiArray): PHiValue; stdcall;
 var
   ps, pi, pf: PHiValue;
-  p: PChar;
-  fmt, buf: string;
+  p: PAnsiChar;
+  fmt, buf: AnsiString;
   w: WORD; dw: DWORD; i, len: Integer;
   s: Smallint; f: Single; d: Double;
   e: Extended; i64: Int64;
@@ -3120,14 +3120,14 @@ begin
   fmt := UpperCase(hi_str(pf));
   replace_dll_types(fmt);
 
-  p   := PChar(ps.ptr_s);
+  p   := PAnsiChar(ps.ptr_s);
   if hi_int(pi) >= 1 then Inc(p, hi_int(pi) - 1);
 
   if fmt = '' then
   begin
       Result := nil;
   end else
-  if fmt = 'PCHAR' then
+  if fmt = 'PAnsiChar' then
   begin
       // それ以後のバイナリを全部得る
       // 01:23456 --- 2
@@ -3205,14 +3205,14 @@ const
   pow2_64:Extended = High(Int64)+1.0-Low(Int64);
 var
   pv, ps, pi, pf: PHiValue;
-  p, pp: PChar;
-  fmt: string;
+  p, pp: PAnsiChar;
+  fmt: AnsiString;
   w: WORD; dw: DWORD; i, len: Integer;
   s: Smallint; f: Single; d: Double;
   e: Extended; i64: Int64;
 
   function getInt(p: PHiValue): Integer;
-  var s: string;
+  var s: AnsiString;
   begin
     case p.VType of
       varInt:
@@ -3232,7 +3232,7 @@ var
   end;
 
   function getWord(p: PHiValue): WORD;
-  var s: string;
+  var s: AnsiString;
   begin
     case p.VType of
       varInt:
@@ -3252,7 +3252,7 @@ var
   end;
 
   function getDWord(p: PHiValue): DWORD;
-  var s: string;
+  var s: AnsiString;
   begin
     case p.VType of
       varInt:
@@ -3282,7 +3282,7 @@ begin
   if ps.VType <> varStr then hi_setStr(ps, hi_str(ps));
   Result := nil;
 
-  p := PChar(ps.ptr_s);
+  p := PAnsiChar(ps.ptr_s);
   if hi_int(pi) > 1 then Inc(p, hi_int(pi)-1);
 
   fmt := UpperCase(hi_str(pf));
@@ -3290,7 +3290,7 @@ begin
   if fmt = '' then
     // 理解できない型の場合は何もしない
   else
-  if fmt='PCHAR' then
+  if fmt='PAnsiChar' then
   begin
     if pv.VType <> varStr then hi_setStr(pv, hi_str(pv));
     len := Length(hi_str(pv));
@@ -3301,7 +3301,7 @@ begin
     case fmt[1]  of
       REC_DTYPE_1CHAR,
       REC_DTYPE_1BYTE:
-        p^ := Char(getInt(pv) and $FF);
+        p^ := AnsiChar(getInt(pv) and $FF);
       REC_DTYPE_2SHORT:
         begin
           s:=Short(hi_int(pv));
@@ -3386,7 +3386,7 @@ end;
 function EnumWindowsProc( hwnd:HWND; lParam:LPARAM ):BOOL; stdcall;
 var
   p: PHiValue;
-  c: string; len: Integer;
+  c: AnsiString; len: Integer;
 begin
   p := hi_var_new;
   hi_ary_create(p);
@@ -3395,14 +3395,14 @@ begin
 
   // class name
   SetLength(c, 512);
-  GetClassName(hwnd, PChar(c), 512);
-  hi_ary(p).Add(hi_newStr(PChar(c)));
+  GetClassNameA(hwnd, PAnsiChar(c), 512);
+  hi_ary(p).Add(hi_newStr(PAnsiChar(c)));
 
   // window text
   len := GetWindowTextLength(hwnd);
   SetLength(c, len+1);
-  GetWindowText(hwnd, PChar(c), len+1);
-  hi_ary(p).Add(hi_newStr(PChar(c)));
+  GetWindowTextA(hwnd, PAnsiChar(c), len+1);
+  hi_ary(p).Add(hi_newStr(PAnsiChar(c)));
 
   // 引数として与えられた返り値にセット
   hi_ary(PHiValue(lParam)).Add(p);
@@ -3500,7 +3500,7 @@ end;
 
 function sys_goto(args: THiArray): PHiValue; stdcall;
 var
-  s: string;
+  s: AnsiString;
   jumppoint_id:DWORD;
 begin
   Result := nil;
@@ -3535,7 +3535,7 @@ end;
 function sys_except(args: THiArray): PHiValue;
 var
   s: PHiValue;
-  msg: string;
+  msg: AnsiString;
 begin
   // (1) 引数の取得
   s := args.FindKey(token_s);
@@ -3562,13 +3562,13 @@ function sys_debug(args: THiArray): PHiValue; stdcall;
 var
   p: PHiValue;
   i: Integer;
-  s: string;
+  s: AnsiString;
 begin
   Result := nil;
   p := HiSystem.Eval('変数列挙');
   s := AppPath + 'debug.txt';
   FileSaveAll(hi_str(p), s);
-  //ShellExecute(mainWindowHandle, 'open', PChar(s), '', '', SW_SHOW);
+  //ShellExecute(mainWindowHandle, 'open', PAnsiChar(s), '', '', SW_SHOW);
 
   i := MessageBox(MainWindowHandle, 'debug.txtへ変数の一覧を保存しました。'#13#10+
         '実行を継続しますか？', 'デバッグ', MB_ICONQUESTION or MB_YESNO);
@@ -3589,7 +3589,7 @@ end;
 
 function sys_guguru(args: THiArray): PHiValue; stdcall;
 var
-  url, key: string;
+  url, key: AnsiString;
 begin
   key := getArgStr(args, 0, True);
   key := UTF8Encode(key);
@@ -3602,7 +3602,7 @@ end;
 function sys_plugins_enum(args: THiArray): PHiValue; stdcall;
 var
   i: Integer;
-  s: string;
+  s: AnsiString;
   p: THiPlugin;
 begin
   s := '';
@@ -3625,7 +3625,7 @@ end;
 function sys_EnumVar(args: THiArray): PHiValue;
 var
   s: PHiValue;
-  str,res: string;
+  str,res: AnsiString;
 begin
   Result := hi_var_new;
 
@@ -3709,7 +3709,7 @@ type
   //[4]
   TDllfuncLong = function: Longint; stdcall;
   TDllfuncDWord = function: DWORD; stdcall;
-  TDllfuncPtr = function: PChar; stdcall;
+  TDllfuncPtr = function: PAnsiChar; stdcall;
   TDllfuncFloat  = function: Single; stdcall;
   //[8]
   TDllfuncInt64  = function: int64; stdcall;
@@ -3719,22 +3719,22 @@ type
 var
   StkP:Pointer;//スタックポインタ
   rect:Pointer;//引数構造体
-  ret:String;//返り値型
+  ret: AnsiString;//返り値型
   res,size:integer;//返り値整数｜引数構造体のサイズ
-  resStr:String;//返り値文字列
+  resStr: AnsiString;//返り値文字列
   resPtr:Pointer;//返り値ポインタ
   resF: Extended;
   res64:Int64;
   func:pointer;//関数ポインタ
   ck:TCallKind;
 begin
-  if StrIComp(PChar(hi_str(args.Items[0])),'cdecl') = 0 then
+  if StrIComp(PAnsiChar(hi_str(args.Items[0])),'cdecl') = 0 then
     ck := ckCdecl
   else
     ck := ckStdcall;
   func := Pointer(hi_int(args.Items[1]));
   size := hi_int(args.Items[2]);
-  rect := PChar(hi_str(args.Items[3]));
+  rect := PAnsiChar(hi_str(args.Items[3]));
   ret := UpperCase(hi_str(args.Items[4]));
   //Result:=nil;
   //MessageBox(0,rect,rect,0);
@@ -3767,7 +3767,7 @@ begin
     'D','H': res := TDllfuncDWord(func);
     'P': // ポインタ型
       begin
-        if ret = 'PCHAR' then
+        if ret = 'PAnsiChar' then
         begin
           resStr := string( TDllfuncPtr(func) );
         end else
@@ -3789,7 +3789,7 @@ begin
   // 関数の結果を代入
   if not (ret[1] = 'V') then begin
     Result := hi_var_new;
-    if ret = 'PCHAR' then hi_setStr(Result, resStr)
+    if ret = 'PAnsiChar' then hi_setStr(Result, resStr)
                                    else
     begin
       case ret[1] of
@@ -3816,7 +3816,7 @@ end;
 function sys_namespace_change(args: THiArray): PHiValue; stdcall;
 var
   s: PHiValue;
-  ss: string;
+  ss: AnsiString;
   spc: THiScope;
 begin
   s := args.FindKey(token_s);
@@ -3956,7 +3956,7 @@ end;
 function sys_EnumMember(args: THiArray): PHiValue; stdcall;
 var
   s: PHiValue;
-  res: string;
+  res: AnsiString;
 begin
   Result := hi_var_new;
 
@@ -3975,7 +3975,7 @@ end;
 function sys_EnumMemberEx(args: THiArray): PHiValue; stdcall;
 var
   s: PHiValue;
-  res: string;
+  res: AnsiString;
 begin
   Result := hi_var_new;
 
@@ -4027,9 +4027,9 @@ end;
 function sys_binView(args: THiArray): PHiValue;
 var
   s: PHiValue;
-  str, res: string;
+  str, res: AnsiString;
   i: Integer;
-  p: PChar;
+  p: PAnsiChar;
 begin
   Result := hi_var_new;
 
@@ -4069,7 +4069,7 @@ end;
 function sys_say(args: THiArray): PHiValue; stdcall;
 var
   s: PHiValue;
-  str, cap: string;
+  str, cap: AnsiString;
   h: THandle;
 begin
   Result := nil;
@@ -4082,13 +4082,13 @@ begin
     h := GetForegroundWindow;
   end;
   cap := GetMainWindowCaption;
-  MessageBox(h, PChar(str), PChar(cap), MB_OK);
+  MessageBoxA(h, PAnsiChar(str), PAnsiChar(cap), MB_OK);
 end;
 
 function sys_yesno(args: THiArray): PHiValue; stdcall;
 var
   s: PHiValue;
-  cap, str: string;
+  cap, str: AnsiString;
   ret: Integer;
 begin
   // (1) 引数の取得
@@ -4098,7 +4098,7 @@ begin
   // (2) 処理
   str := hi_str(s);
   cap := GetMainWindowCaption;
-  ret := MessageBox(hima_function.MainWindowHandle, PChar(str), PChar(cap), MB_YESNO);
+  ret := MessageBoxA(hima_function.MainWindowHandle, PAnsiChar(str), PAnsiChar(cap), MB_YESNO);
 
   // (3) 結果の代入
   Result := hi_var_new;
@@ -4108,7 +4108,7 @@ end;
 function sys_yesnocancel(args: THiArray): PHiValue; stdcall;
 var
   s: PHiValue;
-  cap, str: string;
+  cap, str: AnsiString;
   ret, res: Integer;
 begin
   // (1) 引数の取得
@@ -4118,7 +4118,7 @@ begin
   // (2) 処理
   str := hi_str(s);
   cap := GetMainWindowCaption;
-  ret := MessageBox(MainWindowHandle, PChar(str), PChar(cap), MB_YESNOCANCEL or MB_ICONQUESTION);
+  ret := MessageBoxA(MainWindowHandle, PAnsiChar(str), PAnsiChar(cap), MB_YESNOCANCEL or MB_ICONQUESTION);
   case ret of
   IDYES:    res := 1;
   IDNO:     res := 0;
@@ -4134,8 +4134,8 @@ end;
 function sys_msg_list(args: THiArray): PHiValue; stdcall;
 var
   s: PHiValue;
-  t: string;
-  init, cancel, ime, title: string;
+  t: AnsiString;
+  init, cancel, ime, title: AnsiString;
 begin
   // (1) 引数の取得
   s := args.FindKey(token_s);
@@ -4161,21 +4161,21 @@ end;
 
 function sys_version_dialog(args: THiArray): PHiValue; stdcall;
 var
-  title, memo: string;
+  title, memo: AnsiString;
   h: THandle;
 begin
   title := getArgStr(args, 0, True);
   memo  := getArgStr(args, 1);
   h := MainWindowHandle;
-  ShellAbout(h, PChar(title), PChar(memo), 0);
+  ShellAboutA(h, PAnsiChar(title), PAnsiChar(memo), 0);
   Result := nil;
 end;
 
 function sys_msg_memo(args: THiArray): PHiValue; stdcall;
 var
   s: PHiValue;
-  t: string;
-  init, cancel, ime, title: string;
+  t: AnsiString;
+  init, cancel, ime, title: AnsiString;
 begin
   // (1) 引数の取得
   s := args.FindKey(token_s);
@@ -4191,8 +4191,8 @@ begin
   hi_setStr(Result, t);
 end;
 
-procedure GetDialogSetting(var init: string; var cancel: string; var ime: string;
-  var title: string);
+procedure GetDialogSetting(var init: AnsiString; var cancel: AnsiString; var ime: AnsiString;
+  var title: AnsiString);
 begin
   init    := hi_str(HiSystem.GetVariableS('ダイアログ初期値'));
   cancel  := hi_str(HiSystem.GetVariableS('ダイアログキャンセル値'));
@@ -4204,8 +4204,8 @@ end;
 function sys_input(args: THiArray): PHiValue; stdcall;
 var
   s: PHiValue;
-  str, init, cancel, title, ime: string;
-  ret: string;
+  str, init, cancel, title, ime: AnsiString;
+  ret: AnsiString;
 begin
   // (1) 引数の取得
   s := args.FindKey(token_s);
@@ -4242,36 +4242,36 @@ end;
 
 function sys_wav(args: THiArray): PHiValue; stdcall;
 var
-  fname: string;
+  fname: AnsiString;
 begin
   // (1) 引数の取得
   fname := getArgStr(args, 0, True);
 
   // (2) 処理
   getEmbedFile(fname);
-  sndPlaySound(PChar(fname), SND_ASYNC);
+  sndPlaySoundA(PAnsiChar(fname), SND_ASYNC);
 
   // (3) 結果の代入
   Result := nil;
 end;
 
 
-function nako_mciSend(cmd: string): string;
+function nako_mciSend(cmd: AnsiString): AnsiString;
 begin
   SetLength(Result, 4096);
-  if mciSendString(PChar(cmd), PChar(Result), Length(Result), 0) <> 0 then
+  if mciSendStringA(PAnsiChar(cmd), PAnsiChar(Result), Length(Result), 0) <> 0 then
   begin
-    raise Exception.Create('MCIコマンドエラー。' + string(PChar(Result)) + '(' + cmd + ')');
+    raise Exception.Create('MCIコマンドエラー。' + string(PAnsiChar(Result)) + '(' + cmd + ')');
   end else
   begin
-    Result := string(PChar(Result));
+    Result := string(PAnsiChar(Result));
   end;
 end;
 
 function sys_musPlay(args: THiArray): PHiValue; stdcall;
 var
-  cmd, ret: string;
-  fname: string;
+  cmd, ret: AnsiString;
+  fname: AnsiString;
 begin
   // (1) 引数の取得
   fname := getArgStr(args, 0, True);
@@ -4318,7 +4318,7 @@ end;
 function sys_mciCommand(args: THiArray): PHiValue; stdcall;
 var
   pa: PHiValue;
-  cmd, ret: string;
+  cmd, ret: AnsiString;
 begin
   // (1) 引数の取得
   pa := args.Items[0];
@@ -4334,7 +4334,7 @@ end;
 function sys_mciOpen(args: THiArray): PHiValue; stdcall;
 var
   pfile, pa: PHiValue;
-  fname, cmd, ret: string;
+  fname, cmd, ret: AnsiString;
 begin
   // (1) 引数の取得
   pfile := args.Items[0];
@@ -4353,7 +4353,7 @@ end;
 function sys_mciPlay(args: THiArray): PHiValue; stdcall;
 var
   pa: PHiValue;
-  cmd, ret: string;
+  cmd, ret: AnsiString;
 begin
   // (1) 引数の取得
   pa    := args.Items[0];
@@ -4369,7 +4369,7 @@ end;
 function sys_mciStop(args: THiArray): PHiValue; stdcall;
 var
   pa: PHiValue;
-  cmd, ret: string;
+  cmd, ret: AnsiString;
 begin
   // (1) 引数の取得
   pa    := args.Items[0];
@@ -4385,7 +4385,7 @@ end;
 function sys_mciClose(args: THiArray): PHiValue; stdcall;
 var
   pa: PHiValue;
-  cmd, ret: string;
+  cmd, ret: AnsiString;
 begin
   // (1) 引数の取得
   pa    := args.Items[0];
@@ -4407,9 +4407,9 @@ end;
 function sys_selDir(args: THiArray): PHiValue; stdcall;
 var
   s: PHiValue;
-  str: string;
-  ret: string;
-  init, cancel, ime, title: string;
+  str: AnsiString;
+  ret: AnsiString;
+  init, cancel, ime, title: AnsiString;
 begin
   // (1) 引数の取得
   s := args.FindKey(token_s);
@@ -4434,8 +4434,8 @@ end;
 function sys_selFile(args: THiArray): PHiValue; stdcall;
 var
   s,a: PHiValue;
-  str: string;
-  ret: string;
+  str: AnsiString;
+  ret: AnsiString;
   h: THandle;
 begin
   // (1) 引数の取得
@@ -4461,8 +4461,8 @@ end;
 function sys_selFileAsSave(args: THiArray): PHiValue; stdcall;
 var
   s,a: PHiValue;
-  str: string;
-  ret: string;
+  str: AnsiString;
+  ret: AnsiString;
   h: THandle;
 begin
   // (1) 引数の取得
@@ -4490,7 +4490,7 @@ end;
 function sys_print(args: THiArray): PHiValue;
 var
   s: PHiValue;
-  str: string;
+  str: AnsiString;
 begin
   Result := nil;
   s := args.FindKey(token_s);
@@ -5061,7 +5061,7 @@ end;
 function sys_chr(args: THiArray): PHiValue;
 var
   a: PHiValue;
-  s: string;
+  s: AnsiString;
   i: Integer;
 begin
   // (1) 引数の取得
@@ -5084,7 +5084,7 @@ end;
 function sys_asc(args: THiArray): PHiValue;
 var
   a: PHiValue;
-  str: string;
+  str: AnsiString;
 begin
   // (1) 引数の取得
   a := args.FindKey(token_a); // 値
@@ -5494,18 +5494,18 @@ end;
 
 
 // SysUtils を改良したもの(WINDOWS用)
-function GetEnvVar(const Name: string): string;
+function GetEnvVar(const Name: AnsiString): AnsiString;
 var // 環境変数の取得
   Len: Integer;
 begin
   Result := '';
   try
-    Len := GetEnvironmentVariable(PChar(Name), nil, 0);
+    Len := GetEnvironmentVariableA(PAnsiChar(Name), nil, 0);
     if Len > 0 then
     begin
       SetLength(Result, Len); // 修正 Len -1 だとアクセスエラーが出る環境があった
       ZeroMemory(@Result[1], Length(Result));
-      GetEnvironmentVariable(PChar(Name), PChar(Result), Len);
+      GetEnvironmentVariableA(PAnsiChar(Name), PAnsiChar(Result), Len);
       // 最後の#0を抜く
       if Copy(Result, Length(Result), 1) = #0 then
         System.Delete(Result, Length(Result), 1);
@@ -5529,7 +5529,7 @@ end;
 function sys_dateAdd(args: THiArray): PHiValue; stdcall;
 var
   s, a: PHiValue;
-  ss: string;
+  ss: AnsiString;
 begin
   s := args.Items[0];
   a := args.Items[1];
@@ -5543,7 +5543,7 @@ end;
 function sys_timeAdd(args: THiArray): PHiValue; stdcall;
 var
   s, a: PHiValue;
-  ss: string;
+  ss: AnsiString;
 begin
   s := args.Items[0];
   a := args.Items[1];
@@ -5629,8 +5629,8 @@ end;
 {$ELSE}
 function sys_date_format(args: THiArray): PHiValue; stdcall;
 var
-  date_s: string;
-  fmt: string;
+  date_s: AnsiString;
+  fmt: AnsiString;
   dt: TDateTime;
   fs: TFormatSettings;
   i: Integer;
@@ -5668,7 +5668,7 @@ end;
 function sys_format(args: THiArray): PHiValue; stdcall;
 var
   s, a: PHiValue;
-  sa, ss: string;
+  sa, ss: AnsiString;
 begin
   s := args.Items[0]; if s = nil then s := HiSystem.Sore;
   a := args.Items[1];
@@ -5709,7 +5709,7 @@ function sys_formatmoney(args: THiArray): PHiValue; stdcall;
 var
   s: PHiValue;
 
-  function InsertYenComma(const yen: string): string;
+  function InsertYenComma(const yen: AnsiString): AnsiString;
   begin
     if Pos('.',yen)=0 then
     begin
@@ -5734,7 +5734,7 @@ end;
 function sys_str_center(args: THiArray): PHiValue; stdcall;
 var
   s, a: PHiValue;
-  ss, res: string;
+  ss, res: AnsiString;
   ia: Integer;
   i, spc: Integer;
 begin
@@ -5755,7 +5755,7 @@ begin
 end;
 
 function sys_zen_kana(args: THiArray): PHiValue; stdcall;
-var s: string;
+var s: AnsiString;
 begin
   s := JCopy(getArgStr(args,0,True),1,1) + ' ';
   Result := hi_newBool(s[1] in SysUtils.LeadBytes);
@@ -5773,7 +5773,7 @@ begin
   Result := hi_newBool(IsNumOne(getArgStr(args,0,True)));
 end;
 function sys_suuretu_kana(args: THiArray): PHiValue; stdcall;
-var s: string;
+var s: AnsiString;
 begin
   s := getArgStr(args,0,True);
   Result := hi_newBool(IsNumber(s));
@@ -5785,7 +5785,7 @@ end;
 
 function sys_str_comp(args: THiArray): PHiValue; stdcall;
 var
-  a, b: string;
+  a, b: AnsiString;
   r: Integer;
 begin
   a := getArgStr(args, 0,True);
@@ -5797,7 +5797,7 @@ end;
 
 function sys_str_comp_jisyo(args: THiArray): PHiValue; stdcall;
 var
-  a, b: string;
+  a, b: AnsiString;
   r: Integer;
 begin
   a := getArgStr(args, 0,True);
@@ -5814,7 +5814,7 @@ end;
 function sys_str_right(args: THiArray): PHiValue; stdcall;
 var
   s, a: PHiValue;
-  ss, res: string;
+  ss, res: AnsiString;
   ia: Integer;
   i, spc: Integer;
 begin
@@ -5881,7 +5881,7 @@ var
   pPack: PHiValue;
   pFile: PHiValue;
 
-  s: string;
+  s: AnsiString;
 begin
   Result := hi_var_new;
 
@@ -5936,7 +5936,7 @@ function sys_packfile_extract_str(args: THiArray): PHiValue; stdcall;
 var
   a,b: PHiValue;
   e: TFileMixReader;
-  s: string;
+  s: AnsiString;
 begin
   a := nako_getFuncArg(args, 0);; // pack
   b := nako_getFuncArg(args, 1);; // file
@@ -6051,7 +6051,7 @@ end;
 function sys_makeoriginalfile(args: THiArray): PHiValue; stdcall;
 var
   pDir, pHeader: PHiValue;
-  s: string;
+  s: AnsiString;
 begin
   pDir    := nako_getFuncArg(args, 0);
   pHeader := nako_getFuncArg(args, 1);
@@ -6174,14 +6174,14 @@ begin
   end;
 end;
 
-procedure THimaArgs.DefineArgs(s: string);
+procedure THimaArgs.DefineArgs(s: AnsiString);
 var
-  p: PChar;
-  m, kata, value, name, josi, ss: string;
+  p: PAnsiChar;
+  m, kata, value, name, josi, ss: AnsiString;
   arg: THimaArg;
 begin
   // {文字列=""}Aから{文字列}Bへ|AをBへ
-  p := PChar(s);
+  p := PAnsiChar(s);
   while p^ <> #0 do
   begin
     // 修飾

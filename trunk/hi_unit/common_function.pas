@@ -5,11 +5,11 @@ interface
 uses
   Windows, SysUtils, imm;
 
-function ImeStr2ImeMode(s: string): DWORD;
+function ImeStr2ImeMode(s: AnsiString): DWORD;
 
 implementation
 
-function ImeStr2ImeMode(s: string): DWORD;
+function ImeStr2ImeMode(s: AnsiString): DWORD;
 begin
   s := Copy(s,1,7);
   if s = 'IMEƒIƒ“' then

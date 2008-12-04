@@ -5,23 +5,23 @@ interface
 uses
   SysUtils, BlowFish, CryptUtils;
 
-function BlowfishKeyCheck(Key: string): string;
-function BlowfishEnc(s, Key: string): string;
-function BlowfishDec(s, Key: string): string;
+function BlowfishKeyCheck(Key: AnsiString): AnsiString;
+function BlowfishEnc(s, Key: AnsiString): AnsiString;
+function BlowfishDec(s, Key: AnsiString): AnsiString;
 
 implementation
 
-function BlowfishKeyCheck(Key: string): string;
+function BlowfishKeyCheck(Key: AnsiString): AnsiString;
 begin
   // キーの長さを補完する(短いキーに対する修正)
   Result := 'com.nadesi::' + Trim(Key) + ':nadesiko:pKUkh9Dhgj8m5KZTbkv:';
 end;
 
-function BlowfishEnc(s, Key: string): string;
+function BlowfishEnc(s, Key: AnsiString): AnsiString;
 const
   IV: array [0..1 - 1] of Int64 = ($1FA3D38A3532AC56);
 var
-  Src, Dst: string;
+  Src, Dst: AnsiString;
   Size: Integer;
 begin
   Key := BlowfishKeyCheck(Key);
@@ -44,11 +44,11 @@ begin
   end;
 end;
 
-function BlowfishDec(s, Key: string): string;
+function BlowfishDec(s, Key: AnsiString): AnsiString;
 const
   IV: array [0..1 - 1] of Int64 = ($1FA3D38A3532AC56);
 var
-  Dst: string;
+  Dst: AnsiString;
   Size: Integer;
 begin
   Key := BlowfishKeyCheck(Key);

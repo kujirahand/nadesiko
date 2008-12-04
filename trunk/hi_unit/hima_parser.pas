@@ -50,12 +50,12 @@ type
   public
     constructor Create(FParent: TSyntaxNode);
     destructor Destroy; override;
-    function DebugStr: string; virtual;           // 簡易デバッグ用文字列の保持
+    function DebugStr: AnsiString; virtual;           // 簡易デバッグ用文字列の保持
     function getValue: PHiValue; virtual;         // ノードの内容を実行する
     function GetValueNoGetter(CanCreate:Boolean): PHiValue; virtual; // Getterなしの変数を得る
     function FindBreakLevel: Integer;             // 抜けるなどの処理に使う
-    function outNadesikoProgram: string; virtual; // 構文木からなでしこのプログラムを生成する
-    function outLuaProgram: string; virtual;
+    function outNadesikoProgram: AnsiString; virtual; // 構文木からなでしこのプログラムを生成する
+    function outLuaProgram: AnsiString; virtual;
     property SyntaxLevel: Integer read FSyntaxLevel write SetSyntaxLevel;
     property Parent: TSyntaxNode read FParent write SetParent;
   end;
@@ -63,43 +63,43 @@ type
   TSyntaxJumpPoint = class(TSyntaxNode)
   public
     NameId: DWORD;
-    function DebugStr: string; override;
-    function outNadesikoProgram: string; override;
+    function DebugStr: AnsiString; override;
+    function outNadesikoProgram: AnsiString; override;
   end;
 
   // 構文の関係を示すためのノードタイプ
   TSyntaxNodeTop = class(TSyntaxNode)
   public
-    function DebugStr: string; override;
+    function DebugStr: AnsiString; override;
     function getValue: PHiValue; override;
-    function outNadesikoProgram: string; override;
-    function outLuaProgram: string; override;
+    function outNadesikoProgram: AnsiString; override;
+    function outLuaProgram: AnsiString; override;
   end;
 
   TSyntaxNodeChild = class(TSyntaxNode)
   public
-    function DebugStr: string; override;
+    function DebugStr: AnsiString; override;
     function getValue: PHiValue; override;
-    function outNadesikoProgram: string; override;
-    function outLuaProgram: string; override;
+    function outNadesikoProgram: AnsiString; override;
+    function outLuaProgram: AnsiString; override;
   end;
 
   TSyntaxNamespace = class(TSyntaxNode)
   public
     scopeID: Integer;
-    function DebugStr: string; override;
+    function DebugStr: AnsiString; override;
     function getValue: PHiValue; override;
-    function outNadesikoProgram: string; override;
-    function outLuaProgram: string; override;
+    function outNadesikoProgram: AnsiString; override;
+    function outLuaProgram: AnsiString; override;
   end;
 
   TSyntaxEnzansi = class(TSyntaxNode)
   public
     ID: Integer;
-    function DebugStr: string; override;
+    function DebugStr: AnsiString; override;
     function getValue: PHiValue; override;
-    function outNadesikoProgram: string; override;
-    function outLuaProgram: string; override;
+    function outNadesikoProgram: AnsiString; override;
+    function outLuaProgram: AnsiString; override;
   end;
 
   TSyntaxConst = class(TSyntaxNode)
@@ -107,10 +107,10 @@ type
     constValue: PHiValue;
     constructor Create(FParent: TSyntaxNode);
     destructor Destroy; override;
-    function DebugStr: string; override;
+    function DebugStr: AnsiString; override;
     function getValue: PHiValue; override;
-    function outNadesikoProgram: string; override;
-    function outLuaProgram: string; override;
+    function outNadesikoProgram: AnsiString; override;
+    function outLuaProgram: AnsiString; override;
   end;
 
   //----------------------------------------------------------------------------
@@ -147,12 +147,12 @@ type
     Element: TSyntaxValueElement;
     constructor Create(FParent: TSyntaxNode);
     destructor Destroy; override;
-    function DebugStr: string; override;
+    function DebugStr: AnsiString; override;
     function GetValueNoGetter(CanCreate:Boolean): PHiValue; override;
     function getValue: PHiValue; override;
     property GroupScope: THiGroup read FGroupScope;
-    function outNadesikoProgram: string; override;
-    function outLuaProgram: string; override;
+    function outNadesikoProgram: AnsiString; override;
+    function outLuaProgram: AnsiString; override;
   end;
 
   // -1 や !true を表す
@@ -164,32 +164,32 @@ type
     mode: TSyntaxTermMode;
     constructor Create(FParent: TSyntaxNode);
     destructor Destroy; override;
-    function DebugStr: string; override;
+    function DebugStr: AnsiString; override;
     function getValue: PHiValue; override;
-    function outNadesikoProgram: string; override;
-    function outLuaProgram: string; override;
+    function outNadesikoProgram: AnsiString; override;
+    function outLuaProgram: AnsiString; override;
   end;
 
   TSyntaxSentence = class(TSyntaxNode)
   public
-    DebugMemo: string;
+    DebugMemo: AnsiString;
     constructor Create(FParent: TSyntaxNode);
     destructor Destroy; override;
-    function DebugStr: string; override;
+    function DebugStr: AnsiString; override;
     function GetValueNoGetter(CanCreate:Boolean): PHiValue; override;
     function getValue: PHiValue; override;
-    function outNadesikoProgram: string; override;
-    function outLuaProgram: string; override;
+    function outNadesikoProgram: AnsiString; override;
+    function outLuaProgram: AnsiString; override;
   end;
 
   TSyntaxCalc = class(TSyntaxNode)
   public
     constructor Create(FParent: TSyntaxNode);
     destructor Destroy; override;
-    function DebugStr: string; override;
+    function DebugStr: AnsiString; override;
     function getValue: PHiValue; override;
-    function outNadesikoProgram: string; override;
-    function outLuaProgram: string; override;
+    function outNadesikoProgram: AnsiString; override;
+    function outLuaProgram: AnsiString; override;
   end;
 
   TSyntaxLet = class(TSyntaxSentence)
@@ -203,10 +203,10 @@ type
     tokenMultiLine: Boolean;
     constructor Create(FParent: TSyntaxNode);
     destructor Destroy; override;
-    function DebugStr: string; override;
+    function DebugStr: AnsiString; override;
     function getValue: PHiValue; override;
-    function outNadesikoProgram: string; override;
-    function outLuaProgram: string; override;
+    function outNadesikoProgram: AnsiString; override;
+    function outLuaProgram: AnsiString; override;
   end;
 
   TSyntaxCreateVar = class(TSyntaxNode)
@@ -215,10 +215,10 @@ type
     InitNode: TSyntaxNode; // 初期化のための式があるかどうか
     constructor Create(FParent: TSyntaxNode);
     destructor Destroy; override;
-    function DebugStr: string; override;
+    function DebugStr: AnsiString; override;
     function getValue: PHiValue; override;
-    function outNadesikoProgram: string; override;
-    function outLuaProgram: string; override;
+    function outNadesikoProgram: AnsiString; override;
+    function outLuaProgram: AnsiString; override;
   end;
 
   TSyntaxWhile = class(TSyntaxSentence)
@@ -228,10 +228,10 @@ type
     Jouken: TSyntaxNode;
     constructor Create(FParent: TSyntaxNode);
     destructor Destroy; override;
-    function DebugStr: string; override;
+    function DebugStr: AnsiString; override;
     function getValue: PHiValue; override;
-    function outNadesikoProgram: string; override;
-    function outLuaProgram: string; override;
+    function outNadesikoProgram: AnsiString; override;
+    function outLuaProgram: AnsiString; override;
   end;
 
   TSyntaxLoop = class(TSyntaxSentence)
@@ -241,10 +241,10 @@ type
     Kaisu: TSyntaxNode;
     constructor Create(FParent: TSyntaxNode);
     destructor Destroy; override;
-    function DebugStr: string; override;
+    function DebugStr: AnsiString; override;
     function getValue: PHiValue; override;
-    function outNadesikoProgram: string; override;
-    function outLuaProgram: string; override;
+    function outNadesikoProgram: AnsiString; override;
+    function outLuaProgram: AnsiString; override;
   end;
 
   TSyntaxFor = class(TSyntaxSentence)
@@ -253,10 +253,10 @@ type
     VarFrom,VarTo: TSyntaxNode;
     constructor Create(FParent: TSyntaxNode);
     destructor Destroy; override;
-    function DebugStr: string; override;
+    function DebugStr: AnsiString; override;
     function getValue: PHiValue; override;
-    function outNadesikoProgram: string; override;
-    function outLuaProgram: string; override;
+    function outNadesikoProgram: AnsiString; override;
+    function outLuaProgram: AnsiString; override;
   end;
 
   TSyntaxEach = class(TSyntaxSentence)
@@ -267,10 +267,10 @@ type
     iVar: TSyntaxValue; // イテレーター変数
     constructor Create(FParent: TSyntaxNode);
     destructor Destroy; override;
-    function DebugStr: string; override;
+    function DebugStr: AnsiString; override;
     function getValue: PHiValue; override;
-    function outNadesikoProgram: string; override;
-    function outLuaProgram: string; override;
+    function outNadesikoProgram: AnsiString; override;
+    function outLuaProgram: AnsiString; override;
   end;
 
   TSyntaxIf = class(TSyntaxNode)
@@ -283,10 +283,10 @@ type
     Reverse: Boolean;
     constructor Create(FParent: TSyntaxNode);
     destructor Destroy; override;
-    function DebugStr: string; override;
+    function DebugStr: AnsiString; override;
     function getValue: PHiValue; override;
-    function outNadesikoProgram: string; override;
-    function outLuaProgram: string; override;
+    function outNadesikoProgram: AnsiString; override;
+    function outLuaProgram: AnsiString; override;
   end;
 
   //-----------------------------------------
@@ -308,10 +308,10 @@ type
     ElseNode  : TSyntaxSentence;
     constructor Create(FParent: TSyntaxNode);
     destructor Destroy; override;
-    function DebugStr: string; override;
+    function DebugStr: AnsiString; override;
     function getValue: PHiValue; override;
-    function outNadesikoProgram: string; override;
-    function outLuaProgram: string; override;
+    function outNadesikoProgram: AnsiString; override;
+    function outLuaProgram: AnsiString; override;
   end;
 
   TSyntaxTryExcept = class(TSyntaxNode)
@@ -322,7 +322,7 @@ type
     NodeExcept: TSyntaxNode;
     constructor Create(FParent: TSyntaxNode);
     destructor Destroy; override;
-    function DebugStr: string; override;
+    function DebugStr: AnsiString; override;
     function getValue: PHiValue; override;
   end;
 
@@ -345,10 +345,10 @@ type
     FlagGroupMember : Boolean;
     constructor Create(FParent: TSyntaxNode);
     destructor  Destroy; override;
-    function DebugStr           : string;   override;
+    function DebugStr           : AnsiString;   override;
     function getValue           : PHiValue; override;
-    function outNadesikoProgram : string;   override;
-    function outLuaProgram: string; override;
+    function outNadesikoProgram : AnsiString;   override;
+    function outLuaProgram: AnsiString; override;
   end;
 
   TSyntaxFunction = class(TSyntaxNode)
@@ -360,7 +360,7 @@ type
     function callUserFunc: PHiValue;
     function callDllFunc:  PHiValue;
   public
-    FDebugFuncName: string; // デバッグ用関数名
+    FDebugFuncName: AnsiString; // デバッグ用関数名
     FuncID  : DWORD;
     HiFunc  : THiFunction;
     DefFunc : TSyntaxDefFunction;
@@ -368,10 +368,10 @@ type
     Link    : TSyntaxFunctionLink;
     constructor Create(FParent: TSyntaxNode);
     destructor Destroy; override;
-    function DebugStr: string; override;
+    function DebugStr: AnsiString; override;
     function getValue: PHiValue; override;
-    function outNadesikoProgram: string; override;
-    function outLuaProgram: string; override;
+    function outNadesikoProgram: AnsiString; override;
+    function outLuaProgram: AnsiString; override;
   end;
 
   TSyntaxWith = class(TSyntaxSentence)
@@ -379,9 +379,9 @@ type
     WithVar: TSyntaxNode;
     constructor Create(FParent: TSyntaxNode);
     destructor Destroy; override;
-    function DebugStr: string; override;
+    function DebugStr: AnsiString; override;
     function getValue: PHiValue; override;
-    function outNadesikoProgram: string; override;
+    function outNadesikoProgram: AnsiString; override;
   end;
 
   // 引数のない関数型を宣言（新しいＤＬＬインポート命令）
@@ -396,7 +396,7 @@ type
   //[4]
   TDllfuncLong   = function: Longint;  stdcall;
   TDllfuncDWord  = function: DWORD;    stdcall;
-  TDllfuncPtr    = function: PChar;    stdcall;
+  TDllfuncPtr    = function: PAnsiChar;    stdcall;
   TDllfuncFloat  = function: Single;    stdcall;
   //[8]
   TDllfuncInt64  = function: int64;    stdcall;
@@ -476,21 +476,21 @@ type
     constructor Create;
     destructor Destroy; override;
     function Parse(token: THimaToken): TSyntaxNode;
-    function Debug: string;
+    function Debug: AnsiString;
   end;
 
 var
   SonoTokenID: DWORD = DWORD(-1);
   LastUserFuncID: DWORD = 0;
 
-function SyntaxTab(Level: Integer): string;
+function SyntaxTab(Level: Integer): AnsiString;
 
 implementation
 
 uses hima_string, hima_system, unit_string, Math, unit_text_file;
 
-function SyntaxTab(Level: Integer): string;
-var i: Integer;p:PChar;
+function SyntaxTab(Level: Integer): AnsiString;
+var i: Integer;p:PAnsiChar;
 begin
   {Result := '';
   for i := 0 to Level - 1 do
@@ -498,7 +498,7 @@ begin
     Result := Result + '    ';
   end;}
   SetLength(Result,level*4);
-  p := PChar(Result);
+  p := PAnsiChar(Result);
   for i:= 0 to Level*4 - 1 do
   begin
     p^ := ' ';
@@ -527,7 +527,7 @@ begin
   DebugInfo.Flag   := 0;
 end;
 
-function TSyntaxNode.DebugStr: string;
+function TSyntaxNode.DebugStr: AnsiString;
 begin
   Result := '(なし)' + hi_str(NodeResult);
 end;
@@ -573,12 +573,12 @@ begin
   Result := getValue;
 end;
 
-function TSyntaxNode.outLuaProgram: string;
+function TSyntaxNode.outLuaProgram: AnsiString;
 begin
   Result := '';
 end;
 
-function TSyntaxNode.outNadesikoProgram: string;
+function TSyntaxNode.outNadesikoProgram: AnsiString;
 begin
   Result := '';
 end;
@@ -1205,18 +1205,18 @@ var
 
   procedure AnalizeDllImport;
   //const
-  //  acceptTypes = '/CHAR/BYTE/SHORT/WORD/LONG/DWORD/POINTER/CHAR*/VOID/PCHAR/FLOAT/REAL/INT64/QWORD/';
+  //  acceptTypes = '/CHAR/BYTE/SHORT/WORD/LONG/DWORD/POINTER/CHAR*/VOID/PAnsiChar/FLOAT/REAL/INT64/QWORD/';
   var
-    dllName, cDec: string;
-    ret, funcName, sarg, argName, argType, res: string;
+    dllName, cDec: AnsiString;
+    ret, funcName, sarg, argName, argType, res: AnsiString;
 
     h: HINST;
     proc: Pointer;
     i: Integer;
 
-    function getWord(var p: PChar): string;
+    function getWord(var p: PAnsiChar): AnsiString;
     var
-      tmp_p:pchar;
+      tmp_p:PAnsiChar;
     begin
       skipSpace(p);
       //Result := '';
@@ -1227,16 +1227,16 @@ var
         Inc(p);
       end;
       SetLength(Result,Integer(p-tmp_p));
-      StrLCopy(PChar(Result),tmp_p,Integer(p-tmp_p));
+      StrLCopy(PAnsiChar(Result),tmp_p,Integer(p-tmp_p));
     end;
 
     procedure analizeDelphiDoc;
     var
       cnt: Integer;
-      p: PChar;
+      p: PAnsiChar;
       sl: THStringList;
       i: Integer;
-      str:string;//for debug
+      str: AnsiString;//for debug
     begin
       sl := THStringList.Create;
       //--------------
@@ -1260,7 +1260,7 @@ var
       //--------------
       // 引数の正当性をチェック
       cnt := 0;
-      p   := PChar(sarg);
+      p   := PAnsiChar(sarg);
       res := '';
       while p^ <> #0 do
       begin
@@ -1339,8 +1339,8 @@ var
     procedure analizeCDec;
     var
       cnt: Integer;
-      p: PChar;
-      str:string;//for debug
+      p: PAnsiChar;
+      str: AnsiString;//for debug
     begin
       // 返値を得る
       ret := UpperCase(Trim(getToken_s(cDec,' ')));
@@ -1365,7 +1365,7 @@ var
 
       // 引数の正当性をチェック
       cnt := 0;
-      p   := PChar(sarg);
+      p   := PAnsiChar(sarg);
       res := '';
       while p^ <> #0 do
       begin
@@ -1377,7 +1377,7 @@ var
         if argType = '' then begin argType := argName; argName := ''; end;
         if argType = '' then Continue;
         //if Copy(argName, 1, 1) = '*' then
-        if PChar(argName)^ = '*' then
+        if PAnsiChar(argName)^ = '*' then
         begin
           argType := argType + '*';
           System.Delete(argName, 1, 1);
@@ -1420,13 +1420,13 @@ var
     i := HiSystem.DllNameList.IndexOf(dllName);
     if i < 0 then
     begin
-      h := LoadLibrary(PChar(dllName));
+      h := LoadLibraryA(PAnsiChar(dllName));
       if h <= 0 then
       begin
         if Pos(':\', dllName) = 0 then
         begin
           dllName := ExtractFilePath(ParamStr(0)) + 'plug-ins\' + dllName;
-          h := LoadLibrary(PChar(dllName));
+          h := LoadLibraryA(PAnsiChar(dllName));
         end;
         if h <= 0 then begin
           raise Exception.Create('DLL「'+dllName+'」が見当たりません。');
@@ -1439,7 +1439,7 @@ var
       h := Cardinal(HiSystem.DllHInstList.Items[i]);
     end;
     // DLL内の関数へのエントリポイントを取得
-    proc := GetProcAddress( h, PChar(funcName) );
+    proc := GetProcAddress( h, PAnsiChar(funcName) );
     if proc = nil then raise Exception.CreateFmt('DLL「%s」に関数「%s」が見当たりません。',[dllName, funcName]);
 
     // 変数に設定
@@ -4416,7 +4416,7 @@ end;
 
 function THiParser.ReadInclude(var token: THimaToken; node: TSyntaxNode): Boolean;
 var
-  fname: string;
+  fname: AnsiString;
   res: PHiValue;
 begin
   fname := token.GetConstStr; // <-- FNAME
@@ -4428,13 +4428,13 @@ begin
   Result := True;
 end;
 
-function THiParser.Debug: string;
+function THiParser.Debug: AnsiString;
 var
   p: TSyntaxNode;
 
-  function _debug(p: TSyntaxNode): string;
+  function _debug(p: TSyntaxNode): AnsiString;
   var
-    s: string; i: Integer;
+    s: AnsiString; i: Integer;
   begin
     if p = nil then Exit;
 
@@ -4570,7 +4570,7 @@ end;
 
 procedure THiParser.ChangeNamespace(var token: THimaToken; node: TSyntaxNode);
 var
-  str: string; id: DWORD;
+  str: AnsiString; id: DWORD;
   scope: THiScope;
 begin
   str   := token.GetConstStr; // <-- FNAME
@@ -4699,7 +4699,7 @@ begin
   constValue.Registered := 1;
 end;
 
-function TSyntaxConst.DebugStr: string;
+function TSyntaxConst.DebugStr: AnsiString;
 begin
   Result := '(定数)' + hi_str(constValue);
 end;
@@ -4728,12 +4728,12 @@ begin
   Result := NodeResult;
 end;
 
-function TSyntaxConst.outLuaProgram: string;
+function TSyntaxConst.outLuaProgram: AnsiString;
 begin
   raise Exception.Create('TSyntaxConst.outLuaProgram');
 end;
 
-function TSyntaxConst.outNadesikoProgram: string;
+function TSyntaxConst.outNadesikoProgram: AnsiString;
 begin
   case constValue.VType of
   varStr, varInt, varFloat:
@@ -4825,7 +4825,7 @@ begin
   FGroupScope := nil;
 end;
 
-function TSyntaxValue.DebugStr: string;
+function TSyntaxValue.DebugStr: AnsiString;
 begin
   Result := '(変数)' + hi_id2tango(VarID);
 end;
@@ -4846,7 +4846,7 @@ end;
 function TSyntaxValue.GetValueNoGetter(CanCreate:Boolean): PHiValue;
 var
   pe: TSyntaxValueElement;
-  s: string;
+  s: AnsiString;
   i: Integer;
   group, res: PHiValue;
 begin
@@ -4950,7 +4950,7 @@ begin
 end;
 
 
-function TSyntaxValue.outLuaProgram: string;
+function TSyntaxValue.outLuaProgram: AnsiString;
 var
   pe: TSyntaxValueElement;
 begin
@@ -5000,7 +5000,7 @@ begin
   Result := Result + #13#10;
 end;
 
-function TSyntaxValue.outNadesikoProgram: string;
+function TSyntaxValue.outNadesikoProgram: AnsiString;
 var
   pe: TSyntaxValueElement;
 begin
@@ -5057,7 +5057,7 @@ begin
   inherited;
 end;
 
-function TSyntaxCalc.DebugStr: string;
+function TSyntaxCalc.DebugStr: AnsiString;
 begin
   Result := '(計算式)';
 end;
@@ -5143,10 +5143,10 @@ begin
   Result := NodeResult;
 end;
 
-function TSyntaxCalc.outLuaProgram: string;
+function TSyntaxCalc.outLuaProgram: AnsiString;
 var
   node: TSyntaxNode;
-  va, vb: string;
+  va, vb: AnsiString;
   // stack用変数
   stack: array [0..255] of string;
   sp: Integer;
@@ -5196,10 +5196,10 @@ begin
   Result := '(' + Trim(stack[0]) + ')';
 end;
 
-function TSyntaxCalc.outNadesikoProgram: string;
+function TSyntaxCalc.outNadesikoProgram: AnsiString;
 var
   node: TSyntaxNode;
-  va, vb: string;
+  va, vb: AnsiString;
   // stack用変数
   stack: array [0..255] of string;
   sp: Integer;
@@ -5260,7 +5260,7 @@ begin
   DebugMemo := '';
 end;
 
-function TSyntaxSentence.DebugStr: string;
+function TSyntaxSentence.DebugStr: AnsiString;
 begin
   Result := '(文)'+DebugMemo;
 end;
@@ -5304,19 +5304,19 @@ begin
   end;
 end;
 
-function TSyntaxSentence.outLuaProgram: string;
+function TSyntaxSentence.outLuaProgram: AnsiString;
 begin
   Result := 'do'#13#10 + HiSystem.DebugProgram(Children) + 'end'#13#10;
 end;
 
-function TSyntaxSentence.outNadesikoProgram: string;
+function TSyntaxSentence.outNadesikoProgram: AnsiString;
 begin
   Result := SyntaxTab(FSyntaxLevel) + HiSystem.DebugProgram(Children);
 end;
 
 { TSyntaxEnzansi }
 
-function TSyntaxEnzansi.DebugStr: string;
+function TSyntaxEnzansi.DebugStr: AnsiString;
 begin
   Result := '(演算子)' + hi_id2tango(ID);
 end;
@@ -5326,12 +5326,12 @@ begin
   Result := nil;
 end;
 
-function TSyntaxEnzansi.outLuaProgram: string;
+function TSyntaxEnzansi.outLuaProgram: AnsiString;
 begin
   Result := '';
 end;
 
-function TSyntaxEnzansi.outNadesikoProgram: string;
+function TSyntaxEnzansi.outNadesikoProgram: AnsiString;
 begin
   Result := '';
 end;
@@ -5427,12 +5427,12 @@ var
   ary: THiArray;
   //
   size: Integer;
-  StkP: PChar;
+  StkP: PAnsiChar;
   func: Pointer;
   res: Integer;
   resF: Extended;
   res64:Int64;
-  resStr: string; resPtr: Pointer;
+  resStr: AnsiString; resPtr: Pointer;
 begin
   //----------------------------------------------------------------------------
   // 引数を取得
@@ -5498,7 +5498,7 @@ begin
       'I': res64 := TDllfuncInt64(func);
       'P': // ポインタ型
       begin
-        if HiFunc.DllRetType = 'PCHAR' then
+        if HiFunc.DllRetType = 'PAnsiChar' then
         begin
           resStr := string( TDllfuncPtr(func) );
         end else
@@ -5513,7 +5513,7 @@ begin
     // 関数の結果を代入
     if not (HiFunc.DllRetType[1] = 'V') then begin
       Result := hi_var_new;
-      if HiFunc.DllRetType = 'PCHAR' then hi_setStr(Result, resStr)
+      if HiFunc.DllRetType = 'PAnsiChar' then hi_setStr(Result, resStr)
                                      else
       begin
         case HiFunc.DllRetType[1] of
@@ -5602,7 +5602,7 @@ begin
   DefFunc         := nil;
 end;
 
-function TSyntaxFunction.DebugStr: string;
+function TSyntaxFunction.DebugStr: AnsiString;
 begin
   Result := '(関数)' + hi_id2tango(FuncID);
 end;
@@ -5801,16 +5801,16 @@ begin
   end;
 end;
 
-function TSyntaxFunction.outLuaProgram: string;
+function TSyntaxFunction.outLuaProgram: AnsiString;
 begin
   raise Exception.Create('TSyntaxFunction.outLuaProgram');
 end;
 
-function TSyntaxFunction.outNadesikoProgram: string;
+function TSyntaxFunction.outNadesikoProgram: AnsiString;
 var
   i: Integer;
   o: TSyntaxNode;
-  f: string;
+  f: AnsiString;
 begin
 
   // グローバル変数ネームスペース
@@ -5866,7 +5866,7 @@ begin
   VarNode := nil;
 end;
 
-function TSyntaxLet.DebugStr: string;
+function TSyntaxLet.DebugStr: AnsiString;
 begin
   Result := '(代入)' + hi_id2tango(VarID);
   if VarNode.Element.NextElement <> nil then
@@ -6095,7 +6095,7 @@ begin
 
 end;
 
-function TSyntaxLet.outLuaProgram: string;
+function TSyntaxLet.outLuaProgram: AnsiString;
 
   procedure _parseSN;
   var
@@ -6148,7 +6148,7 @@ begin
   Result := Result + ' = ' + Trim(HiSystem.DebugProgram( Children, langLua)) + #13#10;
 end;
 
-function TSyntaxLet.outNadesikoProgram: string;
+function TSyntaxLet.outNadesikoProgram: AnsiString;
 
   procedure _parseSN;
   var
@@ -6215,7 +6215,7 @@ begin
   CanBreak := True;
 end;
 
-function TSyntaxWhile.DebugStr: string;
+function TSyntaxWhile.DebugStr: AnsiString;
 begin
   Result := '(間)';
 end;
@@ -6284,7 +6284,7 @@ begin
   Result := nil;
 end;
 
-function TSyntaxWhile.outLuaProgram: string;
+function TSyntaxWhile.outLuaProgram: AnsiString;
 begin
   Result := SyntaxTab(SyntaxLevel) +
     'while(' + Trim(HiSystem.DebugProgram(jouken, langLua)) + ')do'#13#10 +
@@ -6292,7 +6292,7 @@ begin
     'end'#13#10;
 end;
 
-function TSyntaxWhile.outNadesikoProgram: string;
+function TSyntaxWhile.outNadesikoProgram: AnsiString;
 begin
   Result := SyntaxTab(SyntaxLevel) + Trim(HiSystem.DebugProgram(jouken)) + 'の間'#13#10;
   Result := Result + HiSystem.DebugProgram(Children);
@@ -6315,7 +6315,7 @@ begin
   Reverse   := False;
 end;
 
-function TSyntaxIf.DebugStr: string;
+function TSyntaxIf.DebugStr: AnsiString;
 begin
   Result := '(ならば)';
 end;
@@ -6346,9 +6346,9 @@ begin
   end;
 end;
 
-function TSyntaxIf.outLuaProgram: string;
+function TSyntaxIf.outLuaProgram: AnsiString;
 var
-  cond_str: string;
+  cond_str: AnsiString;
 begin
   cond_str := '';
   if Reverse then
@@ -6367,7 +6367,7 @@ begin
   Result := Result + 'end'#13#10;
 end;
 
-function TSyntaxIf.outNadesikoProgram: string;
+function TSyntaxIf.outNadesikoProgram: AnsiString;
 begin
   Result := SyntaxTab(SyntaxLevel);
   Result := Result + 'もし,' + Trim(HiSystem.DebugProgram( Jouken ));
@@ -6413,7 +6413,7 @@ begin
   CanBreak := True;
 end;
 
-function TSyntaxLoop.DebugStr: string;
+function TSyntaxLoop.DebugStr: AnsiString;
 begin
   Result := '(回)';
 end;
@@ -6483,7 +6483,7 @@ begin
   hi_setInt(HiSystem.kaisu, tmpKaisu);
 end;
 
-function TSyntaxLoop.outLuaProgram: string;
+function TSyntaxLoop.outLuaProgram: AnsiString;
 begin
   Result := SyntaxTab(SyntaxLevel) +
     'do'#13#10+
@@ -6494,7 +6494,7 @@ begin
     'end'#13#10;
 end;
 
-function TSyntaxLoop.outNadesikoProgram: string;
+function TSyntaxLoop.outNadesikoProgram: AnsiString;
 begin
   Result := SyntaxTab(SyntaxLevel) + Trim(HiSystem.DebugProgram(kaisu)) + '回'#13#10;
   Result := Result + HiSystem.DebugProgram(Children);
@@ -6508,7 +6508,7 @@ end;
 
 { TSyntaxNodeTop }
 
-function TSyntaxNodeTop.DebugStr: string;
+function TSyntaxNodeTop.DebugStr: AnsiString;
 begin
   Result := '-(トップノード)-';
 end;
@@ -6518,19 +6518,19 @@ begin
   Result := inherited getValue;
 end;
 
-function TSyntaxNodeTop.outLuaProgram: string;
+function TSyntaxNodeTop.outLuaProgram: AnsiString;
 begin
   Result := '-- top'#13#10;
 end;
 
-function TSyntaxNodeTop.outNadesikoProgram: string;
+function TSyntaxNodeTop.outNadesikoProgram: AnsiString;
 begin
   Result := '# トップ'#13#10;
 end;
 
 { TSyntaxNodeChild }
 
-function TSyntaxNodeChild.DebugStr: string;
+function TSyntaxNodeChild.DebugStr: AnsiString;
 begin
   Result := '-(子ノード)-';
 end;
@@ -6540,12 +6540,12 @@ begin
   Result := inherited getValue;
 end;
 
-function TSyntaxNodeChild.outLuaProgram: string;
+function TSyntaxNodeChild.outLuaProgram: AnsiString;
 begin
   Result := HiSystem.DebugProgram(Self.Next, langLua) + '--Node'#13#10;
 end;
 
-function TSyntaxNodeChild.outNadesikoProgram: string;
+function TSyntaxNodeChild.outNadesikoProgram: AnsiString;
 begin
   //Result := '#子ノード'#13#10;
   //Result := inherited outNadesikoProgram;
@@ -6563,7 +6563,7 @@ begin
   CanBreak := True;
 end;
 
-function TSyntaxFor.DebugStr: string;
+function TSyntaxFor.DebugStr: AnsiString;
 begin
   Result := '(繰り返し)';
 end;
@@ -6709,7 +6709,7 @@ begin
 end;
 
 
-function TSyntaxFor.outLuaProgram: string;
+function TSyntaxFor.outLuaProgram: AnsiString;
 begin
   Result := SyntaxTab(SyntaxLevel) +
     'do'#13#10+
@@ -6721,7 +6721,7 @@ begin
     'end'#13#10;
 end;
 
-function TSyntaxFor.outNadesikoProgram: string;
+function TSyntaxFor.outNadesikoProgram: AnsiString;
 begin
   Result := SyntaxTab(SyntaxLevel) + Trim(HiSystem.DebugProgram(VarLoop)) + 'で' + Trim(HiSystem.DebugProgram(VarFrom)) + 'から';
   Result := Result + Trim(HiSystem.DebugProgram(VarTo)) + 'まで繰り返し'#13#10;
@@ -6737,7 +6737,7 @@ begin
   NodeExcept := nil;
 end;
 
-function TSyntaxTryExcept.DebugStr: string;
+function TSyntaxTryExcept.DebugStr: AnsiString;
 begin
   Result := '(エラー監視)';
 end;
@@ -6795,7 +6795,7 @@ begin
   //contents := nil;
 end;
 
-function TSyntaxDefFunction.DebugStr: string;
+function TSyntaxDefFunction.DebugStr: AnsiString;
 begin
   Result := '(ユーザー関数)' + hi_id2tango(FuncID);
 end;
@@ -6811,7 +6811,7 @@ begin
   Result := HiSystem.RunNode(Children);
 end;
 
-function TSyntaxDefFunction.outLuaProgram: string;
+function TSyntaxDefFunction.outLuaProgram: AnsiString;
 var
   i: Integer;
   a: THimaArg;
@@ -6848,7 +6848,7 @@ begin
     'end'#13#10;
 end;
 
-function TSyntaxDefFunction.outNadesikoProgram: string;
+function TSyntaxDefFunction.outNadesikoProgram: AnsiString;
 var
   i: Integer;
   a: THimaArg;
@@ -6894,7 +6894,7 @@ begin
   iVar := nil;
 end;
 
-function TSyntaxEach.DebugStr: string;
+function TSyntaxEach.DebugStr: AnsiString;
 begin
   Result := '(反復)';
 end;
@@ -6910,8 +6910,8 @@ function TSyntaxEach.getValue: PHiValue;
 var
   v, sore: PHiValue;
   i, cnt: Integer;
-  p: PChar;
-  str, s: string;
+  p: PAnsiChar;
+  str, s: AnsiString;
   mode: Integer;
   ary: THiArray;
   tkFile: TKTextFileStream;
@@ -6922,7 +6922,7 @@ var
   procedure _getLine;
   begin
     s := '';
-    p := PChar(str);
+    p := PAnsiChar(str);
     while p^ <> #0 do begin
       if p^ in LeadBytes then begin
         s := s + p^ + (p+1)^; Inc(p, 2);
@@ -7131,7 +7131,7 @@ begin
 
 end;
 
-function TSyntaxEach.outLuaProgram: string;
+function TSyntaxEach.outLuaProgram: AnsiString;
 begin
   Result := SyntaxTab(SyntaxLevel) +
     'do'#13#10+
@@ -7141,7 +7141,7 @@ begin
     'end'#13#10;
 end;
 
-function TSyntaxEach.outNadesikoProgram: string;
+function TSyntaxEach.outNadesikoProgram: AnsiString;
 begin
   Result := SyntaxTab(SyntaxLevel) + Trim(HiSystem.DebugProgram(jouken)) + 'を反復'#13#10;
   Result := Result + HiSystem.DebugProgram(Children);
@@ -7167,7 +7167,7 @@ begin
   InitNode := nil;
 end;
 
-function TSyntaxCreateVar.DebugStr: string;
+function TSyntaxCreateVar.DebugStr: AnsiString;
 begin
   Result := '(変数生成)' + hi_id2tango(Template.VarID);
 end;
@@ -7202,7 +7202,7 @@ begin
 end;
 
 
-function TSyntaxCreateVar.outLuaProgram: string;
+function TSyntaxCreateVar.outLuaProgram: AnsiString;
 begin
   Result := '';
   if template = nil then Exit;
@@ -7210,7 +7210,7 @@ begin
     'l[' + hi_id2tango(template.VarID) + '] as ' + hi_vtype2str(template)+#13#10;
 end;
 
-function TSyntaxCreateVar.outNadesikoProgram: string;
+function TSyntaxCreateVar.outNadesikoProgram: AnsiString;
 begin
   Result := '';
   if template = nil then Exit;
@@ -7228,7 +7228,7 @@ begin
   Jouken   := nil;
 end;
 
-function TSyntaxSwitch.DebugStr: string;
+function TSyntaxSwitch.DebugStr: AnsiString;
 begin
   Result := '(条件分岐)';
 end;
@@ -7291,7 +7291,7 @@ begin
   Result := nil;
 end;
 
-function TSyntaxSwitch.outLuaProgram: string;
+function TSyntaxSwitch.outLuaProgram: AnsiString;
 var
   i: Integer;
   c: TSyntaxSwitchCase;
@@ -7316,7 +7316,7 @@ begin
 end;
 
 
-function TSyntaxSwitch.outNadesikoProgram: string;
+function TSyntaxSwitch.outNadesikoProgram: AnsiString;
 var
   i: Integer;
   c: TSyntaxSwitchCase;
@@ -7384,7 +7384,7 @@ begin
   inherited Create(FParent);
 end;
 
-function TSyntaxWith.DebugStr: string;
+function TSyntaxWith.DebugStr: AnsiString;
 begin
   Result := '(について)';
 end;
@@ -7412,7 +7412,7 @@ begin
   end;
 end;
 
-function TSyntaxWith.outNadesikoProgram: string;
+function TSyntaxWith.outNadesikoProgram: AnsiString;
 begin
   Result := SyntaxTab(FSyntaxLevel) + Trim(HiSystem.DebugProgram(WithVar)) + 'について'#13#10;
   Result := Result + HiSystem.DebugProgram(Children);
@@ -7420,7 +7420,7 @@ end;
 
 { TSyntaxNamespace }
 
-function TSyntaxNamespace.DebugStr: string;
+function TSyntaxNamespace.DebugStr: AnsiString;
 begin
   if scopeID >= 0 then
     Result := '(ネームスペース変更)' + HimaFileList.Strings[scopeID]
@@ -7434,12 +7434,12 @@ begin
   Result := nil;
 end;
 
-function TSyntaxNamespace.outLuaProgram: string;
+function TSyntaxNamespace.outLuaProgram: AnsiString;
 begin
   Result := '-- todo:namespace'#13#10;
 end;
 
-function TSyntaxNamespace.outNadesikoProgram: string;
+function TSyntaxNamespace.outNadesikoProgram: AnsiString;
 begin
   if scopeID >= 0 then
     Result := '『'+ChangeFileExt(HimaFileList.Strings[scopeID],'')+ '』にネームスペース変更。'#13#10
@@ -7455,7 +7455,7 @@ begin
   baseNode := nil;
 end;
 
-function TSyntaxTerm.DebugStr: string;
+function TSyntaxTerm.DebugStr: AnsiString;
 begin
   Result := '(項) - ' + baseNode.DebugStr;
 end;
@@ -7486,12 +7486,12 @@ begin
   if res.Registered = 0 then hi_var_free(res);
 end;
 
-function TSyntaxTerm.outLuaProgram: string;
+function TSyntaxTerm.outLuaProgram: AnsiString;
 begin
   Result := outNadesikoProgram;
 end;
 
-function TSyntaxTerm.outNadesikoProgram: string;
+function TSyntaxTerm.outNadesikoProgram: AnsiString;
 begin
   if mode = termMinus then
   begin
@@ -7522,12 +7522,12 @@ end;
 
 { TSyntaxJumpPoint }
 
-function TSyntaxJumpPoint.DebugStr: string;
+function TSyntaxJumpPoint.DebugStr: AnsiString;
 begin
   Result := '▲' + hi_id2tango(NameId) + ';';
 end;
 
-function TSyntaxJumpPoint.outNadesikoProgram: string;
+function TSyntaxJumpPoint.outNadesikoProgram: AnsiString;
 begin
   Result := DebugStr;
 end;

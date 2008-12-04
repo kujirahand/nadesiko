@@ -9,22 +9,22 @@ uses
 type
   TNakoDialogInfoRec = record
     DType       : Integer;
-    Title       : string;
-    Caption     : string;
-    Text        : string;
-    InitValue   : string;
-    CancelValue : string;
+    Title       : AnsiString;
+    Caption     : AnsiString;
+    Text        : AnsiString;
+    InitValue   : AnsiString;
+    CancelValue : AnsiString;
     ImeMode     : DWORD;
   end;
 
-function showMemoDialog(hParent: THandle; var txt: string;
-  init:string = ''; cancel:string = ''; title: string = ''; ime:DWORD = 0): Boolean;
-function showListDialog(hParent: THandle; var txt: string;
-  init:string = ''; cancel:string = ''; title: string = ''; ime:DWORD = 0): Boolean;
+function showMemoDialog(hParent: THandle; var txt: AnsiString;
+  init: AnsiString = ''; cancel: AnsiString = ''; title: AnsiString = ''; ime:DWORD = 0): Boolean;
+function showListDialog(hParent: THandle; var txt: AnsiString;
+  init: AnsiString = ''; cancel: AnsiString = ''; title: AnsiString = ''; ime:DWORD = 0): Boolean;
 
-procedure ShowProgressDialog(title, text, info: string; FlagShowDialog: Boolean);
-procedure SetWinText(h: HWND; s: string);
-procedure SetDlgWinText(hDlg: HWND; id: DWORD; s: string);
+procedure ShowProgressDialog(title, text, info: AnsiString; FlagShowDialog: Boolean);
+procedure SetWinText(h: HWND; s: AnsiString);
+procedure SetDlgWinText(hDlg: HWND; id: DWORD; s: AnsiString);
 
 var
   DialogHandle        : HWND    = 0;
@@ -39,12 +39,12 @@ uses unit_string, mini_func, hima_function;
 var
   dinfo: TNakoDialogInfoRec;
 
-procedure SetWinText(h: HWND; s: string);
+procedure SetWinText(h: HWND; s: AnsiString);
 begin
-  SendMessage(h, WM_SETTEXT, 0, LPARAM(PChar(s)));
+  SendMessage(h, WM_SETTEXT, 0, LPARAM(PAnsiChar(s)));
 end;
 
-procedure SetDlgWinText(hDlg: HWND; id: DWORD; s: string);
+procedure SetDlgWinText(hDlg: HWND; id: DWORD; s: AnsiString);
 begin
   SetWinText(GetDlgItem(hDlg, id), s);
 end;
@@ -75,7 +75,7 @@ begin
   Result := hima_function.MainWindowHandle
 end;
 
-procedure ShowProgressDialog(title, text, info: string; FlagShowDialog: Boolean);
+procedure ShowProgressDialog(title, text, info: AnsiString; FlagShowDialog: Boolean);
 var
   hParent: HWND;
   msg: TMsg;
@@ -86,12 +86,12 @@ begin
   hParent := nako_getMainWindowHandle;
   if hParent = 0 then hParent := GetForegroundWindow;
   //
-  DialogHandle := CreateDialog(hInstance, PChar(IDD_DIALOG_PROGRESS),
+  DialogHandle := CreateDialogA(hInstance, PAnsiChar(IDD_DIALOG_PROGRESS),
                 hParent, @procProgress);
 
   SetDlgWinText(DialogHandle, IDC_EDIT_TEXT, text);
   SetDlgWinText(DialogHandle, IDC_EDIT_INFO, info);
-  SetWindowText(DialogHandle, PChar(title));
+  SetWindowText(DialogHandle, PAnsiChar(title));
 
   if FlagShowDialog then
   begin
@@ -147,10 +147,10 @@ begin
   SetWindowPos(hWnd, 0, r.Left, r.Top, w, h, SWP_NOSIZE);
 end;
 
-function getWinText(h: HWND): string;
+function getWinText(h: HWND): AnsiString;
 var
   len: Integer;
-  mem: PChar;
+  mem: PAnsiChar;
 begin
   len := SendMessage(h, WM_GETTEXTLENGTH, 0, 0);
   //
@@ -167,7 +167,7 @@ function procMemoDialog(hDlg: HWND; msg: UINT; wp: WPARAM; lp: LPARAM): BOOL; st
 var
   ID, i, len, wNotifyCode: Integer;
   h: HWND;
-  s, a: string;
+  s, a: AnsiString;
 begin
   Result := False;
 
@@ -177,7 +177,7 @@ begin
       // Caption
       if dinfo.Caption <> '' then
       begin
-        SetWindowText(hDlg, PChar(dinfo.Caption));
+        SetWindowText(hDlg, PAnsiChar(dinfo.Caption));
       end;
       // IME
       if dinfo.ImeMode > 0 then
@@ -192,7 +192,7 @@ begin
           if dinfo.Text <> '' then
           begin
             SendMessage( GetDlgItem(hDlg, IDC_EDIT_TEXT), WM_SETTEXT, 0,
-              LPARAM(PChar(dinfo.Text)));
+              LPARAM(PAnsiChar(dinfo.Text)));
           end;
           SetFocus(GetDlgItem(hDlg, IDC_EDIT_TEXT));
         end;
@@ -206,14 +206,14 @@ begin
             while s <> '' do
             begin
               a := getToken_s(s, #13#10);
-              SendMessage(h, LB_ADDSTRING, 0, LPARAM(PChar(a)));
+              SendMessage(h, LB_ADDSTRING, 0, LPARAM(PAnsiChar(a)));
             end;
           end;
           // 初期値をセット  IDC_EDIT_TEXT
           if dinfo.InitValue <> '' then
           begin
             SendMessage( GetDlgItem(hDlg, IDC_EDIT_TEXT), WM_SETTEXT, 0,
-              LPARAM(PChar(dinfo.InitValue)));
+              LPARAM(PAnsiChar(dinfo.InitValue)));
           end;
           GetDlgItem(hDlg, IDC_LIST_MAIN)
         end;
@@ -258,7 +258,7 @@ begin
           len := SendMessage(h, LB_GETTEXTLEN, i, 0);
           SetLength(a, len+1);
           SendMessage(h, LB_GETTEXT, i, LParam(@a[1]));
-          SendMessage(GetDlgItem(hDlg, IDC_EDIT_TEXT), WM_SETTEXT, 0, LPARAM(PChar(a)));
+          SendMessage(GetDlgItem(hDlg, IDC_EDIT_TEXT), WM_SETTEXT, 0, LPARAM(PAnsiChar(a)));
           if wNotifyCode = LBN_DBLCLK then
           begin
             SendMessage(GetDlgItem(hDlg, IDOK), WM_LBUTTONDOWN, 0, 0);
@@ -271,8 +271,8 @@ begin
   end;
 end;
 
-function showMemoDialog(hParent: THandle; var txt: string;
-  init, cancel, title: string; ime:DWORD): Boolean;
+function showMemoDialog(hParent: THandle; var txt: AnsiString;
+  init, cancel, title: AnsiString; ime:DWORD): Boolean;
 begin
   hParent     := getWinH(hParent);
   dinfo.Caption := title;
@@ -281,12 +281,12 @@ begin
   dinfo.InitValue   := init;
   dinfo.CancelValue := cancel;
   dinfo.ImeMode     := ime;
-  Result      := (IDOK = DialogBox(hInstance, PChar(IDD_DIALOG_MEMO), hParent, @procMemoDialog));
+  Result      := (IDOK = DialogBoxA(hInstance, PAnsiChar(IDD_DIALOG_MEMO), hParent, @procMemoDialog));
   txt         := dinfo.Text;
 end;
 
-function showListDialog(hParent: THandle; var txt: string;
-  init, cancel, title: string; ime:DWORD): Boolean;
+function showListDialog(hParent: THandle; var txt: AnsiString;
+  init, cancel, title: AnsiString; ime:DWORD): Boolean;
 begin
   hParent     := getWinH(hParent);
   dinfo.Caption := title;
@@ -295,7 +295,7 @@ begin
   dinfo.InitValue   := init;
   dinfo.CancelValue := cancel;
   dinfo.ImeMode     := ime;
-  Result      := (IDOK = DialogBox(hInstance, PChar(IDD_DIALOG_LIST), hParent, @procMemoDialog));
+  Result      := (IDOK = DialogBoxA(hInstance, PAnsiChar(IDD_DIALOG_LIST), hParent, @procMemoDialog));
   txt         := dinfo.Text;
 end;
 

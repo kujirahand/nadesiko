@@ -14,10 +14,10 @@ type
   TWindowState = (wsNormal, wsMinimized, wsMaximized);
 
 // 文字列にファイルの内容を全部開く
-function FileLoadAll(Filename: string): string;
+function FileLoadAll(Filename: AnsiString): AnsiString;
 
 // 文字列にファイルの内容を全部書き込む
-procedure FileSaveAll(s, Filename: string);
+procedure FileSaveAll(s, Filename: AnsiString);
 
 implementation
 
@@ -25,16 +25,16 @@ uses
   unit_windows_api, unit_string;
 
 // 文字列にファイルの内容を全部開く
-function FileLoadAll(Filename: string): string;
+function FileLoadAll(Filename: AnsiString): AnsiString;
 var
   f: THandle;
   size, rsize: DWORD;
 begin
   // open
-  f := CreateFile(PChar(Filename), GENERIC_READ, FILE_SHARE_READ, nil,
+  f := CreateFileA(PAnsiChar(Filename), GENERIC_READ, FILE_SHARE_READ, nil,
     OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN,0);
   if f = INVALID_HANDLE_VALUE then
-    raise EInOutError.Create('ファイル"' + Filename + '"が開けません。' + GetLastErrorStr);
+    raise EInOutError.Create(AnsiString('ファイル"' + Filename + '"が開けません。' + GetLastErrorStr));
   try
     // set pointer
     SetFilePointer(f, 0, nil, FILE_BEGIN); // 初めからゼロの位置に
@@ -53,13 +53,13 @@ begin
 end;
 
 // 文字列にファイルの内容を全部書き込む
-procedure FileSaveAll(s, Filename: string);
+procedure FileSaveAll(s, Filename: AnsiString);
 var
   f: THandle;
   size, rsize: DWORD;
 begin
   // open
-  f := CreateFile(PChar(Filename), GENERIC_WRITE, 0, nil,
+  f := CreateFileA(PAnsiChar(Filename), GENERIC_WRITE, 0, nil,
     CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN,0);
   if f = INVALID_HANDLE_VALUE then
     raise EInOutError.Create('ファイル"' + Filename + '"が開けません。' + GetLastErrorStr);

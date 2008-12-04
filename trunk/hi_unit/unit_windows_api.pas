@@ -6,22 +6,22 @@ uses
   Windows, SysUtils, messages;
 
 // エラーメッセージを取得する
-function GetLastErrorStr: string;
-function GetLastErrorMessage(ErrorCode: Integer): string;
+function GetLastErrorStr: AnsiString;
+function GetLastErrorMessage(ErrorCode: Integer): AnsiString;
 
-function ClipbrdGetAsText: string;
-function ClipbrdSetAsText(s: string): string;
+function ClipbrdGetAsText: AnsiString;
+function ClipbrdSetAsText(s: AnsiString): AnsiString;
 procedure ClipbrdSetAsBuffer(Format: Word; var Buffer; Size: Integer);
 
-procedure SendCOPYDATA(hwnd: THandle; str: string; msgid: DWORD; SelfHandle: THandle);
+procedure SendCOPYDATA(hwnd: THandle; str: AnsiString; msgid: DWORD; SelfHandle: THandle);
 
-function getWinVersion: string;
+function getWinVersion: AnsiString;
 
 implementation
 
-function getWinVersion: string;
+function getWinVersion: AnsiString;
 var
-  //s: string;
+  //s: AnsiString;
   major,minor: LongInt;
   Info: TOSVersionInfo;
 begin
@@ -62,11 +62,11 @@ begin
             Result := 'Windows Vista';
           end;
       else begin
-          Result := '不明 Version = '+ IntToStr(GetVersion);
+          Result := AnsiString('不明 Version = '+ IntToStr(GetVersion));
       end;
   end;
   {上手く動かない
-  s := string(PChar(@Info.szCSDVersion[1]));
+  s := string(PAnsiChar(@Info.szCSDVersion[1]));
   if s<>'' then
   begin
       Result := Result + s;
@@ -75,11 +75,11 @@ end;
 
 
 {WM_COPYDATAを簡単に送信する}
-procedure SendCOPYDATA(hwnd: THandle; str: string; msgid: DWORD; SelfHandle: THandle);
+procedure SendCOPYDATA(hwnd: THandle; str: AnsiString; msgid: DWORD; SelfHandle: THandle);
 var
   cd  : TCopyDataStruct;
   len : integer;
-  Msg : PChar;
+  Msg : PAnsiChar;
 begin
   if hwnd <> 0 then
   begin
@@ -111,7 +111,7 @@ begin
   CloseClipboard;
 end;
 
-function ClipbrdGetAsText: string;
+function ClipbrdGetAsText: AnsiString;
 var
   Data: THandle;
 begin
@@ -119,7 +119,7 @@ begin
   Data := GetClipboardData(CF_TEXT);
   try
     if Data <> 0 then
-      Result := PChar(GlobalLock(Data))
+      Result := PAnsiChar(GlobalLock(Data))
     else
       Result := '';
   finally
@@ -128,7 +128,7 @@ begin
   end;
 end;
 
-function ClipbrdSetAsText(s: string): string;
+function ClipbrdSetAsText(s: AnsiString): AnsiString;
 begin
   s := s + #0;
   ClipbrdSetAsBuffer(CF_TEXT, s[1], Length(s));
@@ -162,15 +162,15 @@ begin
 end;
 
 
-function GetLastErrorMessage(ErrorCode: Integer): string;
+function GetLastErrorMessage(ErrorCode: Integer): AnsiString;
 const
   MAX_MES = 512;
 var
-  Buf: PChar;
+  Buf: PAnsiChar;
 begin
   Buf := AllocMem(MAX_MES);
   try
-    FormatMessage(Format_Message_From_System, Nil, ErrorCode,
+    FormatMessageA(Format_Message_From_System, Nil, ErrorCode,
                   (SubLang_Default shl 10) + Lang_Neutral,
                   Buf, MAX_MES, Nil);
   finally
@@ -179,7 +179,7 @@ begin
   end;
 end;
 
-function GetLastErrorStr: string;
+function GetLastErrorStr: AnsiString;
 begin
   Result := GetLastErrorMessage(GetLastError);
 end;

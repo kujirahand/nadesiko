@@ -18,12 +18,12 @@ uses hima_string, unit_string;
 // •¶Žš—ñ str ‚ð •¶Žš—ñ splitter ‚Å•ª‚¯‚Ä”z—ñŒ`Ž®‚Å PHiValue ‚É•Ô‚·
 function hi_split(str, splitter: PHiValue): PHiValue;
 var
-  s, kugiri, ss: string; sp, sp_last: PChar;
+  s, kugiri, ss: string; sp, sp_last: PAnsiChar;
   p: PHiValue;
 begin
   s := hi_str(str);
   kugiri := hi_str(splitter);
-  sp := PChar(s);
+  sp := PAnsiChar(s);
   sp_last := sp + Length(s);
 
   // ”z—ñ‚Æ‚µ‚Ä•Ô‚·

@@ -20,9 +20,9 @@ var
   _nako_loader: TDnakoLoader;
   debugmode: Boolean = False;
 
-function ExtractFilePath(const s: string): string;
+function ExtractFilePath(const s: AnsiString): AnsiString;
 var
-  ss: string;
+  ss: AnsiString;
   p, pEnd, pFrom: PChar;
 begin
   if s = '' then
@@ -51,7 +51,7 @@ begin
   if pEnd <> nil then
   begin
     pEnd^ := #0;
-    Result := string( PChar(pFrom) );
+    Result := AnsiString( PChar(pFrom) );
     if Copy(Result, Length(Result), 1) <> '\' then Result := Result + '\';
   end else
   begin
@@ -72,13 +72,13 @@ end;
 
 procedure main;
 var
-  src, err, s, path: string;
+  src, err, s, path: AnsiString;
   res, len: Integer;
   i: Integer;
   FlagOneLiner: Boolean;
 
   procedure ExitW;
-  var s: string;
+  var s: AnsiString;
   begin
     if getMode = CNAKO_MODE_EXE then ReadLn;
     if debugmode then

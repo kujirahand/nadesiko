@@ -7,21 +7,21 @@ uses
 
 
 {TDateTimeを、和暦に変換する}
-function DateToWareki(d: TDateTime): string;
+function DateToWareki(d: TDateTime): AnsiString;
 // 文字列(日付)を和暦に変換する
-function DateToWarekiS(d: string): string;
+function DateToWarekiS(d: AnsiString): AnsiString;
 {日付の加算 ex)３ヵ月後 IncDate('2001/10/30','0/3/0') 三日前 IncDate('2001/1/1','-0/0/3')}
-function IncDate(BaseDate: TDateTime; AddDate: string): TDateTime;
+function IncDate(BaseDate: TDateTime; AddDate: AnsiString): TDateTime;
 {時間の加算 ex)３時間後 IncTime('15:0:0','3:0:0') 三秒前 IncTime('12:45:0','-0:0:3')}
-function IncTime(BaseTime: TDateTime; AddTime: string): TDateTime;
-function StrToDateEx(str: string): TDateTime;
+function IncTime(BaseTime: TDateTime; AddTime: AnsiString): TDateTime;
+function StrToDateEx(str: AnsiString): TDateTime;
 {西暦、和暦に対応した日付変換用関数}
-function StrToDateStr(str: string): string;
+function StrToDateStr(str: AnsiString): AnsiString;
 
 implementation
 
 {西暦、和暦に対応した日付変換用関数}
-function StrToDateStr(str: string): string;
+function StrToDateStr(str: AnsiString): AnsiString;
 begin
     Result:='';
     if str='' then Exit;
@@ -31,7 +31,7 @@ begin
     );
 end;
 
-function StrToDateEx(str: string): TDateTime;
+function StrToDateEx(str: AnsiString): TDateTime;
 begin
     Result := Now;
     str := convToHalf(str);
@@ -41,9 +41,9 @@ begin
 end;
 
 {時間の加算 ex)３時間後 IncTime('15:0:0','3:0:0') 三秒前 IncTime('12:45:0','-0:0:3')}
-function IncTime(BaseTime: TDateTime; AddTime: string): TDateTime;
+function IncTime(BaseTime: TDateTime; AddTime: AnsiString): TDateTime;
 var
-    flg: string;
+    flg: AnsiString;
     hh,nn,ss: Word;
 begin
     // デルファイの標準関数を使うように変更 2003/2/19
@@ -69,9 +69,9 @@ begin
 end;
 
 {日付の加算 ex)３ヵ月後 IncDate('2001/10/30','0/3/0') 三日前 IncDate('2001/1/1','-0/0/3')}
-function IncDate(BaseDate: TDateTime; AddDate: string): TDateTime;
+function IncDate(BaseDate: TDateTime; AddDate: AnsiString): TDateTime;
 var
-    flg: string;
+    flg: AnsiString;
     yy,mm,dd: Word;
 begin
     // デルファイの標準関数を使うように変更 2003/2/19
@@ -106,8 +106,8 @@ const
   HEISEI = 1989;
 
 {TDateTimeを、和暦に変換する}
-function DateToWareki(d: TDateTime): string;
-var y, yy, mm, dd: Word; sy: string;
+function DateToWareki(d: TDateTime): AnsiString;
+var y, yy, mm, dd: Word; sy: AnsiString;
 begin
     DecodeDate(d, yy, mm, dd);
     if ((MEIJI<=yy)and(yy<TAISYO))or((TAISYO=yy)and((mm<=6)or((mm=7)and(dd<=30)))) then
@@ -136,8 +136,8 @@ begin
     end;
 end;
 
-function DateToWarekiS(d: string): string;
-var y, yy: Word; sy: string;
+function DateToWarekiS(d: AnsiString): AnsiString;
+var y, yy: Word; sy: AnsiString;
 begin
     // 単純に西暦だけが指定されたか調査
     d := convToHalf(d);

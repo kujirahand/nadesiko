@@ -22,7 +22,7 @@ type
     procedure CustomDecode(XL, XR: TBFWord; var WL, WR: TBFWord);
   public
     constructor Create; override;
-    function Algorithm: string; override;
+    function Algorithm: AnsiString; override;
     procedure Initialize(const Key; KeyBytes: Integer); override;
     function BlockSize: Integer; override;
     procedure EncodeValue(const Src; var Dst); override;
@@ -470,7 +470,7 @@ begin
   Result := 8;
 end;
 
-function TBlowFish.Algorithm: string;
+function TBlowFish.Algorithm: AnsiString;
 begin
   Result := 'BlowFish';
 end;
