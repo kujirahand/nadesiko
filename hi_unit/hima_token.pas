@@ -42,21 +42,21 @@ type
   public
     TokenID : DWORD;
     JosiID  : Integer;
-    Token, Josi: string;
+    Token, Josi: AnsiString;
     NumberToken: Extended;
     Parent: THimaBlock;
     TokenType: TTokenType;
     NextToken: THimaToken; // 次のトークン
     constructor Create(Parent: THimaBlock);
     function CheckNextBlock: THimaToken;
-    function GetConstStr: string;
+    function GetConstStr: AnsiString;
     function GetConstPtr: Pointer;
-    function UCToken: string; // 大文字変換してトークンを得る
+    function UCToken: AnsiString; // 大文字変換してトークンを得る
     function LineNo: Integer; // 親を調べて求める
     function Indent: Integer;
     function FileNo: Integer;
     function DebugInfo: TDebugInfo;
-    function GetAsText: string;
+    function GetAsText: AnsiString;
   end;
 
   THimaBlock = class(THObjectList)
@@ -72,33 +72,33 @@ type
     constructor Create(Parent: THimaFile);
     destructor Destroy; override;
     property Tokens[Index: Integer]: THimaToken read GetToken write SetToken;
-    function GetAsText(kugiri: string): string;
+    function GetAsText(kugiri: AnsiString): AnsiString;
     procedure Add(item: THimaToken);
   end;
 
   THimaFile = class(THObjectList)
   private
-    procedure Analize(src: string); //<--- トークンを区切る関数 ---------------- ***
+    procedure Analize(src: AnsiString); //<--- トークンを区切る関数 ---------------- ***
   public
     Parent    : THimaFiles;
-    Path, Filename : string;
+    Path, Filename : AnsiString;
     Fileno    : Integer;
     TopBlock,
     CurBlock  : THimaBlock;
     constructor Create(Parent: THimaFiles; Fileno: Integer);
-    function GetAsText: string;
+    function GetAsText: AnsiString;
     function TopToken: THimaToken;
     procedure Add(item: THimaBlock);
     //
-    procedure LoadFromFile(Filename: string);
-    procedure SetSource(src: string);
+    procedure LoadFromFile(Filename: AnsiString);
+    procedure SetSource(src: AnsiString);
   end;
 
   THimaFiles = class(THObjectList)
   public
-    function FindFile(Filename: string): THimaFile;
-    function LoadAndAdd(Filename: string): THimaFile;
-    function LoadSourceAdd(SourceText: string; Filename: string): THimaFile;
+    function FindFile(Filename: AnsiString): THimaFile;
+    function LoadAndAdd(Filename: AnsiString): THimaFile;
+    function LoadSourceAdd(SourceText: AnsiString; Filename: AnsiString): THimaFile;
     function FindFileNo(no: Integer): THimaFile;
   end;
 
@@ -111,18 +111,18 @@ type
   private
     FLastID: Integer;
     FFindID: Integer; //**検索用
-    FFindKey: string; //**検索用
+    FFindKey: AnsiString; //**検索用
     function subEnumKeys(item: THHashItem): Boolean;
     function subFindKey(item: THHashItem): Boolean;
-    function GetTango(key: string): THimaTango;
-    procedure SetTango(key: string; const Value: THimaTango);
+    function GetTango(key: AnsiString): THimaTango;
+    procedure SetTango(key: AnsiString; const Value: THimaTango);
   public
     constructor Create;
-    function GetID(key: string; DefaultID: Integer = -1): Integer;
-    procedure SetID(key: string; Value: Integer);
-    function FindKey(id: Integer): string;
-    function EnumKeys: string;
-    property Tangos[key: string]: THimaTango read GetTango write SetTango;
+    function GetID(key: AnsiString; DefaultID: Integer = -1): Integer;
+    procedure SetID(key: AnsiString; Value: Integer);
+    function FindKey(id: Integer): AnsiString;
+    function EnumKeys: AnsiString;
+    property Tangos[key: AnsiString]: THimaTango read GetTango write SetTango;
   end;
 
   THimaJosiList = class(THObjectList)
@@ -131,38 +131,38 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    function GetID(key: string): Integer;
-    procedure SetID(key: string; Value: Integer);
-    function AddID(key: string): Integer;
-    function Find(var p: PChar): string;
-    function ID2Str(id: WORD): string;
+    function GetID(key: AnsiString): Integer;
+    procedure SetID(key: AnsiString; Value: Integer);
+    function AddID(key: AnsiString): Integer;
+    function Find(var p: PAnsiChar): AnsiString;
+    function ID2Str(id: WORD): AnsiString;
     procedure SortByLen;
-    function EnumKeys: string;
+    function EnumKeys: AnsiString;
   end;
 
   THiKuraidori = class
   public
-    kurai: string;
+    kurai: AnsiString;
     bai: Extended;
-    function Comp(var p: PChar): Boolean;
-    constructor Create(akurai: string; abai: Extended);
+    function Comp(var p: PAnsiChar): Boolean;
+    constructor Create(akurai: AnsiString; abai: Extended);
   end;
 
   THiKuraidoriList = class(THObjectList)
   public
-    function FindKurai(var p: PChar; var num: Extended): Boolean;
+    function FindKurai(var p: PAnsiChar; var num: Extended): Boolean;
   end;
 
 
 
 // トークンを切り出す
-function HimaGetWord(var p: PChar; var tokenJosi: string): string;
+function HimaGetWord(var p: PAnsiChar; var tokenJosi: AnsiString): AnsiString;
 // 数字の切り出し
-function HimaGetNumber(var p: PChar; var tokenJosuusi: string): Extended;
+function HimaGetNumber(var p: PAnsiChar; var tokenJosuusi: AnsiString): Extended;
 // 文字列の切り出し
-function HimaGetString(var p: PChar; var lineNo: Integer): string;
+function HimaGetString(var p: PAnsiChar; var lineNo: Integer): AnsiString;
 // 助詞に一致する語があれば抜き出す
-function HimaGetJosi(var p: PChar): string;
+function HimaGetJosi(var p: PAnsiChar): AnsiString;
 
 // 初期登録単語の作成
 procedure setTokenList(sys: TObject);
@@ -170,7 +170,7 @@ procedure setTokenList(sys: TObject);
 procedure setJosiList(sys: TObject);
 
 // ファイルの検索
-function HiFindFile(var fname: string): Boolean;
+function HiFindFile(var fname: AnsiString): Boolean;
 
 
 const
@@ -308,12 +308,12 @@ var
   KuraidoriList: THiKuraidoriList;
 
 
-function HiFindFile(var fname: string): Boolean;
+function HiFindFile(var fname: AnsiString): Boolean;
 var
-  rawpath, path: string;
-  name: string;
+  rawpath, path: AnsiString;
+  name: AnsiString;
 
-  function check(testpath: string): Boolean;
+  function check(testpath: AnsiString): Boolean;
   begin
     Result := False;
     if FileExists(testpath + name) then
@@ -367,7 +367,7 @@ begin
 end;
 
 // トークンを切り出す
-function HimaGetWord(var p: PChar; var tokenJosi: string): string;
+function HimaGetWord(var p: PAnsiChar; var tokenJosi: AnsiString): AnsiString;
 
   procedure HimaGetToJosi; // 格助詞まで
   begin
@@ -415,11 +415,11 @@ function HimaGetWord(var p: PChar; var tokenJosi: string): string;
 var
   i, len: Integer;
 const
-  reigaiku:Array[0..7] of string = (
+  reigaiku:Array[0..7] of Ansistring = (
     'または','もし','違えば','違えばもし','かつ','また',
     'なでしこ','ひらがな'
   );
-  matubiku:Array[0..2] of string = (
+  matubiku:Array[0..2] of Ansistring = (
     '回','以上','以下'
   );
 begin
@@ -434,7 +434,7 @@ begin
   for i := 0 to High(reigaiku) do
   begin
     len := Length(reigaiku[i]);
-    if StrLComp(p, PChar(reigaiku[i]), len) = 0 then
+    if StrLComp(p, PAnsiChar(reigaiku[i]), len) = 0 then
     begin
       Result := reigaiku[i]; Inc(p, len);
       tokenJosi := '';
@@ -474,9 +474,9 @@ begin
 end;
 
 // 数字の切り出し
-function HimaGetNumber(var p: PChar; var tokenJosuusi: string): Extended;
+function HimaGetNumber(var p: PAnsiChar; var tokenJosuusi: AnsiString): Extended;
 var
-  res: string;
+  res: AnsiString;
 
   procedure get16sin;
   begin
@@ -542,7 +542,7 @@ var
   procedure getJosuusi;
   var
     i: Integer;
-    s: string;
+    s: AnsiString;
   begin
     //---------------------
     if (p^ in LeadBytes) or (p^ in ['A'..'Z','a'..'z']) then
@@ -550,7 +550,7 @@ var
       for i := Low(HimaJosuusi) to High(HimaJosuusi) do
       begin
         s := HimaJosuusi[i];
-        if StrLComp(p, PChar(s), Length(s)) = 0 then
+        if StrLComp(p, PAnsiChar(s), Length(s)) = 0 then
         begin
           tokenJosuusi := s;
           //Result := Result + s;
@@ -586,9 +586,9 @@ begin
 end;
 
 // 文字列の切り出し
-function HimaGetString(var p: PChar; var lineNo: Integer): string;
+function HimaGetString(var p: PAnsiChar; var lineNo: Integer): AnsiString;
 var
-  c: string;
+  c: AnsiString;
 begin
   Result := '';
   if p^ = '"' then
@@ -651,7 +651,7 @@ begin
 end;
 
 
-function HimaGetJosi(var p: PChar): string;
+function HimaGetJosi(var p: PAnsiChar): AnsiString;
 begin
   Result := '';
   if p^ = #0 then Exit;
@@ -692,7 +692,7 @@ begin
   inherited;
 end;
 
-function THimaBlock.GetAsText(kugiri: string): string;
+function THimaBlock.GetAsText(kugiri: AnsiString): AnsiString;
 var
   i: Integer;
   token: THimaToken;
@@ -736,14 +736,14 @@ begin
   CurBlock.NextBlock := nil;
 end;
 
-procedure THimaFile.Analize(src: string);
+procedure THimaFile.Analize(src: AnsiString);
 var
   lineNo: Integer;
   indent: Integer;
-  p: PChar;
+  p: PAnsiChar;
   block: THimaBlock;
   token: THimaToken;
-  s, tokenJosi: string;
+  s, tokenJosi: AnsiString;
 
   function countIndent: Integer;
   var tab: Integer;
@@ -785,12 +785,12 @@ var
 
     function chkWord(word:string): Boolean;
     var
-      pp: PChar;
+      pp: PAnsiChar;
     begin
       Result := False;
       pp := p;
       Dec(pp, Length(word));
-      if StrLComp(pp, PChar(word), Length(word)) = 0 then
+      if StrLComp(pp, PAnsiChar(word), Length(word)) = 0 then
       begin
         Result := True;
       end;
@@ -832,7 +832,7 @@ var
 
 begin
   //todo 4: ソースをトークンに切る
-  p := PChar(src);
+  p := PAnsiChar(src);
   lineNo := 1; // 1 からはじめる
 
   // 一番初めのブロックを作る
@@ -1018,7 +1018,7 @@ begin
 end;
 
 
-function THimaFile.GetAsText: string;
+function THimaFile.GetAsText: AnsiString;
 var
   i,j: Integer;
   block: THimaBlock;
@@ -1039,9 +1039,9 @@ end;
 
 
 
-procedure THimaFile.LoadFromFile(Filename: string);
+procedure THimaFile.LoadFromFile(Filename: AnsiString);
 var
-  src, fname, path: string;
+  src, fname, path: AnsiString;
 
 begin
   // パスとファイル名を分解
@@ -1077,7 +1077,7 @@ begin
   end;
 end;
 
-procedure THimaFile.SetSource(src: string);
+procedure THimaFile.SetSource(src: AnsiString);
 begin
   src := HimaSourceConverter(-1, src);
   Self.Filename := '';
@@ -1095,12 +1095,12 @@ end;
 
 { THimaFiles }
 
-function THimaFiles.FindFile(Filename: string): THimaFile;
+function THimaFiles.FindFile(Filename: AnsiString): THimaFile;
 var
   i: Integer;
   h: THimaFile;
 
-  function fp(s: string): string;
+  function fp(s: AnsiString): AnsiString;
   begin
     s := ExtractFileName(s);
     s := getToken_s(s, '.'); // 拡張子の前だけが有効
@@ -1138,7 +1138,7 @@ begin
   end;
 end;
 
-function THimaFiles.LoadAndAdd(Filename: string):THimaFile;
+function THimaFiles.LoadAndAdd(Filename: AnsiString):THimaFile;
 var
   himaFile: THimaFile;
 begin
@@ -1153,10 +1153,10 @@ begin
   end;
 end;
 
-function THimaFiles.LoadSourceAdd(SourceText, Filename: string): THimaFile;
+function THimaFiles.LoadSourceAdd(SourceText, Filename: AnsiString): THimaFile;
 var
   himaFile: THimaFile;
-  src: string;
+  src: AnsiString;
 begin
   himaFile := THimaFile.Create(self, FCount);
   himaFile.Filename := Filename;
@@ -1212,7 +1212,7 @@ begin
 end;
 }
 
-function THimaToken.GetAsText: string;
+function THimaToken.GetAsText: AnsiString;
 begin
   if Self.TokenType = tokenNumber then
   begin
@@ -1231,7 +1231,7 @@ begin
     raise EHimaSyntax.Create(Self.FileNo, Self.LineNo, 'NULL', []);
 end;
 
-function THimaToken.GetConstStr: string;
+function THimaToken.GetConstStr: AnsiString;
 begin
   if (Copy(token,1,1) = '"') and (Copy(token,Length(token),1) = '"') then
   begin
@@ -1269,7 +1269,7 @@ begin
   Result := Self.Parent.LineNo;
 end;
 
-function THimaToken.UCToken: string;
+function THimaToken.UCToken: AnsiString;
 begin
   Result := UpperCaseEx(token);
 end;
@@ -1282,7 +1282,7 @@ begin
   inherited;
 end;
 
-function THimaTangoList.GetID(key: string; DefaultID: Integer): Integer;
+function THimaTangoList.GetID(key: AnsiString; DefaultID: Integer): Integer;
 var
   tango: THimaTango;
 begin
@@ -1311,7 +1311,7 @@ begin
   Result := tango.ID;
 end;
 
-function THimaTangoList.FindKey(id: Integer): string;
+function THimaTangoList.FindKey(id: Integer): AnsiString;
 begin
   FFindKey := '';
   FFindID  := id;
@@ -1319,12 +1319,12 @@ begin
   Result := FFindKey;
 end;
 
-function THimaTangoList.GetTango(key: string): THimaTango;
+function THimaTangoList.GetTango(key: AnsiString): THimaTango;
 begin
   Result := THimaTango(Items[key]);
 end;
 
-procedure THimaTangoList.SetID(key: string; Value: Integer);
+procedure THimaTangoList.SetID(key: AnsiString; Value: Integer);
 var
   g: THimaTango;
 begin
@@ -1342,7 +1342,7 @@ begin
   end;
 end;
 
-procedure THimaTangoList.SetTango(key: string; const Value: THimaTango);
+procedure THimaTangoList.SetTango(key: AnsiString; const Value: THimaTango);
 begin
   Items[key] := Value;
 end;
@@ -1363,7 +1363,7 @@ begin
   end;
 end;
 
-function THimaTangoList.EnumKeys: string;
+function THimaTangoList.EnumKeys: AnsiString;
 begin
   FFindKey := '';
   Each(subEnumKeys);
@@ -1381,7 +1381,7 @@ end;
 
 { THimaJosiList }
 
-function THimaJosiList.AddID(key: string): Integer;
+function THimaJosiList.AddID(key: AnsiString): Integer;
 begin
   Result := GetID(key);
   if Result < 0 then
@@ -1404,7 +1404,7 @@ begin
   inherited;
 end;
 
-function THimaJosiList.EnumKeys: string;
+function THimaJosiList.EnumKeys: AnsiString;
 var
   i: Integer;
   w: THimaTango;
@@ -1418,7 +1418,7 @@ begin
   Result := Trim(Result);
 end;
 
-function THimaJosiList.Find(var p: PChar): string;
+function THimaJosiList.Find(var p: PAnsiChar): AnsiString;
 var
   i: Integer;
   w: THimaTango;
@@ -1427,7 +1427,7 @@ begin
   for i := 0 to Count - 1 do
   begin
     w := Items[i];
-    if StrLComp(p, PChar(w.Key), Length(w.Key)) = 0 then
+    if StrLComp(p, PAnsiChar(w.Key), Length(w.Key)) = 0 then
     begin
       Result := w.Key;
       Inc(p, Length(w.Key));
@@ -1436,7 +1436,7 @@ begin
   end;
 end;
 
-function THimaJosiList.GetID(key: string): Integer;
+function THimaJosiList.GetID(key: AnsiString): Integer;
 var
   i: Integer;
   p: THimaTango;
@@ -1452,7 +1452,7 @@ begin
   end;
 end;
 
-function THimaJosiList.ID2Str(id: WORD): string;
+function THimaJosiList.ID2Str(id: WORD): AnsiString;
 var
   i: Integer;
   p: THimaTango;
@@ -1469,7 +1469,7 @@ begin
   end;
 end;
 
-procedure THimaJosiList.SetID(key: string; Value: Integer);
+procedure THimaJosiList.SetID(key: AnsiString; Value: Integer);
 var
   i: Integer;
   p: THimaTango;
@@ -1504,15 +1504,15 @@ end;
 
 { THiKuraidori }
 
-constructor THiKuraidori.Create(akurai: string; abai: Extended);
+constructor THiKuraidori.Create(akurai: AnsiString; abai: Extended);
 begin
   kurai := akurai;
   bai   := abai;
 end;
 
-function THiKuraidori.Comp(var p: PChar): Boolean;
+function THiKuraidori.Comp(var p: PAnsiChar): Boolean;
 begin
-  if StrLComp(p, PChar(kurai), Length(kurai)) = 0 then
+  if StrLComp(p, PAnsiChar(kurai), Length(kurai)) = 0 then
   begin
     Result := True;
     Inc(p, Length(kurai));
@@ -1524,7 +1524,7 @@ end;
 
 { THiKuraidoriList }
 
-function THiKuraidoriList.FindKurai(var p: PChar;
+function THiKuraidoriList.FindKurai(var p: PAnsiChar;
   var num: Extended): Boolean;
 var
   i: Integer;
@@ -1550,7 +1550,7 @@ end;
 
 procedure setKuraidoriList;
 
-  procedure _add(name: string; bai: Extended);
+  procedure _add(name: AnsiString; bai: Extended);
   begin
     KuraidoriList.Add(THiKuraidori.Create(name, bai));
   end;

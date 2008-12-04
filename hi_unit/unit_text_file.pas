@@ -9,14 +9,14 @@ type
   // バッファリングのあるFileStream
   TKTextFileStream = class(TFileStream)
   private
-    FBuf          : string;
+    FBuf          : AnsiString;
     FReadBufSize  : Integer;
     FEOF          : Boolean;
     preEOF        : Boolean;
   public
-    constructor Create(const FileName: string; Mode: Word);
+    constructor Create(const FileName: AnsiString; Mode: Word);
     destructor Destroy; override;
-    function ReadLn: string;
+    function ReadLn: AnsiString;
     property ReadBufSize: Integer read FReadBufSize write FReadBufSize;
     property EOF: Boolean read FEOF;
   end;
@@ -25,7 +25,7 @@ implementation
 
 { TKTextFileStream }
 
-constructor TKTextFileStream.Create(const FileName: string; Mode: Word);
+constructor TKTextFileStream.Create(const FileName: AnsiString; Mode: Word);
 begin
   inherited Create(FileName, Mode);
   FReadBufSize := 4096 * 2; // 適当
@@ -39,13 +39,13 @@ begin
   inherited;
 end;
 
-function TKTextFileStream.ReadLn: string;
+function TKTextFileStream.ReadLn: AnsiString;
 var
   i: Integer;
-  tmp, retcode: string;
+  tmp, retcode: AnsiString;
 
   procedure ReadNewBuf;
-  var sz: Integer; prebuf: string;
+  var sz: Integer; prebuf: AnsiString;
   begin
     // 新規バッファサイズを確保
     SetLength(FBuf, FReadBufSize);
@@ -79,7 +79,7 @@ var
     end;
   end;
 
-  function findRetCode(s: string): Integer;
+  function findRetCode(s: AnsiString): Integer;
   var
     i: Integer;
   begin

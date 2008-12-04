@@ -19,11 +19,11 @@ type
     FForStack: Boolean;
     function GetValue(Index: Integer): PHiValue;
     procedure SetValue(Index: Integer; const Value: PHiValue);
-    procedure AddFromString(s: string); // 改行で区切って要素追加
-    procedure AddFromStringEx(s: string; splitter: Char); // 改行で区切って要素追加 ... CSVパーサー
-    function GetAsString: string;
-    procedure SetAsTsv(const Value: string);
-    function GetAsTsv: string;
+    procedure AddFromString(s: AnsiString); // 改行で区切って要素追加
+    procedure AddFromStringEx(s: AnsiString; splitter: AnsiChar); // 改行で区切って要素追加 ... CSVパーサー
+    function GetAsString: AnsiString;
+    procedure SetAsTsv(const Value: AnsiString);
+    function GetAsTsv: AnsiString;
     function GetCell(Row, Col: Integer): PHiValue;
     procedure SetCell(Row, Col: Integer; const Value: PHiValue);
   protected
@@ -33,13 +33,13 @@ type
     procedure Clear; override;
     procedure ClearNotFree;
     function FindKey(Key: DWORD): PHiValue;
-    function Join(s:string): string;
-    function JoinAsCSV(splitter:string): string;
+    function Join(s: AnsiString): AnsiString;
+    function JoinAsCSV(splitter: AnsiString): AnsiString;
     procedure Assign(a: THiArray);
     procedure Add(v: PHiValue);
     procedure Sort;
     procedure SortNum;
-    procedure CustomSort(s: string);
+    procedure CustomSort(s: AnsiString);
     procedure SortCsv(Index: Integer);
     procedure SortCsvNum(Index: Integer);
     procedure InsertArray(Index: Integer; a: THiArray);
@@ -52,11 +52,11 @@ type
     function max: HFloat;
     function min: HFloat;
     function PopnVariance: HFloat;
-    function FindIndex(key: string; fromI: Integer): Integer;
-    function CsvPickupHasKey(s: string; Index: Integer=-1): THiArray;
-    function CsvPickupIsKey(s: string; Index: Integer=-1): THiArray;
-    function CsvFind(Col: Integer; key: string; fromRow: Integer=0): Integer;
-    function CsvVagueFind(Col: Integer; key: string; fromRow: Integer=0): Integer;
+    function FindIndex(key: AnsiString; fromI: Integer): Integer;
+    function CsvPickupHasKey(s: AnsiString; Index: Integer=-1): THiArray;
+    function CsvPickupIsKey(s: AnsiString; Index: Integer=-1): THiArray;
+    function CsvFind(Col: Integer; key: AnsiString; fromRow: Integer=0): Integer;
+    function CsvVagueFind(Col: Integer; key: AnsiString; fromRow: Integer=0): Integer;
     function GetColCount: Integer;
     procedure RowColReverse;
     procedure Rotate;
@@ -68,8 +68,8 @@ type
     function CsvInsCol(i: Integer; a: THiArray): PHiValue;
     function CsvDelCol(i: Integer): PHiValue;
     function CsvSum(idx: Integer): HFloat;
-    property AsString: string read GetAsString write AddFromString; // カンマ区切り
-    property AsTSV: string read GetAsTsv write SetAsTsv;
+    property AsString: AnsiString read GetAsString write AddFromString; // カンマ区切り
+    property AsTSV: AnsiString read GetAsTsv write SetAsTsv;
     property Cells[Row, Col: Integer]: PHiValue read GetCell write SetCell;
     property RefCount: Integer read FRefCount write FRefCount;
     property ForStack: Boolean read FForStack write FForStack;
@@ -80,8 +80,8 @@ function  hi_ary_get(v: PHiValue; index: Integer): PHiValue;
 function  hi_ary_getCsv(v: PHiValue; Row, Col: Integer): PHiValue;
 procedure hi_ary_set(v: PHiValue; index: Integer; value: PHiValue);
 function  hi_ary_count(v: PHiValue): Integer;
-procedure hi_ary_setStr(v: PHiValue; index: Integer; value: string);
-function  hi_ary2str(v: PHiValue): string;
+procedure hi_ary_setStr(v: PHiValue; index: Integer; value: AnsiString);
+function  hi_ary2str(v: PHiValue): AnsiString;
 procedure hi_str2ary(v: PHiValue);
 function  hi_ary(v: PHiValue): THiArray;
 
@@ -103,27 +103,27 @@ type
     function subGetAsString(item: THHashItem): Boolean;
     function subEnumKey(item: THHashItem): Boolean;
     function subEnumValue(item: THHashItem): Boolean;
-    function GetValue(key: string): PHiValue;
-    procedure SetValue(key: string; const Value: PHiValue);
+    function GetValue(key: AnsiString): PHiValue;
+    procedure SetValue(key: AnsiString; const Value: PHiValue);
     function subAssignTo(item: THHashItem): Boolean;
-    function GetAsString: string;
-    procedure SetFromString(const Value: string);
+    function GetAsString: AnsiString;
+    procedure SetFromString(const Value: AnsiString);
   public
     procedure Clear; override;
-    function EnumKeys: string;
-    function EnumValues: string;
-    property Values[key: string]: PHiValue read GetValue write SetValue;
+    function EnumKeys: AnsiString;
+    function EnumValues: AnsiString;
+    property Values[key: AnsiString]: PHiValue read GetValue write SetValue;
     procedure Assign(src: THiHash);
     procedure AssignTo(Des: THiHash);
-    property AsString: string read GetAsString write SetFromString;
+    property AsString: AnsiString read GetAsString write SetFromString;
     property RefCount: Integer read FRefCount write FRefCount;
     constructor Create;
     destructor Destroy;override;
   end;
 
 procedure hi_hash_create(v: PHiValue);
-function  hi_hash_get(v: PHiValue; key: string): PHiValue;
-procedure hi_hash_set(v: PHiValue; key: string; value: PHiValue);
+function  hi_hash_get(v: PHiValue; key: AnsiString): PHiValue;
+procedure hi_hash_set(v: PHiValue; key: AnsiString; value: PHiValue);
 function  hi_hash(v: PHiValue): THiHash;
 
 //------------------------------------------------------------------------------
@@ -148,8 +148,8 @@ const
 type
   PHimaRecVarType = ^THimaRecVarType;
   THimaRecVarType = record // 構造体の構成.変数構造体
-    VName: string;  // 変数の名前
-    DType: string;  // データタイプ
+    VName: AnsiString;  // 変数の名前
+    DType: AnsiString;  // データタイプ
     DSize: Integer; // データサイズ
     Index: Integer; // この構造体が構造体の何バイト目にあるかの情報
   end;
@@ -157,7 +157,7 @@ type
   TCallBufferRecord = record
     ptr:Pointer;
     src:PHiValue;
-    dtype:Char;
+    dtype:AnsiChar;
   end;
 
   THimaRecord = class
@@ -166,45 +166,45 @@ type
     FDataTypes: array of THimaRecVarType;
     FDataBuffer: array of TCallBufferRecord;
     FBufferCount: integer;
-    function SetBuffer(ptr: Pointer;src:PHiValue;dtype:Char):Pointer;
+    function SetBuffer(ptr: Pointer;src:PHiValue;dtype:AnsiChar):Pointer;
     procedure BufferClear;
   public
     DataPtr: Pointer;
     constructor Create;
     destructor Destroy; override;
-    procedure SetDataTypes(DataTypes: string;for_stack: boolean = false);// TYPE NAME, TYPE NAME ... とカンマで区切って指定
+    procedure SetDataTypes(DataTypes: AnsiString;for_stack: boolean = false);// TYPE NAME, TYPE NAME ... とカンマで区切って指定
     procedure RecordCreate; // 構造体の実体を作る
     procedure RecordFree;   // 構造体の実体を破棄
-    function FindVar(const name: string): PHimaRecVarType;
-    function FindVarIndex(const name: string): Integer;
+    function FindVar(const name: AnsiString): PHimaRecVarType;
+    function FindVarIndex(const name: AnsiString): Integer;
 
     procedure SetVarNumIndex(Index, value: Integer);
-    procedure SetVarNum(const name: string; value: Integer);
-    function GetVarNum(const name: string): Integer;
+    procedure SetVarNum(const name: AnsiString; value: Integer);
+    function GetVarNum(const name: AnsiString): Integer;
     function GetVarNumIndex(Index:Integer): Integer;
 
     procedure SetVarFloatIndex(Index:Integer; value: Extended);
-    procedure SetVarFloat(const name:string; value: Extended);
-    function GetVarFloat(const name: string): Extended;
+    procedure SetVarFloat(const name: AnsiString; value: Extended);
+    function GetVarFloat(const name: AnsiString): Extended;
     function GetVarFloatIndex(Index:Integer): Extended;
 
-    procedure SetVarStrIndex(Index: Integer;const value: string);
-    procedure SetVarStr(const name: string;const value: string);
+    procedure SetVarStrIndex(Index: Integer;const value: AnsiString);
+    procedure SetVarStr(const name: AnsiString;const value: AnsiString);
 
-    procedure SetPCharIndex(Index: Integer; pv: PChar);
+    procedure SetPAnsiCharIndex(Index: Integer; pv: PAnsiChar);
     procedure SetPointerIndex(Index: Integer; ptr: Pointer);
     function GetPointerIndex(Index: Integer): Pointer;
 
-    function GetVarStr(const name: string): string;
-    function GetVarStrIndex(Index: Integer): string;
+    function GetVarStr(const name: AnsiString): AnsiString;
+    function GetVarStrIndex(Index: Integer): AnsiString;
 
-    procedure SetVarBin(const name: string; value: Pointer; size: Integer);
+    procedure SetVarBin(const name: AnsiString; value: Pointer; size: Integer);
     procedure SetVarBinIndex(index: integer; value: Pointer;size: Integer);
-    function GetVarBinIndex(Index: Integer): String;
+    function GetVarBinIndex(Index: Integer): AnsiString;
 
-    procedure SetValue(const name: string; value: PHiValue);
+    procedure SetValue(const name: AnsiString; value: PHiValue);
     procedure SetValueIndex(Index: Integer; value: PHiValue);
-    function GetValue(const name: string): PHiValue;
+    function GetValue(const name: AnsiString): PHiValue;
     procedure GetValueIndex(Index: Integer; res: PHiValue);
 
     property TotalByte: Integer read FTotalByte;
@@ -213,7 +213,7 @@ type
     procedure CopyDataTo(p: Pointer); // 無保証に全てをコピーする
     procedure Assign(rec: THimaRecord);
     procedure RestoreBuffer;
-    function DumpMemory: string;
+    function DumpMemory: AnsiString;
     function Count: Integer;
   end;
 
@@ -228,7 +228,7 @@ type
   public
     HiClassNameID     : DWORD;
     HiClassInstanceID : DWORD;
-    HiClassDebug      : string; // DEBUG用
+    HiClassDebug      : AnsiString; // DEBUG用
     IsDestructorRunned : Boolean;
     DefaultValue: PHiValue; // default
     constructor Create(InstanceVar: PHiValue);
@@ -239,8 +239,8 @@ type
     procedure Delete(Index: Integer); override;
     procedure Assign(src: THiGroup);
     procedure AddMembers(src: THiGroup);
-    function EnumKeys: string;
-    function EnumKeyAndVlues: string;
+    function EnumKeys: AnsiString;
+    function EnumKeyAndVlues: AnsiString;
     property RefCount: Integer read FRefCount write FRefCount;
     property InstanceVar: PHiValue read FInstanceVar; // 実体を司る変数
   end;
@@ -284,7 +284,7 @@ uses
 
 function conv2float(p: PHiValue): HFloat;
 var
-  s: string;
+  s: AnsiString;
 begin
   if p = nil then
   begin
@@ -304,7 +304,7 @@ begin
 end;
 
 procedure hi_ary_create(var v: PHiValue);
-var s: string;
+var s: AnsiString;
 begin
   // 配列の生成
   if v = nil then
@@ -371,7 +371,7 @@ begin
   THiArray(v.ptr).SetValue(index, value);
 end;
 
-procedure hi_ary_setStr(v: PHiValue; index: Integer; value: string);
+procedure hi_ary_setStr(v: PHiValue; index: Integer; value: AnsiString);
 var
   p: PHiValue;
 begin
@@ -381,7 +381,7 @@ begin
   THiArray(v.ptr).SetValue(index, p);
 end;
 
-function  hi_ary2str(v: PHiValue): string;
+function  hi_ary2str(v: PHiValue): AnsiString;
 begin
   hi_ary_Create(v);
   Result := THiArray(v.ptr).AsString;
@@ -389,7 +389,7 @@ end;
 
 procedure  hi_str2ary(v: PHiValue);
 var
-  s: string;
+  s: AnsiString;
 begin
   if v.VType <> varArray then
   begin
@@ -410,7 +410,7 @@ end;
 
 procedure hi_hash_create(v: PHiValue);
 var
-  str: string;
+  str: AnsiString;
 begin
   v := hi_getLink(v);
   if v.VType <> varHash then
@@ -429,14 +429,14 @@ begin
   end;
 end;
 
-function  hi_hash_get(v: PHiValue; key: string): PHiValue;
+function  hi_hash_get(v: PHiValue; key: AnsiString): PHiValue;
 begin
   v := hi_getLink(v);
   hi_hash_create(v);
   Result := THiHash(v^.ptr).GetValue(key);
 end;
 
-procedure hi_hash_set(v: PHiValue; key: string; value: PHiValue);
+procedure hi_hash_set(v: PHiValue; key: AnsiString; value: PHiValue);
 begin
   hi_hash_create(v);
   THiHash(V^.ptr).SetValue(key, value);
@@ -863,9 +863,9 @@ begin
   inherited;
 end;
 
-function THimaRecord.DumpMemory: string;
+function THimaRecord.DumpMemory: AnsiString;
 var
-  v: string;
+  v: AnsiString;
   i: Integer;
 begin
   SetLength(v, TotalByte);
@@ -879,7 +879,7 @@ begin
   Result := Trim(Result);
 end;
 
-function THimaRecord.SetBuffer(ptr: Pointer;src:PHiValue;dtype:Char):Pointer;
+function THimaRecord.SetBuffer(ptr: Pointer;src:PHiValue;dtype:AnsiChar):Pointer;
 begin
   if Length(FDataBuffer) <= FBufferCount then
     SetLength(FDataBuffer,5);
@@ -934,7 +934,7 @@ begin
 end;
 
 
-function THimaRecord.FindVar(const name: string): PHimaRecVarType;
+function THimaRecord.FindVar(const name: AnsiString): PHimaRecVarType;
 var
   i: Integer;
 begin
@@ -948,7 +948,7 @@ begin
   end;
 end;
 
-function THimaRecord.FindVarIndex(const name: string): Integer;
+function THimaRecord.FindVarIndex(const name: AnsiString): Integer;
 var
   i: Integer;
 begin
@@ -962,7 +962,7 @@ begin
   end;
 end;
 
-function THimaRecord.GetValue(const name: string): PHiValue;
+function THimaRecord.GetValue(const name: AnsiString): PHiValue;
 var
   i: integer;
 begin
@@ -984,11 +984,11 @@ var
 
   procedure forPointer;
   var
-    str:string;
-    size:integer;
+    str: AnsiString;
+    size: Integer;
   begin
     case r.DType[i] of
-      REC_DTYPE_1CHAR:    hi_setStr(Res,pchar(ptr));
+      REC_DTYPE_1CHAR:    hi_setStr(Res,PAnsiChar(ptr));
       REC_DTYPE_1BYTE:    hi_setInt(Res,pbyte(ptr)^);
       REC_DTYPE_2SHORT:   hi_setInt(Res,psmallint(ptr)^);
       REC_DTYPE_2WORD:    hi_setInt(Res,pword(ptr)^);
@@ -1021,7 +1021,7 @@ var
         getToken_s(str,'(');
         size := StrToIntDef(getToken_s(str,')'), 0);
         SetLength(str,size);
-        Move(ptr^,PChar(str)^,size);
+        Move(ptr^,PAnsiChar(str)^,size);
         hi_setStr(Res,str)
       end;
       else
@@ -1055,33 +1055,33 @@ end;
 function THimaRecord.GetPointerIndex(Index: Integer): Pointer;
 var
   r: PHimaRecVarType;
-  pp: PChar;
+  pp: PAnsiChar;
 begin
   r := @FDataTypes[Index];
 
   // 対象アドレスを得る
-  pp := PChar(DataPtr);
+  pp := PAnsiChar(DataPtr);
   Inc(pp, r.Index);
 
   Move(pp^, result, SizeOf(Pointer));
 end;
 
-function THimaRecord.GetVarBinIndex(Index: Integer): String;
+function THimaRecord.GetVarBinIndex(Index: Integer): AnsiString;
 var
   r: PHimaRecVarType;
-  pp: PChar;
+  pp: PAnsiChar;
 begin
   r := @FDataTypes[Index];
 
   // 対象アドレスを得る
-  pp := PChar(DataPtr);
+  pp := PAnsiChar(DataPtr);
   Inc(pp, r.Index);
 
   SetLength(result,r.dsize);
   Move(pp^, result, r.dsize);
 end;
 
-function THimaRecord.GetVarNum(const name: string): Integer;
+function THimaRecord.GetVarNum(const name: AnsiString): Integer;
 var
   i: Integer;
 begin
@@ -1122,7 +1122,7 @@ begin
   end;
 end;
 
-function THimaRecord.GetVarStr(const name: string): string;
+function THimaRecord.GetVarStr(const name: AnsiString): AnsiString;
 var
   i: Integer;
 begin
@@ -1131,22 +1131,22 @@ begin
   Result:=GetVarStrIndex(i);
 end;
 
-function THimaRecord.GetVarStrIndex(Index: Integer): string;
+function THimaRecord.GetVarStrIndex(Index: Integer): AnsiString;
 var
   r: PHimaRecVarType;
-  p: PChar;
+  p: PAnsiChar;
 begin
   r := @FDataTypes[Index];
 
   // 対象アドレスを得る
-  p := PChar(DataPtr);
+  p := PAnsiChar(DataPtr);
   Inc(p, r.Index);
 
   SetLength(Result, r.DSize);
-  StrLCopy(PChar(Result), p, r.DSize);
+  StrLCopy(PAnsiChar(Result), p, r.DSize);
 end;
 
-function THimaRecord.GetVarFloat(const name: string): Extended;
+function THimaRecord.GetVarFloat(const name: AnsiString): Extended;
 var
   i: Integer;
 begin
@@ -1210,14 +1210,14 @@ begin
   BufferClear;
 end;
 
-procedure THimaRecord.SetDataTypes(DataTypes: string;for_stack: boolean = false);
+procedure THimaRecord.SetDataTypes(DataTypes: AnsiString;for_stack: boolean = false);
 var
   sl: THStringList;
   i,sz,total: Integer;
-  stype, _stype, sname: string;
+  stype, _stype, sname: AnsiString;
 
-  function GetTypeSize(s: string): Integer;
-  var a: string;
+  function GetTypeSize(s: AnsiString): Integer;
+  var a: AnsiString;
   begin
     Result := -1;
     case s[1] of
@@ -1290,19 +1290,19 @@ begin
   end;
 end;
 
-procedure THimaRecord.SetPCharIndex(Index: Integer; pv: PChar);
+procedure THimaRecord.SetPAnsiCharIndex(Index: Integer; pv: PAnsiChar);
 var
   r: PHimaRecVarType;
-  pp: PChar;
+  pp: PAnsiChar;
 begin
   r := @FDataTypes[Index];
 
   // 対象アドレスを得る
-  pp := PChar(DataPtr);
+  pp := PAnsiChar(DataPtr);
   Inc(pp, r.Index);
 
   // 文字列へのポインタ(直接)
-  //pv := PChar(value);
+  //pv := PAnsiChar(value);
 
   Move(pv, pp^, SizeOf(Pointer));
 end;
@@ -1310,18 +1310,18 @@ end;
 procedure THimaRecord.SetPointerIndex(Index: Integer; ptr: Pointer);
 var
   r: PHimaRecVarType;
-  pp: PChar;
+  pp: PAnsiChar;
 begin
   r := @FDataTypes[Index];
 
   // 対象アドレスを得る
-  pp := PChar(DataPtr);
+  pp := PAnsiChar(DataPtr);
   Inc(pp, r.Index);
 
   Move(ptr, pp^, SizeOf(Pointer));
 end;
 
-procedure THimaRecord.SetValue(const name: string; value: PHiValue);
+procedure THimaRecord.SetValue(const name: AnsiString; value: PHiValue);
 var
   i: integer;
 begin
@@ -1348,7 +1348,7 @@ var
    f   :Extended;
   begin
     case r.DType[2] of
-      REC_DTYPE_1CHAR:    SetPCharIndex(Index, value^.ptr_s);
+      REC_DTYPE_1CHAR:    SetPAnsiCharIndex(Index, value^.ptr_s);
       REC_DTYPE_1BYTE,
       REC_DTYPE_2SHORT,
       REC_DTYPE_2WORD,
@@ -1387,9 +1387,9 @@ var
         SetBuffer(iptr,value,r.DType[2]);
         SetPointerIndex(Index, iptr);
       end;
-      REC_DTYPE__EXT:     SetPCharIndex(Index, value^.ptr);
+      REC_DTYPE__EXT:     SetPAnsiCharIndex(Index, value^.ptr);
       else
-        SetPCharIndex(Index, value^.ptr);
+        SetPAnsiCharIndex(Index, value^.ptr);
     end;
   end;
 
@@ -1408,7 +1408,7 @@ begin
   end;
 end;
 
-procedure THimaRecord.SetVarBin(const name: string; value: Pointer;
+procedure THimaRecord.SetVarBin(const name: AnsiString; value: Pointer;
   size: Integer);
 var
   i: Integer;
@@ -1422,22 +1422,22 @@ procedure THimaRecord.SetVarBinIndex(index: integer; value: Pointer;
   size: Integer);
 var
   r: PHimaRecVarType;
-  p: PChar;
+  p: PAnsiChar;
 begin
   r := @FDataTypes[Index];
 
   // 対象アドレスを得る
-  p := PChar(DataPtr);
+  p := PAnsiChar(DataPtr);
   Inc(p, r.Index);
 
   // オーバー分を補正
   if size > r.DSize then size := r.DSize;
 
   // コピー
-  Move(PChar(value)^, p^, size);
+  Move(PAnsiChar(value)^, p^, size);
 end;
 
-procedure THimaRecord.SetVarNum(const name: string; value: Integer);
+procedure THimaRecord.SetVarNum(const name: AnsiString; value: Integer);
 var
   i: Integer;
 begin
@@ -1449,7 +1449,7 @@ end;
 procedure THimaRecord.SetVarNumIndex(Index, value: Integer);
 var
   r: PHimaRecVarType;
-  p: PChar;
+  p: PAnsiChar;
   //--------------- for CAST
   FChar: Shortint;
   FByte: Byte;
@@ -1461,7 +1461,7 @@ begin
   r := @FDataTypes[Index];
 
   // 対象アドレスを得る
-  p := PChar(DataPtr);
+  p := PAnsiChar(DataPtr);
   Inc(p, r.Index);
 
   // バイト数の調整
@@ -1476,7 +1476,7 @@ begin
   end;
 end;
 
-procedure THimaRecord.SetVarFloat(const name: string; value: Extended);
+procedure THimaRecord.SetVarFloat(const name: AnsiString; value: Extended);
 var
   i: Integer;
 begin
@@ -1490,7 +1490,7 @@ const
   pow2_64:Extended = High(Int64)+1.0-Low(Int64);
 var
   r: PHimaRecVarType;
-  p: PChar;
+  p: PAnsiChar;
   //--------------- for CAST
   FSingle: Single;
   FDouble: Double;
@@ -1499,7 +1499,7 @@ begin
   r := @FDataTypes[Index];
 
   // 対象アドレスを得る
-  p := PChar(DataPtr);
+  p := PAnsiChar(DataPtr);
   Inc(p, r.Index);
 
   // バイト数の調整
@@ -1529,7 +1529,7 @@ begin
   end;
 end;
 
-procedure THimaRecord.SetVarStr(const name:string;const value: string);
+procedure THimaRecord.SetVarStr(const name: AnsiString;const value: AnsiString);
 var
   i: Integer;
 begin
@@ -1538,23 +1538,23 @@ begin
   SetVarStrIndex(i, value);
 end;
 
-procedure THimaRecord.SetVarStrIndex(Index: Integer;const value: string);
+procedure THimaRecord.SetVarStrIndex(Index: Integer;const value: AnsiString);
 var
   r: PHimaRecVarType;
-  p: PChar;
+  p: PAnsiChar;
 begin
   r := @FDataTypes[Index];
 
   // 対象アドレスを得る
-  p := PChar(DataPtr);
+  p := PAnsiChar(DataPtr);
   Inc(p, r.Index);
 
-  StrLCopy(p, PChar(value), r.DSize);
+  StrLCopy(p, PAnsiChar(value), r.DSize);
 end;
 
 { THiArray }
 
-procedure THiArray.AddFromString(s: string);
+procedure THiArray.AddFromString(s: AnsiString);
 begin
   AddFromStringEx(s, ',');
 end;
@@ -1582,7 +1582,7 @@ begin
   end;
 end;
 
-function THiArray.GetAsString: string;
+function THiArray.GetAsString: AnsiString;
 var
   i: Integer;
   p: PHiValue;
@@ -1696,7 +1696,7 @@ begin
   end;
 end;
 
-function THiArray.Join(s: string): string;
+function THiArray.Join(s: AnsiString): AnsiString;
 var
   i: Integer;
   p: PHiValue;
@@ -1734,11 +1734,11 @@ begin
 
 end;
 
-function THiArray.JoinAsCSV(splitter: string): string;
+function THiArray.JoinAsCSV(splitter: AnsiString): AnsiString;
 var
   i: Integer;
   p: PHiValue;
-  str: string;
+  str: AnsiString;
   seq: Boolean;
 begin
   Result := '';
@@ -1794,7 +1794,7 @@ begin
   end;
 end;
 
-function THiArray.FindIndex(key: string; fromI: Integer): Integer;
+function THiArray.FindIndex(key: AnsiString; fromI: Integer): Integer;
 var
   p: PHiValue;
   i: Integer;
@@ -1853,7 +1853,7 @@ end;
 function ary_sort(A, B: Pointer): Integer; // A>B なら0以上
 var
   pa,pb: PHiValue;
-  sa,sb: string;
+  sa,sb: AnsiString;
 begin
   pa := A;
   pb := B;
@@ -1861,7 +1861,7 @@ begin
   sa := hi_str(pa);
   sb := hi_str(pb);
 
-  Result := StrComp(PChar(sa), PChar(sb));
+  Result := StrComp(PAnsiChar(sa), PAnsiChar(sb));
 end;
 
 procedure THiArray.Sort;
@@ -1890,7 +1890,7 @@ begin
 end;
 
 var
-  sort_custom_str: string;
+  sort_custom_str: AnsiString;
 
 function ary_sort_custom(A, B: Pointer): Integer; // A>B なら0以上
 var
@@ -1908,7 +1908,7 @@ begin
 end;
 
 
-procedure THiArray.CustomSort(s: string);
+procedure THiArray.CustomSort(s: AnsiString);
 var
   a,b, tmpa, tmpb: PHiValue;
 begin
@@ -1938,7 +1938,7 @@ begin
   hi_var_copy(tmpb,b);
 end;
 
-function THiArray.GetAsTsv: string;
+function THiArray.GetAsTsv: AnsiString;
 var
   i: Integer;
   p: PHiValue;
@@ -1972,7 +1972,7 @@ var csv_sort_index: Integer;
 function csv_sort(A, B: Pointer): Integer; // A>B なら0以上
 var
   pa, pb: PHiValue;
-  sa, sb: string;
+  sa, sb: AnsiString;
 begin
   pa := A;
   pb := B;
@@ -1983,7 +1983,7 @@ begin
   sa := hi_str( hi_ary(pa).GetValue(csv_sort_index) );
   sb := hi_str( hi_ary(pb).GetValue(csv_sort_index) );
 
-  Result := StrComp(PChar(sa), PChar(sb));
+  Result := StrComp(PAnsiChar(sa), PAnsiChar(sb));
 end;
 
 function csv_sort_num(A, B: Pointer): Integer; // A>B なら0以上
@@ -2035,7 +2035,7 @@ begin
 end;
 
 var
-  _pickup_key: string;
+  _pickup_key: AnsiString;
 
 function pickup_hasKey(v: PHiValue; param: Integer): Boolean; // ピックアップする場合は TRUE を返す
 begin
@@ -2080,19 +2080,19 @@ begin
   end;
 end;
 
-function THiArray.CsvPickupHasKey(s: string; Index: Integer): THiArray;
+function THiArray.CsvPickupHasKey(s: AnsiString; Index: Integer): THiArray;
 begin
   _pickup_key := s;
   Result := CustomPickup(pickup_hasKey, Index);
 end;
 
-function THiArray.CsvPickupIsKey(s: string; Index: Integer): THiArray;
+function THiArray.CsvPickupIsKey(s: AnsiString; Index: Integer): THiArray;
 begin
   _pickup_key := s;
   Result := CustomPickup(pickup_isKey, Index);
 end;
 
-function THiArray.CsvFind(Col: Integer; key: string;
+function THiArray.CsvFind(Col: Integer; key: AnsiString;
   fromRow: Integer): Integer;
 var
   row, i: Integer;
@@ -2127,7 +2127,7 @@ begin
   end;
 end;
 
-function THiArray.CsvVagueFind(Col: Integer; key: string;
+function THiArray.CsvVagueFind(Col: Integer; key: AnsiString;
   fromRow: Integer): Integer;
 var
   row, i: Integer;
@@ -2189,10 +2189,10 @@ begin
 end;
 
 
-procedure THiArray.AddFromStringEx(s: string; splitter: Char);
+procedure THiArray.AddFromStringEx(s: AnsiString; splitter: AnsiChar);
 var
-  p_last: PChar;
-  function _getToSplitterQuote(var p: PChar): string;
+  p_last: PAnsiChar;
+  function _getToSplitterQuote(var p: PAnsiChar): AnsiString;
   begin
     Result := '';
     Inc(p); // skip `"`
@@ -2216,7 +2216,7 @@ var
     while p^ in [' '] do Inc(p);
   end;
 
-  function _getToSpliterNonQuote(var p: PChar): string;
+  function _getToSpliterNonQuote(var p: PAnsiChar): AnsiString;
   begin
     Result := '';
     while p < p_last do
@@ -2234,7 +2234,7 @@ var
     Self.Add(Result);
   end;
 
-  function _getOneCell(var p: PChar): string;
+  function _getOneCell(var p: PAnsiChar): AnsiString;
   begin
     if p = nil then
     begin
@@ -2252,14 +2252,14 @@ var
   end;
 
 var
-  p: PChar;
-  cell: string;
+  p: PAnsiChar;
+  cell: AnsiString;
   pRow, pCell: PHiValue;
 
 begin
   // ガリガリCSVを読み込んで配列に追加していく
   if s = '' then Exit;
-  p   := PChar(s);
+  p   := PAnsiChar(s);
   p_last := p + Length(s);
   pRow := _addNewRow;
   while p < p_last do
@@ -2300,7 +2300,7 @@ begin
   end;
 end;
 
-procedure THiArray.SetAsTsv(const Value: string);
+procedure THiArray.SetAsTsv(const Value: AnsiString);
 begin
   AddFromStringEx(Value, #9);
 end;
@@ -2403,7 +2403,7 @@ end;
 procedure THiArray.CsvUniqCol(Col: Integer);
 var
   Row, idx: Integer;
-  key: string;
+  key: AnsiString;
 begin
   Row := 0;
   while Row < Count do
@@ -2582,7 +2582,7 @@ procedure THiArray.TrimTop;
 var
   i: Integer;
   p: PHiValue;
-  s: string;
+  s: AnsiString;
 begin
   i := 0;
   while i < (Count-1) do
@@ -2621,7 +2621,7 @@ procedure THiArray.TrimBottom;
 var
   i: Integer;
   p: PHiValue;
-  s: string;
+  s: AnsiString;
 begin
   i := Count - 1;
   while i >= 0 do
@@ -2726,14 +2726,14 @@ begin
   inherited;
 end;
 
-function THiHash.EnumKeys: string;
+function THiHash.EnumKeys: AnsiString;
 begin
   temp.Clear;
   Each(subEnumKey);
   Result := temp.Text;
 end;
 
-function THiHash.EnumValues: string;
+function THiHash.EnumValues: AnsiString;
 begin
   temp.Clear;
   Each(subEnumValue);
@@ -2755,14 +2755,14 @@ begin
   end;
 end;
 
-function THiHash.GetAsString: string;
+function THiHash.GetAsString: AnsiString;
 begin
   temp.Clear;
   Each(subGetAsString);
   Result := temp.text; //trimは危険
 end;
 
-function THiHash.GetValue(key: string): PHiValue;
+function THiHash.GetValue(key: AnsiString): PHiValue;
 var
   i: THiHashItem;
 begin
@@ -2783,13 +2783,13 @@ begin
   if i <> nil then Result := i.value else Result := nil;
 end;
 
-procedure THiHash.SetFromString(const Value: string);
+procedure THiHash.SetFromString(const Value: AnsiString);
 var
-  p, p_last: PChar;
-  n, v: string;
+  p, p_last: PAnsiChar;
+  n, v: AnsiString;
   hv: PHiValue;
 begin
-  p := PChar(Value);
+  p := PAnsiChar(Value);
   p_last := p + Length(Value);
   while p < p_last do
   begin
@@ -2805,7 +2805,7 @@ begin
   end;
 end;
 
-procedure THiHash.SetValue(key: string; const Value: PHiValue);
+procedure THiHash.SetValue(key: AnsiString; const Value: PHiValue);
 var
   i: THiHashItem;
 begin
@@ -2942,7 +2942,7 @@ begin
   inherited;
 end;
 
-function THiGroup.EnumKeyAndVlues: string;
+function THiGroup.EnumKeyAndVlues: AnsiString;
 var
   i: Integer;
   p: PHiValue;
@@ -2966,7 +2966,7 @@ begin
   end;
 end;
 
-function THiGroup.EnumKeys: string;
+function THiGroup.EnumKeys: AnsiString;
 var
   i: Integer;
   p: PHiValue;

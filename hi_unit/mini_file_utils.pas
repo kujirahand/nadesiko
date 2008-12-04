@@ -1,4 +1,8 @@
 unit mini_file_utils;
+//------------------------------------------------------------------------------
+// ファイルに関する簡易な処理
+// Unicode 対応済み
+//------------------------------------------------------------------------------
 
 interface
 
@@ -17,37 +21,37 @@ type
   end;
 
 var
-  DIR_PLUGINS: string = 'plug-ins\';
+  DIR_PLUGINS: AnsiString = 'plug-ins\';
 
 // Open / Save Dialog
-function ShowOpenDialog(hOwner:HWND; Filter, InitDir: string; InitFile: string=''): string;
-function ShowSaveDialog(hOwner:HWND; Filter, InitDir: string; InitFile: string=''): string;
-function OpenFolderDialog(var FolderPath: string; msg: string = ''): boolean;
+function ShowOpenDialog(hOwner:HWND; Filter, InitDir: AnsiString; InitFile: AnsiString=''): AnsiString;
+function ShowSaveDialog(hOwner:HWND; Filter, InitDir: AnsiString; InitFile: AnsiString=''): AnsiString;
+function OpenFolderDialog(var FolderPath: AnsiString; msg: AnsiString = ''): boolean;
 
-function GetSpecialFolder(id: DWORD): string;
+function GetSpecialFolder(id: DWORD): AnsiString;
 
-function WinDir:string;
-function SysDir:string;
-function TempDir:string;
-function DesktopDir:string;
-function SendToDir:string;
-function StartUpDir:string;
-function RecentDir:string;
-function ProgramsDir:string;
-function StartMenuDir:string;
-function MyDocumentDir:string;
-function FavoritesDir: string;
-function MyMusicDir:string;
-function MyPictureDir:string;
-function FontsDir: string;
-function ProgramFilesDir:string;
-function QuickLaunchDir:string;
-function AppDataDir:string;
+function WinDir: AnsiString;
+function SysDir: AnsiString;
+function TempDir: AnsiString;
+function DesktopDir: AnsiString;
+function SendToDir: AnsiString;
+function StartUpDir: AnsiString;
+function RecentDir: AnsiString;
+function ProgramsDir: AnsiString;
+function StartMenuDir: AnsiString;
+function MyDocumentDir: AnsiString;
+function FavoritesDir: AnsiString;
+function MyMusicDir: AnsiString;
+function MyPictureDir: AnsiString;
+function FontsDir: AnsiString;
+function ProgramFilesDir: AnsiString;
+function QuickLaunchDir: AnsiString;
+function AppDataDir: AnsiString;
 
-function RunAndWait(path: string; Hide: Boolean=False): Boolean;
-function OpenApp(path: string; Hide: Boolean=False): Boolean;
-function RunApp(path: string; Hide: Boolean=False): Boolean;
-function RunAppWithPipe(path: string; Hide: Boolean;out ParentPipe,ChildPipe:TPipe): Cardinal;
+function RunAndWait(path: AnsiString; Hide: Boolean=False): Boolean;
+function OpenApp(path: AnsiString; Hide: Boolean=False): Boolean;
+function RunApp(path: AnsiString; Hide: Boolean=False): Boolean;
+function RunAppWithPipe(path: AnsiString; Hide: Boolean;out ParentPipe,ChildPipe:TPipe): Cardinal;
 
 const
 CSIDL_FLAG_CREATE = $8000;//Version 5.0. Combine this CSIDL with any of the following CSIDLs to force the creation of the associated folder.
@@ -101,29 +105,36 @@ CSIDL_SYSTEM = $0025;//Version 5.0. The Windows System folder. A typical path is
 CSIDL_TEMPLATES = $0015;//The file system directory that serves as a common repository for document templates. A typical path is C:\Documents and Settings\username\Templates.
 CSIDL_WINDOWS = $0024;//Version 5.0. The Windows directory or SYSROOT. This corresponds to the %windir% or %SYSTEMROOT% environment variables. A typical path is C:\Windows.
 
-function SHFileDeleteComplete(const Source: string): Boolean;
-function FindDLLFile(fname:string):string;
-function AppPath: string;
-function getUniqFilename(const dir: string; basename: string): string;
+function SHFileDeleteComplete(const Source: AnsiString): Boolean;
+function FindDLLFile(fname: AnsiString): AnsiString;
+function AppPath: AnsiString;
+function getUniqFilename(const dir: AnsiString; basename: AnsiString): AnsiString;
+function CheckPathYen(const path: AnsiString): AnsiString;
 
 implementation
 
 uses unit_string, hima_types;
 
-function AppPath: string;
+
+function CheckPathYen(const path: AnsiString): AnsiString;
+begin
+  Result := IncludeTrailingPathDelimiter(path);
+end;
+
+function AppPath: AnsiString;
 begin
   Result := ExtractFilePath(ParamStr(0));
 end;
 
-function FindDLLFile(fname:string):string;
+function FindDLLFile(fname: AnsiString): AnsiString;
 
-  procedure _ok(dll:string);
+  procedure _ok(dll: AnsiString);
   begin
     Result := dll;
   end;
 
 var
-  f: string;
+  f: AnsiString;
 begin
   Result := '';
   // 絶対パス？
@@ -165,10 +176,10 @@ end;
 
 var uniq_value: Word = 0;
 
-function getUniqFilename(const dir: string; basename: string): string;
+function getUniqFilename(const dir: AnsiString; basename: AnsiString): AnsiString;
 var
-  ext, fdir: string;
-  name: string;
+  ext, fdir: AnsiString;
+  name: AnsiString;
   i: Integer;
   guid: TGUID;
 begin
@@ -192,8 +203,8 @@ begin
 
   // Windows の API を使う方法 .. 一番早いがランダム
   SetLength(Result, MAX_PATH);
-  GetTempFileName(PChar(fdir), PChar(name), 0, PChar(Result));
-  Result := string(PChar(Result));
+  GetTempFileNameA(PAnsiChar(fdir), PAnsiChar(name), 0, PAnsiChar(Result));
+  Result := string(PAnsiChar(Result));
 end;
 
 {
@@ -243,31 +254,31 @@ const
   CSIDL_ADMINTOOLS 		=$0030;//Version 5.0 以降： 管理ツールディレクトリ
 }
 
-function SHFileDeleteComplete(const Source: string): Boolean;
+function SHFileDeleteComplete(const Source: AnsiString): Boolean;
 var
-  foStruct: TSHFileOpStruct;
+  foStruct: _SHFILEOPSTRUCTA;
 begin
   with foStruct do
   begin
     wnd    := 0;
     wFunc  := FO_DELETE;  //フラグ（コピーの場合はFO_COPY）
-    pFrom  := PChar(Source + #0#0);  //するフォルダ
+    pFrom  := PAnsiChar(Source + #0#0);  //するフォルダ
     pTo    := Nil; // 必要
     fFlags := FOF_NOCONFIRMATION or FOF_MULTIDESTFILES or FOF_NOERRORUI;  //ダイアログ非表示
     fAnyOperationsAborted := False;
     hNameMappings         := nil;
     lpszProgressTitle     := nil;
   end;
-  Result := (SHFileOperation(foStruct)=0);
+  Result := (SHFileOperationA(foStruct)=0);
 end;
 
-function GetSpecialFolder(id: DWORD): string;
+function GetSpecialFolder(id: DWORD): AnsiString;
 var
   PID: PItemIDList;
-  Path: array [0..MAX_PATH-1] of Char;
+  Path: array [0..MAX_PATH-1] of AnsiChar;
 begin
   SHGetSpecialFolderLocation(GetDesktopWindow, id, PID);
-  SHGetPathFromIDList(PID, Path);
+  SHGetPathFromIDListA(PID, Path);
   Result := Path;
   if Copy(Result, Length(Result),1)<>'\' then Result := Result + '\';
 end;
@@ -275,7 +286,7 @@ end;
 
 
 {Windowsフォルダを得る}
-function WinDir:string;
+function WinDir: AnsiString;
 var
  TempWin:array[0..MAX_PATH] of Char;
 begin
@@ -285,7 +296,7 @@ begin
 end;
 
 {Systemフォルダを得る}
-function SysDir:string;
+function SysDir: AnsiString;
 var
  TempSys:array[0..MAX_PATH] of Char;
 begin
@@ -295,7 +306,7 @@ begin
 end;
 
 {Tempフォルダを得る}
-function TempDir:string;
+function TempDir: AnsiString;
 var
  TempTmp:array[0..MAX_PATH] of Char;
 begin
@@ -304,67 +315,67 @@ begin
  if Copy(Result,Length(Result),1)<>'\' then Result := Result + '\';
 end;
 
-function DesktopDir:string;
+function DesktopDir: AnsiString;
 begin
    Result := GetSpecialFolder(CSIDL_DESKTOPDIRECTORY);
 end;
-function SendToDir:string;
+function SendToDir: AnsiString;
 begin
    Result := GetSpecialFolder(CSIDL_SENDTO);
 end;
-function StartUpDir:string;
+function StartUpDir: AnsiString;
 begin
    Result := GetSpecialFolder(CSIDL_STARTUP);
 end;
-function RecentDir:string;
+function RecentDir: AnsiString;
 begin
    Result := GetSpecialFolder(CSIDL_RECENT);
 end;
-function ProgramsDir:string;
+function ProgramsDir: AnsiString;
 begin
    Result := GetSpecialFolder(CSIDL_PROGRAMS);
 end;
-function StartMenuDir:string;
+function StartMenuDir: AnsiString;
 begin
    Result := GetSpecialFolder(CSIDL_STARTMENU);
 end;
-function MyDocumentDir:string;
+function MyDocumentDir: AnsiString;
 begin
    Result := GetSpecialFolder(CSIDL_PERSONAL);
 end;
-function FavoritesDir: string;
+function FavoritesDir: AnsiString;
 begin
    Result := GetSpecialFolder(CSIDL_FAVORITES);
 end;
-function MyMusicDir:string;
+function MyMusicDir: AnsiString;
 begin
    Result := GetSpecialFolder(CSIDL_MYMUSIC);
 end;
-function MyPictureDir:string;
+function MyPictureDir: AnsiString;
 begin
    Result := GetSpecialFolder(CSIDL_MYPICTURES);
 end;
-function FontsDir: string;
+function FontsDir: AnsiString;
 begin
    Result := GetSpecialFolder(CSIDL_FONTS);
 end;
-function ProgramFilesDir:string;
+function ProgramFilesDir: AnsiString;
 begin
    Result := GetSpecialFolder(CSIDL_PROGRAM_FILES);
 end;
 
-function QuickLaunchDir:string;
+function QuickLaunchDir: AnsiString;
 begin
    Result := GetSpecialFolder(CSIDL_APPDATA) + 'Microsoft\Internet Explorer\Quick Launch\';
 end;
 
-function AppDataDir:string;
+function AppDataDir: AnsiString;
 begin
    Result := GetSpecialFolder(CSIDL_APPDATA);
 end;
 
 //-------------------------------------------------------------------------
-function CheckFilter(Filter: string): string;
+function CheckFilter(Filter: AnsiString): AnsiString;
 begin
   if Pos('|', Filter) = 0 then
   begin
@@ -378,7 +389,7 @@ begin
   Result := Filter;
 end;
 
-function ReplaceChar(const s: string; fromCH, toCH: Char): string;
+function ReplaceChar(const s: AnsiString; fromCH, toCH: AnsiChar): AnsiString;
 var
   i: Integer;
 begin
@@ -397,11 +408,11 @@ begin
   end;
 end;
 
-function ShowOpenDialog(hOwner:HWND; Filter, InitDir: string; InitFile: string=''): string;
+function ShowOpenDialog(hOwner:HWND; Filter, InitDir: AnsiString; InitFile: AnsiString=''): AnsiString;
 var
-  OFN: TOpenFileName;
-  PATH, s, res: string;
-  p: PChar;
+  OFN: tagOFNA;
+  PATH, s, res: AnsiString;
+  p: PAnsiChar;
 begin
   PATH := InitFile+#0;
   SetLength(PATH,MAX_PATH+5);
@@ -416,21 +427,21 @@ begin
   begin
     lStructSize := 76; // for Delphi6
     hWndOwner := hOwner;
-    lpstrFilter := PChar(Filter);
+    lpstrFilter := PAnsiChar(Filter);
     nFilterIndex := 1;
-    lpstrFile := PChar(PATH);
+    lpstrFile := PAnsiChar(PATH);
     nMaxFile:= MAX_PATH+5;
-    lpstrInitialDir := PChar(InitDir);
+    lpstrInitialDir := PAnsiChar(InitDir);
     Flags := OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_EXPLORER or OFN_ALLOWMULTISELECT;
   end;
 
-  if GetOpenFileName(OFN) then
+  if GetOpenFileNameA(OFN) then
   begin
     SetLength(res, OFN.nMaxFile);
-    ZeroMemory(PChar(res), OFN.nMaxFile);
-    StrMove(PChar(res), OFN.lpstrFile, OFN.nMaxFile);
+    ZeroMemory(PAnsiChar(res), OFN.nMaxFile);
+    StrMove(PAnsiChar(res), OFN.lpstrFile, OFN.nMaxFile);
 
-    Result := ''; p := PChar(res);
+    Result := ''; p := PAnsiChar(res);
 
     // ファイル名の取り出し(マルチ対応版 NULL 区切り配列)
     PATH := getTokenStr(p, #0);
@@ -455,11 +466,11 @@ begin
 end;
 
 
-function ShowSaveDialog(hOwner:HWND; Filter, InitDir: string; InitFile: string=''): string;
+function ShowSaveDialog(hOwner:HWND; Filter, InitDir: AnsiString; InitFile: AnsiString=''): AnsiString;
 var
-  OFN: TOpenFileName;
-  PATH: string;
-  ext: string;
+  OFN: tagOFNA;
+  PATH: AnsiString;
+  ext, tmp: AnsiString;
   extList: THStringList;
 begin
   PATH := InitFile+#0;
@@ -477,27 +488,28 @@ begin
   begin
     lStructSize := 76; // for Delphi6
     hWndOwner := hOwner;
-    lpstrFilter := PChar(Filter);
+    lpstrFilter := PAnsiChar(Filter);
     nFilterIndex := 1;
-    lpstrFile := PChar(PATH);
+    lpstrFile := PAnsiChar(PATH);
 
     nMaxFile:= MAX_PATH+5;
-    lpstrInitialDir := PChar(InitDir);
+    lpstrInitialDir := PAnsiChar(InitDir);
     Flags := OFN_OVERWRITEPROMPT or OFN_HIDEREADONLY;
   end;
 
-  if GetSaveFileName(OFN) then
+  if GetSaveFileNameA(OFN) then
   begin
     SetLength(Result, OFN.nMaxFile);
-    ZeroMemory(PChar(Result), OFN.nMaxFile);
-    StrMove(PChar(Result), OFN.lpstrFile, OFN.nMaxFile);
+    ZeroMemory(PAnsiChar(Result), OFN.nMaxFile);
+    StrMove(PAnsiChar(Result), OFN.lpstrFile, OFN.nMaxFile);
 
-    Result := Trim(string( PChar(Result) ));
+    Result := Trim(string( PAnsiChar(Result) ));
     if ExtractFileExt(Result) = '' then
     begin
       ext := extList.Strings[ (OFN.nFilterIndex-1) * 2 + 1 ];
-      ext := ExtractFileExt(getToken_s(ext, ';'));
-      if (Pos('*', ext) > 0)or(Pos('?', ext) > 0) then ext := '';
+      tmp := string(getToken_s(ext, ';'));
+      ext := ExtractFileExt(tmp);
+      if (Pos(string('*'), ext) > 0)or(Pos(string('?'), ext) > 0) then ext := '';
       Result := ChangeFileExt(Result, ext);
     end;
 
@@ -530,20 +542,20 @@ begin
 end;
 
 {フォルダの参照ダイアログを開く}
-function OpenFolderDialog(var FolderPath: string; msg: string = ''): boolean;
+function OpenFolderDialog(var FolderPath: AnsiString; msg: AnsiString = ''): boolean;
 var
   Malloc: IMalloc;
-  BrowseInfo: TBrowseInfo;
-  DisplayPath: array[0..MAX_PATH] of Char;
+  BrowseInfo: TBrowseInfoA;
+  DisplayPath: array[0..MAX_PATH] of AnsiChar;
   IDList: PItemIdList;
-  Buffer,pFolderPath: PChar;
+  Buffer,pFolderPath: PAnsiChar;
 begin
   Result:=False;
   if msg = '' then msg := 'フォルダを選択してください。';
 
   if Succeeded(SHGetMalloc(Malloc)) then  //IMallocのポインタを取得できたら
   begin
-   pFolderPath:=PChar(FolderPath);       //初期フォルダ指定用
+   pFolderPath:=PAnsiChar(FolderPath);       //初期フォルダ指定用
 
    {BrowseInfo構造体を初期化}
    with BrowseInfo do
@@ -551,19 +563,19 @@ begin
     hwndOwner      := GetActiveWindow();  //D4のSelectDirectoryでは、ここがApplication.Handleになっているので、表示位置がおかしくなる
     pidlRoot       := nil;
     pszDisplayName := DisplayPath;                             //表示名用バッファ
-    lpszTitle      := PChar(msg);
+    lpszTitle      := PAnsiChar(msg);
     ulFlags        := BIF_RETURNONLYFSDIRS{ or BIF_STATUSTEXT};  //通常のフォルダのみ参照可能（特殊フォルダは選択できない）
     lpfn           := @BrowseCallback;                         //コールバック関数指定
     lParam         := LongInt(pFolderPath);                    //初期フォルダ指定
     iImage         := 0;
    end;
 
-   IDlist := SHBrowseForFolder(BrowseInfo); //フォルダ参照ダイアログを表示
+   IDlist := SHBrowseForFolderA(BrowseInfo); //フォルダ参照ダイアログを表示
    if IDlist<>nil then                      //値が返ってきたら
     begin
      Buffer:=Malloc.Alloc(MAX_PATH);        //フォルダパス取得用バッファ
      try
-      SHGetPathFromIDList(IDlist, Buffer);  //フォルダパスを取得
+      SHGetPathFromIDListA(IDlist, Buffer);  //フォルダパスを取得
       FolderPath:=string(Buffer);
      finally
       Malloc.Free(Buffer);
@@ -575,16 +587,16 @@ begin
   end;
 end;
 
-function RunApp(path: string; Hide: Boolean=False): Boolean;
+function RunApp(path: AnsiString; Hide: Boolean=False): Boolean;
 var
     retCode: Integer;
 begin
     if Hide then
     begin
-      retCode := WinExec(PChar(path), SW_HIDE);
+      retCode := WinExec(PAnsiChar(path), SW_HIDE);
     end else
     begin
-      retCode := WinExec(PChar(path), SW_SHOW);
+      retCode := WinExec(PAnsiChar(path), SW_SHOW);
     end;
 
     if retCode > 31 then
@@ -596,7 +608,7 @@ begin
     end;
 end;
 
-function OpenApp(path: string; Hide: Boolean=False): Boolean;
+function OpenApp(path: AnsiString; Hide: Boolean=False): Boolean;
 var
   i: DWORD;
   res: HINST;
@@ -608,17 +620,17 @@ begin
   begin
     i := SW_SHOW;
   end;
-  res := ShellExecute(
-    0, 'open', PChar(path), nil, nil,
+  res := ShellExecuteA(
+    0, 'open', PAnsiChar(path), nil, nil,
     i);
   Result := (res > 32);
 end;
 
-function RunAndWait(path: string; Hide: Boolean): Boolean;
+function RunAndWait(path: AnsiString; Hide: Boolean): Boolean;
 var
   ret: Boolean;
   ecode: Integer;
-  StartupInfo: TStartupInfo;
+  StartupInfo: _STARTUPINFOA;
   ProcessInfo: TProcessInformation;
 begin
   Result := False;
@@ -645,9 +657,9 @@ begin
     lpReserved2 := nil;
   end;
   // 実行
-  ret := CreateProcess(
+  ret := CreateProcessA(
     nil,                        // 実行ファイル名
-    PChar(path),                // コマンドライン
+    PAnsiChar(path),                // コマンドライン
     nil,                        // プロセスのセキュリティ属性
     nil,                        // スレッドのセキュリティ属性
     False,                      // 親プロセスからハンドルを継承するか
@@ -676,17 +688,15 @@ begin
   CloseHandle(ProcessInfo.hThread);
 end;
 
-function RunAppWithPipe(path: string; Hide: Boolean;out ParentPipe,ChildPipe:TPipe): Cardinal;
+function RunAppWithPipe(path: AnsiString; Hide: Boolean;out ParentPipe,ChildPipe:TPipe): Cardinal;
 var
   ret: Boolean;
-  StartupInfo: TStartupInfo;
+  StartupInfo: _STARTUPINFOA;
   ProcessInfo: TProcessInformation;
   hParent: THandle;
   WorkPipe: TPipe;
   Security:TSecurityAttributes;
 begin
-  Result := 0;
-
   hParent:= GetCurrentProcess;
 
   with Security do begin
@@ -738,9 +748,9 @@ begin
     lpReserved2 := nil;
   end;
   // 実行
-  ret := CreateProcess(
+  ret := CreateProcessA(
     nil,                        // 実行ファイル名
-    PChar(path),                // コマンドライン
+    PAnsiChar(path),                // コマンドライン
     nil,                        // プロセスのセキュリティ属性
     nil,                        // スレッドのセキュリティ属性
     True,                       // 親プロセスからハンドルを継承するか

@@ -75,30 +75,30 @@ type
   // 文字列処理クラス
   THStringList = class(THList)
   private
-    function getStrings(Index: Integer): string;
-    procedure setString(Index: Integer; const Value: string);
-    function getText: string;
-    procedure setText(const Value: string);
+    function getStrings(Index: Integer): AnsiString;
+    procedure setString(Index: Integer; const Value: AnsiString);
+    function getText: AnsiString;
+    procedure setText(const Value: AnsiString);
   public
     constructor Create;
     destructor Destroy; override;
     procedure Clear; override;
-    procedure Insert(Index: Integer; s: string);
-    function Add(str: string): Integer;
+    procedure Insert(Index: Integer; s: AnsiString);
+    function Add(str: AnsiString): Integer;
     procedure Delete(Index: Integer); override;
-    function IndexOf(key: string): Integer;
-    procedure SplitText(S: string; Separator: string);
+    function IndexOf(key: AnsiString): Integer;
+    procedure SplitText(S: AnsiString; Separator: AnsiString);
     procedure Move(CurIndex, NewIndex: Integer); override;
-    property Strings[Index: Integer]: string read getStrings write setString; default;
-    property Text: string read getText write setText;
+    property Strings[Index: Integer]: AnsiString read getStrings write setString; default;
+    property Text: AnsiString read getText write setText;
     procedure AddStringList(s: THStringList);
     procedure AddStrings(s: THStringList);
     // file
-    procedure LoadFromFile(Filename: string);
-    procedure SaveToFile(Filename: string);
+    procedure LoadFromFile(Filename: AnsiString);
+    procedure SaveToFile(Filename: AnsiString);
   end;
 
-function CountStrLine(s: string): Integer;
+function CountStrLine(s: AnsiString): Integer;
 
 //------------------------------------------------------------------------------
 // HASH (Linked List) KEY = STRING
@@ -113,7 +113,7 @@ type
   protected
     LinkNext : THHashItem;
   public
-    Key      : string;
+    Key      : AnsiString;
     constructor Create;
   end;
 
@@ -130,16 +130,16 @@ type
   private
     FTable: array of THHashItem;
     FCount: Integer;
-    function GetHashKeyNo(key: string): Integer;
-    function GetItem(Key: string): THHashItem;
-    procedure SetItem(Key: string; const Value: THHashItem);
+    function GetHashKeyNo(key: AnsiString): Integer;
+    function GetItem(Key: AnsiString): THHashItem;
+    procedure SetItem(Key: AnsiString; const Value: THHashItem);
   public
     constructor Create;
     destructor Destroy; override;
     procedure Clear; virtual;
     procedure Add(Item: THHashItem);
-    procedure DeleteKey(key: string);
-    property Items[Key: string]: THHashItem read GetItem write SetItem;
+    procedure DeleteKey(key: AnsiString);
+    property Items[Key: AnsiString]: THHashItem read GetItem write SetItem;
     procedure Each(func: THashEachFunction);
     property Count: Integer read FCount;
   end;
@@ -573,7 +573,7 @@ end;
 
 { THStringList }
 
-function THStringList.Add(str: string): Integer;
+function THStringList.Add(str: AnsiString): Integer;
 var
   p: PString;
 begin
@@ -628,7 +628,7 @@ begin
   inherited;
 end;
 
-function THStringList.getStrings(Index: Integer): string;
+function THStringList.getStrings(Index: Integer): AnsiString;
 var
   p: PString;
 begin
@@ -636,7 +636,7 @@ begin
   Result := p^;
 end;
 
-function THStringList.getText: string;
+function THStringList.getText: AnsiString;
 var
   i: Integer;
 begin
@@ -645,7 +645,7 @@ begin
     Result := Result + Strings[i] + #13#10;
 end;
 
-function THStringList.IndexOf(key: string): Integer;
+function THStringList.IndexOf(key: AnsiString): Integer;
 var
   i: Integer;
 begin
@@ -660,7 +660,7 @@ begin
   end;
 end;
 
-procedure THStringList.Insert(Index: Integer; s: string);
+procedure THStringList.Insert(Index: Integer; s: AnsiString);
 var
   p: PString;
 begin
@@ -669,10 +669,10 @@ begin
   inherited Insert(Index, p);  
 end;
 
-procedure THStringList.LoadFromFile(Filename: string);
+procedure THStringList.LoadFromFile(Filename: AnsiString);
 var
   f: TextFile;
-  line: string;
+  line: AnsiString;
 begin
   AssignFile(f, Filename);
   try
@@ -692,11 +692,11 @@ begin
   inherited Move(CurIndex, NewIndex);
 end;
 
-procedure THStringList.SaveToFile(Filename: string);
+procedure THStringList.SaveToFile(Filename: AnsiString);
 var
   f: TextFile;
   i: Integer;
-  line: string;
+  line: AnsiString;
 begin
   AssignFile(f, Filename);
   try
@@ -711,7 +711,7 @@ begin
   end;
 end;
 
-procedure THStringList.setString(Index: Integer; const Value: string);
+procedure THStringList.setString(Index: Integer; const Value: AnsiString);
 var
   p: PString;
 begin
@@ -719,13 +719,13 @@ begin
   p^ := Value;
 end;
 
-procedure THStringList.setText(const Value: string);
+procedure THStringList.setText(const Value: AnsiString);
 var
-  s: string;
-  p, p_last: PChar;
+  s: AnsiString;
+  p, p_last: PAnsiChar;
 begin
   Clear;
-  p := PChar(Value);
+  p := PAnsiChar(Value);
   p_last := p + Length(Value);
   while p < p_last do
   begin
@@ -735,9 +735,9 @@ begin
 end;
 
 
-procedure THStringList.SplitText(S, Separator: string);
+procedure THStringList.SplitText(S, Separator: AnsiString);
 var
-  v: string;
+  v: AnsiString;
 begin
   while S <> '' do
   begin
@@ -746,7 +746,7 @@ begin
   end;
 end;
 
-function CountStrLine(s: string): Integer;
+function CountStrLine(s: AnsiString): Integer;
 var
   ss: THStringList;
 begin
@@ -797,7 +797,7 @@ begin
   FCount := 0;
 end;
 
-procedure THHash.DeleteKey(key: string);
+procedure THHash.DeleteKey(key: AnsiString);
 var
   n: Integer;
   p, pr: THHashItem;
@@ -827,7 +827,7 @@ begin
   inherited;
 end;
 
-function THHash.GetHashKeyNo(key: string): Integer;
+function THHash.GetHashKeyNo(key: AnsiString): Integer;
 var
   i, iTo: Integer;
 begin
@@ -838,7 +838,7 @@ begin
   Result := Result mod MAX_HASH_TABLE; // テーブルサイズに収まるように
 end;
 
-function THHash.GetItem(Key: string): THHashItem;
+function THHash.GetItem(Key: AnsiString): THHashItem;
 var
   no: Integer;
   p: THHashItem;
@@ -874,7 +874,7 @@ begin
   end;
 end;
 
-procedure THHash.SetItem(Key: string; const Value: THHashItem);
+procedure THHash.SetItem(Key: AnsiString; const Value: THHashItem);
 var
   no: Integer;
   p, pr: THHashItem;

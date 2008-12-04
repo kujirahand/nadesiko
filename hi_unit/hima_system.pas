@@ -30,7 +30,7 @@ type
     function FindSpace(id: Integer): THiScope;
     function GetVar(id: DWORD): PHiValue; // 現在のネームスペースから変数を検索
     function GetVarNamespace(NamespaceID: Integer; WordID: DWORD): PHiValue; // ネームスペース中の変数を取得する
-    function EnumKeysAndValues(UserOnly: Boolean = False): string;
+    function EnumKeysAndValues(UserOnly: Boolean = False): AnsiString;
     function GetTopSpace: THiScope;
     property CurSpace: THiScope read GetCurSpace write SetCurSpaceE;
   end;
@@ -51,8 +51,8 @@ type
     constructor Create;
     destructor Destroy; override;
     procedure ExecGroupDestructor;
-    function EnumKeys: string;
-    function EnumKeysAndValues(UserOnly: Boolean = False): string;
+    function EnumKeys: AnsiString;
+    function EnumKeysAndValues(UserOnly: Boolean = False): AnsiString;
   end;
 
   THiGroupScope = class(THList) // グループはグローバル変数としても登録されるのでここでは解放しない
@@ -80,11 +80,11 @@ type
   // プラグイン管理用
   THiPlugin = class
   public
-    FullPath: string;
+    FullPath: AnsiString;
     Handle: THandle;
     ID: Integer;
     Used: Boolean;
-    memo: string;
+    memo: AnsiString;
     NotUseAutoFree: Boolean;
     constructor Create;
     destructor Destroy; override;
@@ -92,10 +92,10 @@ type
   //
   THiPlugins = class(THObjectList) // プラグイン管理用リスト
   public
-    function UsedList: string; // 利用されたプラグインのみを返す
-    procedure ChangeUsed(id, PluginID: Integer; Value: Boolean; memo: string; IzonFiles: string);
-    procedure addDll(fname: string);
-    function find(fname:String): Integer;
+    function UsedList: AnsiString; // 利用されたプラグインのみを返す
+    procedure ChangeUsed(id, PluginID: Integer; Value: Boolean; memo: AnsiString; IzonFiles: AnsiString);
+    procedure addDll(fname: AnsiString);
+    function find(fname: AnsiString): Integer;
   end;
 
   THiBreakType = (btNone, btContinue, btBreak);
@@ -119,21 +119,21 @@ type
     // システム命令の追加を管理するタグ(ヘルプファイル番号の重複を防ぐための簡易的なもの)
     FTime: DWORD;
     FRunFlagList: THList;
-    FPluginsDir: string;
+    FPluginsDir: AnsiString;
     // システム命令を追加する
     procedure CheckInitSystem;
     procedure AddSystemCommand;
     // 命令の追加に使う手続き
-    procedure AddStrVar(const name, value: string; const tag: Integer; const kaisetu, yomigana: string);
-    procedure AddIntVar(const name: string; const value, tag: Integer; const kaisetu, yomigana: string);
-    procedure AddFunc(name, argStr: string; tag: Integer; func: THimaSysFunction; kaisetu, yomigana: string; FIzonFiles: string = '');
+    procedure AddStrVar(const name, value: AnsiString; const tag: Integer; const kaisetu, yomigana: AnsiString);
+    procedure AddIntVar(const name: AnsiString; const value, tag: Integer; const kaisetu, yomigana: AnsiString);
+    procedure AddFunc(name, argStr: AnsiString; tag: Integer; func: THimaSysFunction; kaisetu, yomigana: AnsiString; FIzonFiles: AnsiString = '');
     procedure constListClear;
     function GetGlobalSpace: THiScope;
-    function GetBokanPath: string;
+    function GetBokanPath: AnsiString;
     procedure SetFlagEnd(const Value: Boolean);
     function getRunFlag: THiRunFlag;
     procedure setRunFlag(RunFlag: THiRunFlag);
-    procedure SetPluginsDir(const Value: string);
+    procedure SetPluginsDir(const Value: AnsiString);
   public
     TokenFiles: THimaFiles;
     TopSyntaxNode: TSyntaxNode;
@@ -171,49 +171,49 @@ type
     LastFileNo: Integer; // デバッグのために
     LastLineNo: Integer;
     FDummyGroup: PHiValue;
-    FIncludeBasePath: string; // 取り込み中のBasePath
+    FIncludeBasePath: AnsiString; // 取り込み中のBasePath
     runtime_error: Boolean;
     //
     constructor Create;
     destructor Destroy; override;
     // --- 外部から操作される部分 ---
-    function LoadFromFile(Source: string): Integer;       // ソース読み込み→構文木作成
-    function LoadSourceText(Source, SourceName: string): Integer; // ソース読み込み→構文木作成
+    function LoadFromFile(Source: AnsiString): Integer;       // ソース読み込み→構文木作成
+    function LoadSourceText(Source, SourceName: AnsiString): Integer; // ソース読み込み→構文木作成
     function Run: PHiValue;                       // 読み込んだ構文木を実行
     procedure Run2;                               // 読み込んだ構文木を実行(値を返さない)
-    function Eval(Source: string): PHiValue;      // ソース文字列を指定するとすぐ実行する
-    procedure Eval2(Source: string);              // ソース文字列を指定するとすぐ実行する(値を返さない)
+    function Eval(Source: AnsiString): PHiValue;      // ソース文字列を指定するとすぐ実行する
+    procedure Eval2(Source: AnsiString);              // ソース文字列を指定するとすぐ実行する(値を返さない)
     function GetVariable(VarID: DWORD): PHiValue; // 変数の取得
     function GetVariableNoGroupScope(VarID: DWORD): PHiValue; // 変数の取得
-    function GetVariableS(vname: string): PHiValue; // 変数の取得
-    function ExpandStr(s: string): string;       // 文字列の展開
+    function GetVariableS(vname: AnsiString): PHiValue; // 変数の取得
+    function ExpandStr(s: AnsiString): AnsiString;       // 文字列の展開
     procedure AddSystemFileCommand;               // ちょっと危険？なファイル関連の命令をシステムに追加する
     procedure LoadPlugins;                         // プラグインのロード
     function ErrorContinue: PHiValue;             // エラーで止まったノードを続ける
     procedure ErrorContinue2;
     // --- たまに使う部分
-    function ImportFile(FName: string; var node: TSyntaxNode): PHiValue; // 取り込み
+    function ImportFile(FName: AnsiString; var node: TSyntaxNode): PHiValue; // 取り込み
     function RunNode(node: TSyntaxNode; IsNoGetter: Boolean = False): PHiValue; // 構文木を渡して実行させる
     procedure RunNode2(node: TSyntaxNode; IsNoGetter: Boolean = False);         // 構文木を渡して実行させる(値を返さない)
     function CreateHiValue(VarId: Integer = 0): PHiValue;
     function Local: THiScope;
     procedure PushScope; // ローカルスコープの作成
     procedure PopScope;  // ローカルスコープの破棄
-    procedure SetSetterGetter(VarName, SetterName, GetterName:string; tag: Integer; Description, yomi: string); // セッターゲッターの設定
-    function AddFunction(name, argStr: string; func: THimaSysFunction; tag: Integer; IzonFiles: string): Boolean;
-    function DebugProgram(n: TSyntaxNode; lang: THiOutLangType = langNako): string;
-    function DebugProgramNadesiko: string;
+    procedure SetSetterGetter(VarName, SetterName, GetterName: AnsiString; tag: Integer; Description, yomi: AnsiString); // セッターゲッターの設定
+    function AddFunction(name, argStr: AnsiString; func: THimaSysFunction; tag: Integer; IzonFiles: AnsiString): Boolean;
+    function DebugProgram(n: TSyntaxNode; lang: THiOutLangType = langNako): AnsiString;
+    function DebugProgramNadesiko: AnsiString;
     function RunGroupEvent(group: PHiValue; memberId: DWORD): PHiValue;
     function RunGroupMethod(group, method: PHiValue; args: THObjectList): PHiValue;
     property Global: THiScope read GetGlobalSpace;
-    property BokanPath: string read GetBokanPath;
+    property BokanPath: AnsiString read GetBokanPath;
     property FlagEnd: Boolean read FFlagEnd write SetFlagEnd;
-    function GetSourceText(FileNo: Integer): string;
+    function GetSourceText(FileNo: Integer): AnsiString;
     procedure Test;
     procedure PushRunFlag; // Eval などで実行を遮る時に使う
     procedure PopRunFlag;
-    function makeDllReport: string;
-    property PluginsDir: string read FPluginsDir write SetPluginsDir;
+    function makeDllReport: AnsiString;
+    property PluginsDir: AnsiString read FPluginsDir write SetPluginsDir;
   end;
 
   TImportNakoSystem = procedure; stdcall;
@@ -225,8 +225,8 @@ procedure HiSystemReset; // Reset...
 
 // 簡易用手続き
 // 単語ID から 単語名を得る
-function hi_id2tango(id: DWORD): string;
-function hi_tango2id(tango: string): DWORD;
+function hi_id2tango(id: DWORD): AnsiString;
+function hi_tango2id(tango: AnsiString): DWORD;
 function hi_id2fileno(id: DWORD): Integer;
 
 procedure _initTag;
@@ -261,12 +261,12 @@ begin
 end;
 
 // 単語ID から 単語名を得る
-function hi_id2tango(id: DWORD): string;
+function hi_id2tango(id: DWORD): AnsiString;
 begin
   Result := HiSystem.TangoList.FindKey(id);
 end;
 
-function hi_tango2id(tango: string): DWORD;
+function hi_tango2id(tango: AnsiString): DWORD;
 begin
   Result := HiSystem.TangoList.GetID(tango);
 end;
@@ -336,9 +336,9 @@ end;
 
 { THiSystem }
 
-procedure THiSystem.AddFunc(name, argStr: string; tag: Integer;
-  func: THimaSysFunction; kaisetu, yomigana: string;
-  FIzonFiles: string = '');
+procedure THiSystem.AddFunc(name, argStr: AnsiString; tag: Integer;
+  func: THimaSysFunction; kaisetu, yomigana: AnsiString;
+  FIzonFiles: AnsiString = '');
 var item: PHiValue; id: Integer;
 begin
   name := DeleteGobi(name);
@@ -358,8 +358,8 @@ begin
   end;
 end;
 
-function THiSystem.AddFunction(name, argStr: string;
-  func: THimaSysFunction; tag: Integer; IzonFiles: string): Boolean;
+function THiSystem.AddFunction(name, argStr: AnsiString;
+  func: THimaSysFunction; tag: Integer; IzonFiles: AnsiString): Boolean;
 var item: PHiValue; id: Integer;
 begin
   // 外部/内部からのコマンド追加
@@ -388,8 +388,8 @@ begin
   end;
 end;
 
-procedure THiSystem.AddIntVar(const name: string; const value, tag: Integer;
-  const kaisetu, yomigana: string);
+procedure THiSystem.AddIntVar(const name: AnsiString; const value, tag: Integer;
+  const kaisetu, yomigana: AnsiString);
 var item: PHiValue; id: Integer;
 begin
   id := TangoList.GetID(DeleteGobi(name), tag);
@@ -401,8 +401,8 @@ begin
   hi_setInt(item, value);
 end;
 
-procedure THiSystem.AddStrVar(const name, value: string; const tag: Integer;
-  const kaisetu, yomigana: string);
+procedure THiSystem.AddStrVar(const name, value: AnsiString; const tag: Integer;
+  const kaisetu, yomigana: AnsiString);
 var item: PHiValue; id: Integer;
 begin
   id := TangoList.GetID(DeleteGobi(name), tag);
@@ -416,7 +416,7 @@ end;
 
 procedure THiSystem.AddSystemCommand;
 
-  function _setCmdLine: string;
+  function _setCmdLine: AnsiString;
   var
     i: Integer;
     p, a: PHiValue;
@@ -432,7 +432,7 @@ procedure THiSystem.AddSystemCommand;
     end;
   end;
 
-  procedure Reserved(name, argStr: string; tag: Integer; kaisetu, yomigana: string);
+  procedure Reserved(name, argStr: AnsiString; tag: Integer; kaisetu, yomigana: AnsiString);
   var
     id: Integer;
     item: PHiValue;
@@ -448,7 +448,7 @@ procedure THiSystem.AddSystemCommand;
     item.Designer := 1;
   end;
 
-  function getRuntime: string;
+  function getRuntime: AnsiString;
   begin
     Result := UpperCase(ExtractFileName(ParamStr(0)));
   end;
@@ -1086,7 +1086,7 @@ begin
   Global.RegistVar(Result);
 end;
 
-function THiSystem.DebugProgram(n: TSyntaxNode; lang: THiOutLangType): string;
+function THiSystem.DebugProgram(n: TSyntaxNode; lang: THiOutLangType): AnsiString;
 begin
   Result := '';
   while n <> nil do
@@ -1108,7 +1108,7 @@ begin
   end;
 end;
 
-function THiSystem.DebugProgramNadesiko: string;
+function THiSystem.DebugProgramNadesiko: AnsiString;
 var
   i: Integer;
   d: TSyntaxDefFunction;
@@ -1214,7 +1214,7 @@ begin
   if (p <> nil)and(p.Registered = 0) then hi_var_free(p);
 end;
 
-function THiSystem.Eval(Source: string): PHiValue;
+function THiSystem.Eval(Source: AnsiString): PHiValue;
 var
   parser: THiParser;
   f:THimaFile;
@@ -1264,7 +1264,7 @@ begin
   //</フラグの回復>
 end;
 
-procedure THiSystem.Eval2(Source: string);
+procedure THiSystem.Eval2(Source: AnsiString);
 var
   p: PHiValue;
 begin
@@ -1272,24 +1272,24 @@ begin
   if (p <> nil) and (p.Registered = 0) then hi_var_free(p);
 end;
 
-function THiSystem.ExpandStr(s: string): string;
+function THiSystem.ExpandStr(s: AnsiString): AnsiString;
 var
-  c, EOS, n: string;
-  p: PChar;
+  c, EOS, n: AnsiString;
+  p: PAnsiChar;
 
-  function subEval(w: string): string;
+  function subEval(w: AnsiString): AnsiString;
   var
     vid: Integer;
     n: Integer;
     v: PHiValue;
-    p: PChar;
-    dummy, c, s: string;
+    p: PAnsiChar;
+    dummy, c, s: AnsiString;
   begin
     w := HimaSourceConverter(-1, w);
     if w='' then begin Result := ''; Exit; end;
 
     // シーケンスか？
-    p := PChar(w); Result := '';
+    p := PAnsiChar(w); Result := '';
     while p^ <> #0 do
     begin
       case p^ of
@@ -1344,7 +1344,7 @@ var
         end;
       end;
     end;
-    w := string(PChar(p));
+    w := string(PAnsiChar(p));
     if (w = '')or(w = #0) then Exit;
 
     vid := hi_tango2id(DeleteGobi(w));
@@ -1364,7 +1364,7 @@ var
       Result := '';
   end;
 
-  function get_tenkai_end(var p: PChar): string;
+  function get_tenkai_end(var p: PAnsiChar): AnsiString;
   begin
     Result := '';
     while p^ <> #0 do
@@ -1378,7 +1378,7 @@ var
 
 begin
   Result := ''; if s = '' then Exit;
-  p := PChar(s);
+  p := PAnsiChar(s);
 
   // 展開の必要性を調べる
   c := getOneChar(p);
@@ -1421,7 +1421,7 @@ begin
   end;
 end;
 
-function THiSystem.GetBokanPath: string;
+function THiSystem.GetBokanPath: AnsiString;
 begin
   Result := hi_str(GetVariable(hi_tango2id('母艦パス')));
 end;
@@ -1445,7 +1445,7 @@ begin
   Result.CurNode          :=  CurNode;
 end;
 
-function THiSystem.GetSourceText(FileNo: Integer): string;
+function THiSystem.GetSourceText(FileNo: Integer): AnsiString;
 var
   f: THimaFile;
 begin
@@ -1479,18 +1479,18 @@ begin
   Result := Namespace.GetVar(VarID);
 end;
 
-function THiSystem.GetVariableS(vname: string): PHiValue;
+function THiSystem.GetVariableS(vname: AnsiString): PHiValue;
 begin
   Result := GetVariable(hi_tango2id(vname));
 end;
 
-function THiSystem.ImportFile(FName: string; var node: TSyntaxNode): PHiValue;
+function THiSystem.ImportFile(FName: AnsiString; var node: TSyntaxNode): PHiValue;
 var
   f: THimaFile;
   parser: THiParser;
   oldNamespace: THiScope;
   n: TSyntaxNode;
-  tmpPath: string;
+  tmpPath: AnsiString;
 begin
   CheckInitSystem;
 
@@ -1535,7 +1535,7 @@ begin
   FIncludeBasePath := tmpPath;
 end;
 
-function THiSystem.LoadFromFile(Source: string): Integer;
+function THiSystem.LoadFromFile(Source: AnsiString): Integer;
 var
   f: THimaFile;
   parser: THiParser;
@@ -1560,7 +1560,7 @@ procedure THiSystem.LoadPlugins;
 var
   F:TSearchRec;
   dll, dllpath: THStringList;
-  path, s: string;
+  path, s: AnsiString;
   i: Integer;
   h: THandle;
   proc   : TImportNakoSystem;
@@ -1568,8 +1568,8 @@ var
   plugin : THiPlugin;
   PluginInit: procedure (h: DWORD); stdcall;
 
-  procedure chkDLL(name: string);
-  var s: string;
+  procedure chkDLL(name: AnsiString);
+  var s: AnsiString;
   begin
     s := UpperCase(ExtractFileName(name));
     if s = 'DNAKO.DLL' then Exit;
@@ -1581,10 +1581,10 @@ var
     end;
   end;
 
-  function chk_header(s: string): Boolean;
+  function chk_header(s: AnsiString): Boolean;
   var
     m: THFileStream;
-    b: string;
+    b: AnsiString;
   begin
     Result := False;
     try
@@ -1665,7 +1665,7 @@ begin
     s := dllpath.Strings[i];
     // ヘッダを見てLoadLibraryできるかどうかチェックする
     if chk_header(s) = False then Continue;
-    h := LoadLibraryEx(PChar(s), 0, 0);
+    h := LoadLibraryExA(PAnsiChar(s), 0, 0);
     if h = 0 then
     begin
       errLog('err.load.plugin=' + s);
@@ -1709,7 +1709,7 @@ begin
   dll.Free;
 end;
 
-function THiSystem.LoadSourceText(Source, SourceName: string): Integer; // return FileNo
+function THiSystem.LoadSourceText(Source, SourceName: AnsiString): Integer; // return FileNo
 var
   f: THimaFile;
   parser: THiParser;
@@ -1898,7 +1898,7 @@ function THiSystem.RunNode(node: TSyntaxNode; IsNoGetter: Boolean): PHiValue;
 // -----
   procedure __PRINT_DEBUG_STR__;
   var
-    s: string;
+    s: AnsiString;
   begin
     s := Format('%d:%0.4d (%2d): ',[node.DebugInfo.FileNo, node.DebugInfo.LineNo,node.SyntaxLevel]);
     s := s + RepeatStr('　　', node.SyntaxLevel);
@@ -2091,8 +2091,8 @@ begin
    CurNode := RunFlag.CurNode;
 end;
 
-procedure THiSystem.SetSetterGetter(VarName, SetterName, GetterName: string;
-  tag: Integer; Description, yomi: string);
+procedure THiSystem.SetSetterGetter(VarName, SetterName, GetterName: AnsiString;
+  tag: Integer; Description, yomi: AnsiString);
 var
   VarID, SetterID, GetterID: DWORD;
   pVar: PHiValue;
@@ -2124,9 +2124,9 @@ begin
   if p.Registered = 0 then hi_var_free(p);
 end;
 
-function THiSystem.makeDllReport: string;
+function THiSystem.makeDllReport: AnsiString;
 var
-  s: string;
+  s: AnsiString;
 begin
   s := s + '; --- なでしこ解析レポート ---'#13#10;
   s := s + '[import]'#13#10;
@@ -2138,7 +2138,7 @@ begin
   Result := s;
 end;
 
-procedure THiSystem.SetPluginsDir(const Value: string);
+procedure THiSystem.SetPluginsDir(const Value: AnsiString);
 begin
   FPluginsDir := Value;
   mini_file_utils.DIR_PLUGINS := Value;
@@ -2162,12 +2162,12 @@ begin
   inherited;
 end;
 
-function THiScope.EnumKeys: string;
+function THiScope.EnumKeys: AnsiString;
 begin
   Each(subEnumKeys, @Result);
 end;
 
-function THiScope.EnumKeysAndValues(UserOnly: Boolean = False): string;
+function THiScope.EnumKeysAndValues(UserOnly: Boolean = False): AnsiString;
 begin
   if UserOnly then
     Each(subEnumKeysAndValuesUserOnly, @Result)
@@ -2227,7 +2227,7 @@ function THiScope.subEnumKeysAndValues(item: PHIDHashItem;
 var
   p: PString;
   v: PHiValue;
-  s: string;
+  s: AnsiString;
 begin
   Result := True;
   p := ptr;
@@ -2247,7 +2247,7 @@ begin
   end;
 
   s := JReplace(s, #13#10, '{\n}');
-  if Length(s) > 256 then s := sjis_copyByte(PChar(s), 256) + '...';
+  if Length(s) > 256 then s := sjis_copyByte(PAnsiChar(s), 256) + '...';
 
 
   if Length(p^) > 65535 then
@@ -2429,7 +2429,7 @@ begin
   inherited;
 end;
 
-function THiNamespace.EnumKeysAndValues(UserOnly: Boolean): string;
+function THiNamespace.EnumKeysAndValues(UserOnly: Boolean): AnsiString;
 var
   i: Integer;
   s: THiScope;
@@ -2578,7 +2578,7 @@ end;
 
 { THiPlugins }
 
-procedure THiPlugins.addDll(fname: string);
+procedure THiPlugins.addDll(fname: AnsiString);
 var
   p: THiPlugin;
 begin
@@ -2593,8 +2593,8 @@ begin
   Self.Add(p);
 end;
 
-procedure THiPlugins.ChangeUsed(id, PluginID: Integer; Value: Boolean; memo: string;
-  IzonFiles: string);
+procedure THiPlugins.ChangeUsed(id, PluginID: Integer; Value: Boolean; memo: AnsiString;
+  IzonFiles: AnsiString);
 var
   p: THiPlugin;
   sl: THStringList;
@@ -2621,11 +2621,11 @@ begin
   end;
 end;
 
-function THiPlugins.find(fname: String): Integer;
+function THiPlugins.find(fname: AnsiString): Integer;
 var
   i: Integer;
   p: THiPlugin;
-  name: string;
+  name: AnsiString;
 begin
   Result := -1;
   name := UpperCase(ExtractFileName(fname));
@@ -2641,7 +2641,7 @@ begin
   end;
 end;
 
-function THiPlugins.UsedList: string;
+function THiPlugins.UsedList: AnsiString;
 var
   i: Integer;
   p: THiPlugin;

@@ -13,12 +13,12 @@ uses
 
 //==============================================================================
 // 簡単に質問するダイアログ
-function MsgInput(msg: string; caption: string = ''; InitValue: string = '';
-  Cancel: string = ''; ImeMode: DWORD = 0): string;
+function MsgInput(msg: AnsiString; caption: AnsiString = ''; InitValue: AnsiString = '';
+  Cancel: AnsiString = ''; ImeMode: DWORD = 0): AnsiString;
 
 //==============================================================================
 // パス操作
-function AppPath: string;
+function AppPath: AnsiString;
 
 //==============================================================================
 // その他
@@ -28,7 +28,7 @@ procedure SetImeOnOff(h: HWND; b: Boolean);
 procedure SetImeMode(h: HWND; mode: Cardinal);
 
 var
-  DialogTitle: string;
+  DialogTitle: AnsiString;
   DialogParentHandle: HWND;
 
 {$R mini_func.res}
@@ -41,7 +41,7 @@ type
     Text,
     InitValue,
     Result,
-    CancelValue: string;
+    CancelValue: AnsiString;
     ImeMode: Integer;
   end;
 
@@ -143,8 +143,8 @@ begin
   end;
 end;
 
-function MsgInput(msg: string; caption: string = ''; InitValue: string = '';
-  Cancel: string = ''; ImeMode: DWORD = 0): string;
+function MsgInput(msg: AnsiString; caption: AnsiString = ''; InitValue: AnsiString = '';
+  Cancel: AnsiString = ''; ImeMode: DWORD = 0): AnsiString;
 begin
   MsgInputOpt.Caption   := caption;
   MsgInputOpt.Text      := msg;
@@ -159,7 +159,7 @@ end;
 
 //==============================================================================
 // パスなど
-function AppPath: string;
+function AppPath: AnsiString;
 begin
   Result := ExtractFilePath(ParamStr(0));
 end;

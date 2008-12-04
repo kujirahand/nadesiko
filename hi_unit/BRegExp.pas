@@ -33,7 +33,7 @@ unit BRegExp;
 {
 [使い方]
 
-var s: string;
+var s: AnsiString;
     i: Integer;
 
 begin
@@ -94,37 +94,37 @@ DLL_BREGEXP = 'BREGEXP.DLL';
 //DLL_BREGEXP = 'bregonig.dll';
 
 type
-PPChar=^PChar;
+PPAnsiChar=^PAnsiChar;
 TBRegExpRec=packed record
-    outp: PChar;        // 置換え結果先頭ポインタ
-    outendp: PChar;     // 置換え結果末尾ポインタ
+    outp: PAnsiChar;        // 置換え結果先頭ポインタ
+    outendp: PAnsiChar;     // 置換え結果末尾ポインタ
     splitctr: Integer;  // split 結果カウンタ
-    splitp: PPChar;     // split 結果ポインタポインタ
+    splitp: PPAnsiChar;     // split 結果ポインタポインタ
     rsv1: Integer;      // 予約済み
-    parap: PChar;       // コマンド文字列先頭ポインタ ('s/xxxxx/yy/gi')
-    paraendp: PChar;    // コマンド文字列末尾ポインタ
-    transtblp: PChar;   // tr テーブルへのポインタ
-    startp: PPChar;     // マッチした文字列への先頭ポインタ
-    endp: PPChar;       // マッチした文字列への末尾ポインタ
+    parap: PAnsiChar;       // コマンド文字列先頭ポインタ ('s/xxxxx/yy/gi')
+    paraendp: PAnsiChar;    // コマンド文字列末尾ポインタ
+    transtblp: PAnsiChar;   // tr テーブルへのポインタ
+    startp: PPAnsiChar;     // マッチした文字列への先頭ポインタ
+    endp: PPAnsiChar;       // マッチした文字列への末尾ポインタ
     nparens: Integer;   // match/subst 中の括弧の数
 end;
 pTBRegExpRec=^TBRegExpRec;
 (*
-function BMatch(str, target, targetendp: PChar;
-                var rxp: pTBRegExpRec; msg: PChar): Boolean; cdecl;
+function BMatch(str, target, targetendp: PAnsiChar;
+                var rxp: pTBRegExpRec; msg: PAnsiChar): Boolean; cdecl;
     external 'bregexp.dll';
-function BSubst(str, target, targetendp: PChar;
-                var rxp: pTBRegExpRec; msg: PChar): Boolean; cdecl;
+function BSubst(str, target, targetendp: PAnsiChar;
+                var rxp: pTBRegExpRec; msg: PAnsiChar): Boolean; cdecl;
     external 'bregexp.dll';
-function BTrans(str, target, targetendp: PChar;
-                var rxp: pTBRegExpRec; msg: PChar): Boolean; cdecl;
+function BTrans(str, target, targetendp: PAnsiChar;
+                var rxp: pTBRegExpRec; msg: PAnsiChar): Boolean; cdecl;
     external 'bregexp.dll';
-function BSplit(str, target, targetendp: PChar; limit: Integer;
-                var rxp: pTBRegExpRec; msg: PChar): Boolean; cdecl;
+function BSplit(str, target, targetendp: PAnsiChar; limit: Integer;
+                var rxp: pTBRegExpRec; msg: PAnsiChar): Boolean; cdecl;
     external 'bregexp.dll';
 procedure BRegFree(rx: pTBRegExpRec); cdecl;
     external 'bregexp.dll' name 'BRegfree';
-function BRegExpVersion: PChar; cdecl;
+function BRegExpVersion: PAnsiChar; cdecl;
     external 'bregexp.dll' name 'BRegexpVersion';
 *)
 //=====================================================================
@@ -136,51 +136,51 @@ EBRegExpError=class(Exception) end;
 TBRegExpMode=(brxNone, brxMatch, brxSplit);
 TBRegExp=class(TObject)
   private
-    BMatch:function(str, target, targetendp: PChar;
-                var rxp: pTBRegExpRec; msg: PChar): Boolean; cdecl;
-    BSubst:function(str, target, targetendp: PChar;
-                var rxp: pTBRegExpRec; msg: PChar): Boolean; cdecl;
-    BTrans:function(str, target, targetendp: PChar;
-                var rxp: pTBRegExpRec; msg: PChar): Boolean; cdecl;
-    BSplit:function(str, target, targetendp: PChar; limit: Integer;
-                var rxp: pTBRegExpRec; msg: PChar): Boolean; cdecl;
+    BMatch:function(str, target, targetendp: PAnsiChar;
+                var rxp: pTBRegExpRec; msg: PAnsiChar): Boolean; cdecl;
+    BSubst:function(str, target, targetendp: PAnsiChar;
+                var rxp: pTBRegExpRec; msg: PAnsiChar): Boolean; cdecl;
+    BTrans:function(str, target, targetendp: PAnsiChar;
+                var rxp: pTBRegExpRec; msg: PAnsiChar): Boolean; cdecl;
+    BSplit:function(str, target, targetendp: PAnsiChar; limit: Integer;
+                var rxp: pTBRegExpRec; msg: PAnsiChar): Boolean; cdecl;
     BRegFree:procedure(rx: pTBRegExpRec); cdecl;
-    BRegExpVersion:function: PChar; cdecl;
+    BRegExpVersion:function: PAnsiChar; cdecl;
   private
     Mode: TBRegExpMode;
-    pTargetString: PChar;
+    pTargetString: PAnsiChar;
     pBRegExp: PTBRegExpRec;
     function GetMatchPos: Integer;
     function GetMatchLength: Integer;
     function GetSplitCount: Integer;
-    function GetSplitStrings(index: Integer): string;
-    function GetMatchStrings(index:Integer): string;
+    function GetSplitStrings(index: Integer): AnsiString;
+    function GetMatchStrings(index:Integer): AnsiString;
     function GetMatchCount: Integer;
     function GetCount: Integer;
-    function GetStrings(index: Integer): string;
-    function GetLastCommand: string;
-    function GetText: string;
-    procedure CheckCommand(const Command: string);
+    function GetStrings(index: Integer): AnsiString;
+    function GetLastCommand: AnsiString;
+    function GetText: AnsiString;
+    procedure CheckCommand(const Command: AnsiString);
   public
     hDll:THandle;
     constructor Create;
     destructor Destroy; override;
   public
-    function Match(const Command, TargetString: string): Boolean;
-    function Subst(const Command: string; var TargetString: string): Boolean;
-    function Split(const Command, TargetString: string; Limit: Integer): Boolean;
-    function Trans(const Command: string;var TargetString: string): Boolean;
-    property LastCommand: string read GetLastCommand;
+    function Match(const Command, TargetString: AnsiString): Boolean;
+    function Subst(const Command: AnsiString; var TargetString: AnsiString): Boolean;
+    function Split(const Command, TargetString: AnsiString; Limit: Integer): Boolean;
+    function Trans(const Command: AnsiString;var TargetString: AnsiString): Boolean;
+    property LastCommand: AnsiString read GetLastCommand;
     property MatchPos: Integer read GetMatchPos;
     property MatchLength: Integer read GetMatchLength;
     property Count: Integer read GetCount;
-    property Strings[index: Integer]: string read GetStrings; default;
-    property Text: string read GetText;
+    property Strings[index: Integer]: AnsiString read GetStrings; default;
+    property Text: AnsiString read GetText;
 end;
 
 //=====================================================================
 
-var PATH_BREGEXP_DLL:string = DLL_BREGEXP;
+var PATH_BREGEXP_DLL: AnsiString = DLL_BREGEXP;
 
 implementation
 
@@ -198,7 +198,7 @@ end;
 //=====================================================================
 // 前回のコマンド文字列を返す
 
-function TBRegExp.GetLastCommand: string;
+function TBRegExp.GetLastCommand: AnsiString;
 var len: Integer;
 begin
     if pBRegExp=nil then begin
@@ -213,12 +213,12 @@ end;
 //=====================================================================
 // 前回と異なるコマンドであればキャッシュをクリアする内部手続き
 
-procedure TBRegExp.CheckCommand(const Command: string);
-var p,q: PChar;
+procedure TBRegExp.CheckCommand(const Command: AnsiString);
+var p,q: PAnsiChar;
 begin
     if pBRegExp=nil then Exit;
     p:= pBRegExp.parap - 1;
-    q:= PChar(@Command[1]) - 1;
+    q:= PAnsiChar(@Command[1]) - 1;
     repeat
         Inc(p);
         Inc(q);
@@ -232,8 +232,8 @@ end;
 
 //=====================================================================
 
-function TBRegExp.Match(const Command, TargetString: string): Boolean;
-var ErrorString: string;
+function TBRegExp.Match(const Command, TargetString: AnsiString): Boolean;
+var ErrorString: AnsiString;
     i: Integer;
 begin
     CheckCommand(Command);
@@ -242,33 +242,33 @@ begin
     if TargetString='' then begin // エラー回避
         i:=0;
         Result:=BMatch(
-            PChar(Command),
-            PChar(@i),
-            PChar(@i)+1,    
+            PAnsiChar(Command),
+            PAnsiChar(@i),
+            PAnsiChar(@i)+1,    
             pBRegExp,
-            PChar(ErrorString));
+            PAnsiChar(ErrorString));
     end else begin
         Result:=BMatch(
-            PChar(Command),
-            PChar(TargetString),
-            PChar(TargetString)+Length(TargetString),
+            PAnsiChar(Command),
+            PAnsiChar(TargetString),
+            PAnsiChar(TargetString)+Length(TargetString),
             pBRegExp,
-            PChar(ErrorString));
+            PAnsiChar(ErrorString));
     end;
-    SetLength(ErrorString, StrLen(PChar(ErrorString)));
+    SetLength(ErrorString, StrLen(PAnsiChar(ErrorString)));
     if ErrorString<>'' then
         raise EBRegExpError.Create(ErrorString);
     if Result then Mode:= brxMatch;
-    pTargetString:= PChar(TargetString);
+    pTargetString:= PAnsiChar(TargetString);
 end;
 
 //=====================================================================
 
-function TBRegExp.Subst(const Command: string;
-                        var TargetString: string): Boolean;
-var TextBuffer: string;
-var ErrorString: string;
-    ep,sp: PPChar;
+function TBRegExp.Subst(const Command: AnsiString;
+                        var TargetString: AnsiString): Boolean;
+var TextBuffer: AnsiString;
+var ErrorString: AnsiString;
+    ep,sp: PPAnsiChar;
     i: Integer;
 begin
     TextBuffer := '';
@@ -280,12 +280,12 @@ begin
     SetLength(ErrorString, BREGEXP_ERROR_MAX);
     Mode:=brxNone;
     Result:=BSubst(
-        PChar(Command),
-        PChar(TargetString),
-        PChar(TargetString)+Length(TargetString),
+        PAnsiChar(Command),
+        PAnsiChar(TargetString),
+        PAnsiChar(TargetString)+Length(TargetString),
         pBRegExp,
-        PChar(ErrorString));
-    SetLength(ErrorString,StrLen(PChar(ErrorString)));
+        PAnsiChar(ErrorString));
+    SetLength(ErrorString,StrLen(PAnsiChar(ErrorString)));
     if ErrorString<>'' then 
         raise EBRegExpError.Create(ErrorString);
 
@@ -305,9 +305,9 @@ end;
 
 //=====================================================================
 
-function TBRegExp.Trans(const Command: string;
-                        var TargetString: string): Boolean;
-var ErrorString: string;
+function TBRegExp.Trans(const Command: AnsiString;
+                        var TargetString: AnsiString): Boolean;
+var ErrorString: AnsiString;
 begin
     CheckCommand(Command);
     Mode:=brxNone;
@@ -315,12 +315,12 @@ begin
         TargetString:= #0;
     SetLength(ErrorString, BREGEXP_ERROR_MAX);
     Result:=BTrans(
-        PChar(Command),
-        PChar(TargetString),
-        PChar(TargetString)+Length(TargetString),
+        PAnsiChar(Command),
+        PAnsiChar(TargetString),
+        PAnsiChar(TargetString)+Length(TargetString),
         pBRegExp,
-        PChar(ErrorString));
-    SetLength(ErrorString,StrLen(PChar(ErrorString)));
+        PAnsiChar(ErrorString));
+    SetLength(ErrorString,StrLen(PAnsiChar(ErrorString)));
     if ErrorString<>'' then
         raise EBRegExpError.Create(ErrorString);
     if Result then TargetString:=pBRegExp^.outp;
@@ -328,10 +328,10 @@ end;
 
 //=====================================================================
 
-function TBRegExp.Split(const Command, TargetString: string;
+function TBRegExp.Split(const Command, TargetString: AnsiString;
                         Limit: Integer): Boolean;
-var ErrorString: string;
-    t: string;
+var ErrorString: AnsiString;
+    t: AnsiString;
 begin
     CheckCommand(Command);
     SetLength(ErrorString, BREGEXP_ERROR_MAX);
@@ -339,22 +339,22 @@ begin
     if TargetString='' then begin // エラー回避
         t:= #0;
         Result:=BSplit(
-            PChar(Command),
-            PChar(t),
-            PChar(t)+1,
+            PAnsiChar(Command),
+            PAnsiChar(t),
+            PAnsiChar(t)+1,
             Limit,
             pBRegExp,
-            PChar(ErrorString));
+            PAnsiChar(ErrorString));
     end else begin
         Result:=BSplit(
-            PChar(Command),
-            PChar(TargetString),
-            PChar(TargetString)+Length(TargetString),
+            PAnsiChar(Command),
+            PAnsiChar(TargetString),
+            PAnsiChar(TargetString)+Length(TargetString),
             Limit,
             pBRegExp,
-            PChar(ErrorString));
+            PAnsiChar(ErrorString));
     end;
-    SetLength(ErrorString,StrLen(PChar(ErrorString)));
+    SetLength(ErrorString,StrLen(PAnsiChar(ErrorString)));
     if ErrorString<>'' then
         raise EBRegExpError.Create(ErrorString);
     Mode:=brxSplit;
@@ -409,7 +409,7 @@ end;
 
 //=====================================================================
 
-function TBRegExp.GetStrings(index: Integer): string;
+function TBRegExp.GetStrings(index: Integer): AnsiString;
 begin
     Result:='';
     case Mode of
@@ -424,8 +424,8 @@ end;
 
 //=====================================================================
 
-function TBRegExp.GetMatchStrings(index:Integer):string;
-var sp,ep: PPChar;
+function TBRegExp.GetMatchStrings(index:Integer): AnsiString;
+var sp,ep: PPAnsiChar;
 begin
     Result:='';
     if (index<0) or (index>=GetMatchCount) then
@@ -433,14 +433,14 @@ begin
     sp:=pBRegExp^.startp; Inc(sp, index);
     ep:=pBRegExp^.endp;   Inc(ep, index);
     SetLength(Result,Integer(ep^)-Integer(sp^));
-    Move(sp^^,PChar(Result)^,Integer(ep^)-Integer(sp^));
+    Move(sp^^,PAnsiChar(Result)^,Integer(ep^)-Integer(sp^));
 end;
 
 //=====================================================================
 
-function TBRegExp.GetSplitStrings(index:Integer): string;
-var p: PPChar;
-    sp,ep: PChar;
+function TBRegExp.GetSplitStrings(index:Integer): AnsiString;
+var p: PPAnsiChar;
+    sp,ep: PAnsiChar;
 begin
     if (index<0) or (index>=GetSplitCount) then
         raise EBRegExpError.Create('index out of range');
@@ -448,7 +448,7 @@ begin
     Inc(p,index*2); sp:=p^;
     Inc(p);         ep:=p^;
     SetLength(Result,Integer(ep)-Integer(sp));
-    Move(sp^,PChar(Result)^,Integer(ep)-Integer(sp));
+    Move(sp^,PAnsiChar(Result)^,Integer(ep)-Integer(sp));
 end;
 
 //=====================================================================
@@ -459,7 +459,7 @@ var
 begin
   { DLL の動的呼び出し }
   PATH_BREGEXP_DLL := FindDLLFile(DLL_BREGEXP);
-  hDll := LoadLibrary(PChar(PATH_BREGEXP_DLL));
+  hDll := LoadLibraryA(PAnsiChar(PATH_BREGEXP_DLL));
   if hDll <= 0 then
   begin
     hDll := LoadLibrary(DLL_BREGEXP);
@@ -480,7 +480,7 @@ begin
   end;
 end;
 
-function TBRegExp.GetText: string;
+function TBRegExp.GetText: AnsiString;
 var i: Integer;
 begin
   Result:='';

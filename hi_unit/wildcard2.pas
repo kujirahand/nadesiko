@@ -4,8 +4,7 @@ unit wildcard2;
 ●●●　VB上位互換のワイルドカード　●●●
 
 ================================================================================
-【製作】桜峰春 (kujira@kujirahand.com) http://nadesi.com
-【】
+【製作】http://nadesi.com
 ================================================================================
 "*"      : 任意の0文字以上の文字列
 "?"      : 任意の1文字
@@ -65,38 +64,38 @@ type
 
   TKWSeq = class
   public
-    function IsMatch(var p: PChar): Boolean; virtual; abstract;
-    function IsTopMatch(var p: PChar): Boolean; virtual; abstract;
+    function IsMatch(var p: PAnsiChar): Boolean; virtual; abstract;
+    function IsTopMatch(var p: PAnsiChar): Boolean; virtual; abstract;
   end;
 
   TKWArray = array of TKWSeq;
 
   TKWChar = class(TKWSeq)
   public
-    Data: string;
-    constructor Create(ch: string);
-    function IsMatch(var p: PChar): Boolean; override;
-    function IsTopMatch(var p: PChar): Boolean; override;
+    Data: AnsiString;
+    constructor Create(ch: AnsiString);
+    function IsMatch(var p: PAnsiChar): Boolean; override;
+    function IsTopMatch(var p: PAnsiChar): Boolean; override;
   end;
 
   TKWAsterisk = class(TKWSeq)
   public
     Parent: TKWPattern;
     constructor Create(AParent: TKWPattern);
-    function IsMatch(var p: PChar): Boolean; override;
-    function IsTopMatch(var p: PChar): Boolean; override;
+    function IsMatch(var p: PAnsiChar): Boolean; override;
+    function IsTopMatch(var p: PAnsiChar): Boolean; override;
   end;
 
   TKWQuestion = class(TKWSeq)
   public
-    function IsMatch(var p: PChar): Boolean; override;
-    function IsTopMatch(var p: PChar): Boolean; override;
+    function IsMatch(var p: PAnsiChar): Boolean; override;
+    function IsTopMatch(var p: PAnsiChar): Boolean; override;
   end;
 
   TKWSharp = class(TKWSeq)
   public
-    function IsMatch(var p: PChar): Boolean; override;
-    function IsTopMatch(var p: PChar): Boolean; override;
+    function IsMatch(var p: PAnsiChar): Boolean; override;
+    function IsTopMatch(var p: PAnsiChar): Boolean; override;
   end;
 
   TKWSelectPattern = (patOne, patPlus, patAsterisk, patWord);
@@ -107,27 +106,27 @@ type
     Sets: TStringList;
     Pattern: TKWSelectPattern;
     IsNot: Boolean;
-    constructor Create(AParent: TKWPattern; var p: PChar); overload;
-    constructor Create(AParent: TKWPattern; s: string); overload;
+    constructor Create(AParent: TKWPattern; var p: PAnsiChar); overload;
+    constructor Create(AParent: TKWPattern; s: AnsiString); overload;
     destructor Destroy; override;
-    function IsMatch(var p: PChar): Boolean; override;
-    function IsTopMatch(var p: PChar): Boolean; override;
+    function IsMatch(var p: PAnsiChar): Boolean; override;
+    function IsTopMatch(var p: PAnsiChar): Boolean; override;
   end;
 
   TKWKakkoFrom = class(TKWSeq)
   public
     Parent: TKWPattern;
     constructor Create(AParent: TKWPattern);
-    function IsMatch(var p: PChar): Boolean; override;
-    function IsTopMatch(var p: PChar): Boolean; override;
+    function IsMatch(var p: PAnsiChar): Boolean; override;
+    function IsTopMatch(var p: PAnsiChar): Boolean; override;
   end;
 
   TKWKakkoTo = class(TKWSeq)
   public
     Parent: TKWPattern;
     constructor Create(AParent: TKWPattern);
-    function IsMatch(var p: PChar): Boolean; override;
-    function IsTopMatch(var p: PChar): Boolean; override;
+    function IsMatch(var p: PAnsiChar): Boolean; override;
+    function IsTopMatch(var p: PAnsiChar): Boolean; override;
   end;
 
   TKWString = class
@@ -145,37 +144,37 @@ type
 
   TKWPattern = class(TKWString)
   protected
-    function IsMatchPChar(var p: PChar): Boolean;    // 完全にマッチ
-    function IsTopMatchPChar(var p: PChar): Boolean; // 先頭にマッチ
+    function IsMatchPAnsiChar(var p: PAnsiChar): Boolean;    // 完全にマッチ
+    function IsTopMatchPAnsiChar(var p: PAnsiChar): Boolean; // 先頭にマッチ
   public
     Index: Integer;
     Pickup: TStringList;
-    PickupBegin: PChar;
-    constructor Create(str: string);
+    PickupBegin: PAnsiChar;
+    constructor Create(str: AnsiString);
     destructor Destroy; override;
-    procedure SetPattern(str: string); // パターン文字列の再設定
+    procedure SetPattern(str: AnsiString); // パターン文字列の再設定
     procedure MoveNext;
     function HasNext: Boolean;
     function Cur: TKWSeq;
-    function IsMatch(s: string): Boolean;            // 完全にマッチ
-    function IsTopMatch(var s: string): Boolean;     // 先頭マッチ
-    function Replace(Src, NewStr: string; ReplaceAll: Boolean): string; // 検索パターンは Create の時にセットする
-    function Split(Src: string): TStringList;
-    function SubMatch(Src: string): string; // 部分的にマッチした部分を抽出
-    function getToken(var Src: string): string; // マッチした部分までを切り取る
+    function IsMatch(s: AnsiString): Boolean;            // 完全にマッチ
+    function IsTopMatch(var s: AnsiString): Boolean;     // 先頭マッチ
+    function Replace(Src, NewStr: AnsiString; ReplaceAll: Boolean): AnsiString; // 検索パターンは Create の時にセットする
+    function Split(Src: AnsiString): TStringList;
+    function SubMatch(Src: AnsiString): AnsiString; // 部分的にマッチした部分を抽出
+    function getToken(var Src: AnsiString): AnsiString; // マッチした部分までを切り取る
   end;
 
-function getOneChar(var p: PChar): string;overload;
-function getOneChar(var p: PChar;const p_last:PChar): string;overload;
+function getOneChar(var p: PAnsiChar): AnsiString;overload;
+function getOneChar(var p: PAnsiChar;const p_last:PAnsiChar): AnsiString;overload;
 
-function JReplace(str, sFind, sNew: string): string;
-function MatchesMask(const Filename, Mask: string): Boolean;
-function IsMatch(const str, pattern: string; var pickup: TStringList): Boolean;
-function IsTopMatch(var str: string; pattern: string; var pickup: TStringList): Boolean;
-function WildReplace(Src, FindStr, NewStr: string; ReplaceAll: Boolean): string;
-function WildSplit(Src, FindStr: string): TStringList;
-function WildSubMatch(const str, pattern: string; var pickup: TStringList): string;
-function WildGetToken(var Src: string; splitter: string; var pickup: TStringList): string;
+function JReplace(str, sFind, sNew: AnsiString): AnsiString;
+function MatchesMask(const Filename, Mask: AnsiString): Boolean;
+function IsMatch(const str, pattern: AnsiString; var pickup: TStringList): Boolean;
+function IsTopMatch(var str: AnsiString; pattern: AnsiString; var pickup: TStringList): Boolean;
+function WildReplace(Src, FindStr, NewStr: AnsiString; ReplaceAll: Boolean): AnsiString;
+function WildSplit(Src, FindStr: AnsiString): TStringList;
+function WildSubMatch(const str, pattern: AnsiString; var pickup: TStringList): AnsiString;
+function WildGetToken(var Src: AnsiString; splitter: AnsiString; var pickup: TStringList): AnsiString;
 
 procedure TestAll;
 procedure TestWildcard1;
@@ -261,7 +260,7 @@ end;
 procedure TestWildcard3;
 var
   pickup: TStringList;
-  str: string;
+  str: AnsiString;
 begin
   pickup := nil;
   assert(MatchesMask('ウタダヒカル','*[!ア-ン]')=False);
@@ -291,9 +290,9 @@ begin
 end;
 
 
-function LCMapStringExHalf(const str: string; MapFlag: DWORD): string;
+function LCMapStringExHalf(const str: AnsiString; MapFlag: DWORD): AnsiString;
 var
-  pDes: PChar;
+  pDes: PAnsiChar;
   len,len2: Integer;
 begin
   if str='' then begin Result := ''; Exit; end;
@@ -302,19 +301,19 @@ begin
   GetMem(pDes, len2);
   try
     FillChar( pDes^, len2, 0 );
-    LCMapString( LOCALE_SYSTEM_DEFAULT, MapFlag, PChar(str), len, pDes, len2-1);
+    LCMapStringA( LOCALE_SYSTEM_DEFAULT, MapFlag, PAnsiChar(str), len, pDes, len2-1);
     Result := string( pDes );
   finally
     FreeMem(pDes);
   end;
 end;
 
-function UpperCaseEx(const str: string): string;
+function UpperCaseEx(const str: AnsiString): AnsiString;
 begin
   Result := LCMapStringExHalf( str, LCMAP_UPPERCASE );
 end;
 
-function MatchesMask(const Filename, Mask: string): Boolean;
+function MatchesMask(const Filename, Mask: AnsiString): Boolean;
 var
   pat: TKWPattern;
 begin
@@ -327,7 +326,7 @@ begin
 end;
 
 
-function IsMatch(const str, pattern: string; var pickup: TStringList): Boolean;
+function IsMatch(const str, pattern: AnsiString; var pickup: TStringList): Boolean;
 var
   pat: TKWPattern;
 begin
@@ -341,7 +340,7 @@ begin
   end;
 end;
 
-function IsTopMatch(var str: string; pattern: string; var pickup: TStringList): Boolean;
+function IsTopMatch(var str: AnsiString; pattern: AnsiString; var pickup: TStringList): Boolean;
 var
   pat: TKWPattern;
 begin
@@ -355,7 +354,7 @@ begin
   end;
 end;
 
-function WildReplace(Src, FindStr, NewStr: string; ReplaceAll: Boolean): string;
+function WildReplace(Src, FindStr, NewStr: AnsiString; ReplaceAll: Boolean): AnsiString;
 var
   pat: TKWPattern;
 begin
@@ -372,16 +371,16 @@ begin
   end;
 end;
 
-function WildSplit(Src, FindStr: string): TStringList;
+function WildSplit(Src, FindStr: AnsiString): TStringList;
 var
   pat: TKWPattern;
-  p: Pchar;
+  p: PAnsiChar;
 begin
   if FindStr = '' then
   begin
     //ワイルドカードが空の時は1文字ずつ区切る
     Result := TStringList.Create;
-    p := Pchar(Src);
+    p := PAnsiChar(Src);
     while p^ <> #0 do
     begin
       if p^ in LeadBytes then
@@ -404,7 +403,7 @@ begin
   end;
 end;
 
-function WildSubMatch(const str, pattern: string; var pickup: TStringList): string;
+function WildSubMatch(const str, pattern: AnsiString; var pickup: TStringList): AnsiString;
 var
   pat: TKWPattern;
 begin
@@ -418,7 +417,7 @@ begin
   end;
 end;
 
-function WildGetToken(var Src: string; splitter: string; var pickup: TStringList): string;
+function WildGetToken(var Src: AnsiString; splitter: AnsiString; var pickup: TStringList): AnsiString;
 var
   pat: TKWPattern;
 begin
@@ -432,7 +431,7 @@ begin
   end;
 end;
 
-function getOneChar(var p: PChar): string;
+function getOneChar(var p: PAnsiChar): AnsiString;
 begin
   if (p = nil)or(p^ = #0) then begin Result := ''; Exit; end;
   if p^ in LeadBytes then
@@ -446,7 +445,7 @@ begin
   end;
 end;
 
-function getOneChar(var p: PChar;const p_last:PChar): string;
+function getOneChar(var p: PAnsiChar;const p_last:PAnsiChar): AnsiString;
 begin
   if (p = nil)or(p >= p_last) then begin Result := ''; Exit; end;
   if p^ in LeadBytes then
@@ -460,14 +459,14 @@ begin
   end;
 end;
 
-function JReplace(str, sFind, sNew: string): string;
+function JReplace(str, sFind, sNew: AnsiString): AnsiString;
 var
-  p, pFind: PChar;
+  p, pFind: PAnsiChar;
   len: Integer;
-  c: string;
+  c: AnsiString;
 begin
-  p      := PChar(str);
-  pFind  := PChar(sFind);
+  p      := PAnsiChar(str);
+  pFind  := PAnsiChar(sFind);
   len    := Length(sFind);
   Result := '';
   while p^ <> #0 do
@@ -522,35 +521,35 @@ end;
 
 { TKWChar }
 
-constructor TKWChar.Create(ch: string);
+constructor TKWChar.Create(ch: AnsiString);
 begin
   Data := ch;
 end;
 
-function TKWChar.IsMatch(var p: PChar): Boolean;
+function TKWChar.IsMatch(var p: PAnsiChar): Boolean;
 var
-  c: string;
+  c: AnsiString;
 begin
   c := getOneChar(p);
   Result := (c = Data);
 end;
 
-function TKWChar.IsTopMatch(var p: PChar): Boolean;
+function TKWChar.IsTopMatch(var p: PAnsiChar): Boolean;
 begin
   Result := IsMatch(p);
 end;
 
 { TKWQuestion }
 
-function TKWQuestion.IsMatch(var p: PChar): Boolean;
+function TKWQuestion.IsMatch(var p: PAnsiChar): Boolean;
 var
-  c: string;
+  c: AnsiString;
 begin
   c := getOneChar(p);
   Result := True;
 end;
 
-function TKWQuestion.IsTopMatch(var p: PChar): Boolean;
+function TKWQuestion.IsTopMatch(var p: PAnsiChar): Boolean;
 begin
   Result := IsMatch(p);
 end;
@@ -562,9 +561,9 @@ begin
   Parent := AParent;
 end;
 
-function TKWAsterisk.IsMatch(var p: PChar): Boolean;
+function TKWAsterisk.IsMatch(var p: PAnsiChar): Boolean;
 var
-  tmp: PChar;
+  tmp: PAnsiChar;
   idx: Integer;
   pickupCount: Integer;
 begin
@@ -584,7 +583,7 @@ begin
 
   while p^ <> #0 do
   begin
-    if Parent.IsMatchPChar(p) then
+    if Parent.IsMatchPAnsiChar(p) then
     begin
       Result := True;
       Exit;
@@ -601,13 +600,13 @@ begin
     end;
   end;
   // ワイルドカードが文の最後なら必ず True を返す
-  Result := Parent.IsMatchPChar(p);
+  Result := Parent.IsMatchPAnsiChar(p);
   Parent.Index := idx;
 end;
 
-function TKWAsterisk.IsTopMatch(var p: PChar): Boolean;
+function TKWAsterisk.IsTopMatch(var p: PAnsiChar): Boolean;
 var
-  tmp: PChar;
+  tmp: PAnsiChar;
   idx: Integer;
   pickupCount: Integer;
 begin
@@ -627,7 +626,7 @@ begin
 
   while p^ <> #0 do
   begin
-    if Parent.IsTopMatchPChar(p) then
+    if Parent.IsTopMatchPAnsiChar(p) then
     begin
       Result := True;
       Exit;
@@ -644,13 +643,13 @@ begin
     end;
   end;
   // ワイルドカードが文の最後なら必ず True を返す
-  Result := Parent.IsTopMatchPChar(p);
+  Result := Parent.IsTopMatchPAnsiChar(p);
   Parent.Index := idx;
 end;
 
 { TKWPattern }
 
-constructor TKWPattern.Create(str: string);
+constructor TKWPattern.Create(str: AnsiString);
 begin
   Pickup := TStringList.Create;
   PickupBegin := nil;
@@ -674,13 +673,13 @@ begin
   Result := (Index < Count - 1);
 end;
 
-function TKWPattern.IsMatch(s: string): Boolean;
+function TKWPattern.IsMatch(s: AnsiString): Boolean;
 var
-  p: PChar;
+  p: PAnsiChar;
 begin
   pickup.Clear;
-  p := PChar(s);
-  Result := IsMatchPChar(p);
+  p := PAnsiChar(s);
+  Result := IsMatchPAnsiChar(p);
 end;
 
 procedure TKWPattern.MoveNext;
@@ -688,16 +687,16 @@ begin
   Inc(Index);
 end;
 
-procedure TKWPattern.SetPattern(str: string);
+procedure TKWPattern.SetPattern(str: AnsiString);
 var
-  p: PChar;
-  c: string;
+  p: PAnsiChar;
+  c: AnsiString;
   i: Integer;
   q: TKWSeq;
 begin
   SetLength(FData, Length(str));
   i := 0;
-  p := PChar(str);
+  p := PAnsiChar(str);
   while p^ <> #0 do
   begin
     c := getOneChar(p);
@@ -753,7 +752,7 @@ begin
   SetLength(FData, i);
 end;
 
-function TKWPattern.IsMatchPChar(var p: PChar): Boolean;
+function TKWPattern.IsMatchPAnsiChar(var p: PAnsiChar): Boolean;
 var
   c: TKWSeq;
 begin
@@ -772,17 +771,17 @@ begin
   if (p = nil) or (p^ <> #0) then Result := False;
 end;
 
-function TKWPattern.IsTopMatch(var s: string): Boolean;
+function TKWPattern.IsTopMatch(var s: AnsiString): Boolean;
 var
-  p: PChar;
+  p: PAnsiChar;
 begin
   pickup.Clear;
-  p := PChar(s);
-  Result := IsTopMatchPChar(p);
+  p := PAnsiChar(s);
+  Result := IsTopMatchPAnsiChar(p);
   s := p;
 end;
 
-function TKWPattern.IsTopMatchPChar(var p: PChar): Boolean;
+function TKWPattern.IsTopMatchPAnsiChar(var p: PAnsiChar): Boolean;
 var
   c: TKWSeq;
 begin
@@ -799,20 +798,20 @@ begin
   end;
 end;
 
-function TKWPattern.Replace(Src, NewStr: string;
-  ReplaceAll: Boolean): string;
+function TKWPattern.Replace(Src, NewStr: AnsiString;
+  ReplaceAll: Boolean): AnsiString;
 var
-  p, pTemp: PChar;
-  c, s: string;
+  p, pTemp: PAnsiChar;
+  c, s: AnsiString;
   i: Integer;
 begin
   Result := '';
-  p := PChar(Src);
+  p := PAnsiChar(Src);
   pTemp := p;
   while p^ <> #0 do
   begin
     Self.Index := 0;
-    if IsTopMatchPChar(p) then
+    if IsTopMatchPAnsiChar(p) then
     begin
       s := NewStr;
       //-----------------------------
@@ -844,19 +843,19 @@ begin
   end;
 end;
 
-function TKWPattern.Split(Src: string): TStringList;
+function TKWPattern.Split(Src: AnsiString): TStringList;
 var
-  p, pTemp: PChar;
-  s, c: string;
+  p, pTemp: PAnsiChar;
+  s, c: AnsiString;
 begin
   Result := TStringList.Create;
-  p := PChar(Src);
+  p := PAnsiChar(Src);
   pTemp := p;
   s := '';
   while p^ <> #0 do
   begin
     Self.Index := 0;
-    if IsTopMatchPChar(p) then
+    if IsTopMatchPAnsiChar(p) then
     begin
       Result.Add(s);
       s := '';
@@ -872,26 +871,26 @@ begin
   if s <> '' then Result.Add(s);
 end;
 
-function TKWPattern.SubMatch(Src: string): string;
+function TKWPattern.SubMatch(Src: AnsiString): AnsiString;
 var
-  p, pTemp, pTop: PChar;
-  c: string;
+  p, pTemp, pTop: PAnsiChar;
+  c: AnsiString;
   len: Integer;
 begin
   Result := '';
-  p := PChar(Src);
+  p := PAnsiChar(Src);
   pTop  := p;
   pTemp := p;
   while p^ <> #0 do
   begin
     Self.Index := 0;
-    if IsTopMatchPChar(p) then
+    if IsTopMatchPAnsiChar(p) then
     begin
       len := (p - pTemp) ;
       if len <> 0 then
       begin
         SetLength(Result, len);
-        StrLCopy(PChar(Result), pTemp, len);
+        StrLCopy(PAnsiChar(Result), pTemp, len);
       end;
       Break;
     end else
@@ -903,19 +902,19 @@ begin
   end;
 end;
 
-function TKWPattern.getToken(var Src: string): string;
+function TKWPattern.getToken(var Src: AnsiString): AnsiString;
 var
-  p, pTemp, pTop: PChar;
-  c: string;
+  p, pTemp, pTop: PAnsiChar;
+  c: AnsiString;
 begin
   Result := '';
-  p := PChar(Src);
+  p := PAnsiChar(Src);
   pTop  := p;
   pTemp := p;
   while p^ <> #0 do
   begin
     Self.Index := 0;
-    if IsTopMatchPChar(p) then
+    if IsTopMatchPAnsiChar(p) then
     begin
       Src := string(p);
       Exit;
@@ -932,9 +931,9 @@ end;
 
 { TKWSharp }
 
-function TKWSharp.IsMatch(var p: PChar): Boolean;
+function TKWSharp.IsMatch(var p: PAnsiChar): Boolean;
 var
-  c: string;
+  c: AnsiString;
 begin
   Result := False;
   c := getOneChar(p);
@@ -942,7 +941,7 @@ begin
   if c[1] in ['0'..'9'] then Result := True;
 end;
 
-function TKWSharp.IsTopMatch(var p: PChar): Boolean;
+function TKWSharp.IsTopMatch(var p: PAnsiChar): Boolean;
 begin
   Result := IsMatch(p);
 end;
@@ -954,13 +953,13 @@ begin
   Parent := AParent;
 end;
 
-function TKWKakkoFrom.IsMatch(var p: PChar): Boolean;
+function TKWKakkoFrom.IsMatch(var p: PAnsiChar): Boolean;
 begin
   Parent.PickupBegin := p;
   Result := True;
 end;
 
-function TKWKakkoFrom.IsTopMatch(var p: PChar): Boolean;
+function TKWKakkoFrom.IsTopMatch(var p: PAnsiChar): Boolean;
 begin
   Result := IsMatch(p);
 end;
@@ -972,10 +971,10 @@ begin
   Parent := AParent;
 end;
 
-function TKWKakkoTo.IsMatch(var p: PChar): Boolean;
+function TKWKakkoTo.IsMatch(var p: PAnsiChar): Boolean;
 var
-  s: string;
-  pp: PChar;
+  s: AnsiString;
+  pp: PAnsiChar;
 begin
   Result := True;
   pp := Parent.PickupBegin;
@@ -989,18 +988,18 @@ begin
   Parent.Pickup.Add(s);
 end;
 
-function TKWKakkoTo.IsTopMatch(var p: PChar): Boolean;
+function TKWKakkoTo.IsTopMatch(var p: PAnsiChar): Boolean;
 begin
   Result := IsMatch(p);
 end;
 
 { TKWSelect }
 
-constructor TKWSelect.Create(AParent: TKWPattern; var p: PChar);
+constructor TKWSelect.Create(AParent: TKWPattern; var p: PAnsiChar);
 var
-  c, c2: string;
+  c, c2: AnsiString;
 
-  function getCharCode(s: string): Integer;
+  function getCharCode(s: AnsiString): Integer;
   begin
     if s = '' then begin Result := 0; Exit; end;
     if s[1] in LeadBytes then
@@ -1012,7 +1011,7 @@ var
     end;
   end;
 
-  function CharCode2Str(code: Integer): string;
+  function CharCode2Str(code: Integer): AnsiString;
   begin
     Result := Chr( (code shr 8) and $FF ) + Chr( code and $FF );
   end;
@@ -1053,7 +1052,7 @@ var
     end;
   end;
   procedure getWords;
-  var s: string;
+  var s: AnsiString;
   begin
     if p^ = '!' then
     begin
@@ -1122,11 +1121,11 @@ begin
   end;
 end;
 
-constructor TKWSelect.Create(AParent: TKWPattern; s: string);
+constructor TKWSelect.Create(AParent: TKWPattern; s: AnsiString);
 var
-  p: PChar;
+  p: PAnsiChar;
 begin
-  p := PChar(s);
+  p := PAnsiChar(s);
   Self.Create(AParent, p);
 end;
 
@@ -1136,12 +1135,12 @@ begin
   inherited;
 end;
 
-function TKWSelect.IsMatch(var p: PChar): Boolean;
+function TKWSelect.IsMatch(var p: PAnsiChar): Boolean;
 var
-  c: string;
+  c: AnsiString;
   i: Integer;
 
-  function getChar: string;
+  function getChar: AnsiString;
   begin
     if (p = nil)or(p^ = #0) then begin Result := ''; Exit; end;
     if p^ in LeadBytes then
@@ -1202,7 +1201,7 @@ begin
         for i := 0 to Sets.Count - 1 do
         begin
           c := Sets.Strings[i];
-          if StrLComp(PChar(c), p, Length(c)) = 0 then
+          if StrLComp(PAnsiChar(c), p, Length(c)) = 0 then
           begin
             Result := True;
             Inc(p, Length(c));
@@ -1213,7 +1212,7 @@ begin
   end;
 end;
 
-function TKWSelect.IsTopMatch(var p: PChar): Boolean;
+function TKWSelect.IsTopMatch(var p: PAnsiChar): Boolean;
 begin
   Result := IsMatch(p);
 end;

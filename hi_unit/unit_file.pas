@@ -14,27 +14,27 @@ type
   TWindowState2 = (ws2Normal, ws2Minimized, ws2Maximized);
 
 // 文字列にファイルの内容を全部開く
-function FileLoadAll(Filename: string): string;
+function FileLoadAll(Filename: AnsiString): AnsiString;
 
 // 文字列にファイルの内容を全部書き込む
-procedure FileSaveAll(s, Filename: string);
+procedure FileSaveAll(s, Filename: AnsiString);
 
 //COPY
-function SHFileCopy(const Source, Dest, Title: string): Boolean;
-function SHFileDelete(const Source: string): Boolean;
-function SHFileDeleteComplete(const Source: string): Boolean;
-function SHFileMove(const Source, Dest: string): Boolean;
-function SHFileRename(const Source, Dest: string): Boolean;
+function SHFileCopy(const Source, Dest, Title: AnsiString): Boolean;
+function SHFileDelete(const Source: AnsiString): Boolean;
+function SHFileDeleteComplete(const Source: AnsiString): Boolean;
+function SHFileMove(const Source, Dest: AnsiString): Boolean;
+function SHFileRename(const Source, Dest: AnsiString): Boolean;
 
 //EnumFile
-function EnumFiles(path: string): THStringList;
-function EnumAllFiles(path: string): THStringList;
-function EnumAllDirs(path: string): THStringList;
-function EnumDirs(const path: string): THStringList;
-function CreateShortCut(SavePath, TargetApp, Arg, WorkDir: string; State: TWindowState2): Boolean;
-function CreateShortCutEx(SavePath, TargetApp, Arg, WorkDir, IconPath: string;
-    IconNo:Integer;Comment:String;Hotkey:Word; State: TWindowState2): Boolean;
-function GetShortCutLink(Path :string): String;
+function EnumFiles(path: AnsiString): THStringList;
+function EnumAllFiles(path: AnsiString): THStringList;
+function EnumAllDirs(path: AnsiString): THStringList;
+function EnumDirs(const path: AnsiString): THStringList;
+function CreateShortCut(SavePath, TargetApp, Arg, WorkDir: AnsiString; State: TWindowState2): Boolean;
+function CreateShortCutEx(SavePath, TargetApp, Arg, WorkDir, IconPath: AnsiString;
+    IconNo:Integer;Comment: AnsiString;Hotkey:Word; State: TWindowState2): Boolean;
+function GetShortCutLink(Path : AnsiString): AnsiString;
 
 //ファイルの作成・更新・最終書込日時を得る
 function GetFileTimeEx(fname:string; var tCreation, tLastAccess, tLastWrite:TDateTime):Boolean;
@@ -44,13 +44,13 @@ function DateTimeToFileTimeEx(dt: TDateTime):TFileTime;
 // ファイルタイムをローカルなTTimeDateに変換する
 function FileTimeToDateTimeEx(const ft:TFileTime):TDateTime;
 
-function getVolumeName(drive: string): string;
-function getSerialNo(drive: string): DWORD;
-function getFileSystemName(drive: string): string;
+function getVolumeName(drive: AnsiString): AnsiString;
+function getSerialNo(drive: AnsiString): DWORD;
+function getFileSystemName(drive: AnsiString): AnsiString;
 
-function ShortToLongFileName(ShortName: String):String;
-function LongToShortFileName(LongName: String):String;
-procedure RunAsAdmin(hWnd: THandle; aFile: string; aParameters: string);
+function ShortToLongFileName(ShortName: AnsiString):String;
+function LongToShortFileName(LongName: AnsiString):String;
+procedure RunAsAdmin(hWnd: THandle; aFile: AnsiString; aParameters: AnsiString);
 
 var MainWindowHandle: THandle = 0;
 
@@ -65,7 +65,7 @@ implementation
 uses
   unit_windows_api, unit_string;
 
-procedure RunAsAdmin(hWnd: THandle; aFile: string; aParameters: string);
+procedure RunAsAdmin(hWnd: THandle; aFile: AnsiString; aParameters: AnsiString);
 var
   sei: TShellExecuteInfoA;
 begin
@@ -74,14 +74,14 @@ begin
   sei.Wnd := hWnd;
   sei.fMask := SEE_MASK_FLAG_DDEWAIT or SEE_MASK_FLAG_NO_UI;
   sei.lpVerb := 'runas';
-  sei.lpFile := PChar(aFile);
-  sei.lpParameters := PChar(aParameters);
+  sei.lpFile := PAnsiChar(aFile);
+  sei.lpParameters := PAnsiChar(aParameters);
   sei.nShow := SW_SHOWNORMAL;
   if not ShellExecuteEx(@sei) then
     raise Exception.Create('起動に失敗しました。(' + aFile + ')');
 end;
 
-function ShortToLongFileName(ShortName: String):String;
+function ShortToLongFileName(ShortName: AnsiString):String;
 var
   SearchRec: TSearchRec;
 begin
@@ -106,26 +106,26 @@ begin
   result := ShortName + result;
 end;
 
-function LongToShortFileName(LongName: String):String;
+function LongToShortFileName(LongName: AnsiString):String;
 var
-  tmp: string;
+  tmp: AnsiString;
 begin
   SetLength(tmp, MAX_PATH + 1);
-  GetShortPathName(PChar(LongName), PChar(tmp), MAX_PATH);
-  Result := string(PChar(tmp));
+  GetShortPathNameA(PAnsiChar(LongName), PAnsiChar(tmp), MAX_PATH);
+  Result := string(PAnsiChar(tmp));
 end;
 
-function getVolumeName(drive: string): string;
+function getVolumeName(drive: AnsiString): AnsiString;
 var
-  fi: SHFILEINFO;
+  fi: SHFILEINFOA;
 begin
   if Length(drive) = 1 then drive := drive + ':\';
   //
-  SHGetFileInfo(PChar(drive), 0, fi, sizeof(SHFILEINFO), SHGFI_DISPLAYNAME);
+  SHGetFileInfoA(PAnsiChar(drive), 0, fi, sizeof(SHFILEINFO), SHGFI_DISPLAYNAME);
   Result := string(fi.szDisplayName);
 end;
 
-function getFileSystemName(drive: string): string;
+function getFileSystemName(drive: AnsiString): AnsiString;
 var
 	SystemName: array [0..1000] of Char;
 	SerialNumber: DWORD;
@@ -134,8 +134,8 @@ var
 begin
   if Length(drive) = 1 then drive := drive + ':\';
   //
-	GetVolumeInformation(
-		PChar(drive),
+	GetVolumeInformationA(
+		PAnsiChar(drive),
     nil,
 		0,
 		@SerialNumber,
@@ -144,11 +144,11 @@ begin
 		@SystemName[0],
 		1000);
   //
-  Result := string(PChar(@SystemName[0]));
+  Result := string(PAnsiChar(@SystemName[0]));
 end;
 
 
-function getSerialNo(drive: string): DWORD;
+function getSerialNo(drive: AnsiString): DWORD;
 var
 	SerialNumber: DWORD;
 	FileNameLength: DWORD;
@@ -156,8 +156,8 @@ var
 begin
   if Length(drive) = 1 then drive := drive + ':\';
   //
-	GetVolumeInformation(
-		PChar(drive),
+	GetVolumeInformationA(
+		PAnsiChar(drive),
 		nil,
 		0,
 		@SerialNumber,
@@ -203,11 +203,11 @@ end;
 //ファイルの作成・更新・最終書込日時を得る
 function GetFileTimeEx(fname:string; var tCreation, tLastAccess, tLastWrite:TDateTime):boolean;
 var
-  F: TWin32FindData;
+  F: TWin32FindDataA;
   h:THandle;
 begin
   Result:=False;
-  h := FindFirstFile(PChar(fname),F);
+  h := FindFirstFileA(PAnsiChar(fname),F);
   if h <> INVALID_HANDLE_VALUE then
   begin
     tCreation   :=  FileTimeToDateTimeEx( F. ftCreationTime   );
@@ -230,7 +230,7 @@ begin
   fLastWrite  := DateTimeToFileTimeEx(tLastWrite  );
 
   // 日時の変更
-	hFile := CreateFile(PChar(fname), GENERIC_WRITE, 0, nil, OPEN_EXISTING,
+	hFile := CreateFileA(PAnsiChar(fname), GENERIC_WRITE, 0, nil, OPEN_EXISTING,
     FILE_ATTRIBUTE_NORMAL, 0);
   if hFile <> INVALID_HANDLE_VALUE then
   begin
@@ -245,13 +245,13 @@ end;
 
 
 // 文字列にファイルの内容を全部開く
-function FileLoadAll(Filename: string): string;
+function FileLoadAll(Filename: AnsiString): AnsiString;
 var
   f: THandle;
   size, rsize: DWORD;
 begin
   // open
-  f := CreateFile(PChar(Filename), GENERIC_READ, FILE_SHARE_READ, nil,
+  f := CreateFileA(PAnsiChar(Filename), GENERIC_READ, FILE_SHARE_READ, nil,
     OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN,0);
   if f = INVALID_HANDLE_VALUE then
     raise EInOutError.Create('ファイル"' + Filename + '"が開けません。' + GetLastErrorStr);
@@ -273,13 +273,13 @@ begin
 end;
 
 // 文字列にファイルの内容を全部書き込む
-procedure FileSaveAll(s, Filename: string);
+procedure FileSaveAll(s, Filename: AnsiString);
 var
   f: THandle;
   size, rsize: DWORD;
 begin
   // open
-  f := CreateFile(PChar(Filename), GENERIC_WRITE, 0, nil,
+  f := CreateFileA(PAnsiChar(Filename), GENERIC_WRITE, 0, nil,
     CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN,0);
   if f = INVALID_HANDLE_VALUE then
     raise EInOutError.Create('ファイル"' + Filename + '"が開けません。' + GetLastErrorStr);
@@ -303,10 +303,10 @@ begin
 end;
 
 
-function SHFileCopy(const Source, Dest, Title: string): Boolean;
+function SHFileCopy(const Source, Dest, Title: AnsiString): Boolean;
 var
-  foStruct: TSHFileOpStruct;
-  s_src, s_des: string;
+  foStruct: TSHFileOpStructA;
+  s_src, s_des: AnsiString;
 begin
   Result := False;
   if (Source='')or(Dest='') then Exit;
@@ -318,79 +318,79 @@ begin
   begin
     wnd    := getMainWindowHandle;
     wFunc  := FO_COPY;            //フラグ（コピーの場合はFO_COPY）
-    pFrom  := PChar(s_src);
-    pTo    := PChar(s_des);
+    pFrom  := PAnsiChar(s_src);
+    pTo    := PAnsiChar(s_des);
     fFlags := FOF_MULTIDESTFILES or FOF_NOCONFIRMATION or FOF_NOCONFIRMMKDIR{orFOF_NOERRORUI};
     fAnyOperationsAborted := False;          // 処理が中断された場合 FALSE が返る
     hNameMappings         := nil;            // 処理前後のファイル
-    lpszProgressTitle     := PChar(Title);   // ダイアログのタイトル
+    lpszProgressTitle     := PAnsiChar(Title);   // ダイアログのタイトル
   end;
-  Result := (SHFileOperation(foStruct) = 0);
+  Result := (SHFileOperationA(foStruct) = 0);
 end;
 
-function SHFileDelete(const Source: string): Boolean;
+function SHFileDelete(const Source: AnsiString): Boolean;
 var
-  foStruct: TSHFileOpStruct;
+  foStruct: TSHFileOpStructA;
 begin
   ZeroMemory(@foStruct, sizeof(foStruct));
   with foStruct do
   begin
     wnd    := getMainWindowHandle;//Application.Handle;
     wFunc  := FO_DELETE;  //フラグ（コピーの場合はFO_COPY）
-    pFrom  := PChar(Source + #0#0);  //するフォルダ
+    pFrom  := PAnsiChar(Source + #0#0);  //するフォルダ
     fFlags := FOF_NOCONFIRMATION or FOF_ALLOWUNDO;  //ダイアログ非表示
   end;
-  Result := (SHFileOperation(foStruct)=0);
+  Result := (SHFileOperationA(foStruct)=0);
 end;
 
-function SHFileDeleteComplete(const Source: string): Boolean;
+function SHFileDeleteComplete(const Source: AnsiString): Boolean;
 var
-  foStruct: TSHFileOpStruct;
+  foStruct: TSHFileOpStructA;
 begin
   with foStruct do
   begin
     wnd    := getMainWindowHandle;//Application.Handle;
     wFunc  := FO_DELETE;  //フラグ（コピーの場合はFO_COPY）
-    pFrom  := PChar(Source + #0#0);  //するフォルダ
+    pFrom  := PAnsiChar(Source + #0#0);  //するフォルダ
     pTo    := Nil; // 必要
     fFlags := FOF_NOCONFIRMATION or FOF_MULTIDESTFILES or FOF_NOERRORUI;  //ダイアログ非表示
     fAnyOperationsAborted := False;
     hNameMappings         := nil;
     lpszProgressTitle     := nil;
   end;
-  Result := (SHFileOperation(foStruct)=0);
+  Result := (SHFileOperationA(foStruct)=0);
 end;
 
-function SHFileMove(const Source, Dest: string): Boolean;
+function SHFileMove(const Source, Dest: AnsiString): Boolean;
 var
-  foStruct: TSHFileOpStruct;
+  foStruct: TSHFileOpStructA;
 begin
   with foStruct do
   begin
     wnd       :=  getMainWindowHandle;//Application.Handle;
     wFunc     :=  FO_MOVE;  //フラグ（コピーの場合はFO_COPY）
-    pFrom     :=  PChar(Source + #0#0);  //するフォルダ
-    pTo       :=  PChar(Dest   + #0#0);
+    pFrom     :=  PAnsiChar(Source + #0#0);  //するフォルダ
+    pTo       :=  PAnsiChar(Dest   + #0#0);
     fFlags    :=  FOF_NOCONFIRMATION or FOF_ALLOWUNDO or FOF_NOERRORUI;  //ダイアログ非表示
     fAnyOperationsAborted := False;
     hNameMappings         := nil;
     lpszProgressTitle     := nil;
   end;
-  Result := (SHFileOperation(foStruct)=0);
+  Result := (SHFileOperationA(foStruct)=0);
 end;
 
-function SHFileRename(const Source, Dest: string): Boolean;
+function SHFileRename(const Source, Dest: AnsiString): Boolean;
 begin
   Result := SHFileMove(Source, Dest);
 end;
 
-function EnumFiles(path: string): THStringList;
+function EnumFiles(path: AnsiString): THStringList;
 var
   rec: TSearchRec;
-  basePath: string;
-  s: string;
+  basePath: AnsiString;
+  s: AnsiString;
 
-  procedure _enum(path: string);
+  procedure _enum(path: AnsiString);
   begin
     // ファイルの検索
     if FindFirst(path, FaAnyFile, rec) = 0 then
@@ -439,16 +439,16 @@ begin
 
 end;
 
-function EnumAllFiles(path: string): THStringList;
+function EnumAllFiles(path: AnsiString): THStringList;
 var
-  basePath: string;
-  s: string;
+  basePath: AnsiString;
+  s: AnsiString;
   hmain: THandle;
-  smain: string;
+  smain: AnsiString;
 
-  procedure _enum(path: string);
+  procedure _enum(path: AnsiString);
   var
-    base, ext, s, title: string;
+    base, ext, s, title: AnsiString;
     dirs: THStringList;
     files: THStringList;
     i: Integer;
@@ -460,7 +460,7 @@ var
     if hmain > 0 then
     begin
       title := '検索中:' + base;
-      SetWindowText(hmain, PChar(title));
+      SetWindowText(hmain, PAnsiChar(title));
     end;
 
     // ファイルを列挙
@@ -508,7 +508,7 @@ begin
   if hmain > 0 then
   begin
     SetLength(smain, 1024);
-    GetWindowText(hmain, PChar(smain), 1023);
+    GetWindowTextA(hmain, PAnsiChar(smain), 1023);
   end;
 
 
@@ -530,22 +530,21 @@ begin
 
   if hmain > 0 then
   begin
-    SetWindowText(hmain, PChar(smain));
+    SetWindowText(hmain, PAnsiChar(smain));
   end;
 
 end;
 
-function EnumAllDirs(path: string): THStringList;
+function EnumAllDirs(path: AnsiString): THStringList;
 var
-  basePath: string;
   hmain: THandle;
-  smain: string;
+  smain: AnsiString;
 
-  procedure _enum(path: string);
+  procedure _enum(path: AnsiString);
   var
-    title: string;
+    title: AnsiString;
     dirs: THStringList;
-    base, f, n: string;
+    base, f, n: AnsiString;
     i: Integer;
   begin
     base := ExtractFilePath(path);
@@ -553,7 +552,7 @@ var
     if hmain > 0 then
     begin
       title := '検索中:' + path;
-      SetWindowText(hmain, PChar(title));
+      SetWindowText(hmain, PAnsiChar(title));
     end;
 
     // フォルダを列挙
@@ -584,23 +583,23 @@ begin
   if hmain > 0 then
   begin
     SetLength(smain, 1024);
-    GetWindowText(hmain, PChar(smain), 1023);
+    GetWindowTextA(hmain, PAnsiChar(smain), 1023);
   end;
 
   _enum(path+'*');
 
   if hmain > 0 then
   begin
-    SetWindowText(hmain, PChar(smain));
+    SetWindowText(hmain, PAnsiChar(smain));
   end;
 
 end;
 
 
-function EnumDirs(const path: string): THStringList;
+function EnumDirs(const path: AnsiString): THStringList;
 var
   rec: TSearchRec;
-  s: string;
+  s: AnsiString;
 begin
   Result := THStringList.Create;
   //
@@ -623,7 +622,7 @@ begin
   end;
 end;
 
-function CreateShortCut(SavePath, TargetApp, Arg, WorkDir: string; State: TWindowState2): Boolean;
+function CreateShortCut(SavePath, TargetApp, Arg, WorkDir: AnsiString; State: TWindowState2): Boolean;
 var
   IU: IUnknown;
   W: PWideChar;
@@ -634,10 +633,10 @@ begin
   Result := False;
   try
     IU := CreateComObject(CLSID_ShellLink);
-    with IU as IShellLink do begin
-      if SetPath(PChar(TargetApp)) <> NOERROR then Abort;
-      if SetArguments(PChar(Arg)) <> NOERROR then Abort;
-      if SetWorkingDirectory(PChar(WorkDir)) <> NOERROR then Abort;
+    with IU as IShellLinkA do begin
+      if SetPath(PAnsiChar(TargetApp)) <> NOERROR then Abort;
+      if SetArguments(PAnsiChar(Arg)) <> NOERROR then Abort;
+      if SetWorkingDirectory(PAnsiChar(WorkDir)) <> NOERROR then Abort;
       if SetShowCmd(ShowCmd[State]) <> NOERROR then Abort
     end;
     W := PWChar(WideString(SavePath));
@@ -647,8 +646,8 @@ begin
   end
 end;
 
-function CreateShortCutEx(SavePath, TargetApp, Arg, WorkDir, IconPath: string;
-    IconNo:Integer;Comment:String;Hotkey:Word; State: TWindowState2): Boolean;
+function CreateShortCutEx(SavePath, TargetApp, Arg, WorkDir, IconPath: AnsiString;
+    IconNo:Integer;Comment: AnsiString;Hotkey:Word; State: TWindowState2): Boolean;
 var
   IU: IUnknown;
   W: PWideChar;
@@ -659,13 +658,13 @@ begin
   Result := False;
   try
     IU := CreateComObject(CLSID_ShellLink);
-    with IU as IShellLink do begin
-      if SetPath(PChar(TargetApp)) <> NOERROR then Abort;
-      if SetArguments(PChar(Arg)) <> NOERROR then Abort;
-      if SetWorkingDirectory(PChar(WorkDir)) <> NOERROR then Abort;
-      if (IconPath <> '') and (SetIconLocation(PChar(IconPath),IconNo) <> NOERROR) then Abort;
+    with IU as IShellLinkA do begin
+      if SetPath(PAnsiChar(TargetApp)) <> NOERROR then Abort;
+      if SetArguments(PAnsiChar(Arg)) <> NOERROR then Abort;
+      if SetWorkingDirectory(PAnsiChar(WorkDir)) <> NOERROR then Abort;
+      if (IconPath <> '') and (SetIconLocation(PAnsiChar(IconPath),IconNo) <> NOERROR) then Abort;
       if (HotKey <> 0) and (SetHotkey(Hotkey) <> NOERROR) then Abort;
-      if SetDescription(PChar(Comment)) <> NOERROR then Abort;
+      if SetDescription(PAnsiChar(Comment)) <> NOERROR then Abort;
       if SetShowCmd(ShowCmd[State]) <> NOERROR then Abort
     end;
     W := PWChar(WideString(SavePath));
@@ -675,23 +674,23 @@ begin
   end
 end;
 
-function GetShortCutLink(Path :string): String;
+function GetShortCutLink(Path : AnsiString): AnsiString;
 var
   IU: IUnknown;
   IP: IPersistFile;
-  buf:string;
+  buf: AnsiString;
   fd:_WIN32_FIND_DATAA;
 begin
   Result := '';
   SetLength(buf,260);
   try
     IU := CreateComObject(CLSID_ShellLink);
-    with IU as IShellLink do begin
+    with IU as IShellLinkA do begin
       if QueryInterface(IPersistFile,IP) <> NOERROR then Abort;
       if IP.Load(PWChar(WideString(Path)),STGM_READWRITE) <> NOERROR then Abort;
-      if GetPath(PChar(buf),260,fd,0) <> NOERROR then Abort;
+      if GetPath(PAnsiChar(buf),260,fd,0) <> NOERROR then Abort;
     end;
-    Result := PChar(buf);
+    Result := PAnsiChar(buf);
   except
   end
 end;

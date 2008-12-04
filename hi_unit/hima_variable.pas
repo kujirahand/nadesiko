@@ -32,21 +32,21 @@ type
     case Byte of
     0:( int     : Longint ); // varInt
     1:( ptr     : Pointer ); // other...
-    2:( ptr_s   : PChar   ); // varStr
+    2:( ptr_s   : PAnsiChar   ); // varStr
     3:( link    : PHiValue); // varLink
   end;
 
 // 変換→原始型
 function hi_int   (v: PHiValue): Integer;
 function hi_float (v: PHiValue): HFloat;
-function hi_str   (v: PHiValue): string;
+function hi_str   (v: PHiValue): AnsiString;
 function hi_bool  (v: PHiValue): Boolean;
-function hi_bin   (v: PHiValue): string;
+function hi_bin   (v: PHiValue): AnsiString;
 
 // 変換←THiValue
 procedure hi_setInt   (v: PHiValue; const i: Integer);
 procedure hi_setFloat (v: PHiValue; const f: HFloat);
-procedure hi_setStr   (v: PHiValue; const s: string);
+procedure hi_setStr   (v: PHiValue; const s: AnsiString);
 procedure hi_setBool  (v: PHiValue; const b: Boolean);
 procedure hi_setIntOrFloat(v: PHiValue; f: HFloat);
 
@@ -65,19 +65,19 @@ function hi_clone(v: PHiValue): PHiValue;       // 新規変数を作成しvの値をコピー
 procedure hi_var_copyGensiAndCheckType(Src, Des: PHiValue); // 原始型の変数はデータ内容を、その他はポインタをコピー。
 procedure hi_var_ChangeType(var v: PHiValue; vType: THiVType); // 変数の型を変換する
 //
-function hi_newStr(s: string): PHiValue;        // 新規変数を生成して文字列をセットして返す
+function hi_newStr(s: AnsiString): PHiValue;        // 新規変数を生成して文字列をセットして返す
 function hi_newInt(i: Integer): PHiValue;       // 新規変数を生成して数値をセットして返す
 function hi_newBool(i: Boolean): PHiValue;       // 新規変数を生成して数値をセットして返す
 
 
 // その他
-function hi_vtype2str(p: PHiValue): string;
+function hi_vtype2str(p: PHiValue): AnsiString;
 
 implementation
 
 uses hima_string, hima_variable_ex, hima_function, hima_system, hima_token;
 
-function hi_vtype2str(p: PHiValue): string;
+function hi_vtype2str(p: PHiValue): AnsiString;
 begin
   if p = nil then
   begin
@@ -337,7 +337,7 @@ begin
   hi_var_copyData(v, Result);
 end;
 
-function hi_newStr(s: string): PHiValue;  // 新規変数を生成して文字列をセットして返す
+function hi_newStr(s: AnsiString): PHiValue;  // 新規変数を生成して文字列をセットして返す
 begin
   Result := hi_var_new;
   hi_setStr(Result, s);
@@ -413,7 +413,7 @@ begin
   end;
 end;
 
-function hi_str(v: PHiValue): string;
+function hi_str(v: PHiValue): AnsiString;
 begin
   if v = nil then begin Result := ''; Exit; end;
 
@@ -457,7 +457,7 @@ begin
 
 end;
 
-function hi_bin   (v: PHiValue): string;
+function hi_bin   (v: PHiValue): AnsiString;
 begin
   // 変数の型によって変換を行う
   case v^.VType of
@@ -637,9 +637,9 @@ begin
   PHFloat(v.ptr)^ := f;
 end;
 
-procedure hi_setStr(v: PHiValue; const s: string);
+procedure hi_setStr(v: PHiValue; const s: AnsiString);
 var
-  pp: PChar;
+  pp: PAnsiChar;
 begin
   hi_var_clear(v);
   v.VType := varStr;

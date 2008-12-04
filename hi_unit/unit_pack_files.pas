@@ -47,8 +47,8 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    function AddFile(const FName, ArchieveName: string; compress: BYTE{0:off 1:easy}): Integer;
-    function SaveToFile(const FName: string): Boolean;
+    function AddFile(const FName, ArchieveName: AnsiString; compress: BYTE{0:off 1:easy}): Integer;
+    function SaveToFile(const FName: AnsiString): Boolean;
   end;
 
   TFileMixReader = class
@@ -57,21 +57,21 @@ type
     fList: THList;
   public
     theHeader: TFileMixHeader;
-    TempFile: string;
+    TempFile: AnsiString;
     autoDelete: Boolean;
     procedure AutoDeleteTempFile;
   public
-    constructor Create(const FName: string);
+    constructor Create(const FName: AnsiString);
     destructor Destroy; override;
-    function ReadFile(const FName: string; var ms: THMemoryStream; IsUser: Boolean = False): Boolean;
-    function ReadAndSaveToFile(const ReadName, SaveName: string; IsUser: Boolean = False): Boolean;
-    function ReadFileAsString(const FName: string; var str: String; IsUser: Boolean = False): Boolean;
+    function ReadFile(const FName: AnsiString; var ms: THMemoryStream; IsUser: Boolean = False): Boolean;
+    function ReadAndSaveToFile(const ReadName, SaveName: AnsiString; IsUser: Boolean = False): Boolean;
+    function ReadFileAsString(const FName: AnsiString; var str: AnsiString; IsUser: Boolean = False): Boolean;
     function EnumFiles: THStringList;
-    procedure SaveToDataFile(const fname: string);
-    procedure ExtractAllFile(const dir: string; ext: string = '');
+    procedure SaveToDataFile(const fname: AnsiString);
+    procedure ExtractAllFile(const dir: AnsiString; ext: AnsiString = '');
     procedure Extract(info: PFileMixFileHeader; ms: THMemoryStream);
-    procedure ExtractPatternFiles(const outdir:string; pattern: string; overwrite:Boolean = True);
-    function Find(const FName: string): PFileMixFileHeader;
+    procedure ExtractPatternFiles(const outdir: AnsiString; pattern: AnsiString; overwrite:Boolean = True);
+    function Find(const FName: AnsiString): PFileMixFileHeader;
     procedure debug;
   end;
 
@@ -85,17 +85,17 @@ procedure DoAngou(var ms: THMemoryStream);
 procedure DoAngou3(var ms: THMemoryStream; enc:Boolean);
 
 {実行ファイルへリソースの埋め込み／読み込み}
-function WritePackExeFile(outFileName, exeFileName, packFileName: string): Boolean;
-function ReadPackExeFile(FileName:String; xQDA:THMemoryStream; RealRead: Boolean = True):Boolean;
+function WritePackExeFile(outFileName, exeFileName, packFileName: AnsiString): Boolean;
+function ReadPackExeFile(FileName: AnsiString; xQDA:THMemoryStream; RealRead: Boolean = True):Boolean;
 
 {パックファイルをOPENする}
-function OpenPackFile(packExeFile: string): Boolean;
+function OpenPackFile(packExeFile: AnsiString): Boolean;
 
 {オリジナル一時ファイル名の取得}
-function getOriginalFileName(dirname, header: string): string;
+function getOriginalFileName(dirname, header: AnsiString): AnsiString;
 
 // 埋め込まれたファイルを取り出して引数のファイル名を書き換える
-function getEmbedFile(var fname: string):Boolean;
+function getEmbedFile(var fname: AnsiString):Boolean;
 
 implementation
 
@@ -103,19 +103,19 @@ uses mini_file_utils, unit_string, EasyMasks,
   nadesiko_version, Math;
 
 {オリジナル一時ファイル名の取得}
-function getOriginalFileName(dirname, header: string): string;
+function getOriginalFileName(dirname, header: AnsiString): AnsiString;
 begin
   if dirname='' then dirname := TempDir;
   SetLength(Result, MAX_PATH);
-  GetTempFileName(PChar(dirname), PChar(header), 0, PChar(Result));
-  SetLength(Result,StrLen(PChar(Result)));
+  GetTempFileNameA(PAnsiChar(dirname), PAnsiChar(header), 0, PAnsiChar(Result));
+  SetLength(Result,StrLen(PAnsiChar(Result)));
 end;
 
 
-function OpenPackFile(packExeFile: string): Boolean;
+function OpenPackFile(packExeFile: AnsiString): Boolean;
 var
   mem: THMemoryStream;
-  fname: string;
+  fname: AnsiString;
 begin
   Result := False;
 
@@ -153,7 +153,7 @@ begin
 end;
 
 
-function WritePackExeFile(outFileName, exeFileName, packFileName: string): Boolean;
+function WritePackExeFile(outFileName, exeFileName, packFileName: AnsiString): Boolean;
 var
   OutFile, SSTTC, PackFile: THFileStream;
 begin
@@ -175,7 +175,7 @@ begin
   Result := True;
 end;
 
-function ReadPackExeFile(FileName:String; xQDA:THMemoryStream; RealRead: Boolean = True):Boolean;
+function ReadPackExeFile(FileName: AnsiString; xQDA:THMemoryStream; RealRead: Boolean = True):Boolean;
 //参考：部員弐号の数々の問題
 //<!-- saved from url=(0060)http://members.jcom.home.ne.jp/buin2gou/delphi/DelphiFAQ.htm -->
 var
@@ -315,7 +315,7 @@ begin
   end;
 end;
 
-var key3real: string = '';
+var key3real: AnsiString = '';
 
 // 簡易暗号化その3（実行時のみ展開が許される／ユーザーからの展開は失敗する）
 procedure DoAngou3(var ms: THMemoryStream; enc:Boolean);
@@ -361,15 +361,15 @@ begin
   end;
 end;
 
-function JPosEx(const sub, str:string; idx:Integer): Integer;
+function JPosEx(const sub, str: AnsiString; idx:Integer): Integer;
 var
-    p, sub_p, temp: PChar; len: Integer;
+    p, sub_p, temp: PAnsiChar; len: Integer;
 begin
     Result := 0;
     if Length(str) < idx then Exit;
-    temp := PChar(str); p:= temp;
+    temp := PAnsiChar(str); p:= temp;
     Inc(p, idx-1);
-    sub_p := PChar(sub);
+    sub_p := PAnsiChar(sub);
     len := Length(sub);
     while p^ <> #0 do
     begin
@@ -384,7 +384,7 @@ end;
 
 
 {デリミタ文字列までの単語を切り出す。}
-function GetToken(const delimiter: String; var str: string): String;
+function GetToken(const delimiter: AnsiString; var str: AnsiString): AnsiString;
 var
     i: Integer;
 begin
@@ -402,7 +402,7 @@ end;
 { TFileMixWriter }
 
 function TFileMixWriter.AddFile(const FName,
-  ArchieveName: string;  compress: BYTE): Integer;
+  ArchieveName: AnsiString;  compress: BYTE): Integer;
 begin
   Result := FileList.Add(FName + '=' + ArchieveName + '=' +IntToStr(compress));
 end;
@@ -418,14 +418,14 @@ begin
   inherited;
 end;
 
-function TFileMixWriter.SaveToFile(const FName: string): Boolean;
+function TFileMixWriter.SaveToFile(const FName: AnsiString): Boolean;
 var
     fileHeader: TFileMixFileHeader;
     mixHeader: TFileMixHeader;
     fs: THFileStream;
     ms: THMemoryStream;
     i,j: Integer;
-    s, readName, name: string;
+    s, readName, name: AnsiString;
 begin
     Result := False;
     with mixHeader do
@@ -452,7 +452,7 @@ begin
                 readName := GetToken('=', s);
                 name := UpperCase(gettoken('=',s));
                 for j:=0 to 255 do FileName[j] := #0;
-                StrLCopy(@FileName[0],PChar(name), 255); // filename
+                StrLCopy(@FileName[0],PAnsiChar(name), 255); // filename
                 Comp := StrToIntDef(s,0);
                 ms := THMemoryStream.Create ;
                 try
@@ -491,7 +491,7 @@ end;
 
 { TFileMixReader }
 
-constructor TFileMixReader.Create(const FName: string);
+constructor TFileMixReader.Create(const FName: AnsiString);
 var
     i: Integer;
     p: PFileMixFileHeader;
@@ -557,12 +557,12 @@ begin
   end;
 end;
 
-procedure TFileMixReader.ExtractAllFile(const dir: string; ext: string = '');
+procedure TFileMixReader.ExtractAllFile(const dir: AnsiString; ext: AnsiString = '');
 var
   i: Integer;
   p: PFileMixFileHeader;
   ms: THMemoryStream;
-  f, ext2: string;
+  f, ext2: AnsiString;
 begin
   ForceDirectories(dir);
   for i := 0 to fList.Count - 1 do
@@ -584,7 +584,7 @@ begin
 end;
 
 function TFileMixReader.ReadAndSaveToFile(const ReadName,
-  SaveName: string; IsUser: Boolean): Boolean;
+  SaveName: AnsiString; IsUser: Boolean): Boolean;
 var
   ms: THMemoryStream;
 begin
@@ -596,7 +596,7 @@ begin
   end;
 end;
 
-function TFileMixReader.ReadFile(const FName: string;
+function TFileMixReader.ReadFile(const FName: AnsiString;
   var ms: THMemoryStream; IsUser: Boolean): Boolean;
 var
   pf: PFileMixFileHeader;
@@ -635,8 +635,8 @@ begin
 end;
 
 
-function TFileMixReader.ReadFileAsString(const FName: string;
-  var str: String; IsUser: Boolean): Boolean;
+function TFileMixReader.ReadFileAsString(const FName: AnsiString;
+  var str: AnsiString; IsUser: Boolean): Boolean;
 var
   m:THMemoryStream;
 begin
@@ -650,12 +650,12 @@ begin
     m.Seek(0, soBeginning);
     m.Read(str[1], m.Size);
     //str[m.Size+1] := #0;
-    //str := string(PChar(str));
+    //str := string(PAnsiChar(str));
   end;
   FreeAndNil(m);
 end;
 
-procedure TFileMixReader.SaveToDataFile(const fname: string);
+procedure TFileMixReader.SaveToDataFile(const fname: AnsiString);
 var
   mem: THMemoryStream;
 begin
@@ -673,7 +673,7 @@ function TFileMixReader.EnumFiles: THStringList;
 var
   i: Integer;
   p: PFileMixFileHeader;
-  f: string;
+  f: AnsiString;
 begin
   Result := THStringList.Create;
   for i := 0 to fList.Count - 1 do
@@ -684,7 +684,7 @@ begin
   end;
 end;
 
-function getFileSize(fname: string): Cardinal;
+function getFileSize(fname: AnsiString): Cardinal;
 var
   Rec : TSearchRec;
 begin
@@ -700,11 +700,11 @@ begin
   end;
 end;
 
-procedure TFileMixReader.ExtractPatternFiles(const outdir: string; pattern: string; overwrite:Boolean = True);
+procedure TFileMixReader.ExtractPatternFiles(const outdir: AnsiString; pattern: AnsiString; overwrite:Boolean = True);
 var
   i: Integer;
   p: PFileMixFileHeader;
-  dir, f: string;
+  dir, f: AnsiString;
   ms: THMemoryStream;
 begin
   dir := CheckPathYen(outdir);
@@ -737,7 +737,7 @@ begin
   end;
 end;
 
-function TFileMixReader.Find(const FName: string): PFileMixFileHeader;
+function TFileMixReader.Find(const FName: AnsiString): PFileMixFileHeader;
 var
   p: PFileMixFileHeader;
   i: Integer;
@@ -755,11 +755,11 @@ begin
   end;
 end;
 
-function getEmbedFile(var fname: string):Boolean;
+function getEmbedFile(var fname: AnsiString):Boolean;
 var
-  f: string;
-  readf, savef: string;
-  tmp: string;
+  f: AnsiString;
+  readf, savef: AnsiString;
+  tmp: AnsiString;
 begin
   Result := False;
   if unit_pack_files.FileMixReader <> nil then

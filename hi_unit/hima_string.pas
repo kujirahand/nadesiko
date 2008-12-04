@@ -9,24 +9,24 @@ type
   // ひまわりのソースを整形するコンバーター
   THimaSourceConverter = class
   private
-    FSource: string;
+    FSource: AnsiString;
     FileNo: Integer;
   private
-    procedure getOneChar(var p: PChar; AddPointer: Boolean; var ch:string; var nch:string);
+    procedure getOneChar(var p: PAnsiChar; AddPointer: Boolean; var ch: AnsiString; var nch: AnsiString);
   public
-    constructor Create(FileNo: Integer; source: string);
+    constructor Create(FileNo: Integer; source: AnsiString);
     procedure Convert;
-    property Source: string read FSource;
+    property Source: AnsiString read FSource;
   end;
 
 // クラスを使わないで整形
-function HimaSourceConverter(FileNo: Integer; src: string): string;
+function HimaSourceConverter(FileNo: Integer; src: AnsiString): AnsiString;
 // 動詞の語尾変化を削除
-function DeleteGobi(key: string): string;
+function DeleteGobi(key: AnsiString): AnsiString;
 // 文字コードの範囲内かどうか調べる
-function CharInRange(p: PChar; fromCH, toCH: string): Boolean;
+function CharInRange(p: PAnsiChar; fromCH, toCH: AnsiString): Boolean;
 // 文字列を数値に変換
-function HimaStrToNum(s: string): HFloat;
+function HimaStrToNum(s: AnsiString): HFloat;
 
 implementation
 
@@ -34,7 +34,7 @@ uses
   hima_error, hima_token;
 
 // クラスを使わないで整形
-function HimaSourceConverter(FileNo: Integer; src: string): string;
+function HimaSourceConverter(FileNo: Integer; src: AnsiString): AnsiString;
 var
   h: THimaSourceConverter;
 begin
@@ -48,11 +48,11 @@ begin
 end;
 
 // 動詞の語尾変化を削除
-function DeleteGobi(key: string): string;
-var p: PChar;
+function DeleteGobi(key: AnsiString): AnsiString;
+var p: PAnsiChar;
 begin
   key := HimaSourceConverter(0, key);
-  p := PChar(key);
+  p := PAnsiChar(key);
 
   if CharInRange(p, 'ぁ','ん') then // ひらがなから始まれば語尾を消さない
   begin
@@ -76,14 +76,14 @@ begin
   end;
 end;
 { //old version
-function DeleteGobi(key: string): string;
+function DeleteGobi(key: AnsiString): AnsiString;
 var
-  p, pS: PChar;
-  pp: PChar;
-  s: string;
+  p, pS: PAnsiChar;
+  pp: PAnsiChar;
+  s: AnsiString;
 begin
   key := HimaSourceConverter(0, key);
-  p := PChar(key); pS := p; pp := p;
+  p := PAnsiChar(key); pS := p; pp := p;
 
   // ひらがな以外が最後に現れた位置(+1文字の所)を記録
   while p^ <> #0 do begin
@@ -122,7 +122,7 @@ end;
 
 
 // 文字コードの範囲内かどうか調べる
-function CharInRange(p: PChar; fromCH, toCH: string): Boolean;
+function CharInRange(p: PAnsiChar; fromCH, toCH: AnsiString): Boolean;
 var
   code: Integer;
   fromCode, toCode: Integer;
@@ -159,13 +159,13 @@ end;
 
 // 文字列を数値に変換
 {
-function HimaStrToNum(s: string): Extended;
+function HimaStrToNum(s: AnsiString): Extended;
 var
-  p: PChar;
+  p: PAnsiChar;
   Flag: Integer;
 
   procedure get16sin;
-  var n: string;
+  var n: AnsiString;
   begin
     n := p^; Inc(p);
     while p^ in ['0'..'9','A'..'F','a'..'f'] do
@@ -177,7 +177,7 @@ var
   end;
 
   procedure get10sin;
-  var n: string;
+  var n: AnsiString;
   begin
     // 通常の形式
     // 123.456
@@ -215,7 +215,7 @@ var
 begin
   Result := 0; Flag := 1;
 
-  p := PChar(s); skipSpace(p);
+  p := PAnsiChar(s); skipSpace(p);
 
   // + or -
   if p^ = '+' then Inc(p);
@@ -229,11 +229,11 @@ begin
 
 end;
 }
-function HimaStrToNum(s: string): Extended;
+function HimaStrToNum(s: AnsiString): Extended;
 var
-  p: PChar; dummy: string;
+  p: PAnsiChar; dummy: AnsiString;
 begin
-  p := PChar(s);
+  p := PAnsiChar(s);
   Result := hima_token.HimaGetNumber(p, dummy);
 end;
 
@@ -241,10 +241,10 @@ end;
 
 procedure THimaSourceConverter.Convert;
 var
-  res: string;
-  p: PChar;
-  lineNo, InLineNo: Integer; memStr: string;
-  ch, nch, ch2, nch2: string;
+  res: AnsiString;
+  p: PAnsiChar;
+  lineNo, InLineNo: Integer; memStr: AnsiString;
+  ch, nch, ch2, nch2: AnsiString;
   isString, isComment, isString2, isCommentLine: Boolean;
   isString3, isString4: Boolean;
 
@@ -252,7 +252,7 @@ begin
   res    := '';
   lineNo :=  1; InLineNo := 0; // 行番号
   memStr := ''; // エラー表示のための周辺文字列
-  p      := PChar(FSource);
+  p      := PAnsiChar(FSource);
   isString  := False; //「」
   isString2 := False; //『』
   isString3 := False; // ""
@@ -460,17 +460,17 @@ begin
   FSource := res;
 end;
 
-constructor THimaSourceConverter.Create(FileNo: Integer; source: string);
+constructor THimaSourceConverter.Create(FileNo: Integer; source: AnsiString);
 begin
   FSource := source;
   Self.FileNo := FileNo;
 end;
 
 // 一文字切り出す ... 切り出した結果を ch nch に得る
-procedure THimaSourceConverter.getOneChar(var p: PChar; AddPointer: Boolean; var ch, nch: string);
+procedure THimaSourceConverter.getOneChar(var p: PAnsiChar; AddPointer: Boolean; var ch, nch: AnsiString);
 var
   code: Integer;
-  pp: PChar;
+  pp: PAnsiChar;
 begin
   if p^ = #0 then begin ch := ''; nch := ''; Exit; end; //
 

@@ -17,8 +17,8 @@ type
 
   EHimaSyntax = class(Exception)
   public
-    constructor Create(FileNo, LineNo: Integer; Msg: string; Args: array of const); overload;
-    constructor Create(DInfo: TDebugInfo; Msg: string; Args: array of const); overload;
+    constructor Create(FileNo, LineNo: Integer; Msg: AnsiString; Args: array of const); overload;
+    constructor Create(DInfo: TDebugInfo; Msg: AnsiString; Args: array of const); overload;
   end;
   EHimaRuntime = class(EHimaSyntax)
   end;
@@ -64,38 +64,38 @@ const
   ERR_S_RUN_VALUE     = '変数『%s』の値が取得できません。';
 
 var
-  HimaErrorMessage: string;
+  HimaErrorMessage: AnsiString;
   HimaFileList: THStringList; // ひまわりで使うファイルの管理用
 
-function setSourceFileName(fname: string): Integer; // ソースファイルを登録する
-function ErrFmt(FileNo, LineNo: Integer; Msg: string; Args: array of const): string;
+function setSourceFileName(fname: AnsiString): Integer; // ソースファイルを登録する
+function ErrFmt(FileNo, LineNo: Integer; Msg: AnsiString; Args: array of const): AnsiString;
 
 procedure debugi(i:Integer);
-procedure debugs(s:string);
+procedure debugs(s: AnsiString);
 
 var useErrorLog:Boolean = False; // <--- for DEBUG
 var FileErrLog: TextFile;
-procedure errLog(s: string);
+procedure errLog(s: AnsiString);
 
 implementation
 
 uses hima_string, unit_string, hima_variable, hima_system;
 
 var
-  HimaLog: string = '';
+  HimaLog: AnsiString = '';
 
 procedure debugi(i:Integer);
-var s: string;
+var s: AnsiString;
 begin
   s := IntToStr(i);
-  MessageBox(0, PChar(s), 'debug', MB_OK);
+  MessageBoxA(0, PAnsiChar(s), 'debug', MB_OK);
 end;
-procedure debugs(s:string);
+procedure debugs(s: AnsiString);
 begin
-  MessageBox(0, PChar(s), 'debug', MB_OK);
+  MessageBoxA(0, PAnsiChar(s), 'debug', MB_OK);
 end;
 
-function setSourceFileName(fname: string): Integer;
+function setSourceFileName(fname: AnsiString): Integer;
 begin
   Result := HimaFileList.IndexOf(fname);
   if Result < 0 then
@@ -104,12 +104,12 @@ begin
   end;
 end;
 
-var last_err_result : string = '';
-var last_err_file   : string = '';
+var last_err_result : AnsiString = '';
+var last_err_file   : AnsiString = '';
 
-function ErrFmt(FileNo, LineNo: Integer; Msg: string; Args: array of const): string;
+function ErrFmt(FileNo, LineNo: Integer; Msg: AnsiString; Args: array of const): AnsiString;
 var
-  fname, s, file_info: string;
+  fname, s, file_info: AnsiString;
 const
   err_h    = '[エラー] ';
   err_same = '前回と同様の理由でエラー。';
@@ -181,7 +181,7 @@ var
   LogTime: DWORD;
   fOpen: Boolean = False;
 
-function TempDir:string;
+function TempDir: AnsiString;
 var
  TempTmp:array[0..MAX_PATH] of Char;
 begin
@@ -190,9 +190,9 @@ begin
  if Copy(Result,Length(Result),1)<>'\' then Result := Result + '\';
 end;
 
-procedure errLog(s: string);
+procedure errLog(s: AnsiString);
 var
-  logname: string;
+  logname: AnsiString;
 begin
   if not useErrorLog then Exit;
   if not fOpen then
@@ -211,14 +211,14 @@ end;
 
 { EHimaSyntax }
 
-constructor EHimaSyntax.Create(FileNo, LineNo: Integer; Msg: string;
+constructor EHimaSyntax.Create(FileNo, LineNo: Integer; Msg: AnsiString;
   Args: array of const);
 begin
   inherited Create( ErrFmt(FileNo, LineNo, Msg, Args) );
   hi_setStr(HiSystem.ErrMsg, HimaErrorMessage);
 end;
 
-constructor EHimaSyntax.Create(DInfo: TDebugInfo; Msg: string;
+constructor EHimaSyntax.Create(DInfo: TDebugInfo; Msg: AnsiString;
   Args: array of const);
 begin
   inherited Create( ErrFmt(DInfo.FileNo, DInfo.LineNo, Msg, Args) );

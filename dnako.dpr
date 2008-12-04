@@ -53,7 +53,7 @@ begin
   FreeAndNil(FHiSystem);
 end;
 
-function nako_load(sourceFile: PChar): DWORD; stdcall;// 『なでしこ』のソースファイルを読み込む
+function nako_load(sourceFile: PAnsiChar): DWORD; stdcall;// 『なでしこ』のソースファイルを読み込む
 begin
   try
     HiSystem.FIncludeBasePath := '';
@@ -64,7 +64,7 @@ begin
   Result := nako_OK;
 end;
 
-function nako_loadSource(sourceText: PChar): DWORD; stdcall;// 『なでしこ』のソースファイルを読み込む
+function nako_loadSource(sourceText: PAnsiChar): DWORD; stdcall;// 『なでしこ』のソースファイルを読み込む
 begin
   try
     HiSystem.FIncludeBasePath := '';
@@ -104,12 +104,12 @@ begin
   Result := nako_OK;
 end;
 
-function nako_getError(msg: PChar; maxLen: Integer): DWORD; stdcall;// エラーメッセージを取得する。戻り値にはエラーメッセージの長さを返す。
+function nako_getError(msg: PAnsiChar; maxLen: Integer): DWORD; stdcall;// エラーメッセージを取得する。戻り値にはエラーメッセージの長さを返す。
 begin
   Result := Length(HimaErrorMessage);
   if maxLen > 0 then
   begin
-    StrLCopy(msg, PChar(HimaErrorMessage), maxLen);
+    StrLCopy(msg, PAnsiChar(HimaErrorMessage), maxLen);
   end;
 end;
 
@@ -118,7 +118,7 @@ begin
   HimaErrorMessage := '';
 end;
 
-function nako_eval(source: PChar): PHiValue; stdcall;// source に与えられた文字列をプログラムとして評価して結果を返す
+function nako_eval(source: PAnsiChar): PHiValue; stdcall;// source に与えられた文字列をプログラムとして評価して結果を返す
 begin
   try
     Result := HiSystem.Eval(source);
@@ -127,7 +127,7 @@ begin
   end;
 end;
 
-function nako_evalEx(source: PChar; var ret: PHiValue): BOOL; stdcall;// source に与えられた文字列をプログラムとして評価して実行結果と成功したかどうかを返す
+function nako_evalEx(source: PAnsiChar; var ret: PHiValue): BOOL; stdcall;// source に与えられた文字列をプログラムとして評価して実行結果と成功したかどうかを返す
 begin
   Result := True;
   try
@@ -143,7 +143,7 @@ begin
   HiSystem.AddSystemFileCommand;
 end;
 
-function nako_getVariable(vname: PChar): PHiValue; stdcall;// なでしこに登録されている変数のポインタを取得する
+function nako_getVariable(vname: PAnsiChar): PHiValue; stdcall;// なでしこに登録されている変数のポインタを取得する
 var
   id: DWORD;
 begin
@@ -151,13 +151,13 @@ begin
   Result := HiSystem.GetVariable(id);
 end;
 
-procedure nako_setVariable(vname: PChar; value: PHiValue); stdcall; // なでしこに変数を登録する(グローバルとして)
+procedure nako_setVariable(vname: PAnsiChar; value: PHiValue); stdcall; // なでしこに変数を登録する(グローバルとして)
 begin
   value.VarID := hi_tango2id(DeleteGobi(vname));
   HiSystem.Global.RegistVar(value);
 end;
 
-function nako_addFunction(name, args: PChar; func: THimaSysFunction; tag: Integer): DWORD; stdcall; // 独自関数を追加する
+function nako_addFunction(name, args: PAnsiChar; func: THimaSysFunction; tag: Integer): DWORD; stdcall; // 独自関数を追加する
 begin
   if HiSystem.AddFunction(name, args, func, tag, '') then
     Result := NAKO_OK
@@ -165,7 +165,7 @@ begin
     Result := NAKO_NG;
 end;
 
-function nako_addFunction2(name, args: PChar; func: THimaSysFunction; tag: Integer; IzonFiles: PChar): DWORD; stdcall; // 独自関数を追加する
+function nako_addFunction2(name, args: PAnsiChar; func: THimaSysFunction; tag: Integer; IzonFiles: PAnsiChar): DWORD; stdcall; // 独自関数を追加する
 begin
   if HiSystem.AddFunction(name, args, func, tag, IzonFiles) then
     Result := NAKO_OK
@@ -199,10 +199,10 @@ begin
   Result := HiSystem.Sore;
 end;
 
-procedure nako_addIntVar(name: PChar; value: Integer; tag: Integer); stdcall; // 整数型の変数をシステムに追加する。(tagには希望の単語IDを指定)
+procedure nako_addIntVar(name: PAnsiChar; value: Integer; tag: Integer); stdcall; // 整数型の変数をシステムに追加する。(tagには希望の単語IDを指定)
 var
   p: PHiValue;
-  key: string;
+  key: AnsiString;
   id: DWORD;
 begin
   key := DeleteGobi(name);
@@ -212,10 +212,10 @@ begin
   hi_setInt(p, value);
 end;
 
-procedure nako_addStrVar(name: PChar; value: PChar; tag: Integer); stdcall; // 文字列型の変数をシステムに追加する。
+procedure nako_addStrVar(name: PAnsiChar; value: PAnsiChar; tag: Integer); stdcall; // 文字列型の変数をシステムに追加する。
 var
   p: PHiValue;
-  key: string;
+  key: AnsiString;
   id: DWORD;
 begin
   key := DeleteGobi(name);
@@ -238,22 +238,22 @@ begin
   HiSystem.ReturnLevel  := BREAK_OFF;
 end;
 
-function nako_id2tango(id: DWORD; tango: PChar; maxLen: DWORD): DWORD; stdcall; // 単語管理用IDから単語名を取得する。戻り値は常に単語の長さを返す。
-var s: string;
+function nako_id2tango(id: DWORD; tango: PAnsiChar; maxLen: DWORD): DWORD; stdcall; // 単語管理用IDから単語名を取得する。戻り値は常に単語の長さを返す。
+var s: AnsiString;
 begin
   s       := hi_id2tango(id);
   Result  := Length(s);
-  if maxLen > 0 then StrLCopy(tango, PChar(s), maxLen);
+  if maxLen > 0 then StrLCopy(tango, PAnsiChar(s), maxLen);
 end;
 
-function nako_tango2id(tango: PChar): DWORD; stdcall; // 単語名から単語管理用IDを取得する
+function nako_tango2id(tango: PAnsiChar): DWORD; stdcall; // 単語名から単語管理用IDを取得する
 begin
   Result := hi_tango2id(string(tango));
 end;
 
-function nako_var2str(value: PHiValue; str: PChar; maxLen: DWORD): DWORD; stdcall; // PHiValueを文字列に変換してstrにコピーする。
+function nako_var2str(value: PHiValue; str: PAnsiChar; maxLen: DWORD): DWORD; stdcall; // PHiValueを文字列に変換してstrにコピーする。
 var
-  s: string;
+  s: AnsiString;
   copyLen: DWORD;
 begin
   s := hi_str(value);
@@ -275,9 +275,9 @@ begin
   end;
 end;
 
-function nako_var2cstr(value: PHiValue; str: PChar; maxLen: DWORD): DWORD; stdcall; // PHiValueをヌル終端文字列に変換してstrにコピーする。内容が途中で途切れる可能性もある。
+function nako_var2cstr(value: PHiValue; str: PAnsiChar; maxLen: DWORD): DWORD; stdcall; // PHiValueをヌル終端文字列に変換してstrにコピーする。内容が途中で途切れる可能性もある。
 var
-  s: string;
+  s: AnsiString;
   copyLen: DWORD;
 begin
   s := hi_str(value);
@@ -295,7 +295,7 @@ begin
 
   if Result > 0 then
   begin
-    StrLCopy(str, PChar(s), copyLen);
+    StrLCopy(str, PAnsiChar(s), copyLen);
   end;
 end;
 
@@ -315,14 +315,14 @@ begin
   Result := hi_Float(value);
 end;
 
-procedure nako_str2var(str: PChar; value: PHiValue); stdcall; // ヌル文字列を PHiValue に変換してセット
+procedure nako_str2var(str: PAnsiChar; value: PHiValue); stdcall; // ヌル文字列を PHiValue に変換してセット
 begin
-  hi_setStr(value, string(str));
+  hi_setStr(value, AnsiString(str));
 end;
 
-procedure nako_bin2var(bin: PChar; len: DWORD; value: PHiValue); stdcall; // バイナリデータを文字列としてvalueにセット
+procedure nako_bin2var(bin: PAnsiChar; len: DWORD; value: PHiValue); stdcall; // バイナリデータを文字列としてvalueにセット
 var
-  s: string;
+  s: AnsiString;
 begin
   if len = 0 then
   begin
@@ -343,7 +343,7 @@ begin
   hi_setFloat(value, num);
 end;
 
-function nako_var_new(name: PChar): PHiValue; stdcall; // 新規 PHiValue の変数を作成する。nameにnilを渡すと変数名をつけないで値だけ作成し変数名をつけるとグローバル変数として登録する。
+function nako_var_new(name: PAnsiChar): PHiValue; stdcall; // 新規 PHiValue の変数を作成する。nameにnilを渡すと変数名をつけないで値だけ作成し変数名をつけるとグローバル変数として登録する。
 begin
   if name <> nil then
   begin
@@ -404,7 +404,7 @@ begin
   Result := hima_function.MainWindowHandle;
 end;
 
-function nako_getGroupMember(groupName, memberName: PChar): PHiValue; stdcall; // グループのメンバを取得する。メンバが存在しなければnilが返る。
+function nako_getGroupMember(groupName, memberName: PAnsiChar): PHiValue; stdcall; // グループのメンバを取得する。メンバが存在しなければnilが返る。
 var
   g: PHiValue;
 begin
@@ -417,7 +417,7 @@ begin
   Result := hi_group(g).FindMember(hi_tango2id(DeleteGobi(memberName)));
 end;
 
-function nako_hasEvent(groupName, memberName: PChar): PHiValue; stdcall; // グループのメンバを取得する。メンバが存在しなければnilが返る。
+function nako_hasEvent(groupName, memberName: PAnsiChar): PHiValue; stdcall; // グループのメンバを取得する。メンバが存在しなければnilが返る。
 var
   g: PHiValue;
 begin
@@ -428,7 +428,7 @@ begin
   Result := hi_group(g).FindMember(hi_tango2id(memberName));
 end;
 
-procedure nako_addSetterGetter(vname, setter, getter:PChar; tag: DWORD); stdcall; // 変数名vnameにゲッターセッターを設定する
+procedure nako_addSetterGetter(vname, setter, getter:PAnsiChar; tag: DWORD); stdcall; // 変数名vnameにゲッターセッターを設定する
 begin
   HiSystem.SetSetterGetter(vname, setter, getter, tag, '', '');
 end;
@@ -453,10 +453,10 @@ begin
   hi_group(group).Add(member);
 end;
 
-function nako_group_findMember(group: PHiValue; memberName: PChar): PHiValue; stdcall; // グループ変数groupのメンバmemberNameを検索する
+function nako_group_findMember(group: PHiValue; memberName: PAnsiChar): PHiValue; stdcall; // グループ変数groupのメンバmemberNameを検索する
 var
   vid: DWORD;
-  s: string;
+  s: AnsiString;
 begin
   s := memberName;
   s := DeleteGobi(s);
@@ -464,17 +464,17 @@ begin
   Result := hi_group(group).FindMember(vid);
 end;
 
-function nako_group_exec(group: PHiValue; memberName: PChar): PHiValue; stdcall; // グループ変数groupのメンバmemberNameがイベントならば実行し結果を返す
+function nako_group_exec(group: PHiValue; memberName: PAnsiChar): PHiValue; stdcall; // グループ変数groupのメンバmemberNameがイベントならば実行し結果を返す
 begin
   Result := HiSystem.RunGroupEvent(group, hi_tango2id(DeleteGobi(memberName)));
 end;
 
-function nako_debug_nadesiko(p: PChar; len: DWORD): DWORD; stdcall; // nako_loadした構文木を再度ソースに変換する
-var s: string;
+function nako_debug_nadesiko(p: PAnsiChar; len: DWORD): DWORD; stdcall; // nako_loadした構文木を再度ソースに変換する
+var s: AnsiString;
 begin
   s := HiSystem.DebugProgramNadesiko;
   Result := Length(s);
-  StrLCopy(PChar(s), p, len);
+  StrLCopy(PAnsiChar(s), p, len);
 end;
 
 procedure nako_ary_create(p: PHiValue); stdcall; // p を配列として生成する
@@ -502,7 +502,7 @@ begin
   HiSystem.LoadPlugins;
 end;
 
-function nako_openPackfile(fname: PChar): Integer; stdcall; // 実行ファイル fname のパックファイルを開く。失敗なら、0を返す。
+function nako_openPackfile(fname: PAnsiChar): Integer; stdcall; // 実行ファイル fname のパックファイルを開く。失敗なら、0を返す。
 begin
   errLog('nako_openPackfile:' + fname);
   if OpenPackFile(fname) then
@@ -517,7 +517,7 @@ end;
 
 function nako_runPackfile: DWORD; stdcall; // nako_openPackfile で開いたファイルにある nadesiko.nako を開いて実行する。失敗は、nako_NGを返す。
 var
-  src: string;
+  src: AnsiString;
 begin
   Result := nako_NG;
 
@@ -541,7 +541,7 @@ begin
   Result := nako_OK;
 end;
 
-function nako_openPackfileBin(packname: PChar): Integer; stdcall; // packname のパックファイルを開く。失敗なら、0を返す。
+function nako_openPackfileBin(packname: PAnsiChar): Integer; stdcall; // packname のパックファイルを開く。失敗なら、0を返す。
 begin
   errLog('nako_openPackfileBin:' + packname);
 
@@ -556,7 +556,7 @@ begin
 end;
 
 
-function nako_closePackfile(dummy: PChar): Integer; stdcall; // 実行ファイルのパックファイルを閉じる（後片付け）。失敗なら、0を返す。
+function nako_closePackfile(dummy: PAnsiChar): Integer; stdcall; // 実行ファイルのパックファイルを閉じる（後片付け）。失敗なら、0を返す。
 begin
   if FileMixReader <> nil then
   begin
@@ -580,24 +580,24 @@ begin
   unit_pack_files.FileMixReader := TFileMixReader(Integer(handle));
 end;
 
-procedure nako_makeReport(fname: PChar); stdcall; // 取り込んだファイル、プラグインのレポートを作成する
+procedure nako_makeReport(fname: PAnsiChar); stdcall; // 取り込んだファイル、プラグインのレポートを作成する
 var
-  s: string;
+  s: AnsiString;
 begin
   s := HiSystem.makeDllReport;
   FileSaveAll(s, fname);
 end;
 
-procedure nako_reportDLL(fname: PChar); stdcall; // DLLを利用したことを明示する..レポートに加える
+procedure nako_reportDLL(fname: PAnsiChar); stdcall; // DLLを利用したことを明示する..レポートに加える
 begin
   HiSystem.plugins.addDll(fname);
 end;
 
-function nako_hasPlugins(dllName: PChar): BOOL; stdcall; // 指定したプラグインが使われているか？
+function nako_hasPlugins(dllName: PAnsiChar): BOOL; stdcall; // 指定したプラグインが使われているか？
 var
   i: Integer;
-  f: string;
-  dll: string;
+  f: AnsiString;
+  dll: AnsiString;
 begin
   Result := False;
   dll := UpperCase(string( dllName ));
@@ -617,23 +617,23 @@ procedure nako_hash_create(v: PHiValue); stdcall; // 値vをハッシュ形式に変換する
 begin
   hi_hash_create(v);
 end;
-function nako_hash_get(hash: PHiValue; key: PChar): PHiValue; stdcall; // hashのkeyの値を取得する
+function nako_hash_get(hash: PHiValue; key: PAnsiChar): PHiValue; stdcall; // hashのkeyの値を取得する
 begin
   hi_hash_create(hash);
   Result := hi_hash_get(hash, key);
 end;
-procedure nako_hash_set(hash: PHiValue; key: PChar; value: PHiValue); stdcall; // hashのkeyにvalueを設定する
+procedure nako_hash_set(hash: PHiValue; key: PAnsiChar; value: PHiValue); stdcall; // hashのkeyにvalueを設定する
 begin
   hi_hash_create(hash);
   hi_hash_set(hash, key, value);
 end;
-function nako_hash_keys(hash: PHiValue; s: PChar; len: Integer): Integer; stdcall; // hashのkey一覧を得る
+function nako_hash_keys(hash: PHiValue; s: PAnsiChar; len: Integer): Integer; stdcall; // hashのkey一覧を得る
 var
-  list: string;
+  list: AnsiString;
 begin
   hi_hash_create(hash);
   list := hi_hash(hash).EnumKeys;
-  StrLCopy(s, PChar(list), len);
+  StrLCopy(s, PAnsiChar(list), len);
   Result := Length(list);
 end;
 
@@ -645,23 +645,23 @@ begin
   //
 end;
 
-function nako_getSourceText(fileNo: Integer; s: PChar; len: DWORD): DWORD; stdcall; // 現在の実行行を得る
+function nako_getSourceText(fileNo: Integer; s: PAnsiChar; len: DWORD): DWORD; stdcall; // 現在の実行行を得る
 var
-  txt: string;
+  txt: AnsiString;
 begin
   txt := HiSystem.GetSourceText(fileNo);
   Result := Length(txt);
-  if len > 0 then StrLCopy(s, PChar(txt), len);
+  if len > 0 then StrLCopy(s, PAnsiChar(txt), len);
 end;
 
-function nako_getFilename(fileNo: Integer; outstr: PChar; len: DWORD): DWORD; stdcall; // fileno からファイル名を得る
+function nako_getFilename(fileNo: Integer; outstr: PAnsiChar; len: DWORD): DWORD; stdcall; // fileno からファイル名を得る
 var
   f: THimaFile;
-  s: string;
+  s: AnsiString;
 begin
   f := HiSystem.TokenFiles.FindFileNo(fileNo);
   s := f.Path + f.Filename;
-  if len > 0 then StrLCopy(outstr, PChar(s), len);
+  if len > 0 then StrLCopy(outstr, PAnsiChar(s), len);
   Result := nako_OK;
 end;
 
@@ -706,14 +706,14 @@ begin
   dnako_dll_handle := h;
 end;
 
-procedure nako_setPluginsDir(path: PChar); stdcall; // plug-ins フォルダを指定する
+procedure nako_setPluginsDir(path: PAnsiChar); stdcall; // plug-ins フォルダを指定する
 begin
   HiSystem.PluginsDir := path;
 end;
 
-function nako_getPluginsDir(): PChar; stdcall; // plug-ins フォルダを取得する
+function nako_getPluginsDir(): PAnsiChar; stdcall; // plug-ins フォルダを取得する
 begin
-  Result := PChar(HiSystem.PluginsDir);
+  Result := PAnsiChar(HiSystem.PluginsDir);
 end;
 
 procedure test; stdcall; // テスト
@@ -721,31 +721,31 @@ begin
   HiSystem.Test;
 end;
 
-function nako_getVersion(): PChar; stdcall; // なでしこのバージョンを文字列で得る
+function nako_getVersion(): PAnsiChar; stdcall; // なでしこのバージョンを文字列で得る
 begin
-  Result := PChar(NADESIKO_VER);
+  Result := PAnsiChar(NADESIKO_VER);
 end;
 
-function nako_getUpdateDate(): PChar; stdcall; // なでしこの更新日を文字列で得る
+function nako_getUpdateDate(): PAnsiChar; stdcall; // なでしこの更新日を文字列で得る
 begin
-  Result := PChar(NADESIKO_DATE);
+  Result := PAnsiChar(NADESIKO_DATE);
 end;
 
-function nako_getNADESIKO_GUID(): PChar; stdcall; // なでしこのGUIDを返す
+function nako_getNADESIKO_GUID(): PAnsiChar; stdcall; // なでしこのGUIDを返す
 begin
-  Result := PChar(NADESIKO_GUID);
+  Result := PAnsiChar(NADESIKO_GUID);
 end;
 
-function nako_getEmbedFile(find_file: PChar; outfile: PChar; len: DWORD): BOOL; stdcall; // 実行ファイルに埋め込まれたリソースがあればファイルを返す
+function nako_getEmbedFile(find_file: PAnsiChar; outfile: PAnsiChar; len: DWORD): BOOL; stdcall; // 実行ファイルに埋め込まれたリソースがあればファイルを返す
 var
-  f, org: string;
+  f, org: AnsiString;
 begin
   Result := False;
-  org := string(find_file);
+  org := AnsiString(find_file);
   f := org;
   if getEmbedFile(f) then
   begin
-    StrLCopy(outfile, PChar(f), len);
+    StrLCopy(outfile, PAnsiChar(f), len);
     Result := True;
   end;
 end;
@@ -755,31 +755,31 @@ begin
   Result := LastUserFuncID;
 end;
 
-function nako_checkLicense(license_name:PChar; license_code:PChar): DWORD; stdcall;// ライセンスされているか確認する
+function nako_checkLicense(license_name:PAnsiChar; license_code:PAnsiChar): DWORD; stdcall;// ライセンスされているか確認する
 var
-  path:string;
-  code: string;
+  path: AnsiString;
+  code: AnsiString;
 begin
   Result := nako_NG;
   path := AppDataDir + 'com.nadesi.dll.dnako\license\';
-  path := path + string(license_name);
+  path := path + AnsiString(license_name);
   if not FileExists(path) then Exit;
   code := FileLoadAll(path);
-  if string(license_code) = code then
+  if AnsiString(license_code) = code then
   begin
     Result := nako_OK;
   end;
 end;
 
-function nako_registerLicense(license_name:PChar; license_code:PChar): DWORD; stdcall;// ライセンスコードを書き込む
+function nako_registerLicense(license_name:PAnsiChar; license_code:PAnsiChar): DWORD; stdcall;// ライセンスコードを書き込む
 var
-  path:string;
+  path: AnsiString;
 begin
   Result := nako_NG;
   try
     path := AppDataDir + 'com.nadesi.dll.dnako\license\';
     ForceDirectories(path);
-    path := path + string(license_name);
+    path := path + AnsiString(license_name);
     FileSaveAll(string(license_code), path);
     Result := nako_OK;
   except

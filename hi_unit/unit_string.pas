@@ -13,104 +13,104 @@ uses
   Windows, SysUtils, hima_types;
 
 type
-  TChars = set of Char;
+  TChars = set of AnsiChar;
 
 //------------------------------------------------------------------------------
-// PChar 関連
+// PAnsiChar 関連
 //------------------------------------------------------------------------------
-// PChar から 1文字取り出す
-function getOneChar(var p: PChar): string;
-// PChar から 1文字取り出し文字コードで返しポインタを進める
-function getOneCharCode(var p: PChar): Integer;
-// PChar で空白文字を飛ばしポインタを進める
-procedure skipSpace(var p: PChar);
-// PChar で特定の文字までを取り出しポインタを進める(返す文字にsplitterを含む)
+// PAnsiChar から 1文字取り出す
+function getOneChar(var p: PAnsiChar): AnsiString;
+// PAnsiChar から 1文字取り出し文字コードで返しポインタを進める
+function getOneCharCode(var p: PAnsiChar): Integer;
+// PAnsiChar で空白文字を飛ばしポインタを進める
+procedure skipSpace(var p: PAnsiChar);
+// PAnsiChar で特定の文字までを取り出しポインタを進める(返す文字にsplitterを含む)
 // もしsplitterがあれば HasSplitter=True を返す
-function getToSplitter(var p: PChar; splitter: string; var HasSplitter: Boolean): string;
-function getToSplitterStr(var s: string; splitter: string): string;
+function getToSplitter(var p: PAnsiChar; splitter: AnsiString; var HasSplitter: Boolean): AnsiString;
+function getToSplitterStr(var s: AnsiString; splitter: AnsiString): AnsiString;
 // 特定の文字列の手前までを取得する
-function getToSplitterB(var p: PChar; splitter: string): string;
+function getToSplitterB(var p: PAnsiChar; splitter: AnsiString): AnsiString;
 // 特定の区切り文字までを取得する（区切り文字は削除する）
-function getTokenCh(var p: PChar; ch: TChars): string;
+function getTokenCh(var p: PAnsiChar; ch: TChars): AnsiString;
 // 特定の区切り文字までを取得する（区切り文字は削除する）
-function getTokenStr(var p: PChar; splitter: string): string;
+function getTokenStr(var p: PAnsiChar; splitter: AnsiString): AnsiString;
 // 特定の区切り文字までを取得する（区切り文字は削除する）
-function getToken_s(var s: string; splitter: string): string;
+function getToken_s(var s: AnsiString; splitter: AnsiString): AnsiString;
 
 //------------------------------------------------------------------------------
 // 検索取り出し
 //------------------------------------------------------------------------------
 // 検索
-function JPos(sub, s: string): Integer;
-function JPosEx(sub, s: string; FromI: Integer): Integer;
-function PosEx(sub, s: string; FromI: Integer): Integer;
+function JPos(sub, s: AnsiString): Integer;
+function JPosEx(sub, s: AnsiString; FromI: Integer): Integer;
+function PosEx(sub, s: AnsiString; FromI: Integer): Integer;
 
 // コピー
-function JCopy (s: string; i, count: Integer): string;
-function JRight(s: string; count: Integer): string;
-function Right (s: string; count: Integer): string;
+function JCopy (s: AnsiString; i, count: Integer): AnsiString;
+function JRight(s: AnsiString; count: Integer): AnsiString;
+function Right (s: AnsiString; count: Integer): AnsiString;
 // 文字数取得
-function JLength(s: string): Integer;
+function JLength(s: AnsiString): Integer;
 // 文字削除
-procedure JDelete(var s: string; i, count: Integer);
+procedure JDelete(var s: AnsiString; i, count: Integer);
 // 置換
-function JReplace(str, sFind, sNew: string): string;
-function JReplaceOne(str, sFind, sNew: string): string;
+function JReplace(str, sFind, sNew: AnsiString): AnsiString;
+function JReplaceOne(str, sFind, sNew: AnsiString): AnsiString;
 // 繰り返し
-function RepeatStr(s: string; count: Integer): string;
+function RepeatStr(s: AnsiString; count: Integer): AnsiString;
 
-function GetAbsolutePath(soutai, base: string; Delimiter: Char): string;
-function SplitChar(delimiter: Char; str: string): THStringList;
+function GetAbsolutePath(soutai, base: AnsiString; Delimiter: AnsiChar): AnsiString;
+function SplitChar(delimiter: AnsiChar; str: AnsiString): THStringList;
 
 //------------------------------------------------------------------------------
 // S_JIS対応コピー
 //------------------------------------------------------------------------------
-function sjis_copyByte(p: PChar; count: Integer): string;
-function sjis_copyB(p: PChar; index, count: Integer): string;
-function Asc(const ch: string): Integer; //文字コードを得る
+function sjis_copyByte(p: PAnsiChar; count: Integer): AnsiString;
+function sjis_copyB(p: PAnsiChar; index, count: Integer): AnsiString;
+function Asc(const ch: AnsiString): Integer; //文字コードを得る
 
 //------------------------------------------------------------------------------
 // 文字種類変換 関連
 //------------------------------------------------------------------------------
 // 全角変換
-function convToFull(const str: string): string;
+function convToFull(const str: AnsiString): AnsiString;
 // 半角変換
-function convToHalf(const str: string): string;
+function convToHalf(const str: AnsiString): AnsiString;
 // ひらがな変換
-function convToHiragana(const str: string): string;
+function convToHiragana(const str: AnsiString): AnsiString;
 // カタカナ変換
-function convToKatakana(const str: string): string;
+function convToKatakana(const str: AnsiString): AnsiString;
 // 大文字変換
-function LowerCaseEx(const str: string): string;
+function LowerCaseEx(const str: AnsiString): AnsiString;
 // 小文字変換
-function UpperCaseEx(const str: string): string;
+function UpperCaseEx(const str: AnsiString): AnsiString;
 
 // 全部アルファベット？（全角文字がない？）
-function IsHalfStr(s: string): Boolean;
+function IsHalfStr(s: AnsiString): Boolean;
 // 全部数値か？
-function IsNumber(var s: string): Boolean;
-function IsNumOne(const str: string): Boolean;
-function IsHiragana(const str: string): Boolean;
-function IsKatakana(const str: string): Boolean;
-function IsAlphabet(const str: string): Boolean;
+function IsNumber(var s: AnsiString): Boolean;
+function IsNumOne(const str: AnsiString): Boolean;
+function IsHiragana(const str: AnsiString): Boolean;
+function IsKatakana(const str: AnsiString): Boolean;
+function IsAlphabet(const str: AnsiString): Boolean;
 
-function URLEncode(s: string):string;
-function URLDecode(s: string):string;
+function URLEncode(s: AnsiString):string;
+function URLDecode(s: AnsiString):string;
 
 //------------------------------------------------------------------------------
 // 各種処理
 //------------------------------------------------------------------------------
-function ExpandTab(const s: string; tabCnt: Integer): string;
+function ExpandTab(const s: AnsiString; tabCnt: Integer): AnsiString;
 
 // パスの終端に\をつける
-function CheckPathYen(s: string): string;
+function CheckPathYen(s: AnsiString): AnsiString;
 
 implementation
 
-function URLDecode(s: string):string;
+function URLDecode(s: AnsiString):string;
 var
   Idx: Integer;   // loops thru chars in string
-  Hex: string;    // string of hex characters
+  Hex: AnsiString;    // string of hex characters
   Code: Integer;  // hex character code (-1 on error)
 begin
   // Intialise result and string index
@@ -150,7 +150,7 @@ begin
   end;
 end;
 
-function URLEncode(s: string):string;
+function URLEncode(s: AnsiString):string;
 var
   i: Integer;
 begin
@@ -161,7 +161,7 @@ begin
   end;
 end;
 
-function IsHiragana(const str: string): Boolean;
+function IsHiragana(const str: AnsiString): Boolean;
 var code: Integer;
 begin
     Result := False;
@@ -170,7 +170,7 @@ begin
     if ($82A0 <= code)and(code <= $833E) then Result := True;
 end;
 
-function IsKatakana(const str: string): Boolean;
+function IsKatakana(const str: AnsiString): Boolean;
 var code: Integer;
 begin
     Result := False;
@@ -179,8 +179,8 @@ begin
     if ($8340 <= code)and(code <= $839D) then Result := True;
 end;
 
-function IsAlphabet(const str: string): Boolean;
-var s: string;
+function IsAlphabet(const str: AnsiString): Boolean;
+var s: AnsiString;
 begin
   Result := False;
   if str = '' then Exit;
@@ -197,8 +197,8 @@ begin
   end;
 end;
 
-function IsNumOne(const str: string): Boolean;
-var s: string;
+function IsNumOne(const str: AnsiString): Boolean;
+var s: AnsiString;
 begin
   Result := False;
   if str = '' then Exit;
@@ -217,17 +217,17 @@ end;
 
 
 // パスの終端に\をつける
-function CheckPathYen(s: string): string;
+function CheckPathYen(s: AnsiString): AnsiString;
 begin
   Result := IncludeTrailingPathDelimiter(s);
 end;
 
 
 //------------------------------------------------------------------------------
-// PChar 関連
+// PAnsiChar 関連
 //------------------------------------------------------------------------------
-// PChar から 1文字取り出す
-function getOneChar(var p: PChar): string;
+// PAnsiChar から 1文字取り出す
+function getOneChar(var p: PAnsiChar): AnsiString;
 begin
   if p^ in SysUtils.LeadBytes then
   begin
@@ -240,8 +240,8 @@ begin
   end;
 end;
 
-// PChar から 1文字取り出し文字コードで返す
-function getOneCharCode(var p: PChar): Integer;
+// PAnsiChar から 1文字取り出し文字コードで返す
+function getOneCharCode(var p: PAnsiChar): Integer;
 begin
   if p^ in SysUtils.LeadBytes then
   begin
@@ -254,18 +254,18 @@ begin
   end;
 end;
 
-// PChar で空白文字を飛ばす
-procedure skipSpace(var p: PChar);
+// PAnsiChar で空白文字を飛ばす
+procedure skipSpace(var p: PAnsiChar);
 begin
   while p^ in [' ',#9] do Inc(p);
 end;
 
-// PChar で特定の文字までを取り出しポインタを進める(返す文字にsplitterを含む)
+// PAnsiChar で特定の文字までを取り出しポインタを進める(返す文字にsplitterを含む)
 // もしsplitterがあれば HasSplitter=True を返す
-function getToSplitter(var p: PChar; splitter: string; var HasSplitter: Boolean): string;
-var sp: PChar; len: Integer;
+function getToSplitter(var p: PAnsiChar; splitter: AnsiString; var HasSplitter: Boolean): AnsiString;
+var sp: PAnsiChar; len: Integer;
 begin
-  sp := PChar(splitter); len := Length(splitter);
+  sp := PAnsiChar(splitter); len := Length(splitter);
   HasSplitter := False;
   Result := '';
   while p^ <> #0 do
@@ -281,21 +281,21 @@ begin
   end;
 end;
 
-function getToSplitterStr(var s: string; splitter: string): string;
+function getToSplitterStr(var s: AnsiString; splitter: AnsiString): AnsiString;
 var
-  p: PChar; flg: Boolean;
+  p: PAnsiChar; flg: Boolean;
 begin
-  p := PChar(s);
+  p := PAnsiChar(s);
   Result := getToSplitter(p, splitter, flg);
   s := p;
 end;
 
 // 特定の文字列の手前までを取得する
-function getToSplitterB(var p: PChar; splitter: string): string;
+function getToSplitterB(var p: PAnsiChar; splitter: AnsiString): AnsiString;
 var
-  sp: PChar; len: Integer;
+  sp: PAnsiChar; len: Integer;
 begin
-  sp := PChar(splitter); len := Length(splitter);
+  sp := PAnsiChar(splitter); len := Length(splitter);
   Result := '';
   while p^ <> #0 do
   begin
@@ -308,7 +308,7 @@ begin
 end;
 
 // 特定の区切り文字までを取得する（区切り文字は削除する）
-function getTokenCh(var p: PChar; ch: TChars): string;
+function getTokenCh(var p: PAnsiChar; ch: TChars): AnsiString;
 begin
   Result := '';
   while p^ <> #0 do
@@ -331,14 +331,14 @@ end;
 
 // 特定の区切り文字までを取得する（区切り文字は削除する）
 // 区切り文字が空文字列の時は1文字だけ返す
-function getTokenStr(var p: PChar; splitter: string): string;
+function getTokenStr(var p: PAnsiChar; splitter: AnsiString): AnsiString;
 var
-  sp: PChar;
+  sp: PAnsiChar;
   len: Integer;
 begin
   Result := '';
 
-  sp  := PChar(splitter);
+  sp  := PAnsiChar(splitter);
   len := Length(splitter);
 
   if len = 0 then
@@ -378,9 +378,9 @@ begin
 end;
 
 // 特定の区切り文字までを取得する（区切り文字は削除する）
-function getToken_s(var s: string; splitter: string): string;
+function getToken_s(var s: AnsiString; splitter: AnsiString): AnsiString;
 var
-  ps, pSplitter: PChar;
+  ps, pSplitter: PAnsiChar;
   lenS, len, lenSplitter: Integer;
   flg: Boolean;
 begin
@@ -432,9 +432,9 @@ end;
 // 検索取り出し
 //------------------------------------------------------------------------------
 // 検索
-function JPos(sub, s: string): Integer;
+function JPos(sub, s: AnsiString): Integer;
 var
-  psub, ps: PChar;
+  psub, ps: PAnsiChar;
   i, len: Integer;
 begin
   // Pos('','ABC') = 0 に習う
@@ -442,8 +442,8 @@ begin
   begin
     Result := 0; Exit;
   end;
-  psub := PChar(sub);
-  ps   := PChar(s);
+  psub := PAnsiChar(sub);
+  ps   := PAnsiChar(s);
   len  := Length(sub);
   Result := 0; i := 0;
   while ps^ <> #0 do
@@ -465,9 +465,9 @@ begin
   end;
 end;
 
-function JPosEx(sub, s: string; FromI: Integer): Integer;
+function JPosEx(sub, s: AnsiString; FromI: Integer): Integer;
 var
-  psub, ps: PChar;
+  psub, ps: PAnsiChar;
   i, len: Integer;
 begin
   // Pos('','ABC') = 0 に習う
@@ -479,8 +479,8 @@ begin
   if FromI <= 0 then FromI := 1;
   s := JCopy(s, FromI, Length(s)); // 切り出し
 
-  psub := PChar(sub);
-  ps   := PChar(s);
+  psub := PAnsiChar(sub);
+  ps   := PAnsiChar(s);
   len  := Length(sub);
   Result := 0; i := 0;
   while ps^ <> #0 do
@@ -502,7 +502,7 @@ begin
   end;
 end;
 
-function PosEx(sub, s: string; FromI: Integer): Integer;
+function PosEx(sub, s: AnsiString; FromI: Integer): Integer;
 begin
   s := Copy(s, FromI, Length(s));
   Result := Pos(sub, s);
@@ -510,13 +510,13 @@ begin
 end;
 
 // コピー
-function JCopy(s: string; i, count: Integer): string;
+function JCopy(s: AnsiString; i, count: Integer): AnsiString;
 var
-  p: PChar;
+  p: PAnsiChar;
   idx, idxFrom, idxTo: Integer;
-  c: string;
+  c: AnsiString;
 begin
-  p := PChar(s);
+  p := PAnsiChar(s);
   idx := 1;
   idxFrom := i; if idxFrom < 1 then idxFrom := 1;
   idxTo   := idxFrom + count - 1;
@@ -536,7 +536,7 @@ begin
   end;
 end;
 
-function Right (s: string; count: Integer): string;
+function Right (s: AnsiString; count: Integer): AnsiString;
 var
   len: Integer;
 begin
@@ -545,7 +545,7 @@ begin
   Result := Copy(s, len - count + 1, count);
 end;
 
-function JRight(s: string; count: Integer): string;
+function JRight(s: AnsiString; count: Integer): AnsiString;
 var
   len: Integer;
 begin
@@ -556,11 +556,11 @@ begin
 end;
 
 // 文字数取得
-function JLength(s: string): Integer;
+function JLength(s: AnsiString): Integer;
 var
-  p: PChar;
+  p: PAnsiChar;
 begin
-  p := PChar(s);
+  p := PAnsiChar(s);
   Result := 0;
   while p^ <> #0 do
   begin
@@ -570,16 +570,16 @@ begin
 end;
 
 // 文字削除
-procedure JDelete(var s: string; i, count: Integer);
+procedure JDelete(var s: AnsiString; i, count: Integer);
 var
   idx, idxFrom, idxTo: Integer;
-  p: PChar;
-  des, c: string;
+  p: PAnsiChar;
+  des, c: AnsiString;
 begin
   idx := 0;
   idxFrom := i;
   idxTo   := idxFrom + count - 1;
-  p := PChar(s);
+  p := PAnsiChar(s);
   des := '';
   while p^ <> #0 do
   begin
@@ -597,11 +597,11 @@ begin
 end;
 
 // 置換
-function JReplace(str, sFind, sNew: string): string;
+function JReplace(str, sFind, sNew: AnsiString): AnsiString;
 var
-  p, pFind: PChar;
+  p, pFind: PAnsiChar;
   i, len,slen: Integer;
-  c: string;
+  c: AnsiString;
 begin
   Result := '';
 
@@ -613,8 +613,8 @@ begin
     Exit;// 検索対象がない
   end;
 
-  p      := PChar(str);
-  pFind  := PChar(sFind);
+  p      := PAnsiChar(str);
+  pFind  := PAnsiChar(sFind);
   len    := Length(sFind);
   slen   := Length(str);
 
@@ -638,7 +638,7 @@ begin
   Result := Result + Copy(p,1,slen-i);
 end;
 
-function JReplaceOne(str, sFind, sNew: string): string;
+function JReplaceOne(str, sFind, sNew: AnsiString): AnsiString;
 var
   i, lenA, lenF: Integer;
 begin
@@ -654,7 +654,7 @@ begin
   Result := Copy(str, 1, i-1) + sNew + Copy(str, i + lenF, lenA - (i + lenF) + 1);
 end;
 
-function RepeatStr(s: string; count: Integer): string;
+function RepeatStr(s: AnsiString; count: Integer): AnsiString;
 var
   i, len: Integer;
 begin
@@ -671,12 +671,12 @@ begin
   end;
 end;
 
-function SplitChar(delimiter: Char; str: string): THStringList;
+function SplitChar(delimiter: AnsiChar; str: AnsiString): THStringList;
 var
-  p: PChar; s: string;
+  p: PAnsiChar; s: AnsiString;
 begin
   Result := THStringList.Create ;
-  p := PChar(str);
+  p := PAnsiChar(str);
   while p^ <> #0 do
   begin
     s := getTokenStr(p, delimiter);
@@ -684,10 +684,10 @@ begin
   end;
 end;
 
-function GetAbsolutePath(soutai, base: string; Delimiter: Char): string;
+function GetAbsolutePath(soutai, base: AnsiString; Delimiter: AnsiChar): AnsiString;
 var
   slSoutai, slBase: THStringList;
-  rel, s, protocol, domain, root: string;
+  rel, s, protocol, domain, root: AnsiString;
   i: Integer;
 begin
   // 不要の場合
@@ -777,7 +777,7 @@ end;
 //------------------------------------------------------------------------------
 // S_JIS対応コピー
 //------------------------------------------------------------------------------
-function sjis_copyByte(p: PChar; count: Integer): string;
+function sjis_copyByte(p: PAnsiChar; count: Integer): AnsiString;
 var
   i: Integer;
 begin
@@ -799,10 +799,10 @@ begin
   end;
 end;
 
-function sjis_copyB(p: PChar; index, count: Integer): string;
+function sjis_copyB(p: PAnsiChar; index, count: Integer): AnsiString;
 var
   i: Integer;
-  c: string;
+  c: AnsiString;
   rFrom, rTo: Integer;
 begin
   Result := '';
@@ -823,7 +823,7 @@ begin
   end;
 end;
 
-function Asc(const ch: string): Integer; //文字コードを得る
+function Asc(const ch: AnsiString): Integer; //文字コードを得る
 begin
     if ch = '' then begin
         Result := 0;
@@ -841,9 +841,9 @@ end;
 //------------------------------------------------------------------------------
 // 文字種類変換 関連
 //------------------------------------------------------------------------------
-function LCMapStringEx(const str: string; MapFlag: DWORD): string;
+function LCMapStringEx(const str: AnsiString; MapFlag: DWORD): AnsiString;
 var
-  pDes: PChar;
+  pDes: PAnsiChar;
   len,len2: Integer;
 begin
   if str='' then begin Result := ''; Exit; end;
@@ -852,16 +852,16 @@ begin
   GetMem(pDes, len2);//half -> full
   try
     FillChar( pDes^, len2, 0 );
-    LCMapString( LOCALE_SYSTEM_DEFAULT, MapFlag, PChar(str), len, pDes, len2-1);
+    LCMapStringA( LOCALE_SYSTEM_DEFAULT, MapFlag, PAnsiChar(str), len, pDes, len2-1);
     Result := string( pDes );
   finally
     FreeMem(pDes);
   end;
 end;
 
-function LCMapStringExHalf(const str: string; MapFlag: DWORD): string;
+function LCMapStringExHalf(const str: AnsiString; MapFlag: DWORD): AnsiString;
 var
-  pDes: PChar;
+  pDes: PAnsiChar;
   len,len2: Integer;
 begin
   if str='' then begin Result := ''; Exit; end;
@@ -870,40 +870,40 @@ begin
   GetMem(pDes, len2);
   try
     FillChar( pDes^, len2, 0 );
-    LCMapString( LOCALE_SYSTEM_DEFAULT, MapFlag, PChar(str), len, pDes, len2-1);
+    LCMapStringA( LOCALE_SYSTEM_DEFAULT, MapFlag, PAnsiChar(str), len, pDes, len2-1);
     Result := string( pDes );
   finally
     FreeMem(pDes);
   end;
 end;
-function convToFull(const str: string): string;
+function convToFull(const str: AnsiString): AnsiString;
 begin
   Result := LCMapStringEx( str, LCMAP_FULLWIDTH );
 end;
-function convToHalf(const str: string): string;
+function convToHalf(const str: AnsiString): AnsiString;
 begin
   Result := LCMapStringEx( str, LCMAP_HALFWIDTH );
 end;
 {ひらがな・カタカナの変換}
-function convToHiragana(const str: string): string;
+function convToHiragana(const str: AnsiString): AnsiString;
 begin
   Result := LCMapStringEx( str, LCMAP_HIRAGANA );
 end;
-function convToKatakana(const str: string): string;
+function convToKatakana(const str: AnsiString): AnsiString;
 begin
   Result := LCMapStringEx( str, LCMAP_KATAKANA );
 end;
 {マルチバイトを考慮した大文字、小文字化}
-function LowerCaseEx(const str: string): string;
+function LowerCaseEx(const str: AnsiString): AnsiString;
 begin
   Result := LCMapStringExHalf( str, LCMAP_LOWERCASE );
 end;
-function UpperCaseEx(const str: string): string;
+function UpperCaseEx(const str: AnsiString): AnsiString;
 begin
   Result := LCMapStringExHalf( str, LCMAP_UPPERCASE );
 end;
 
-function IsHalfStr(s: string): Boolean;
+function IsHalfStr(s: AnsiString): Boolean;
 var i: Integer;
 begin
   Result := True;
@@ -917,10 +917,10 @@ begin
 end;
 
 // 全部数値か？
-function IsNumber(var s: string): Boolean;
+function IsNumber(var s: AnsiString): Boolean;
 var
   i: Integer;
-  tmp: string;
+  tmp: AnsiString;
 begin
   if s = '' then begin Result := False; Exit; end;
   if Length(s) > 12 then begin Result := False; Exit; end;
@@ -1020,14 +1020,14 @@ end;
 //------------------------------------------------------------------------------
 // 各種処理
 //------------------------------------------------------------------------------
-function ExpandTab(const s: string; tabCnt: Integer): string;
+function ExpandTab(const s: AnsiString; tabCnt: Integer): AnsiString;
 var
-  p: PChar;
+  p: PAnsiChar;
   cnt, spc: Integer;
   i: Integer;
 begin
   Result := '';
-  p := PChar(s);
+  p := PAnsiChar(s);
   cnt := 0;
   while (p^ <> #0) do
   begin

@@ -48,8 +48,8 @@ type
     FHandle: Integer;
     procedure SetSize(const NewSize: Int64); override;
   public
-    constructor Create(const FileName: string; Mode: Word); overload;
-    constructor Create(const FileName: string; Mode: Word; Rights: Cardinal); overload;
+    constructor Create(const FileName: AnsiString; Mode: Word); overload;
+    constructor Create(const FileName: AnsiString; Mode: Word; Rights: Cardinal); overload;
     destructor Destroy; override;
     function Read(var Buffer; Count: Longint): Longint; override;
     function Write(const Buffer; Count: Longint): Longint; override;
@@ -75,9 +75,9 @@ type
     procedure SetSize(const NewSize: Int64); override;
     property Memory: Pointer read FMemory;
     procedure LoadFromStream(Stream: THStream);
-    procedure LoadFromFile(const FileName: string);
+    procedure LoadFromFile(const FileName: AnsiString);
     procedure SaveToStream(Stream: THStream);
-    procedure SaveToFile(const FileName: string);
+    procedure SaveToFile(const FileName: AnsiString);
   end;
 
 
@@ -90,7 +90,7 @@ const
   MaxBufSize = $F000;
 var
   BufSize, N: Integer;
-  Buffer: PChar;
+  Buffer: PAnsiChar;
 begin
   if Count = 0 then
   begin
@@ -146,12 +146,12 @@ end;
 
 { THFileStream }
 
-constructor THFileStream.Create(const FileName: string; Mode: Word);
+constructor THFileStream.Create(const FileName: AnsiString; Mode: Word);
 begin
   Create(Filename, Mode, 0);
 end;
 
-constructor THFileStream.Create(const FileName: string; Mode: Word;
+constructor THFileStream.Create(const FileName: AnsiString; Mode: Word;
   Rights: Cardinal);
 begin
   if Mode = fmCreate then
@@ -211,7 +211,7 @@ begin
   FPosition := 0;
 end;
 
-procedure THMemoryStream.LoadFromFile(const FileName: string);
+procedure THMemoryStream.LoadFromFile(const FileName: AnsiString);
 var
   Stream: THStream;
 begin
@@ -269,7 +269,7 @@ begin
   end;
 end;
 
-procedure THMemoryStream.SaveToFile(const FileName: string);
+procedure THMemoryStream.SaveToFile(const FileName: AnsiString);
 var
   Stream: THStream;
 begin
