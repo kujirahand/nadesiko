@@ -1003,7 +1003,7 @@ begin
     E_WorkSheet := E_Application.ActiveWorkBook.Sheets[sheet];
   end;
   // Protect
-  E_WorkSheet.Unprotect(password, True, True, True);
+  E_WorkSheet.Unprotect(password);
 end;
 
 
