@@ -570,9 +570,12 @@ begin
   // (2) データの処理
   start := Pos('://', s); if start > 0 then start := start + 3;
   last := 0;
-  for i := start to Length(s) do
+  if start <> 0 then
   begin
-    if s[i] = '/' then last := i;
+    for i := start to Length(s) do
+    begin
+      if s[i] = '/' then last := i;
+    end;
   end;
 
   if last = 0 then
@@ -602,9 +605,12 @@ begin
   // (2) データの処理
   start := Pos('://', s); if start > 0 then start := start + 3;
   last := 0;
-  for i := start to Length(s) do
+  if start <> 0 then
   begin
-    if s[i] = '/' then last := i;
+    for i := start to Length(s) do
+    begin
+      if s[i] = '/' then last := i;
+    end;
   end;
 
   if last = 0 then
