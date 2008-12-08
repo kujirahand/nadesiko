@@ -248,7 +248,7 @@ end;
 
 function nako_tango2id(tango: PAnsiChar): DWORD; stdcall; // 単語名から単語管理用IDを取得する
 begin
-  Result := hi_tango2id(string(tango));
+  Result := hi_tango2id(AnsiString(tango));
 end;
 
 function nako_var2str(value: PHiValue; str: PAnsiChar; maxLen: DWORD): DWORD; stdcall; // PHiValueを文字列に変換してstrにコピーする。
@@ -502,10 +502,10 @@ begin
   HiSystem.LoadPlugins;
 end;
 
-function nako_openPackfile(fname: PAnsiChar): Integer; stdcall; // 実行ファイル fname のパックファイルを開く。失敗なら、0を返す。
+function nako_openPackfile(fname: PAnsiString): Integer; stdcall; // 実行ファイル fname のパックファイルを開く。失敗なら、0を返す。
 begin
-  errLog('nako_openPackfile:' + fname);
-  if OpenPackFile(fname) then
+  errLog('nako_openPackfile:' + AnsiString(fname));
+  if OpenPackFile(AnsiString(fname)) then
   begin
     FileMixReader.autoDelete := True;
     Result := Integer(FileMixReader);
@@ -526,7 +526,7 @@ begin
     if not FileMixReader.ReadFileAsString('nadesiko.nako', src) then Exit;
   except
     on e:Exception do begin
-      errLog('nako_runPackfile.load.error:' + e.Message);
+      errLog('nako_runPackfile.load.error:' + AnsiString(e.Message));
       Exit;
     end;
   end;
@@ -534,19 +534,19 @@ begin
     HiSystem.MainFileNo := HiSystem.LoadSourceText(src, 'nadesiko.nako');
   except
     on e:Exception do begin
-      errLog('nako_runPackfile.run.error:' + e.Message);
+      errLog('nako_runPackfile.run.error:' + AnsiString(e.Message));
       Exit;
     end;
   end;
   Result := nako_OK;
 end;
 
-function nako_openPackfileBin(packname: PAnsiChar): Integer; stdcall; // packname のパックファイルを開く。失敗なら、0を返す。
+function nako_openPackfileBin(packname: PAnsiString): Integer; stdcall; // packname のパックファイルを開く。失敗なら、0を返す。
 begin
-  errLog('nako_openPackfileBin:' + packname);
+  errLog('nako_openPackfileBin:' + AnsiString(packname));
 
   try
-    unit_pack_files.FileMixReader := TFileMixReader.Create(string(packname));
+    unit_pack_files.FileMixReader := TFileMixReader.Create(AnsiString(packname));
     unit_pack_files.FileMixReader.autoDelete := True;
     unit_pack_files.FileMixReaderSelfCreate := True;
     Result := Integer(unit_pack_files.FileMixReader);
@@ -593,19 +593,22 @@ begin
   HiSystem.plugins.addDll(fname);
 end;
 
-function nako_hasPlugins(dllName: PAnsiChar): BOOL; stdcall; // 指定したプラグインが使われているか？
+function nako_hasPlugins(dllName: PAnsiString): BOOL; stdcall; // 指定したプラグインが使われているか？
 var
   i: Integer;
   f: AnsiString;
   dll: AnsiString;
 begin
   Result := False;
-  dll := UpperCase(string( dllName ));
-  // 'NAKOFILE.DLL'
+  dll := AnsiString(dllName);
+  dll := UpperCaseEx(dll);
+
   for i := 0 to HiSystem.plugins.Count - 1 do
   begin
-    f := UpperCase(ExtractFileName( THiPlugin(HiSystem.plugins.Items[i]).FullPath ));
-    if f = dll then //nakofile.dll
+    f := THiPlugin(HiSystem.plugins.Items[i]).FullPath;
+    f := AnsiString(ExtractFileName(string(f)));
+    f := UpperCaseEx((f));
+    if f = dll then
     begin
       Result := True;
       Break;
@@ -763,7 +766,7 @@ begin
   Result := nako_NG;
   path := AppDataDir + 'com.nadesi.dll.dnako\license\';
   path := path + AnsiString(license_name);
-  if not FileExists(path) then Exit;
+  if not FileExists(string(path)) then Exit;
   code := FileLoadAll(path);
   if AnsiString(license_code) = code then
   begin
@@ -778,9 +781,9 @@ begin
   Result := nako_NG;
   try
     path := AppDataDir + 'com.nadesi.dll.dnako\license\';
-    ForceDirectories(path);
+    ForceDirectories(string(path));
     path := path + AnsiString(license_name);
-    FileSaveAll(string(license_code), path);
+    FileSaveAll(AnsiString(license_code), path);
     Result := nako_OK;
   except
     Exit;
