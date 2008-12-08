@@ -103,7 +103,7 @@ function URLDecode(s: AnsiString):string;
 function ExpandTab(const s: AnsiString; tabCnt: Integer): AnsiString;
 
 // パスの終端に\をつける
-function CheckPathYen(s: AnsiString): AnsiString;
+function CheckPathYen(s: AnsiString): string;
 
 implementation
 
@@ -127,7 +127,7 @@ begin
         begin
           // there are sufficient digits - try to decode hex digits
           Hex := S[Idx+1] + S[Idx+2];
-          Code := SysUtils.StrToIntDef('$' + Hex, -1);
+          Code := SysUtils.StrToIntDef(string('$' + Hex), -1);
           Inc(Idx, 2);
         end
         else begin
@@ -144,7 +144,7 @@ begin
         Result := Result + ' '
       else
         // All other characters pass thru unchanged
-        Result := Result + S[Idx];
+        Result := Result + string(S[Idx]);
     end;
     Inc(Idx);
   end;
@@ -217,9 +217,9 @@ end;
 
 
 // パスの終端に\をつける
-function CheckPathYen(s: AnsiString): AnsiString;
+function CheckPathYen(s: AnsiString): string;
 begin
-  Result := IncludeTrailingPathDelimiter(s);
+  Result := IncludeTrailingPathDelimiter(string(s));
 end;
 
 
@@ -693,7 +693,7 @@ begin
   // 不要の場合
   if Delimiter = '/' then
   begin
-    i := Pos('/', soutai);
+    i := Pos('/', string(soutai));
     if Copy(soutai,i,2) = '//' then
     begin
       Result := soutai; Exit;
@@ -853,7 +853,7 @@ begin
   try
     FillChar( pDes^, len2, 0 );
     LCMapStringA( LOCALE_SYSTEM_DEFAULT, MapFlag, PAnsiChar(str), len, pDes, len2-1);
-    Result := string( pDes );
+    Result := AnsiString( pDes );
   finally
     FreeMem(pDes);
   end;
@@ -871,7 +871,7 @@ begin
   try
     FillChar( pDes^, len2, 0 );
     LCMapStringA( LOCALE_SYSTEM_DEFAULT, MapFlag, PAnsiChar(str), len, pDes, len2-1);
-    Result := string( pDes );
+    Result := AnsiString( pDes );
   finally
     FreeMem(pDes);
   end;

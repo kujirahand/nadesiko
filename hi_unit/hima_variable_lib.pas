@@ -18,7 +18,7 @@ uses hima_string, unit_string;
 // •¶Žš—ñ str ‚ð •¶Žš—ñ splitter ‚Å•ª‚¯‚Ä”z—ñŒ`Ž®‚Å PHiValue ‚É•Ô‚·
 function hi_split(str, splitter: PHiValue): PHiValue;
 var
-  s, kugiri, ss: string; sp, sp_last: PAnsiChar;
+  s, kugiri, ss: AnsiString; sp, sp_last: PAnsiChar;
   p: PHiValue;
 begin
   s := hi_str(str);

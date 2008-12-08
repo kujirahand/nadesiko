@@ -26,6 +26,7 @@ r21","r22"」をCSV取得。
 　　(TSV【2,0】)と,("石鹸(タブ)")でテスト実行。
 
 ●テスト_DNAKO_二次元配列変数_CSV取得2
+　もし、インターネット接続判定がいいえならば、戻る。
 　「http://a.hatena.ne.jp/white-ball-nako/source?mode=lirs&k=」からHTTPデータ取得
 　Aはそれ
 　Aを「euc」から"sjis"へ文字コード変換

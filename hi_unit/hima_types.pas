@@ -575,7 +575,7 @@ end;
 
 function THStringList.Add(str: AnsiString): Integer;
 var
-  p: PString;
+  p: PAnsiString;
 begin
   New(p);
   p^ := str;
@@ -630,7 +630,7 @@ end;
 
 function THStringList.getStrings(Index: Integer): AnsiString;
 var
-  p: PString;
+  p: PAnsiString;
 begin
   p := Items[Index];
   Result := p^;
@@ -662,7 +662,7 @@ end;
 
 procedure THStringList.Insert(Index: Integer; s: AnsiString);
 var
-  p: PString;
+  p: PAnsiString;
 begin
   New(p);
   p^ := s;
@@ -674,7 +674,7 @@ var
   f: TextFile;
   line: AnsiString;
 begin
-  AssignFile(f, Filename);
+  AssignFile(f, string(Filename));
   try
     Reset(f);
     while not EOF(f) do
@@ -698,7 +698,7 @@ var
   i: Integer;
   line: AnsiString;
 begin
-  AssignFile(f, Filename);
+  AssignFile(f, string(Filename));
   try
     Rewrite(f);
     for i := 0 to FCount - 1 do
@@ -713,7 +713,7 @@ end;
 
 procedure THStringList.setString(Index: Integer; const Value: AnsiString);
 var
-  p: PString;
+  p: PAnsiString;
 begin
   p := Items[Index];
   p^ := Value;
@@ -1002,7 +1002,6 @@ begin
       try
         if func(p, ptr) = False then Break;
       except
-        p := nil;
         Break;
       end;
       p := p.Link;

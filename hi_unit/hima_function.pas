@@ -533,7 +533,7 @@ begin
   begin
     s := '';
   end;
-  s := Trim(s);
+  s := AnsiString(Trim(string(s)));
   if s = '' then Result := 'なでしこ' else Result := s;
 end;
 
@@ -544,7 +544,7 @@ begin
     exit;
   end;
   p:=PAnsiChar(arg);
-  i:=Pos('*',arg);
+  i:=Pos('*',string(arg));
   if i <> 0 then
     Delete(arg,i,1);
   case p^ of
@@ -765,7 +765,7 @@ begin
         'H': begin
           if (Length(arg)>=4) and CompareMem(p+2,PAnsiChar('AR'),2) then begin
             if (Length(arg)=5) and ((p+4)^='*') then begin
-              arg := 'PAnsiChar';//CHAR*
+              arg := 'PCHAR';//CHAR*
             end else if (Length(arg)=4) then begin
               //arg:='CHAR';//CHAR
             end else
@@ -1015,23 +1015,23 @@ end;
 function sys_now(args: THiArray): PHiValue; stdcall;
 begin
   Result := hi_var_new;
-  hi_setStr(Result, FormatDateTime('hh:nn:ss', Now));
+  hi_setStr(Result, AnsiString(FormatDateTime('hh:nn:ss', Now)));
 end;
 
 function sys_today(args: THiArray): PHiValue; stdcall;
 begin
   Result := hi_var_new;
-  hi_setStr(Result, FormatDateTime('yyyy/mm/dd', Date));
+  hi_setStr(Result, AnsiString(FormatDateTime('yyyy/mm/dd', Date)));
 end;
 function sys_thisyear(args: THiArray): PHiValue; stdcall;
 begin
   Result := hi_var_new;
-  hi_setStr(Result, FormatDateTime('yyyy', Date));
+  hi_setStr(Result, AnsiString(FormatDateTime('yyyy', Date)));
 end;
 function sys_thismonth(args: THiArray): PHiValue; stdcall;
 begin
   Result := hi_var_new;
-  hi_setStr(Result, FormatDateTime('m', Date));
+  hi_setStr(Result, AnsiString(FormatDateTime('m', Date)));
 end;
 
 function sys_nextyear(args: THiArray): PHiValue; stdcall;
@@ -1070,7 +1070,7 @@ var
   d: TDateTime;
 const
   //日曜日が 1 で，土曜日が 7 に相当します。
-  mn: array [1..7] of string = ('日','月','火','水','木','金','土');
+  mn: array [1..7] of AnsiString = ('日','月','火','水','木','金','土');
 begin
   Result := hi_var_new;
 
@@ -1183,10 +1183,10 @@ begin
   // --A-- [sa] --B-- [sb] --C--
   res := ''; // B
 
-  idx1 := AnsiPos(sa,str);
+  idx1 := AnsiPos(string(sa), string(str));
   if idx1 <> 0 then
   begin
-    idx2 := AnsiPos(sb,Copy(str,idx1 + Length(sa),High(integer)));
+    idx2 := AnsiPos(string(sb),Copy(string(str),idx1 + Length(sa),High(integer)));
     if idx2 <> 0 then
     begin
       idx2 := idx2 + idx1 + Length(sa) - 1;
@@ -1247,10 +1247,10 @@ begin
   sb  := hi_str(b);
   sc  := hi_str(c);
 
-  idx1 := AnsiPos(sa,str);
+  idx1 := AnsiPos(string(sa), string(str));
   if idx1 <> 0 then
   begin
-    idx2 := AnsiPos(sb,Copy(str,idx1 + Length(sa),High(integer)));
+    idx2 := AnsiPos(string(sb),Copy(string(str),idx1 + Length(sa),High(integer)));
     if idx2 <> 0 then
     begin
       idx2 := idx2 + idx1 + Length(sa) - 1;
@@ -1279,9 +1279,9 @@ var
   s, a: PHiValue;
 begin
   // (1) 引数の取得
-  s := args.FindKey(token_s);
-  a := args.FindKey(token_a);
-  if s = nil then s := HiSystem.Sore;
+  s := nako_getFuncArg(args, 0);
+  a := nako_getFuncArg(args, 1);
+  if s = nil then s := nako_getSore;
 
   // (2) データの処理
   // (3) 戻り値を設定
@@ -1534,25 +1534,22 @@ end;
 
 function sys_word_count(args: THiArray): PHiValue;
 var
-  s, a: PHiValue;
-  ss, sa: AnsiString;
+  ss, sa: string;
   res, i, len: integer;
 begin
   // (1) 引数の取得
-  s   := args.FindKey(token_s); if s = nil then s := HiSystem.Sore;
-  a   := args.FindKey(token_a);
-
-  ss := hi_str(s); sa := hi_str(a);
+  ss := getArgStr(args, 0, True);
+  sa := getArgStr(args, 1);
 
   // (2) データの処理
   res := 0;
   len := Length(sa);
   repeat
-    i := AnsiPos(sa,ss);
+    i := AnsiPos(sa, ss);
     if i <> 0 then
     begin
       Inc(res);
-      Delete(ss,1,i+len-1);
+      Delete(ss, 1, i+len-1);
     end
     else
       Break;
@@ -1618,17 +1615,19 @@ begin
   Result := hi_var_new;
 
   // (1) 引数の取得
-  s   := args.FindKey(token_s); if s <> nil then str := hi_str(s) else str := hi_str(HiSystem.Sore);
+  s   := args.FindKey(token_s);
   cnt := args.FindKey(token_cnt);
   a   := args.FindKey(token_a);
 
+  if s = nil then s := nako_getSore;
+  str := WideString(hi_str(s));
+
   // (2) データの処理
-  str := hi_str(s);
   Insert(WideString(hi_str(a)), str, hi_int(cnt));
 
   // (3) 戻り値を設定
-  hi_setStr(Result, str);
-  if s <> nil then hi_setStr(s, str);
+  hi_setStr(Result, AnsiString(str));
+  if s <> nil then hi_setStr(s, AnsiString(str));
 end;
 
 function sys_insertB(args: THiArray): PHiValue;
@@ -1660,9 +1659,11 @@ begin
   Result := hi_var_new;
 
   // (1) 引数の取得
-  s  := args.Items[0]; if s <> nil then str := hi_str(s) else str := hi_str(HiSystem.Sore);
+  s  := args.Items[0];
   a  := args.Items[1];
   s  := hi_getLink(s);
+  if s = nil then s := nako_getSore;
+  str := WideString(hi_str(s));
 
   // (2) データの処理
   if Length(str) < hi_int(a) then
@@ -1674,8 +1675,8 @@ begin
   end;
 
   // (3) 戻り値を設定
-  hi_setStr(Result, str);
-  if s <> nil then hi_setStr(s, str);
+  hi_setStr(Result, AnsiString(str));
+  if s <> nil then hi_setStr(s, AnsiString(str));
 end;
 
 function sys_deleteRightB(args: THiArray): PHiValue; stdcall;
@@ -1711,16 +1712,18 @@ begin
   Result := hi_var_new;
 
   // (1) 引数の取得
-  s   := args.FindKey(token_s); if s <> nil then str := hi_str(s) else str := hi_str(HiSystem.Sore);
+  s   := args.FindKey(token_s);
   a   := args.FindKey(token_a);
   b   := args.FindKey(token_b);
+  if s = nil then s := nako_getSore;
+  str := WideString(hi_str(s));
 
   // (2) データの処理
   System.Delete(str, hi_int(a), hi_int(b));
 
   // (3) 戻り値を設定
-  hi_setStr(Result, str);
-  if s <> nil then hi_setStr(s, str);
+  hi_setStr(Result, AnsiString(str));
+  if s <> nil then hi_setStr(s, AnsiString(str));
 end;
 
 function sys_deleteB(args: THiArray): PHiValue;
@@ -2055,7 +2058,7 @@ begin
   hi_ary_create(ary);
   for i := 0 to sl.Count - 1 do
   begin
-    vname := Trim(sl.Strings[i]);
+    vname := AnsiString(Trim(string(sl.Strings[i])));
     v := HiSystem.GetVariableS(vname);
     if v = nil then v := HiSystem.CreateHiValue(hi_tango2id(vname));
     hi_var_copyData(hi_ary(ary).Values[i], v);
@@ -3127,7 +3130,7 @@ begin
   begin
       Result := nil;
   end else
-  if fmt = 'PAnsiChar' then
+  if fmt = 'PCHAR' then
   begin
       // それ以後のバイナリを全部得る
       // 01:23456 --- 2
@@ -3290,7 +3293,7 @@ begin
   if fmt = '' then
     // 理解できない型の場合は何もしない
   else
-  if fmt='PAnsiChar' then
+  if fmt='PCHAR' then
   begin
     if pv.VType <> varStr then hi_setStr(pv, hi_str(pv));
     len := Length(hi_str(pv));
@@ -3767,7 +3770,7 @@ begin
     'D','H': res := TDllfuncDWord(func);
     'P': // ポインタ型
       begin
-        if ret = 'PAnsiChar' then
+        if ret = 'PCHAR' then
         begin
           resStr := string( TDllfuncPtr(func) );
         end else
@@ -3789,7 +3792,7 @@ begin
   // 関数の結果を代入
   if not (ret[1] = 'V') then begin
     Result := hi_var_new;
-    if ret = 'PAnsiChar' then hi_setStr(Result, resStr)
+    if ret = 'PCHAR' then hi_setStr(Result, resStr)
                                    else
     begin
       case ret[1] of
