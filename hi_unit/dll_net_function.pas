@@ -2053,7 +2053,7 @@ begin
     on e:Exception do
     begin
       NetDialog.errormessage := e.Message;
-      NetDialog.Cancel;
+      NetDialog.Error;
     end;
   end;
 end;
