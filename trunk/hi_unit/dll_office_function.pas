@@ -1712,6 +1712,20 @@ begin
   ooo.SaveToPDF(f);
 end;
 
+function ooo_checkInstall(h: DWORD): PHiValue; stdcall;
+var
+  reg: TRegistry;
+  b: Boolean;
+begin
+  reg := TRegistry.Create;
+  try
+    reg.RootKey := HKEY_CLASSES_ROOT;
+    b := reg.KeyExists('com.sun.star.ServiceManager');
+  finally
+    FreeAndNil(reg);
+  end;
+  Result := hi_newBool(b);
+end;
 
 var oow:TOpenOfficeorg = nil;
 var oow_visible:Boolean = true;
@@ -1985,6 +1999,7 @@ begin
   AddFunc  ('CALCブック閉じる','{=?}BOOKの', 4824, calc_workbook_close,'ワークブックBOOKを閉じる。BOOkを省略するとアクティブなブックを閉じる。(保存するかどうかユーザーに尋ねる)','CALCぶっくとじる');
   AddFunc  ('CALC全選択','', 4825, calc_selectall,'セル全てを選択する。','CALCぜんせんたく');
   AddFunc  ('CALC_PDF保存','Sへ|Sに', 4826, calc_file_saveToPDF,'ファイルＳへPDF形式で保存する','CALC_PDFほぞん');
+  AddFunc  ('OPENOFFICE_ORGインストールチェック','', 4827, ooo_checkInstall,'OpenOffice.orgがインストールされているか確認してはいかいいえで返す。','OPENOFFICE_ORGいんすとーるちぇっく');
   //-WRITER(OpenOffice.org)
   AddFunc  ('WRITER起動','{=1}Aで', 4830, writer_open,'可視A(オンかオフ)でWriterを起動する','WRITERきどう');
   AddFunc  ('WRITER終了','', 4831, writer_close,'Writerを終了する','WRITERしゅうしょう');

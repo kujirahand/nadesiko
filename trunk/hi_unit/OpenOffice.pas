@@ -485,7 +485,7 @@ var
   Cell: Variant;
 begin
   Cell := fSheet.getCellByPosition(col, row);
-  Cell.setString(value);
+  Cell.Formula := value;
 end;
 
 procedure TOpenOfficeorg.setCellByName(CellName, value: String);
@@ -493,7 +493,7 @@ var
   Cell: Variant;
 begin
   Cell:= fSheet.getCellRangeByName(CellName);
-  Cell.setString(value);
+  Cell.Formula := value;
 end;
 
 function TOpenOfficeorg.getCell(CellName: String): String;
