@@ -869,17 +869,21 @@ begin
 end;
 
 function sys_md5file(args: DWORD): PHiValue; stdcall;
+var
+  f: string;
 begin
-  Result := hi_newStr(
-    MD5FileS( getArgStr(args, 0, True ) )
-  );
+  f := getArgStr(args, 0, True);
+  if not FileExists(f) then raise Exception.Create('ファイル"'+f+'"が見つかりません。');
+  Result := hi_newStr(MD5FileS( f ));
 end;
 
 function sys_sha1file(args: DWORD): PHiValue; stdcall;
+var
+  f: string;
 begin
-  Result := hi_newStr(
-    SHA1StringHexFile( getArgStr(args, 0, True))
-  );
+  f := getArgStr(args, 0, True);
+  if not FileExists(f) then raise Exception.Create('ファイル"'+f+'"が見つかりません。');
+  Result := hi_newStr(SHA1StringHexFile(f));
 end;
 
 function sys_crypt(args: DWORD): PHiValue; stdcall;
