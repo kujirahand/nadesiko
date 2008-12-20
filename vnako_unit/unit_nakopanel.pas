@@ -108,6 +108,7 @@ begin
     Canvas.Brush.Color  := FColor;
     Canvas.Pen.Style    := psClear;
     Canvas.Rectangle(0,0,FImage.ClientWidth, FImage.ClientHeight);
+    Canvas.Font := Self.Font;
     s := Self.Caption;
     w := Canvas.TextWidth(s);
     h := Canvas.TextHeight(s);
