@@ -1720,7 +1720,8 @@ begin
   reg := TRegistry.Create;
   try
     reg.RootKey := HKEY_CLASSES_ROOT;
-    b := reg.KeyExists('com.sun.star.ServiceManager');
+    b := reg.OpenKeyReadOnly('\com.sun.star.ServiceManager');
+    if b then reg.CloseKey;
   finally
     FreeAndNil(reg);
   end;
