@@ -1,5 +1,6 @@
 ツール名称, ショートカット, パス
 ひらがな→カタカナ,,user\hira2kata.nako
-タブ→全角スペース,,user\tab2spc.nako
+タブ→全角スペース(推奨),,user\tab2spc.nako
+タブ→半角スペース,,user\tab2spc_half.nako
 一括置換,Ctrl+H,user\replace.nako
 マニュアル探査艦,,action\manual_searcher\manual_searcher.nako
