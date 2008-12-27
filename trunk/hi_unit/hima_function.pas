@@ -63,7 +63,7 @@ unit hima_function;
 interface
 
 uses
-  Windows, SysUtils, hima_variable, hima_variable_ex, hima_types, shellapi,
+  Windows, SysUtils, Classes, hima_variable, hima_variable_ex, hima_types, shellapi,
   Variants, Math, DateUtils;
 
 
@@ -338,6 +338,8 @@ function sys_csv_sort(args: THiArray): PHiValue; stdcall;
 function sys_csv_sort_num(args: THiArray): PHiValue; stdcall;
 function sys_csv_pickup(args: THiArray): PHiValue; stdcall;
 function sys_csv_pickupComplete(args: THiArray): PHiValue; stdcall;
+function sys_csv_pickupWildcard(args: THiArray): PHiValue; stdcall;
+function sys_csv_pickupRegExp(args: THiArray): PHiValue; stdcall;
 function sys_csv_find(args: THiArray): PHiValue; stdcall;
 function sys_csv_vague_find(args: THiArray): PHiValue; stdcall;
 function sys_csv_cols(args: THiArray): PHiValue; stdcall;
@@ -2274,6 +2276,38 @@ begin
   Result.ptr := hi_ary(a).CsvPickupHasKey(hi_str(s), hi_int(i));
 end;
 
+function sys_csv_pickupWildcard(args: THiArray): PHiValue; stdcall;
+var
+  a,i,s: PHiValue;
+begin
+  a := args.Items[0]; if a=nil then a := HiSystem.Sore;
+  i := args.Items[1];
+  s := args.Items[2];
+
+  hi_ary_create(a);
+
+  Result := hi_var_new;
+  Result.VType := varArray;
+  Result.Size := sizeof(THiArray);
+  Result.ptr := hi_ary(a).CsvPickupWildcard(hi_str(s), hi_int(i));
+end;
+
+function sys_csv_pickupRegExp(args: THiArray): PHiValue; stdcall;
+var
+  a,i,s: PHiValue;
+begin
+  a := args.Items[0]; if a=nil then a := HiSystem.Sore;
+  i := args.Items[1];
+  s := args.Items[2];
+
+  hi_ary_create(a);
+
+  Result := hi_var_new;
+  Result.VType := varArray;
+  Result.Size := sizeof(THiArray);
+  Result.ptr := hi_ary(a).CsvPickupRegExp(hi_str(s), hi_int(i));
+end;
+
 function sys_csv_pickupComplete(args: THiArray): PHiValue; stdcall;
 var
   a,i,s: PHiValue;
@@ -2740,74 +2774,33 @@ end;
 
 function __reMatch(s, pat: AnsiString; var res: AnsiString): Boolean;
 var
-  re: TBRegExp;
-  i: Integer;
   v: PHiValue;
+  m: TStringList;
+  i: Integer;
 begin
-  Result := False;
   res := '';
-  re := TBRegExp.Create;
-  // レポートに追加
-  // load check
-  if re.hDll = 0 then raise Exception.Create('Bregexp.dllがありません。WEBより入手してください。');
-
   v := HiSystem.GetVariableS('抽出文字列');
   hi_setStr(v, '');
-  
-  // match
+  m := TStringList.Create;
   try
-    try
-
-      if Copy(pat,1,1) <> 'm' then
+    Result := bregMatch(s, pat, getRegExpOpt, m);
+    if not Result then
+    begin
+      Exit; // マッチしなかったら抜ける
+    end;
+    if m.Count = 0 then Exit;
+    res := m.Strings[0];
+    if m.Count > 1 then
+    begin
+      hi_ary_create(v);
+      for i := 1 to  m.Count - 1 do
       begin
-        pat := JReplace(pat, '#', '\#');
-        if s =''then //空文字マッチのゴミ対策
-        begin
-          if (Length(pat) > 0)and(pat[1] = '^') then
-          begin
-            Delete(pat,1,1);
-            pat := 'm#^.' + pat + '#' + getRegExpOpt;
-          end
-          else
-            pat := 'm#.' + pat + '#' + getRegExpOpt;
-        end
-        else
-          pat := 'm#' + pat + '#' + getRegExpOpt;
+        hi_ary_set(v, i - 1, hi_newStr(m.Strings[i]));
       end;
-
-      Result := re.Match(pat, s);
-      if not Result then
-      begin
-        Exit; // マッチしなかったら抜ける
-      end;
-
-      // (3) 結果を設定
-      if re.Count = 0 then Exit;
-      res := re.Strings[0];
-
-      // 結果を代入
-      if re.Count > 1 then
-      begin
-        if re.Count > 2 then
-        begin
-          hi_ary_create(v);
-          for i := 1 to re.Count - 1 do
-          begin
-            hi_ary_set(v, i - 1, hi_newStr(re.Strings[i]));
-          end;
-        end else
-        begin
-          hi_setStr(v, re.Strings[1]);
-        end;
-      end;
-
-    except on e:Exception do
-      raise Exception.Create(e.Message);
     end;
   finally
-    re.Free;
+    FreeAndNil(m);
   end;
-
 end;
 
 
