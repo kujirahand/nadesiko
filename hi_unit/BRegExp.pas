@@ -80,7 +80,7 @@ end;
 
 interface
 
-uses Windows,SysUtils;
+uses Windows,SysUtils, Classes;
 
 //=====================================================================
 // 本家 BREGEXP.H と、サポートホームページのドキュメントより
@@ -182,9 +182,58 @@ end;
 
 var PATH_BREGEXP_DLL: AnsiString = DLL_BREGEXP;
 
+function bregMatch(s, pat, opt: AnsiString; matches: TStringList = nil): Boolean;
+
 implementation
 
-uses mini_file_utils;
+uses Masks, unit_string, mini_file_utils;
+
+function bregMatch(s, pat, opt: AnsiString; matches: TStringList = nil): Boolean;
+var
+  re: TBRegExp;
+  i: Integer;
+begin
+  Result := False;
+
+  re := TBRegExp.Create;
+  // レポートに追加
+  // load check
+  if re.hDll = 0 then raise Exception.Create('Bregexp.dllがありません。WEBより入手してください。');
+
+  // match
+  try
+    if Copy(pat,1,1) <> 'm' then
+    begin
+      pat := JReplace(pat, '#', '\#');
+      if s =''then //空文字マッチのゴミ対策
+      begin
+        if (Length(pat) > 0)and(pat[1] = '^') then
+        begin
+          Delete(pat,1,1);
+          pat := 'm#^.' + pat + '#' + opt;
+        end
+        else
+          pat := 'm#.' + pat + '#' + opt;
+      end
+      else
+        pat := 'm#' + pat + '#' + opt;
+    end;
+
+    Result := re.Match(pat, s);
+    if not Result then
+    begin
+      Exit; // マッチしなかったら抜ける
+    end;
+    if matches = nil then Exit;
+    for i := 0 to re.GetCount - 1 do
+    begin
+      matches.Add(re.GetStrings(i));
+    end;
+  finally
+    re.Free;
+  end;
+
+end;
 
 //=====================================================================
 

@@ -169,7 +169,8 @@ function getOneChar(var p: PAnsiChar;const p_last:PAnsiChar): AnsiString;overloa
 
 function JReplace(str, sFind, sNew: AnsiString): AnsiString;
 function MatchesMask(const Filename, Mask: AnsiString): Boolean;
-function IsMatch(const str, pattern: AnsiString; var pickup: TStringList): Boolean;
+function IsMatch(const str, pattern: AnsiString; var pickup: TStringList): Boolean; overload;
+function IsMatch(const str, pattern: AnsiString): Boolean; overload;
 function IsTopMatch(var str: AnsiString; pattern: AnsiString; var pickup: TStringList): Boolean;
 function WildReplace(Src, FindStr, NewStr: AnsiString; ReplaceAll: Boolean): AnsiString;
 function WildSplit(Src, FindStr: AnsiString): TStringList;
@@ -337,6 +338,18 @@ begin
     pickup.Assign(pat.Pickup);
   finally
     pat.Free;
+  end;
+end;
+
+function IsMatch(const str, pattern: AnsiString): Boolean; overload;
+var
+  pick: TStringList;
+begin
+  pick := TStringList.Create;
+  try
+    Result := IsMatch(str, pattern, pick);
+  finally
+    FreeAndNil(pick);
   end;
 end;
 
@@ -1218,3 +1231,4 @@ begin
 end;
 
 end.
+

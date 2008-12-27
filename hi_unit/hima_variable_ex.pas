@@ -55,6 +55,8 @@ type
     function FindIndex(key: AnsiString; fromI: Integer): Integer;
     function CsvPickupHasKey(s: AnsiString; Index: Integer=-1): THiArray;
     function CsvPickupIsKey(s: AnsiString; Index: Integer=-1): THiArray;
+    function CsvPickupWildcard(s: AnsiString; Index: Integer=-1): THiArray;
+    function CsvPickupRegExp(s: AnsiString; Index: Integer=-1): THiArray;
     function CsvFind(Col: Integer; key: AnsiString; fromRow: Integer=0): Integer;
     function CsvVagueFind(Col: Integer; key: AnsiString; fromRow: Integer=0): Integer;
     function GetColCount: Integer;
@@ -280,7 +282,7 @@ implementation
 
 uses
   Math, hima_string, unit_string, hima_system, hima_variable_lib,
-  hima_function,wildcard2;
+  hima_function,wildcard2, BRegExp;
 
 function conv2float(p: PHiValue): HFloat;
 var
@@ -2055,6 +2057,7 @@ begin
     end;
   end;
 end;
+
 function pickup_isKey(v: PHiValue; param: Integer): Boolean; // ピックアップする場合は TRUE を返す
 var
   i: Integer;
@@ -2074,6 +2077,58 @@ begin
   begin
     hi_ary_create(v);
     if (_pickup_key = hi_str( hi_ary(v).GetValue(param) )) then
+    begin
+      Result := True;
+    end;
+  end;
+end;
+
+function pickup_wildcard(v: PHiValue; param: Integer): Boolean; // ピックアップする場合は TRUE を返す
+var
+  i: Integer;
+begin
+  Result := False;
+  if param < 0 then
+  begin
+    hi_ary_create(v);
+    for i := 0 to hi_ary(v).Count - 1 do
+    begin
+      if wildcard2.IsMatch(hi_str(hi_ary(v).GetValue(i)), _pickup_key) then
+      begin
+        Result := True; Break;
+      end;
+    end;
+  end else
+  begin
+    hi_ary_create(v);
+    if wildcard2.IsMatch(hi_str( hi_ary(v).GetValue(param) ), _pickup_key) then
+    begin
+      Result := True;
+    end;
+  end;
+end;
+
+function pickup_regexp(v: PHiValue; param: Integer): Boolean; // ピックアップする場合は TRUE を返す
+var
+  i: Integer;
+  opt: string;
+begin
+  Result := False;
+  if param < 0 then
+  begin
+    hi_ary_create(v);
+    opt := Trim(hi_str(HiSystem.GetVariableS('正規表現修飾子')));
+    for i := 0 to hi_ary(v).Count - 1 do
+    begin
+      if bregMatch(hi_str(hi_ary(v).GetValue(i)), _pickup_key, opt, nil) then
+      begin
+        Result := True; Break;
+      end;
+    end;
+  end else
+  begin
+    hi_ary_create(v);
+    if bregMatch(hi_str( hi_ary(v).GetValue(param) ), _pickup_key, opt) then
     begin
       Result := True;
     end;
@@ -2684,6 +2739,19 @@ begin
       end;
     end;
   end;
+end;
+
+function THiArray.CsvPickupWildcard(s: AnsiString;
+  Index: Integer): THiArray;
+begin
+  _pickup_key := s;
+  Result := CustomPickup(pickup_wildcard, Index);
+end;
+
+function THiArray.CsvPickupRegExp(s: AnsiString; Index: Integer): THiArray;
+begin
+  _pickup_key := s;
+  Result := CustomPickup(pickup_regexp, Index);
 end;
 
 { THiHash }
