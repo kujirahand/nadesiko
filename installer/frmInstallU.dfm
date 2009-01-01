@@ -49,7 +49,7 @@ object frmNakoInstaller: TfrmNakoInstaller
     Top = 0
     Width = 470
     Height = 336
-    ActivePage = tabStart
+    ActivePage = tabOption
     Align = alClient
     MultiLine = True
     ParentShowHint = False
@@ -388,7 +388,7 @@ object frmNakoInstaller: TfrmNakoInstaller
           81EC691A8CCC9F5614DC01907FDA0D1C01C4E03CC85937ACA9000739ACA38138
           4CFFD9}
       end
-      object Label4: TLabel
+      object lblWebSite: TLabel
         Left = 168
         Top = 272
         Width = 80
@@ -475,12 +475,12 @@ object frmNakoInstaller: TfrmNakoInstaller
     object tabOption: TTabSheet
       Caption = #35373#23450
       ImageIndex = 2
-      object GroupBox2: TGroupBox
+      object groupPath: TGroupBox
         Left = 8
         Top = 8
         Width = 441
         Height = 65
-        Caption = #12452#12531#12473#12488#12540#12523#20808
+        Caption = 'Path'
         TabOrder = 0
         object edtDir: TEdit
           Left = 16
@@ -499,14 +499,14 @@ object frmNakoInstaller: TfrmNakoInstaller
           OnClick = btnDirClick
         end
       end
-      object GroupBox3: TGroupBox
+      object groupOption: TGroupBox
         Left = 8
         Top = 88
         Width = 441
         Height = 209
-        Caption = #12458#12503#12471#12519#12531
+        Caption = 'Option'
         TabOrder = 1
-        object Label1: TLabel
+        object lblPleaseSetOption: TLabel
           Left = 16
           Top = 24
           Width = 350
@@ -537,7 +537,7 @@ object frmNakoInstaller: TfrmNakoInstaller
         end
         object chkExt: TCheckBox
           Left = 16
-          Top = 104
+          Top = 152
           Width = 377
           Height = 17
           Caption = #38306#36899#12389#12369#12434#34892#12358
@@ -545,7 +545,7 @@ object frmNakoInstaller: TfrmNakoInstaller
         end
         object chkSendTo: TCheckBox
           Left = 16
-          Top = 128
+          Top = 176
           Width = 377
           Height = 17
           Caption = #12300#36865#12427#12301#12513#12491#12517#12540#12395#30331#37682#12377#12427
@@ -553,7 +553,7 @@ object frmNakoInstaller: TfrmNakoInstaller
         end
         object ChkStartup: TCheckBox
           Left = 16
-          Top = 152
+          Top = 128
           Width = 377
           Height = 17
           Caption = #12525#12464#12458#12531#12375#12383#12425#24120#12395#23455#34892#12377#12427
@@ -561,7 +561,7 @@ object frmNakoInstaller: TfrmNakoInstaller
         end
         object chkAllUsers: TCheckBox
           Left = 16
-          Top = 176
+          Top = 104
           Width = 385
           Height = 17
           Caption = #20840#12390#12398#12518#12540#12470#12540#12391#21033#29992#12377#12427
@@ -655,7 +655,7 @@ object frmNakoInstaller: TfrmNakoInstaller
         Width = 441
         Height = 289
         TabOrder = 0
-        object Label5: TLabel
+        object lblRemoveFiles: TLabel
           Left = 16
           Top = 24
           Width = 193
@@ -691,7 +691,7 @@ object frmNakoInstaller: TfrmNakoInstaller
     Enabled = False
     Interval = 100
     OnTimer = timerUninstallTimer
-    Left = 8
-    Top = 24
+    Left = 168
+    Top = 64
   end
 end

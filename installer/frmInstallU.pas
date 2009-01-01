@@ -24,16 +24,16 @@ type
     radioLicenseOK: TRadioButton;
     radioLicenseNG: TRadioButton;
     edtLicense: TRichEdit;
-    GroupBox2: TGroupBox;
+    groupPath: TGroupBox;
     edtDir: TEdit;
     btnDir: TButton;
-    GroupBox3: TGroupBox;
+    groupOption: TGroupBox;
     chkDesktop: TCheckBox;
     chkQuickLaunch: TCheckBox;
     chkExt: TCheckBox;
     chkSendTo: TCheckBox;
     ChkStartup: TCheckBox;
-    Label1: TLabel;
+    lblPleaseSetOption: TLabel;
     GroupBox4: TGroupBox;
     Label2: TLabel;
     bar2: TProgressBar;
@@ -41,7 +41,7 @@ type
     edtLog: TRichEdit;
     GroupBox5: TGroupBox;
     lblCompleteMsg: TLabel;
-    Label4: TLabel;
+    lblWebSite: TLabel;
     lblAboutLink: TLabel;
     chkAllUsers: TCheckBox;
     bar1: TProgressBar;
@@ -49,7 +49,7 @@ type
     timerUninstall: TTimer;
     tabUninstall: TTabSheet;
     GroupBox6: TGroupBox;
-    Label5: TLabel;
+    lblRemoveFiles: TLabel;
     ubar1: TProgressBar;
     ubar2: TProgressBar;
     edtLogU: TRichEdit;
@@ -110,13 +110,13 @@ type
     FCanClose: Boolean;
     HeadKey: string;
     FlagDebug: Boolean;
+    lang: string;
     ini: TIniFile;
     function msgesc(msg: string): string;
     procedure log_section(msg, descript: string);
     procedure log(msg, descript: string);
     procedure ulog_section(msg, descript: string);
     procedure ulog(msg, descript: string);
-    function getMsg(s:string): string;
     function swapPath(path: string): string;
     procedure writeLog(s: string);
   end;
@@ -126,7 +126,7 @@ var
 
 implementation
 
-uses gui_benri, StrUnit, ComObj, frmExeListU, unit_process32;
+uses gui_benri, StrUnit, ComObj, frmExeListU, unit_process32, unit_getmsg;
 
 {$R *.dfm}
 
@@ -135,15 +135,33 @@ uses gui_benri, StrUnit, ComObj, frmExeListU, unit_process32;
 procedure TfrmNakoInstaller.init;
 begin
   // todo: init
+  //
+  lblWebSite.Caption := getMsg('WebSite');
+  btnPrev.Caption := getMsg('Prev');
+  btnNext.Caption := getMsg('Next');
+  tabStart.Caption := getMsg('First');
+  tabLicense.Caption := getMsg('License');
+  tabOption.Caption := getMsg('Setting');
+  tabProcess.Caption := getMsg('Process');
+  tabEnd.Caption := getMsg('Complete');
+  chkLaunchAfterInstall.Caption := getMsg('Execute');
+  tabUninstall.Caption := getMsg('Uninstall');
+  lblRemoveFiles.Caption := getMsg('Remove Files');
+  radioLicenseOK.Caption := getMsg('Agree');
+  radioLicenseNG.Caption := getMsg('Disagree');
+  lblPleaseSetOption.Caption := getMsg('Setting Option');
+  chkDesktop.Caption := getMsg('chkDesktop');
+  chkQuickLaunch.Caption := getMsg('chkQuickLaunch');
+  chkExt.Caption := getMsg('chkExt');
+  chkSendTo.Caption := getMsg('chkSendTo');
+  ChkStartup.Caption := getMsg('ChkStartup');
+  chkAllUsers.Caption := getMsg('chkAllUsers');
+  groupOption.Caption := getMsg('Option');
+  groupPath.Caption := getMsg('Path');
+  //
   FCanClose := False;
   // --- INI ファイルの調査
-  FIniFile := ChangeFileExt(ParamStr(0), '.ini');
-  if not FileExists(FIniFile) then
-  begin
-    MessageBox(Self.Handle, '設定ファイルがありません。', 'インストーラーの破損', MB_OK or MB_ICONERROR);
-    Halt;
-  end;
-  ini := TIniFile.Create(FIniFile);
+  ini := setting;
   loadSetting;
 
   // --- ページの定義
@@ -488,11 +506,6 @@ begin
   Close;
 end;
 
-function TfrmNakoInstaller.getMsg(s: string): string;
-begin
-  Result := msgesc(ini.ReadString('message', s, s));
-end;
-
 procedure TfrmNakoInstaller.installer_copy(fname: string);
 var
   s, path, spath, newname: string;
@@ -581,7 +594,7 @@ begin
   btnNext.Caption := getMsg('end');
   if FUninstallMode then
   begin
-    lblCompleteMsg.Caption := 'アンインストールが終了しました。';
+    lblCompleteMsg.Caption := getMsg('Uninstall Completed');
     chkLaunchAfterInstall.Visible := False;
   end;
 end;
@@ -1133,7 +1146,7 @@ procedure TfrmNakoInstaller.FormCloseQuery(Sender: TObject;
 begin
   if FCanClose = False then
   begin
-    if not MsgYesNo('処理を中断しますが、よろしいですか？') then
+    if not MsgYesNo(getMsg('Install Interruped?')) then
     begin
       CanClose := False;
     end else

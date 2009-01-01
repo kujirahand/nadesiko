@@ -8,7 +8,8 @@ uses
   gui_benri in 'gui_benri.pas',
   StrUnit in 'strunit.pas',
   frmExeListU in 'frmExeListU.pas' {frmExe},
-  unit_process32 in 'unit_process32.pas';
+  unit_process32 in 'unit_process32.pas',
+  unit_getmsg in 'unit_getmsg.pas';
 
 {$R *.res}
 
@@ -21,7 +22,7 @@ begin
 
   if (ParamCount >= 1)and(ParamStr(1) = '/u2') then
   begin
-    if false = MsgYesNo('アンインストールします。よろしいですか？') then
+    if false = MsgYesNo(getMsg('Uninstall?')) then
     begin
       Exit;
     end;
@@ -48,8 +49,8 @@ begin
 
   if flagOK then
   begin
-    Application.Initialize;
-    Application.CreateForm(TfrmNakoInstaller, frmNakoInstaller);
+  Application.Initialize;
+  Application.CreateForm(TfrmNakoInstaller, frmNakoInstaller);
   Application.CreateForm(TfrmExe, frmExe);
   Application.Run;
   end;
