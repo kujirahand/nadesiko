@@ -16,8 +16,6 @@ type
     tabOption: TTabSheet;
     tabProcess: TTabSheet;
     tabEnd: TTabSheet;
-    Image1: TImage;
-    edtAbout: TRichEdit;
     btnPrev: TButton;
     btnNext: TButton;
     GroupBox1: TGroupBox;
@@ -41,8 +39,6 @@ type
     edtLog: TRichEdit;
     GroupBox5: TGroupBox;
     lblCompleteMsg: TLabel;
-    lblWebSite: TLabel;
-    lblAboutLink: TLabel;
     chkAllUsers: TCheckBox;
     bar1: TProgressBar;
     chkLaunchAfterInstall: TCheckBox;
@@ -53,6 +49,10 @@ type
     ubar1: TProgressBar;
     ubar2: TProgressBar;
     edtLogU: TRichEdit;
+    Panel2: TPanel;
+    edtAbout: TRichEdit;
+    lblWebSite: TLabel;
+    lblAboutLink: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure btnNextClick(Sender: TObject);
     procedure btnPrevClick(Sender: TObject);
@@ -286,7 +286,7 @@ begin
   Application.Title := s;
 
   // message
-  edtAbout.Text := msgesc(ini.ReadString('setup','about','インストールを始めます。'));
+  edtAbout.Text := msgesc(getMsg('The installation is started.'));
   lblAboutLink.Caption := msgesc(ini.ReadString('setup','link','ありません。'));
 
   // license
@@ -591,7 +591,7 @@ procedure TfrmNakoInstaller.installComplete;
 begin
   btnNext.Enabled := True;
   btnNext.OnClick := executeMainFile;
-  btnNext.Caption := getMsg('end');
+  btnNext.Caption := getMsg('Quit');
   if FUninstallMode then
   begin
     lblCompleteMsg.Caption := getMsg('Uninstall Completed');
