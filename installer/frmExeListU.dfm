@@ -11,6 +11,7 @@ object frmExe: TfrmExe
   Font.Name = #65325#65331' '#65328#12468#12471#12483#12463
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 12
@@ -36,14 +37,14 @@ object frmExe: TfrmExe
     Height = 41
     Align = alBottom
     TabOrder = 1
-    object Button1: TButton
+    object btnContinue: TButton
       Left = 312
       Top = 8
       Width = 115
       Height = 25
       Caption = #20966#29702#32153#32154
       TabOrder = 0
-      OnClick = Button1Click
+      OnClick = btnContinueClick
     end
     object btnKill: TButton
       Left = 232

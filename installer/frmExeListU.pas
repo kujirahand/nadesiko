@@ -10,13 +10,14 @@ type
   TfrmExe = class(TForm)
     lstExe: TListBox;
     Panel1: TPanel;
-    Button1: TButton;
+    btnContinue: TButton;
     btnKill: TButton;
     btnUpdate: TButton;
-    procedure Button1Click(Sender: TObject);
+    procedure btnContinueClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnKillClick(Sender: TObject);
     procedure btnUpdateClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private êÈåæ }
   public
@@ -29,11 +30,11 @@ var
 
 implementation
 
-uses unit_process32, frmInstallU;
+uses unit_process32, frmInstallU, unit_getmsg;
 
 {$R *.dfm}
 
-procedure TfrmExe.Button1Click(Sender: TObject);
+procedure TfrmExe.btnContinueClick(Sender: TObject);
 begin
   if checkExe = False then
   begin
@@ -107,6 +108,14 @@ end;
 procedure TfrmExe.btnUpdateClick(Sender: TObject);
 begin
   if checkExe then Close;
+end;
+
+procedure TfrmExe.FormCreate(Sender: TObject);
+begin
+  btnUpdate.Caption := getMsg('Update List');
+  btnKill.Caption := getMsg('Kill App');
+  btnContinue.Caption := getMsg('Continue App');
+  Self.Caption := getMsg('Please Quit Application');
 end;
 
 end.
