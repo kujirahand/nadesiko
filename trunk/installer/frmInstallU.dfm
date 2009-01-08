@@ -256,7 +256,7 @@ object frmNakoInstaller: TfrmNakoInstaller
         Width = 441
         Height = 289
         TabOrder = 0
-        object Label2: TLabel
+        object lblWaitAMoment: TLabel
           Left = 16
           Top = 24
           Width = 289
@@ -279,19 +279,19 @@ object frmNakoInstaller: TfrmNakoInstaller
           TabOrder = 1
           OnClick = btnStopInstallClick
         end
-        object edtLog: TRichEdit
-          Left = 16
-          Top = 88
-          Width = 409
-          Height = 185
-          ScrollBars = ssVertical
-          TabOrder = 2
-        end
         object bar1: TProgressBar
           Left = 16
           Top = 48
           Width = 361
           Height = 9
+          TabOrder = 2
+        end
+        object edtLog: TMemo
+          Left = 16
+          Top = 88
+          Width = 409
+          Height = 185
+          Color = clBtnFace
           TabOrder = 3
         end
       end

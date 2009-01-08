@@ -38,9 +38,9 @@ procedure TfrmExe.btnContinueClick(Sender: TObject);
 begin
   if checkExe = False then
   begin
-    ShowMessage('申し訳ありません。'#13#10+
-      '終了させないとインストールに失敗する可能性があります。'#13#10+
-      'お手数ですが、終了させるか強制終了させてください。');
+    ShowMessage(
+      getMsg('Please kill that application.')
+    );
     Exit;
   end;
 end;
