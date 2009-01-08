@@ -33,10 +33,9 @@ type
     ChkStartup: TCheckBox;
     lblPleaseSetOption: TLabel;
     GroupBox4: TGroupBox;
-    Label2: TLabel;
+    lblWaitAMoment: TLabel;
     bar2: TProgressBar;
     btnStopInstall: TButton;
-    edtLog: TRichEdit;
     GroupBox5: TGroupBox;
     lblCompleteMsg: TLabel;
     chkAllUsers: TCheckBox;
@@ -53,6 +52,7 @@ type
     edtAbout: TRichEdit;
     lblWebSite: TLabel;
     lblAboutLink: TLabel;
+    edtLog: TMemo;
     procedure FormCreate(Sender: TObject);
     procedure btnNextClick(Sender: TObject);
     procedure btnPrevClick(Sender: TObject);
@@ -158,6 +158,8 @@ begin
   chkAllUsers.Caption := getMsg('chkAllUsers');
   groupOption.Caption := getMsg('Option');
   groupPath.Caption := getMsg('Path');
+  lblWaitAMoment.Caption := getMsg('Wait a moment');
+  lblCompleteMsg.Caption := getMsg('Install Completed!');
   //
   FCanClose := False;
   // --- INI ÉtÉ@ÉCÉãÇÃí≤ç∏
@@ -396,7 +398,7 @@ end;
 
 procedure TfrmNakoInstaller.log_section(msg, descript: string);
 begin
-  msg := ini.ReadString('message', msg, msg);
+  msg := getMsg(msg);
   msg := msgesc(msg);
   if descript <> '' then msg := msg + '(' + descript + ')';
   edtLog.Lines.Insert(0, '* ' + msg);
@@ -1113,7 +1115,7 @@ end;
 
 procedure TfrmNakoInstaller.ulog_section(msg, descript: string);
 begin
-  msg := ini.ReadString('message', msg, msg);
+  msg := getMsg(msg);
   msg := msgesc(msg);
   if descript <> '' then msg := msg + '(' + descript + ')';
   edtLogU.Lines.Insert(0, '* ' + msg);
