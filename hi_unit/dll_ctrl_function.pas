@@ -16,8 +16,6 @@ uses dll_plugin_helper, dnako_import, dnako_import_types, unit_ctrl,
   CpuUtils, unit_process32, HotKeyManager, hima_hotkey_manager, SysUtils,
   Types, unit_string;
 
-
-
 function getNakoCtrlVersion(h: DWORD): PHiValue; stdcall;
 begin
   Result := hi_newStr(NAKOCTRL_DLL_VERSION);

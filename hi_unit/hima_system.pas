@@ -488,7 +488,7 @@ begin
   AddStrVar('ナデシコランタイム',    {'(起動時に決定)'}getRuntime,    102, 'なでしこエンジンをロードした実行ファイルの名前(大文字)','なでしこらんたいむ');
   AddStrVar('ナデシコランタイムパス',{'(起動時に決定)'}ParamStr(0),   103, 'なでしこエンジンをロードした実行ファイルのフルパス','なでしこらんたいむぱす');
   AddStrVar('OS',                    {'(起動時に決定)'}getWinVersion, 104, 'OSの種類を保持する。Windows Vista/Windows Server 2003/Windows XP/Windows 2000/Windows Me/Windows 98/Windows NT 4.0/Windows NT 3.51/Windows 95','OS');
-
+  AddStrVar('OSバージョン',          {'(起動時に決定)'}getWinVersionN,105, 'OSのバージョン番号を返す。','OSばーじょん');
 
   //-基本変数
   AddStrVar('それ',   '', 110, '命令の結果が代入される変数。省略語としても使われる。','それ');
