@@ -31,7 +31,47 @@ function getWindowItems(handle:THandle): string;
 
 implementation
 
-uses Masks;
+uses Masks, CommonMemoryUnit;
+
+const
+  SB_GETTEXT        = WM_USER+2;
+  SB_GETTEXTLENGTH  = WM_USER+3;
+  SB_GETPARTS       = WM_USER+6;
+  SB_ISSIMPLE       = WM_USER+14;
+
+const
+  {$EXTERNALSYM LVM_FIRST}
+  LVM_FIRST               = $1000;      { ListView messages }
+  LVM_GETITEMCOUNT        = LVM_FIRST + 4;
+  LVM_GETITEMA            = LVM_FIRST + 5;
+  LVM_SETITEMA            = LVM_FIRST + 6;
+  LVM_GETITEMTEXTA         = LVM_FIRST + 45;
+
+type
+  tagLVITEMA = packed record
+    mask: UINT;
+    iItem: Integer;
+    iSubItem: Integer;
+    state: UINT;
+    stateMask: UINT;
+    pszText: PAnsiChar;
+    cchTextMax: Integer;
+    iImage: Integer;
+    lParam: LPARAM;
+    iIndent: Integer;
+  end;
+  TLVItem = tagLVITEMA;
+
+function ListView_GetItemText(hwndLV: HWND; i, iSubItem: Integer;
+  pszText: PChar; cchTextMax: Integer): Integer;
+var
+  Item: TLVItem;
+begin
+  Item.iSubItem := iSubItem;
+  Item.cchTextMax := cchTextMax;
+  Item.pszText := pszText;
+  Result := SendMessage(hwndLV, LVM_GETITEMTEXTA, i, Longint(@Item));
+end;
 
 function getClassNameStr(h:THandle): string;
 var
@@ -74,6 +114,10 @@ begin
   begin
     Result := SendMessage(h, CB_GETCOUNT, 0, 0);
   end else
+  if cs = 'msctls_statusbar32' then
+  begin
+    Result := SendMessage(h, SB_GETPARTS,0 ,0);
+  end else
   begin
     raise Exception.Create('Windowクラス"' + cs + '"には対応していません。');
   end;
@@ -84,6 +128,62 @@ var
   res, cs, tmp: string;
   len, i, count: Integer;
   p: PChar;
+  
+  procedure _get_statusbar;
+  var Buffer : PChar;
+      MemHdl,  i , PanelCount ,BufferSize ,TextLen : integer;
+      SimpleMode : Boolean;
+      s : string;
+  var
+    TempCM : TCommonMemory;
+  begin
+    s := '';
+    SimpleMode := (SendMessage(Handle,SB_ISSIMPLE,0,0)<>0);
+    PanelCount := SendMessage(Handle,SB_GETPARTS,0,0);
+    for i := 0 to PanelCount-1 do
+      begin
+        BufferSize := 1 + LOWORD(SendMessage(Handle,SB_GETTEXTLENGTH,i,0));
+        TempCM := GetCommonMemory(Handle,BufferSize);
+        try
+          GetMem(Buffer,BufferSize+1);
+          try
+            if (BufferSize = 1) then
+              Buffer[0] := Char(0)
+            else
+            if (BufferSize > 1) then
+            begin
+              TextLen := LOWORD(SendMessage(Handle,SB_GETTEXT,i,LPARAM(TempCM.MemPtr)));
+              if (BufferSize > TextLen) then
+               begin
+                 TempCM.Read(0,Buffer,TextLen);
+                 Buffer[TextLen] := Char(0)
+               end
+                else
+               begin
+                 raise Exception.Create(
+                   Format(
+                   'Handle[%d]' + #13+#10 +
+                   ' Roop[%d/%d]' + #13+#10 +
+                   'エラー:BufferSize[%d] < TextLen[%d] '
+                  ,[ Handle
+                     , i+1 ,PanelCount
+                     ,BufferSize,TextLen
+                       ]));
+                  Buffer[0] := Char(0);
+                end;
+            end;
+            s := s + Buffer + #13+#10;
+            if (SimpleMode) then Break;
+          finally
+             FreeMem(Buffer);
+          end;
+        finally
+          TempCM.Free;
+        end;
+      end; // for
+      res := s;
+  end;
+
 begin
   cs := getClassNameStr(handle);
   res := '';
@@ -114,6 +214,22 @@ begin
       res := res + tmp;
       if (i <> (count-1)) then res := res + #13#10;
     end;
+  end else if cs = 'SysListView32' then
+  begin
+    count := SendMessage(handle, LVM_GETITEMCOUNT, 0, 0);
+    for i := 0 to count - 1 do
+    begin
+      GetMem(p, 4096);
+      ListView_GetItemText(handle, i, 0, p, 4095);
+      System.SetString(tmp, p, len);
+      FreeMem(p);
+      res := res + tmp;
+      if (i <> (count-1)) then res := res + #13#10;
+    end;
+  end else
+  if cs = 'msctls_statusbar32' then
+  begin
+    _get_statusbar;
   end else
   begin
     raise Exception.Create('Windowクラス"' + cs + '"には対応していません。');

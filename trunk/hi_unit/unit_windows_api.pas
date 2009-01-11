@@ -16,8 +16,23 @@ procedure ClipbrdSetAsBuffer(Format: Word; var Buffer; Size: Integer);
 procedure SendCOPYDATA(hwnd: THandle; str: AnsiString; msgid: DWORD; SelfHandle: THandle);
 
 function getWinVersion: AnsiString;
+function getWinVersionN: AnsiString;
 
 implementation
+
+function getWinVersionN: AnsiString;
+var
+  i: TOSVersionInfo;
+begin
+  i.dwOSVersionInfoSize := SizeOf(i);
+  GetVersionEx(i);
+  Result := Format('%d.%d(%d:%d)',[
+    i.dwMajorVersion,
+    i.dwMinorVersion,
+    i.dwBuildNumber,
+    i.dwPlatformId]);
+end;
+
 
 function getWinVersion: AnsiString;
 var
