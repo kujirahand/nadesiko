@@ -48,7 +48,7 @@ function ProgramFilesDir: AnsiString;
 function QuickLaunchDir: AnsiString;
 function AppDataDir: AnsiString;
 
-function RunAndWait(path: AnsiString; Hide: Boolean=False): Boolean;
+function RunAndWait(path: AnsiString; Hide: Boolean=False; sec:Integer = 0): Boolean;
 function OpenApp(path: AnsiString; Hide: Boolean=False): Boolean;
 function RunApp(path: AnsiString; Hide: Boolean=False): Boolean;
 function RunAppWithPipe(path: AnsiString; Hide: Boolean;out ParentPipe,ChildPipe:TPipe): Cardinal;
@@ -626,7 +626,7 @@ begin
   Result := (res > 32);
 end;
 
-function RunAndWait(path: AnsiString; Hide: Boolean): Boolean;
+function RunAndWait(path: AnsiString; Hide: Boolean; sec:Integer): Boolean;
 var
   ret: Boolean;
   ecode: Integer;
@@ -677,8 +677,13 @@ begin
   end;
 
   // 終了待ち(10秒待つ)
-  ecode := WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
-
+  if sec <= 0 then
+  begin
+    ecode := WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
+  end else
+  begin
+    ecode := WaitForSingleObject(ProcessInfo.hProcess, sec * 1000);
+  end;
   // メッセージ表示
   case ecode of
     WAIT_OBJECT_0:  Result := True;

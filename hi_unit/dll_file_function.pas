@@ -350,6 +350,26 @@ begin
   Result := nil;
 end;
 
+function sys_exec_wait_sec(args: DWORD): PHiValue; stdcall;
+var
+  fname: string;
+  sec: Integer;
+begin
+  // (1) 引数の取得
+  fname := getArgStr(args, 0, True);
+  sec   := getArgInt(args, 1);
+
+  // (2) データの処理
+  _getEmbedFile(fname); // もし可能なら実行ファイルから取り出す
+
+  // (3) 戻り値を設定
+  try
+    Result := hi_newBool(RunAndWait(fname, False, sec));
+  except
+    Result := hi_newBool(False);
+  end;
+end;
+
 
 function sys_exec_open_hide(args: DWORD): PHiValue; stdcall;
 var
@@ -2784,8 +2804,9 @@ begin
   AddFunc  ('出力先初期化','', 510, sys_outfile_clear, '『出力先』で指定したファイルを初期化する','しゅつりょくさきしょきか');
 
   //-起動
-  AddFunc  ('起動','{文字列=?}Sを',                      520, sys_exec, 'ファイルSを起動する。','きどう');
-  AddFunc  ('起動待機','{文字列=?}Sを',                  521, sys_exec_wait, 'ファイルSを起動して終了するまで待機する。','きどうたいき');
+  AddFunc  ('起動','{文字列=?}PATHを',                      520, sys_exec, 'ファイルPATHを起動する。','きどう');
+  AddFunc  ('起動待機','{文字列=?}PATHを',                  521, sys_exec_wait, 'ファイルPATHを起動して終了するまで待機する。','きどうたいき');
+  AddFunc  ('秒間起動待機','{文字列=?}PATHをSEC',           677, sys_exec_wait_sec, 'ファイルPATHを起動してSEC秒間待機する。正常に終了すればはい(=1)を返す。時間内に終了しなければ、いいえ(=0)を返し処理を継続する。(起動したアプリの強制終了は行わない。)','びょうかんきどうたいき');
   AddFunc  ('エクスプローラー起動','{文字列=?}DIRで|DIRの|DIRを', 522, sys_exec_exp, 'フォルダDIRをエクスプローラーで起動する。','えくすぷろーらーきどう');
   AddFunc  ('隠し起動','{文字列=?}Sを', 523, sys_exec_open_hide, 'ファイルSを可視オフで起動する。','かくしきどう');
   AddFunc  ('隠し起動待機','{文字列=?}Sを', 524, sys_exec_wait_hide, 'ファイルSを可視オフで起動して終了まで待機する。','かくしきどうたいき');
