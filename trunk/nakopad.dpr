@@ -36,7 +36,8 @@ uses
   CryptUtils in 'hi_unit\CryptUtils.pas',
   EasyMasks in 'hi_unit\EasyMasks.pas',
   nkf in 'hi_unit\NKF.PAS',
-  unit_rewrite_icon in 'hi_unit\unit_rewrite_icon.pas';
+  unit_rewrite_icon in 'hi_unit\unit_rewrite_icon.pas',
+  SHA1 in 'hi_unit\Sha1.pas';
 
 {$R *.res}
 
