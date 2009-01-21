@@ -35,6 +35,7 @@ var
   LhaOption   : string = '-a1 -r2 -x1 -l0 -jp1 -o2 -ji0 -n0';
   UnlhaOption : string = '-a1 -r2 -x1 -jp1 -c0 -m1';
   SfxOption   : string = '-x1 -r2 -gx0 -gw4';
+  ArchivePassword: string = '';
 
 type
   TArchieveFunc = function (const hWnd: HWND; szCmdLine: PChar; szOutput: PChar; dwSize: DWORD): Integer; stdcall;
@@ -797,7 +798,7 @@ end;
 
 procedure zip7_compress(srcFile, desFile: string);
 var
-  s, cmd, basePath, fs : string;
+  s, cmd, basePath, fs, pass: string;
   srcFiles : THStringList;
   i: Integer;
 begin
@@ -830,9 +831,15 @@ begin
       fs := fs + '"' + srcFiles.Strings[i] + '" ';
     end;
 
+    // Password
+    pass := '';
+    if ArchivePassword <> '' then
+    begin
+      pass := ' -p' + ArchivePassword + ' ';
+    end;
     //cmd := a -a1 -r2 -x1 -jp1 "書庫名" "基準ディレクトリ" "パス名"
     //
-    cmd := 'a -tzip -r "'+desFile+'" "'+basePath+'" '+fs;
+    cmd := 'a -tzip '+pass+'-r "'+desFile+'" "'+basePath+'" '+fs;
     SevenZipCommand(cmd);
   finally
     srcFiles.Free;
@@ -841,15 +848,20 @@ end;
 
 procedure zip7_extract(srcFile, desFile: string);
 var
-  cmd: string;
+  pass, cmd: string;
 begin
-  cmd := 'x "'+srcFile+'" -o"'+desFile+'"';
+  pass := '';
+  if ArchivePassword <> '' then
+  begin
+    pass := '-p' + ArchivePassword + ' ';
+  end;
+  cmd := 'x '+pass+'"'+srcFile+'" -o"'+desFile+'"';
   SevenZipCommand(cmd);
 end;
 
 procedure yz1_compress(srcFile, desFile: string);
 var
-  s, cmd, basePath, fs : string;
+  s, cmd, basePath, fs, pass: string;
   srcFiles : THStringList;
   i: Integer;
 begin
@@ -882,8 +894,14 @@ begin
       fs := fs + '"' + srcFiles.Strings[i] + '" ';
     end;
 
+    pass := '';
+    if ArchivePassword <> '' then
+    begin
+      pass := ' -p' + ArchivePassword + ' ';
+    end;
+
     //cmd := a -a1 -r2 -x1 -jp1 "書庫名" "基準ディレクトリ" "パス名"
-    cmd := '-c -r -y1 "'+desFile+'" "'+basePath+'" '+fs;
+    cmd := '-c '+pass+'-r -y1 "'+desFile+'" "'+basePath+'" '+fs;
     Yz1Command(cmd);
   finally
     srcFiles.Free;
@@ -892,9 +910,14 @@ end;
 
 procedure yz1_extract(srcFile, desFile: string);
 var
-  cmd: string;
+  cmd, pass: string;
 begin
-  cmd := '-x "'+srcFile+'" "'+desFile+'"';
+  pass := '';
+  if ArchivePassword <> '' then
+  begin
+    pass := ' -p' + ArchivePassword + ' ';
+  end;
+  cmd := '-x '+pass+'"'+srcFile+'" "'+desFile+'"';
   Yz1Command(cmd);
 end;
 
