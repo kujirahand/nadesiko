@@ -2356,6 +2356,64 @@ begin
   Result := nil;
 end;
 
+function sys_compress_pass(args: DWORD): PHiValue; stdcall;
+var
+  a, b: PHiValue;
+  src, des, ext, pass: string;
+begin
+  // (1) 引数の取得
+  pass := getArgStr(args, 0);
+  a := nako_getFuncArg(args, 1);
+  b := nako_getFuncArg(args, 2);
+
+  src := hi_str(a);
+  des := hi_str(b);
+  ext := LowerCase( ExtractFileExt(des) );
+
+  // (2) 処理
+  unit_archive.ArchivePassword := pass;
+  if ext = '.zip' then zip_compress(src, des) else
+  if ext = '.yz1' then yz1_compress(src, des) else
+  raise Exception.Create('"'+ext+'"は未対応の圧縮形式です。');
+  nako_reportDLL(PChar(unit_archive.used_dll));
+
+  // (3) 結果の代入
+  Result := nil;
+end;
+
+function sys_extract_pass(args: DWORD): PHiValue; stdcall;
+var
+  a, b: PHiValue;
+  src, des, ext, pass: string;
+begin
+  // (1) 引数の取得
+  pass := getArgStr(args, 0);
+  a := nako_getFuncArg(args, 1);
+  b := nako_getFuncArg(args, 2);
+  // (2) 処理
+  src := hi_str(a);
+  des := hi_str(b);
+  ext := LowerCase( ExtractFileExt(src) );
+
+  if ExtractFileExt(des) = '' then
+  begin
+    des := CheckPathYen(des);
+    ForceDirectories(des);
+  end;
+
+  dll_plugin_helper._getEmbedFile(src); // もし可能なら実行ファイルから取り出す
+
+  // (2) 処理
+  unit_archive.ArchivePassword := pass;
+  if ext = '.zip' then zip_extract (src, des)  else
+  if ext = '.yz1' then yz1_extract (src, des)  else
+  raise Exception.Create('"'+ext+'"は未対応の圧縮形式です。');
+  nako_reportDLL(PChar(unit_archive.used_dll));
+
+  // (3) 結果の代入
+  Result := nil;
+end;
+
 
 function sys_archive_command(args: DWORD): PHiValue; stdcall;
 var
@@ -2890,6 +2948,8 @@ begin
   AddFunc('解凍','AをBへ|AからBに', 571, sys_extract, 'ファイルAをパスBへ解凍する。','かいとう','7-zip32.dll,UNLHA32.DLL');
   AddFunc('自己解凍書庫作成','AをBへ|Aから', 572, sys_makesfx, 'パスAをファイルBへ自己解凍書庫を作成する','じこかいとうしょこさくせい','7-zip32.dll,UNLHA32.DLL');
   AddFunc('圧縮解凍実行','TYPEのCMDを|CMDで', 573, sys_archive_command, 'TYPE(拡張子)でアーカイバDLLへコマンドCMDを直接実行する','あっしゅくかいとうじっこう','7-zip32.dll,UNLHA32.DLL');
+  AddFunc('パスワード付圧縮','PASSでAをBへ|AからBに', 574, sys_compress_pass, 'パスワードPASSを利用してパスAをファイルBへ圧縮する。(ZIP/YZ1ファイルのみ対応)','ぱすわーどつきあっしゅく','');
+  AddFunc('パスワード付解凍','PASSでAをBへ|AからBに', 577, sys_extract_pass, 'パスワードPASSを利用してファイルAをパスBへ解凍する。(ZIP/YZ1ファイルのみ対応)','ぱすわーどつきかいとう','');
   //+レジストリ/INIファイル(nakofile.dll)
   //-レジストリ
   AddFunc  ('レジストリ開く','Sの', 580, sys_registry_open,'レジストリパスSを開いてハンドルを返す','れじすとりひらく');
