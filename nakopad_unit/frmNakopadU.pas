@@ -709,8 +709,8 @@ var
   frmNakopad: TfrmNakopad;
 
 const
-  key_md5 = '4f671bfddbff64dfe9384b260fa71f0c';
-
+  key_license_sig = 'tCXPQXX4Ar8NjjLYx13RuawyV5NcdMzhsYBZhm';
+  key_license_chk = 'MkUwODZCQkM1MjQ1OUI2NUREMThFRTM5MkNEMDVENDNFNTNGQjEzNA==';
 
 // 動詞の語尾変化を削除
 function DeleteGobi(key: string): string;
@@ -720,9 +720,19 @@ implementation
 
 uses gui_benri, unit_string, unit_windows_api, StrUnit, Math,
   wildcard, frmMakeExeU, jconvert, jconvertex, MSCryptUnit, frmFindU,
-  frmReplaceU, md5, unit_file, nkf;
+  frmReplaceU, md5, unit_file, nkf, unit_blowfish, SHA1;
 
 {$R *.dfm}
+
+function chk_nakopad_key(key: string): Boolean;
+var
+  bf, hex, s: string;
+begin
+  bf     := BlowfishEnc(key, key_license_sig);
+  hex    := SHA1StringHex(bf);
+  s      := EncodeBase64(hex);
+  Result := (s = key_license_chk);
+end;
 
 
 function CharInRange(p: PChar; fromCH, toCH: string): Boolean;
@@ -3468,7 +3478,7 @@ begin
 
   // todo: 商用版のみの特典を反映
   ini_key := ini.ReadString('license', 'key', 'xxx');
-  if MD5StringS(ini_key) = key_md5 then
+  if chk_nakopad_key(ini_key) then
   begin
     changeProLicense(True);
   end;
@@ -5228,13 +5238,14 @@ end;
 
 procedure TfrmNakopad.mnuRegDeluxClick(Sender: TObject);
 var
-  s, v: string;
+  s: string;
   i: Integer;
 
   procedure _proc_ok;
   begin
     // OK
-    ShowMessage('登録ありがとうございました。');
+    ShowMessage('登録ありがとうございました。'#13#10+
+      'なでしこエディタのすべての機能が使えるようになりました。');
     ini.WriteString('license', 'key', s);
     changeProLicense(True);
   end;
@@ -5256,9 +5267,7 @@ begin
     s := InputBox('ライセンスキーの入力', 'ライセンスキーを入力してください。', '');
     if (s = '') then Exit;
     s := UpperCase(Trim(s));
-    v := MD5StringS(s);
-
-    if v <> key_md5 then
+    if not chk_nakopad_key(s) then
     begin
       ShowWarn('ライセンスキーが違います。'#13+
         'クリップボード経由で貼り付けを使うと間違いが少なくなります。',
