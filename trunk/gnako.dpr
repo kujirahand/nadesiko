@@ -19,6 +19,11 @@ uses
 
 {$R gnako.res}
 
+procedure debug(s: string);
+begin
+  MessageBox(0, PChar(s), 'debug', MB_OK);
+end;
+
 var
   wc    : TWndClass;
   Msg   : TMsg;
@@ -65,7 +70,6 @@ begin
   end;
 
   Halt(Msg.wParam);
-
 end.
 
 

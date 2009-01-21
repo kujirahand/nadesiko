@@ -49,7 +49,7 @@ object frmNakoInstaller: TfrmNakoInstaller
     Top = 0
     Width = 470
     Height = 336
-    ActivePage = tabEnd
+    ActivePage = tabUninstall
     Align = alClient
     MultiLine = True
     ParentShowHint = False
@@ -288,11 +288,21 @@ object frmNakoInstaller: TfrmNakoInstaller
         end
         object edtLog: TMemo
           Left = 16
-          Top = 88
+          Top = 120
           Width = 409
-          Height = 185
+          Height = 153
           Color = clBtnFace
           TabOrder = 3
+          Visible = False
+        end
+        object btnShowLog: TButton
+          Left = 352
+          Top = 96
+          Width = 75
+          Height = 25
+          Caption = '>>'
+          TabOrder = 4
+          OnClick = btnShowLogClick
         end
       end
     end
@@ -354,13 +364,24 @@ object frmNakoInstaller: TfrmNakoInstaller
           Height = 17
           TabOrder = 1
         end
-        object edtLogU: TRichEdit
-          Left = 16
-          Top = 88
-          Width = 409
-          Height = 185
-          ScrollBars = ssVertical
+        object btnShowDetailUninstall: TButton
+          Left = 348
+          Top = 96
+          Width = 75
+          Height = 25
+          Caption = '>>'
           TabOrder = 2
+          OnClick = btnShowDetailUninstallClick
+        end
+        object edtLogU: TMemo
+          Left = 16
+          Top = 120
+          Width = 409
+          Height = 153
+          Color = clBtnFace
+          ReadOnly = True
+          TabOrder = 3
+          Visible = False
         end
       end
     end

@@ -18,13 +18,19 @@ var
   hApp: THandle;
   flagOK: Boolean;
   i: Integer;
+  //
+  res: Integer;
+  s, title: string;
 begin
 
   if (ParamCount >= 1)and(ParamStr(1) = '/u2') then
   begin
-    if false = MsgYesNo(getMsg('Uninstall?')) then
+    s := getMsg('Uninstall?');
+    title := setting.ReadString('setup','title','Application');
+    res := MessageBox(0, PChar(s), PChar(title), MB_YESNO);
+    if res = IDNO then
     begin
-      Exit;
+      Halt;
     end;
   end;
 

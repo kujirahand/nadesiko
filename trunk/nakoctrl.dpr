@@ -19,7 +19,8 @@ uses
   CpuUtils in 'hi_unit\CpuUtils.pas',
   unit_process32 in 'hi_unit\unit_process32.pas',
   HotKeyManager in 'hi_unit\HotKeyManager.pas',
-  hima_hotkey_manager in 'hi_unit\hima_hotkey_manager.pas';
+  hima_hotkey_manager in 'hi_unit\hima_hotkey_manager.pas',
+  CommonMemoryUnit in 'hi_unit\CommonMemoryUnit.pas';
 
 //------------------------------------------------------------------------------
 // Plug-in import function

@@ -19,9 +19,13 @@ type
     btnIzon: TButton;
     btnClear: TButton;
     btnHelp: TButton;
+    GroupBox1: TGroupBox;
     chkAngou: TCheckBox;
-    chkAngou3: TCheckBox;
     chkIncludeDLL: TCheckBox;
+    chkAngou3: TCheckBox;
+    groupIcon: TGroupBox;
+    imgIcon: TImage;
+    dlgOpenIcon: TOpenDialog;
     procedure btnAddFilesClick(Sender: TObject);
     procedure FileDropFileDrop(Sender: TObject; Num: Integer;
       Files: TStrings; X, Y: Integer);
@@ -32,8 +36,11 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure chkIncludeDLLClick(Sender: TObject);
+    procedure imgIconClick(Sender: TObject);
   private
     { Private 宣言 }
+    flagIconChange: Boolean;
+    IconFile: string;
     procedure addIncludeFile(s: string);
   public
     { Public 宣言 }
@@ -45,7 +52,8 @@ var
 
 implementation
 
-uses frmNakopadU, unit_pack_files, StrUnit, gui_benri, Masks;
+uses frmNakopadU, unit_pack_files, StrUnit, gui_benri, Masks,
+  unit_rewrite_icon;
 
 {$R *.dfm}
 
@@ -79,6 +87,22 @@ var
   f,s: string;
   p: TFileMixWriter;
   i: Integer;
+  tempExe: string;
+
+  procedure _rewriteicon;
+  var
+    p: TIconChanger;
+  begin
+    if not flagIconChange then Exit;
+    if frmNakopad.FNakoIndex = NAKO_CNAKO then Exit;
+    //---
+    p := TIconChanger.Create;
+    try
+      p.Change(tempExe, IconFile);
+    finally
+      p.Free;
+    end;
+  end;
 
   procedure _copyPlugins;
   var
@@ -170,17 +194,21 @@ begin
   case frmNakopad.FNakoIndex of
     NAKO_VNAKO:
       begin
-        WritePackExeFile(f, AppPath+'vnako.exe', AppPath+'packfile.bin');
+        tempExe := AppPath + 'vnako.exe';
       end;
     NAKO_GNAKO:
       begin
-        WritePackExeFile(f, AppPath+'gnako.exe', AppPath+'packfile.bin');
+        tempExe := AppPath + 'gnako.exe';
       end;
     NAKO_CNAKO:
       begin
-        WritePackExeFile(f, AppPath+'cnako.exe', AppPath+'packfile.bin');
+        tempExe := AppPath + 'cnako.exe';
       end;
   end;
+
+  _rewriteIcon;
+  WritePackExeFile(f, tempExe, AppPath+'packfile.bin');
+
   //=========================
   // 依存ファイルのコピー
   _copyPlugins;
@@ -192,13 +220,10 @@ begin
       '再度、実行ファイル作成を行い手動でファイルを追加してください。'#13#10);
   end else
   begin
-    if MsgYesNo(
+    ShowMessage(
       '実行ファイルを作成しました。'#13#10+
       '実行ファイルと "dnako.dll"に加え "plug-ins"フォルダを配布してください。'#13#10+
-      'さらに詳しいヘルプを表示しますか？') then
-    begin
-      btnHelpClick(nil);
-    end;
+      '詳しくはヘルプをご覧ください。');
   end;
 
   //===
@@ -245,6 +270,7 @@ begin
   fdrop := TFileDrop.Create(self);
   fdrop.Control := lstFiles;
   fdrop.OnFileDrop := FileDropFileDrop;
+  flagIconChange := False;
 end;
 
 procedure TfrmMakeExe.chkIncludeDLLClick(Sender: TObject);
@@ -313,6 +339,19 @@ begin
   // end;
   if lstFiles.Items.IndexOf(s) < 0 then
     lstFiles.Items.Add(s);
+end;
+
+procedure TfrmMakeExe.imgIconClick(Sender: TObject);
+begin
+  if not frmNakopad.isDelux then
+  begin
+    ShowMessage('すみません。アイコンの変更はデラックス版のみの機能です。');
+    Exit;
+  end;
+  if not dlgOpenIcon.Execute then Exit;
+  imgIcon.Picture.LoadFromFile(dlgOpenIcon.FileName);
+  flagIconChange := True;
+  IconFile := dlgOpenIcon.FileName;
 end;
 
 end.

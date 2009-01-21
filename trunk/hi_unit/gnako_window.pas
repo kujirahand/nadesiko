@@ -241,7 +241,7 @@ begin
   Result := 0;
 
   w := eventList.FindEvent(Msg, HIWORD(WParam), LOWORD(WParam));
-  if w <> nil then begin
+  if (w <> nil)and(_dnako_loader <> nil) then begin
     hi_setInt(pEventReturn, 0);
     while w <> nil do
     begin
@@ -281,7 +281,7 @@ begin
         nako_free;
       end;
       }
-      MainDestroy(hWindow); Exit;
+      MainDestroy(hWindow);
     end;
   WM_CREATE:
     begin
