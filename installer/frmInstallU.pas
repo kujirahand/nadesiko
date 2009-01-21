@@ -47,12 +47,14 @@ type
     lblRemoveFiles: TLabel;
     ubar1: TProgressBar;
     ubar2: TProgressBar;
-    edtLogU: TRichEdit;
     Panel2: TPanel;
     edtAbout: TRichEdit;
     lblWebSite: TLabel;
     lblAboutLink: TLabel;
     edtLog: TMemo;
+    btnShowLog: TButton;
+    btnShowDetailUninstall: TButton;
+    edtLogU: TMemo;
     procedure FormCreate(Sender: TObject);
     procedure btnNextClick(Sender: TObject);
     procedure btnPrevClick(Sender: TObject);
@@ -64,6 +66,8 @@ type
     procedure timerUninstallTimer(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormShow(Sender: TObject);
+    procedure btnShowLogClick(Sender: TObject);
+    procedure btnShowDetailUninstallClick(Sender: TObject);
   private
     FTable: array [0..5] of TInstallPage;
     procedure init;
@@ -502,7 +506,7 @@ procedure TfrmNakoInstaller.haltMessage;
 var
   s: string;
 begin
-  s := getMsg('halt');
+  s := msgesc(getMsg('halt'));
   ShowWarn(s, Application.Title);
   FCanClose := True;
   Close;
@@ -691,7 +695,7 @@ end;
 
 procedure TfrmNakoInstaller.checkParam;
 const
-  uninstaller = 'uninstall_nako.exe';
+  uninstaller = 'uninstall_setup.exe';
 var
   path, src, des: string;
 begin
@@ -708,11 +712,12 @@ begin
     CopyFile(PChar(src), PChar(des), False);
     //
     src := ChangeFileExt(ParamStr(0), '.ini');
-    des := path + 'uninstall_nako.ini';
+    des := path + 'uninstall_setup.ini';
     CopyFile(PChar(src), PChar(des), False);
     //
     RunApp('"' + path + uninstaller + '" "/u2"');
     FCanClose := True;
+    Halt;
     Close;
     Exit;
   end;
@@ -721,7 +726,6 @@ begin
   begin
     setPage(5);
     FUninstallMode := True;
-    timerUninstall.Enabled := True;
   end;
 
 end;
@@ -1148,7 +1152,7 @@ procedure TfrmNakoInstaller.FormCloseQuery(Sender: TObject;
 begin
   if FCanClose = False then
   begin
-    if not MsgYesNo(getMsg('Install Interruped?')) then
+    if not MsgYesNo(msgesc(getMsg('Install Interruped?'))) then
     begin
       CanClose := False;
     end else
@@ -1162,10 +1166,15 @@ procedure TfrmNakoInstaller.FormShow(Sender: TObject);
 begin
   if FCanClose then
   begin
-    Close;
+    Exit;
   end;
   // --- exe の起動チェック
   checkExe;
+  // ---
+  if FUninstallMode then
+  begin
+    timerUninstall.Enabled := True;
+  end;
 end;
 
 
@@ -1228,20 +1237,29 @@ end;
 procedure TfrmNakoInstaller.uninstall_failed(msg: string);
 begin
   ShowWarn(
-    getMsg('アンインストールに失敗しました。\n' +
-      '再度実行してください。'),
-    msg + #13#10 +
-    getMsg('エラー'));
+    msgesc(getMsg('Uninstall failed.')) + #13#10 + msg,
+    getMsg('Error'));
   FCanClose := False;
   Close;
 end;
 
 procedure TfrmNakoInstaller.checkExe;
 begin
+  if FCanClose then Exit;
   if frmExe.checkExe = false then
   begin
     frmExe.ShowModal;
   end;
+end;
+
+procedure TfrmNakoInstaller.btnShowLogClick(Sender: TObject);
+begin
+  edtLog.Visible := not edtLog.Visible;
+end;
+
+procedure TfrmNakoInstaller.btnShowDetailUninstallClick(Sender: TObject);
+begin
+  edtLogU.Visible := not edtLogU.Visible;
 end;
 
 end.

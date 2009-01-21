@@ -796,7 +796,10 @@ initialization
 finalization
   if FileMixReaderSelfCreate then
   begin
-    FreeAndNil(FileMixReader);
+    try
+      FreeAndNil(FileMixReader);
+    except
+    end;
   end;
 
 end.

@@ -35,7 +35,8 @@ uses
   BlowFish in 'hi_unit\BlowFish.pas',
   CryptUtils in 'hi_unit\CryptUtils.pas',
   EasyMasks in 'hi_unit\EasyMasks.pas',
-  nkf in 'hi_unit\NKF.PAS';
+  nkf in 'hi_unit\NKF.PAS',
+  unit_rewrite_icon in 'hi_unit\unit_rewrite_icon.pas';
 
 {$R *.res}
 
