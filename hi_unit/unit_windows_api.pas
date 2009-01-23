@@ -44,7 +44,12 @@ begin
   GetVersionEx(Info);
   Major := Info.dwMajorVersion ;
   Minor := Info.dwMinorVersion ;
+  Result := 'ïsñæ:' + AnsiString(Format('%d.%d',[Major, Minor])) + ')';
   case major of
+      3://NT 3.51
+          begin
+            Result := 'Windows NT 3.51';
+          end;
       4://95/98/ME/NT
           begin
               if Info.dwPlatformId = VER_PLATFORM_WIN32_WINDOWS then
@@ -60,10 +65,6 @@ begin
                   Result := 'Windows NT 4.0';
               end;
           end;
-      3://NT 3.51
-          begin
-              Result := 'Windows NT 3.51';
-          end;
       5://2000/XP/.NET Server
           begin
               case Minor of
@@ -74,18 +75,12 @@ begin
           end;
       6://Vista
           begin
-            Result := 'Windows Vista';
+              case Minor of
+                0: Result := 'Windows Vista';
+                1: Result := 'Windows 7';
+              end;
           end;
-      else begin
-          Result := AnsiString('ïsñæ Version = '+ IntToStr(GetVersion));
-      end;
-  end;
-  {è„éËÇ≠ìÆÇ©Ç»Ç¢
-  s := string(PAnsiChar(@Info.szCSDVersion[1]));
-  if s<>'' then
-  begin
-      Result := Result + s;
-  end;}
+  end;//of case Major 
 end;
 
 
