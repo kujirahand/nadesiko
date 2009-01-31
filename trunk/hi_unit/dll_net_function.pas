@@ -1168,6 +1168,25 @@ begin
   if pop3.Password = '' then raise Exception.Create('メールパスワードが空です。');
 end;
 
+function Popd3CheckMessageIdAsFileName(msgid: string): string;
+var
+  i: Integer;
+  function _CheckId(ch: string): String;
+  begin
+    if Pos(ch, '/?"%\;:''`') > 0 then
+    begin
+      ch := '%' + IntToHex(Ord(ch[1]), 2);
+    end;
+    Result := ch;
+  end;
+begin
+  Result := '';
+  for i := 1 to Length(msgid) do
+  begin
+    Result := Result + _CheckId(msgid[i]);
+  end;
+end;
+
 procedure __sys_pop3_recv_indy(Sender: TNetThread; ptr: Pointer);
 var
   pop3: TIdPOP3;
@@ -1216,6 +1235,7 @@ begin
           // 1件ずつ受信していく
           msgid := msgidsNow.Strings[i];
           getToken_s(msgid, ' ');
+          msgid := Popd3CheckMessageIdAsFileName(msgid);
           if msgids.IndexOf(msgid) >= 0 then Continue; // 受信済み
           raw := TStringList.Create;
           try
