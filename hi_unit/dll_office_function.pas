@@ -1453,6 +1453,11 @@ begin
   SQLite3_Close(Pointer(h));
 end;
 
+function sqlite3_autoconv: Boolean;
+begin
+  Result := hi_bool(nako_getVariable('SQLITE3自動変換'));
+end;
+
 function sys_SQLite3Execute(args: DWORD): PHiValue; stdcall;
 var
   res, sql: string;
@@ -1464,7 +1469,15 @@ begin
   if h = nil then Exit;
   res := '';
   try
-    res := SQLite3ExecCSV(h, sql);
+    if sqlite3_autoconv then
+    begin
+      sql := UTF8Encode(sql);
+      res := SQLite3ExecCSV(h, sql);
+      res := UTF8Decode(res);
+    end else
+    begin
+      res := SQLite3ExecCSV(h, sql);
+    end;
     Result := hi_newStr(res);
   except
     raise;
@@ -1976,6 +1989,7 @@ begin
   AddFunc  ('SQLITE3出力コード設定','{=""}Sに|Sへ|Sで', 4855, sys_SQLite3SetEncode,'データベースからデータを取得する時の文字コードを設定する','SQLITEしゅつりょくこーどせってい', 'sqlite3.dll');
   AddFunc  ('SQLITE3変更数取得','{=0}Hの',      4856, sys_SQLite3TotalChanges,'SQLiteで最後に変更したレコード数を取得する','SQLITE3へんこうすうしゅとく', 'sqlite3.dll');
   AddFunc  ('SQLITE3インストールチェック','', 4857, sys_sqlite3_checkInstall,'SQLite3が使えるかどうかチェックする','SQLITE3いんすとーるちぇっく');
+  AddIntVar('SQLITE3自動変換', 0, 4858, 'SQLITE3実行でSQL文を自動的にUTF-8に変換し、結果をSHIFT_JISに変換する','SQLITE3じどうへんかん');
 
   //+OpenOffice.org連携(nakooffice.dll)
   //-CALC(OpenOffice.org)

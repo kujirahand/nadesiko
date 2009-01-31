@@ -2332,7 +2332,7 @@ begin
         begin
           if nn <> nil then begin
             raise EHimaSyntax.Create(
-              nn.DebugInfo, '記述ミスがあります。プログラムを見直してください。%d個の語句が無意味です。' +
+              nn.DebugInfo, '記述ミスがあります。プログラムを見直してください。%d個の語句が無意味です。命令の未定義、プラグイン不足の可能性もあります。' +
               '(「%s」助詞「%s」)',[cnt, nn.DebugStr, HiSystem.JosiList.ID2Str(nn.JosiId)]);
           end;
         end;
