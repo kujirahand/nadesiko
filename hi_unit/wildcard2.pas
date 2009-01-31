@@ -543,8 +543,15 @@ function TKWChar.IsMatch(var p: PAnsiChar): Boolean;
 var
   c: AnsiString;
 begin
-  c := getOneChar(p);
-  Result := (c = Data);
+  if Data = #13#10 then // ‰üs‚¾‚¯“Á•Êˆµ‚¢‚·‚é
+  begin
+    Result := (((p^) + (p+1)^) = Data);
+    Inc(p, 2);
+  end else
+  begin
+    c := getOneChar(p);
+    Result := (c = Data);
+  end;
 end;
 
 function TKWChar.IsTopMatch(var p: PAnsiChar): Boolean;
