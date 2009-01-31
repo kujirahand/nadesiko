@@ -200,7 +200,7 @@ type
     procedure PushScope; // ローカルスコープの作成
     procedure PopScope;  // ローカルスコープの破棄
     procedure SetSetterGetter(VarName, SetterName, GetterName: AnsiString; tag: Integer; Description, yomi: AnsiString); // セッターゲッターの設定
-    function AddFunction(name, argStr: AnsiString; func: THimaSysFunction; tag: Integer; IzonFiles: AnsiString): Boolean;
+    function AddFunction(name, argStr: AnsiString; func: THimaSysFunction; tag: Integer; FIzonFiles: AnsiString): Boolean;
     function DebugProgram(n: TSyntaxNode; lang: THiOutLangType = langNako): AnsiString;
     function DebugProgramNadesiko: AnsiString;
     function RunGroupEvent(group: PHiValue; memberId: DWORD): PHiValue;
@@ -359,7 +359,7 @@ begin
 end;
 
 function THiSystem.AddFunction(name, argStr: AnsiString;
-  func: THimaSysFunction; tag: Integer; IzonFiles: AnsiString): Boolean;
+  func: THimaSysFunction; tag: Integer; FIzonFiles: AnsiString): Boolean;
 var item: PHiValue; id: Integer;
 begin
   // 外部/内部からのコマンド追加
@@ -369,7 +369,7 @@ begin
   try
     name := DeleteGobi(name);
     id := TangoList.GetID(name, tag);
-    
+
     item := CreateHiValue(id);
     item.VarID := id;
     item.Designer := 1; // SYSTEM
@@ -380,6 +380,7 @@ begin
       PluginID  := FNowLoadPluginId;
       PFunc     := @func;
       FuncType  := funcSystem;
+      IzonFiles := FIzonFiles;
       Args.DefineArgs(argStr);
     end;
 
