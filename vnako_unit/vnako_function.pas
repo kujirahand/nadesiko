@@ -4554,7 +4554,7 @@ var
         panel.Text := sl.Strings[i];
       end;
       for i := sl.count to bar.Panels.Count-1 do
-        bar.Panels.Delete(i);
+        bar.Panels.Delete(bar.Panels.Count - 1);
     end;
 
   begin
