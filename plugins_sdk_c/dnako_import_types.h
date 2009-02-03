@@ -5,9 +5,12 @@
 #define	dnako_import_types_h__
 
 #include <windows.h>
-#include <iostream>
 
-using namespace std;
+#ifdef NAKO_API_EXPORTS
+#  define NAKO_API(rettype) __declspec(dllexport) rettype __stdcall
+#else
+#  define NAKO_API __declspec(dllimport)
+#endif
 
 typedef char* PAnsiChar;
 typedef char* PAnsiString;
@@ -35,17 +38,18 @@ typedef struct tagTHiValue{
 	};
 } THiValue;
 #pragma pack(pop)
-typedef THiValue *PHiValue;
+
+typedef THiValue* PHiValue;
 
 typedef PHiValue(__stdcall *THimaSysFunction)(DWORD);
 typedef double	Double;
 typedef double	Extended; // todo: 正しくないがとりあえず適当
 
-extern PHiValue hi_var_new(string name/*= ""*/);
+extern PHiValue hi_var_new(char* name);
 // 新規変数を生成する
 extern PHiValue hi_clone(PHiValue v); // 関数とまったく同じものを生成する
 extern PHiValue hi_newInt(int value); // 新規整数
-extern PHiValue hi_newStr(string value);  // 新規文字列
+extern PHiValue hi_newStr(char* value);  // 新規文字列
 extern PHiValue hi_newFloat(HFloat value);// 新規文字列
 // 整数をセットする
 extern void hi_setInt  (PHiValue v,int num);
@@ -53,12 +57,12 @@ extern void hi_setFloat(PHiValue v,HFloat num);
 // BOOL型をセットする
 extern void hi_setBool(PHiValue v,BOOL b);
 // 文字列をセットする
-extern void hi_setStr(PHiValue v,std::string s);
+extern void hi_setStr(PHiValue v,char* s, int len);
 // キャストして使えるように
 extern BOOL hi_bool(PHiValue value);
 extern int hi_int  (PHiValue value);
 extern double hi_float(PHiValue value);
-extern string hi_str(PHiValue p);
+extern char* hi_str(PHiValue p);
 
 #endif //dnako_import_types_h__
 
