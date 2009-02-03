@@ -1984,7 +1984,7 @@ begin
   //-SQLite3
   AddFunc  ('SQLITE3開く',  'Fを|Fの|Fで',      4851, sys_SQLite3Open,'SQLite3データベースファイルFを開いてハンドルを返す','SQLITE3ひらく', 'sqlite3.dll');
   AddFunc  ('SQLITE3閉じる','{=0}Hの',          4852, sys_SQLite3Close,'ハンドルH(省略可能)で開いているSQLite3データベースを閉じる','SQLITE3とじる', 'sqlite3.dll');
-  AddFunc  ('SQLITE3実行',  '{=0}HでSQLを|Hの', 4853, sys_SQLite3Execute,'ハンドルH(省略可能)で開いているSQLite3データベースでSQL文を実行して結果をCSV形式で返す','SQLITE3じっこう', 'sqlite3.dll');
+  AddFunc  ('SQLITE3実行',  '{=0}HでSQLを|Hの', 4853, sys_SQLite3Execute,'ハンドルH(省略可能)で開いているSQLite3データベースでSQL文を実行して結果をCSV形式で返す(「SQLITE3自動変換=オン」を明示して使うことを推奨)','SQLITE3じっこう', 'sqlite3.dll');
   AddFunc  ('SQLITE3今挿入したID','{=0}Hの',    4854, sys_SQLite3GetLastId,'SQLiteで最後に挿入したIDを取得する','SQLITEいまそうにゅうしたID', 'sqlite3.dll');
   AddFunc  ('SQLITE3出力コード設定','{=""}Sに|Sへ|Sで', 4855, sys_SQLite3SetEncode,'データベースからデータを取得する時の文字コードを設定する','SQLITEしゅつりょくこーどせってい', 'sqlite3.dll');
   AddFunc  ('SQLITE3変更数取得','{=0}Hの',      4856, sys_SQLite3TotalChanges,'SQLiteで最後に変更したレコード数を取得する','SQLITE3へんこうすうしゅとく', 'sqlite3.dll');
