@@ -1,6 +1,8 @@
 
 #include <windows.h>
 #include <shlobj.h>
+#include <string.h>
+#include <stdlib.h>
 #include "benri.h"
 
 char* file_get_common_appdata_dir(char* szPath, size_t buflen)
@@ -31,9 +33,7 @@ char* file_get_special_dir(DWORD id, char* szPath, size_t buflen)
 char* file_get_apppath(char* buf, size_t buflen)
 {
 	char* p_cmd = GetCommandLine();
-	MessageBox(0, p_cmd, "test", MB_OK);
-	strcpy_s(buf, buflen, p_cmd);
-
+	strncpy(buf, p_cmd, buflen-1);
 	char* p = buf;
 	char* p_last = NULL;
 
@@ -65,8 +65,8 @@ char* file_get_apppath(char* buf, size_t buflen)
 	// copy
 	if (*buf == '"') {
 		char f[MAX_PATH];
-		strcpy_s(f, MAX_PATH, buf+1);
-		strcpy_s(buf, buflen, f);
+		strncpy(f, buf+1, MAX_PATH-1);
+		strncpy(buf, f, buflen-1);
 	}
 	return buf;
 }

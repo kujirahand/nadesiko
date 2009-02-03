@@ -1,14 +1,16 @@
 /*
 ‚È‚Å‚µ‚±‚Å—˜—p‚·‚éŒ^‚Ì’è‹`
 */
-#ifndef	__IMPORT_TYPES__
-#define	__IMPORT_TYPES__
+#ifndef	dnako_import_types_h__
+#define	dnako_import_types_h__
 
 #include <windows.h>
 #include <iostream>
 
 using namespace std;
 
+typedef char* PAnsiChar;
+typedef char* PAnsiString;
 typedef unsigned long HFloat,*PHFloat;
 
 typedef enum __THiVType{varNil = 0, varInt=1, varFloat=2, varStr=3, varPointer=4,
@@ -58,5 +60,5 @@ extern int hi_int  (PHiValue value);
 extern double hi_float(PHiValue value);
 extern string hi_str(PHiValue p);
 
-#endif
+#endif //dnako_import_types_h__
 

@@ -14,6 +14,7 @@
 extern BOOL dnako_load(char* fname);
 extern BOOL dnako_unload(void);
 extern BOOL dnako_enabled();
+extern void dnako_import_initFunctions(DWORD hDll);
 
 #define nako_OK	1
 #define nako_NG	0
