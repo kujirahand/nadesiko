@@ -10,9 +10,9 @@ DNAKO_DEF void(__stdcall *nako_resetAll)(void);
 //●なでしこのシステムを解放する
 DNAKO_DEF void(__stdcall *nako_free)(void);
 //●『なでしこ』のソースファイルを読み込む
-DNAKO_DEF DWORD(__stdcall *nako_load)(char*);
+DNAKO_DEF DWORD(__stdcall *nako_load)(PAnsiChar);
 //●『なでしこ』のソースファイルを読み込む
-DNAKO_DEF DWORD(__stdcall *nako_loadSource)(char*);
+DNAKO_DEF DWORD(__stdcall *nako_loadSource)(PAnsiChar);
 //●nako_load() で読んだソースファイルを実行する
 DNAKO_DEF DWORD(__stdcall *nako_run)(void);
 //●nako_load() で読んだソースファイルを実行する
@@ -20,43 +20,43 @@ DNAKO_DEF PHiValue(__stdcall *nako_run_ex)(void);
 //●エラーで止まった実行を続ける
 DNAKO_DEF DWORD(__stdcall *nako_error_continue)(void);
 //●エラーメッセージを取得する。戻り値にはエラーメッセージの長さを返す。
-DNAKO_DEF DWORD(__stdcall *nako_getError)(char*,int);
+DNAKO_DEF DWORD(__stdcall *nako_getError)(PAnsiChar,int);
 //●現在表示されているエラー情報を消す。
 DNAKO_DEF void(__stdcall *nako_clearError)(void);
 //●source に与えられた文字列をプログラムとして評価して結果を返す
-DNAKO_DEF PHiValue(__stdcall *nako_eval)(char*);
+DNAKO_DEF PHiValue(__stdcall *nako_eval)(PAnsiChar);
 //●source に与えられた文字列をプログラムとして評価して実行結果と成功したかどうかを返す
-DNAKO_DEF BOOL(__stdcall *nako_evalEx)(char*,PHiValue*);
+DNAKO_DEF BOOL(__stdcall *nako_evalEx)(PAnsiChar,PHiValue*);
 //●ファイル関連の命令を使えるようにシステムに登録する。
 DNAKO_DEF void(__stdcall *nako_addFileCommand)(void);
 //●なでしこに登録されている変数のポインタを取得する
-DNAKO_DEF PHiValue(__stdcall *nako_getVariable)(char*);
+DNAKO_DEF PHiValue(__stdcall *nako_getVariable)(PAnsiChar);
 //●なでしこに変数を登録する(グローバルとして)
-DNAKO_DEF void(__stdcall *nako_setVariable)(char*,PHiValue);
+DNAKO_DEF void(__stdcall *nako_setVariable)(PAnsiChar,PHiValue);
 //●独自関数を追加する
-DNAKO_DEF DWORD(__stdcall *nako_addFunction)(char*,char*,THimaSysFunction,int);
+DNAKO_DEF DWORD(__stdcall *nako_addFunction)(PAnsiChar,PAnsiChar,THimaSysFunction,int);
 //●独自関数を追加する
-DNAKO_DEF DWORD(__stdcall *nako_addFunction2)(char*,char*,THimaSysFunction,int,char*);
+DNAKO_DEF DWORD(__stdcall *nako_addFunction2)(PAnsiChar,PAnsiChar,THimaSysFunction,int,PAnsiChar);
 //●nako_addFunction で登録したコールバック関数から引数を取り出すのに使う
 DNAKO_DEF PHiValue(__stdcall *nako_getFuncArg)(DWORD,int);
 //●変数『それ』へのポインタを取得する
 DNAKO_DEF PHiValue(__stdcall *nako_getSore)(void);
 //●整数型の変数をシステムに追加する。(tagには希望の単語IDを指定)
-DNAKO_DEF void(__stdcall *nako_addIntVar)(char*,int,int);
+DNAKO_DEF void(__stdcall *nako_addIntVar)(PAnsiChar,int,int);
 //●文字列型の変数をシステムに追加する。
-DNAKO_DEF void(__stdcall *nako_addStrVar)(char*,char*,int);
+DNAKO_DEF void(__stdcall *nako_addStrVar)(PAnsiChar,PAnsiChar,int);
 //●システムの実行を中止する
 DNAKO_DEF void(__stdcall *nako_stop)(void);
 //●システムの実行を継続する
 DNAKO_DEF void(__stdcall *nako_continue)(void);
 //●単語管理用IDから単語名を取得する。戻り値は常に単語の長さを返す。
-DNAKO_DEF DWORD(__stdcall *nako_id2tango)(DWORD,char*,DWORD);
+DNAKO_DEF DWORD(__stdcall *nako_id2tango)(DWORD,PAnsiChar,DWORD);
 //●単語名から単語管理用IDを取得する
-DNAKO_DEF DWORD(__stdcall *nako_tango2id)(char*);
+DNAKO_DEF DWORD(__stdcall *nako_tango2id)(PAnsiChar);
 //●PHiValueを文字列に変換してstrにコピーする。
-DNAKO_DEF DWORD(__stdcall *nako_var2str)(PHiValue,char*,DWORD);
+DNAKO_DEF DWORD(__stdcall *nako_var2str)(PHiValue,PAnsiChar,DWORD);
 //●PHiValueをヌル終端文字列に変換してstrにコピーする。内容が途中で途切れる可能性もある。
-DNAKO_DEF DWORD(__stdcall *nako_var2cstr)(PHiValue,char*,DWORD);
+DNAKO_DEF DWORD(__stdcall *nako_var2cstr)(PHiValue,PAnsiChar,DWORD);
 //●PHiValueをLongintに変換して得る
 DNAKO_DEF int(__stdcall *nako_var2int)(PHiValue);
 //●PHiValueをDoubleに変換して得る
@@ -64,15 +64,15 @@ DNAKO_DEF Double(__stdcall *nako_var2double)(PHiValue);
 //●PHiValueをExtendedに変換して得る
 DNAKO_DEF Extended(__stdcall *nako_var2extended)(PHiValue);
 //●ヌル文字列を PHiValue に変換してセット
-DNAKO_DEF void(__stdcall *nako_str2var)(char*,PHiValue);
+DNAKO_DEF void(__stdcall *nako_str2var)(PAnsiChar,PHiValue);
 //●バイナリデータを文字列としてvalueにセット
-DNAKO_DEF void(__stdcall *nako_bin2var)(char*,DWORD,PHiValue);
+DNAKO_DEF void(__stdcall *nako_bin2var)(PAnsiChar,DWORD,PHiValue);
 //●ヌル文字列を PHiValue に変換してセット
 DNAKO_DEF void(__stdcall *nako_int2var)(int,PHiValue);
 //●ヌル文字列を PHiValue に変換してセット
 DNAKO_DEF void(__stdcall *nako_double2var)(Double,PHiValue);
 //●新規 PHiValue の変数を作成する。nameにnilを渡すと変数名をつけないで値だけ作成し変数名をつけるとグローバル変数として登録する。
-DNAKO_DEF PHiValue(__stdcall *nako_var_new)(char*);
+DNAKO_DEF PHiValue(__stdcall *nako_var_new)(PAnsiChar);
 //●変数 value の値をクリアする
 DNAKO_DEF void(__stdcall *nako_var_clear)(PHiValue);
 //●変数 value の値を解放する
@@ -92,11 +92,11 @@ DNAKO_DEF void(__stdcall *nako_setMainWindowHandle)(int);
 //●メインウィンドウハンドルを取得する（ダイアログ表示関連の命令で利用）
 DNAKO_DEF DWORD(__stdcall *nako_getMainWindowHandle)(void);
 //●グループのメンバを取得する。メンバが存在しなければnilが返る。
-DNAKO_DEF PHiValue(__stdcall *nako_getGroupMember)(char*,char*);
+DNAKO_DEF PHiValue(__stdcall *nako_getGroupMember)(PAnsiChar,PAnsiChar);
 //●グループのメンバを取得する。メンバが存在しなければnilが返る。
-DNAKO_DEF PHiValue(__stdcall *nako_hasEvent)(char*,char*);
+DNAKO_DEF PHiValue(__stdcall *nako_hasEvent)(PAnsiChar,PAnsiChar);
 //●変数名vnameにゲッターセッターを設定する
-DNAKO_DEF void(__stdcall *nako_addSetterGetter)(char*,char*,char*,DWORD);
+DNAKO_DEF void(__stdcall *nako_addSetterGetter)(PAnsiChar,PAnsiChar,PAnsiChar,DWORD);
 //●デバッグ中のエディタハンドルを設定する
 DNAKO_DEF void(__stdcall *nako_setDebugEditorHandle)(DWORD);
 //●デバッグ中のエディタへ行番号を表示するか
@@ -106,11 +106,11 @@ DNAKO_DEF void(__stdcall *nako_group_create)(PHiValue);
 //●グループ変数groupにメンバmemberを追加する
 DNAKO_DEF void(__stdcall *nako_group_addMember)(PHiValue,PHiValue);
 //●グループ変数groupのメンバmemberNameを検索する
-DNAKO_DEF PHiValue(__stdcall *nako_group_findMember)(PHiValue,char*);
+DNAKO_DEF PHiValue(__stdcall *nako_group_findMember)(PHiValue,PAnsiChar);
 //●グループ変数groupのメンバmemberNameがイベントならば実行し結果を返す
-DNAKO_DEF PHiValue(__stdcall *nako_group_exec)(PHiValue,char*);
+DNAKO_DEF PHiValue(__stdcall *nako_group_exec)(PHiValue,PAnsiChar);
 //●nako_loadした構文木を再度ソースに変換する
-DNAKO_DEF DWORD(__stdcall *nako_debug_nadesiko)(char*,DWORD);
+DNAKO_DEF DWORD(__stdcall *nako_debug_nadesiko)(PAnsiChar,DWORD);
 //●p を配列として生成する
 DNAKO_DEF void(__stdcall *nako_ary_create)(PHiValue);
 //●p を配列として生成する
@@ -122,37 +122,37 @@ DNAKO_DEF void(__stdcall *nako_DebugNextStop)(void);
 //●プラグインを取り込む
 DNAKO_DEF void(__stdcall *nako_LoadPlugins)(void);
 //●実行ファイル fname のパックファイルを開く。失敗なら、0を返す。
-DNAKO_DEF int(__stdcall *nako_openPackfile)(char*);
+DNAKO_DEF int(__stdcall *nako_openPackfile)(PAnsiString);
 //●nako_openPackfile で開いたファイルにある nadesiko.nako を開いて実行する。失敗は、nako_NGを返す。
 DNAKO_DEF DWORD(__stdcall *nako_runPackfile)(void);
 //●packname のパックファイルを開く。失敗なら、0を返す。
-DNAKO_DEF int(__stdcall *nako_openPackfileBin)(char*);
+DNAKO_DEF int(__stdcall *nako_openPackfileBin)(PAnsiString);
 //●実行ファイルのパックファイルを閉じる（後片付け）。失敗なら、0を返す。
-DNAKO_DEF int(__stdcall *nako_closePackfile)(char*);
+DNAKO_DEF int(__stdcall *nako_closePackfile)(PAnsiChar);
 //●実行ファイルにした時、パックファイルの操作に必要な、TMixFileReaderのハンドルを返す。
 DNAKO_DEF int(__stdcall *nako_getPackFileHandle)(void);
 //●実行ファイルにした時で、実行ファイル側でパックファイルを開いた場合この関数を呼ぶ
 DNAKO_DEF void(__stdcall *nako_setPackFileHandle)(DWORD);
 //●取り込んだファイル、プラグインのレポートを作成する
-DNAKO_DEF void(__stdcall *nako_makeReport)(char*);
+DNAKO_DEF void(__stdcall *nako_makeReport)(PAnsiChar);
 //●DLLを利用したことを明示する..レポートに加える
-DNAKO_DEF void(__stdcall *nako_reportDLL)(char*);
+DNAKO_DEF void(__stdcall *nako_reportDLL)(PAnsiChar);
 //●指定したプラグインが使われているか？
-DNAKO_DEF BOOL(__stdcall *nako_hasPlugins)(char*);
+DNAKO_DEF BOOL(__stdcall *nako_hasPlugins)(PAnsiString);
 //●値vをハッシュ形式に変換する
 DNAKO_DEF void(__stdcall *nako_hash_create)(PHiValue);
 //●hashのkeyの値を取得する
-DNAKO_DEF PHiValue(__stdcall *nako_hash_get)(PHiValue,char*);
+DNAKO_DEF PHiValue(__stdcall *nako_hash_get)(PHiValue,PAnsiChar);
 //●hashのkeyにvalueを設定する
-DNAKO_DEF void(__stdcall *nako_hash_set)(PHiValue,char*,PHiValue);
+DNAKO_DEF void(__stdcall *nako_hash_set)(PHiValue,PAnsiChar,PHiValue);
 //●hashのkey一覧を得る
-DNAKO_DEF int(__stdcall *nako_hash_keys)(PHiValue,char*,int);
+DNAKO_DEF int(__stdcall *nako_hash_keys)(PHiValue,PAnsiChar,int);
 //●現在の実行行を得る
 DNAKO_DEF void(__stdcall *nako_getLineNo)(int*,int*);
 //●現在の実行行を得る
-DNAKO_DEF DWORD(__stdcall *nako_getSourceText)(int,char*,DWORD);
+DNAKO_DEF DWORD(__stdcall *nako_getSourceText)(int,PAnsiChar,DWORD);
 //●fileno からファイル名を得る
-DNAKO_DEF DWORD(__stdcall *nako_getFilename)(int,char*,DWORD);
+DNAKO_DEF DWORD(__stdcall *nako_getFilename)(int,PAnsiChar,DWORD);
 //●イベントの実行前に実行フラグを退避しておきたいときに使う
 DNAKO_DEF void(__stdcall *nako_pushRunFlag)(void);
 //●イベントの実行前に実行フラグを退避したものを戻すときに使う
@@ -162,24 +162,24 @@ DNAKO_DEF PHiValue(__stdcall *nako_callSysFunction)(DWORD,PHiValue);
 //●dnako.dll をロードしたときに、そのハンドルをセットする
 DNAKO_DEF void(__stdcall *nako_setDNAKO_DLL_handle)(DWORD);
 //●plug-ins フォルダを指定する
-DNAKO_DEF void(__stdcall *nako_setPluginsDir)(char*);
+DNAKO_DEF void(__stdcall *nako_setPluginsDir)(PAnsiChar);
 //●plug-ins フォルダを取得する
-DNAKO_DEF char*(__stdcall *nako_getPluginsDir)(void);
+DNAKO_DEF PAnsiChar(__stdcall *nako_getPluginsDir)(void);
 //●テスト
 DNAKO_DEF void(__stdcall *test)(void);
 //●なでしこのバージョンを文字列で得る
-DNAKO_DEF char*(__stdcall *nako_getVersion)(void);
+DNAKO_DEF PAnsiChar(__stdcall *nako_getVersion)(void);
 //●なでしこの更新日を文字列で得る
-DNAKO_DEF char*(__stdcall *nako_getUpdateDate)(void);
+DNAKO_DEF PAnsiChar(__stdcall *nako_getUpdateDate)(void);
 //●なでしこのGUIDを返す
-DNAKO_DEF char*(__stdcall *nako_getNADESIKO_GUID)(void);
+DNAKO_DEF PAnsiChar(__stdcall *nako_getNADESIKO_GUID)(void);
 //●実行ファイルに埋め込まれたリソースがあればファイルを返す
-DNAKO_DEF BOOL(__stdcall *nako_getEmbedFile)(char*,char*,DWORD);
+DNAKO_DEF BOOL(__stdcall *nako_getEmbedFile)(PAnsiChar,PAnsiChar,DWORD);
 //●最後に実行したユーザー関数を得る
 DNAKO_DEF DWORD(__stdcall *nako_getLastUserFuncID)(void);
 //●ライセンスされているか確認する
-DNAKO_DEF DWORD(__stdcall *nako_checkLicense)(char*,char*);
+DNAKO_DEF DWORD(__stdcall *nako_checkLicense)(PAnsiChar,PAnsiChar);
 //●ライセンスコードを書き込む
-DNAKO_DEF DWORD(__stdcall *nako_registerLicense)(char*,char*);
+DNAKO_DEF DWORD(__stdcall *nako_registerLicense)(PAnsiChar,PAnsiChar);
 
 

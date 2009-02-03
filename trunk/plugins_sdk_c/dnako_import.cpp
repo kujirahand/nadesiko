@@ -28,7 +28,7 @@ BOOL dnako_load(char* fname){
 #include "dnako_import_let.h"
 
 	nako_setDNAKO_DLL_handle((DWORD)hDll);
-	
+
 	return TRUE;
 }
 
@@ -41,4 +41,9 @@ BOOL dnako_unload(void){
 
 BOOL dnako_enabled() {
 	return (hDll != NULL);
+}
+
+void dnako_import_initFunctions(DWORD handle) {
+	void* hDll = (void*)handle;
+	#include "dnako_import_let.h"
 }
