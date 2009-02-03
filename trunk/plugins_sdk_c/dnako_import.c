@@ -12,14 +12,13 @@ dnako.dllをロード/アンロードする関数を定義
 #define DNAKO_DEF
 #include "dnako_import_def.h"
 
-
 static HINSTANCE hDll = NULL;
 
 BOOL dnako_load(char* fname){
 	
 	if (hDll) dnako_unload();
 
-	hDll = ::LoadLibrary(fname);
+	hDll = LoadLibrary(fname);
 	
 	if( ! hDll ){
 		return FALSE;
@@ -34,7 +33,7 @@ BOOL dnako_load(char* fname){
 
 BOOL dnako_unload(void){
 	if (hDll == NULL) return TRUE;
-	::FreeLibrary( hDll );
+	FreeLibrary( hDll );
 	hDll = NULL;
 	return TRUE;
 }
