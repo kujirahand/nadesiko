@@ -1089,6 +1089,7 @@ var
     end else
     begin
       Result := Result + kana[i];
+      Inc(i);
     end;
   end;
 
