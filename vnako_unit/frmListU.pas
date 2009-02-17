@@ -12,6 +12,7 @@ type
     edtMain: TEdit;
     lstItem: TListBox;
     btnOk: TButton;
+    timerFocus: TTimer;
     procedure btnOkClick(Sender: TObject);
     procedure lstItemDblClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -24,6 +25,7 @@ type
       Shift: TShiftState);
     procedure edtMainChange(Sender: TObject);
     procedure TopPanelResize(Sender: TObject);
+    procedure timerFocusTimer(Sender: TObject);
   private
     { Private êÈåæ }
   public
@@ -112,7 +114,7 @@ end;
 
 procedure TfrmList.FormShow(Sender: TObject);
 begin
-  edtMain.SetFocus;
+  timerFocus.Enabled := True;
 end;
 
 procedure TfrmList.lstItemKeyDown(Sender: TObject; var Key: Word;
@@ -158,6 +160,12 @@ procedure TfrmList.TopPanelResize(Sender: TObject);
 begin
   edtMain.Width := TopPanel.ClientWidth - btnOk.Width - 4 * 3;
   btnOk.Left := edtMain.Width + 4 * 2;
+end;
+
+procedure TfrmList.timerFocusTimer(Sender: TObject);
+begin
+  timerFocus.Enabled := False;
+  edtMain.SetFocus;
 end;
 
 end.

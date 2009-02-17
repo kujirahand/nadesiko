@@ -71,4 +71,11 @@ object frmList: TfrmList
     OnKeyDown = lstItemKeyDown
     OnKeyPress = lstItemKeyPress
   end
+  object timerFocus: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = timerFocusTimer
+    Left = 8
+    Top = 40
+  end
 end
