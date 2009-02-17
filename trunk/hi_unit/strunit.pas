@@ -41,6 +41,7 @@ function LowerCaseEx(const str: string): string;
 function UpperCaseEx(const str: string): string;
 {ローマ字表記を半角カナに変換}
 function RomajiToKana(romaji: String): String;
+function KanaToRomaji(kana: string): string;
 {ｱ 愛知県 のような行頭の半角カナを削除して返す}
 function TrimLeftKana(str: string): string;
 // 漢字をふりがなに変換
@@ -1057,6 +1058,97 @@ begin
     end;
 end;
 
+function KanaToRomaji(kana: string): string;
+const
+  hira: string     = 'あいうえおかきくけこがぎぐげごさしすせそざじずぜぞ'+
+                      'たっちつてとだぢづでど'+
+                      'なにぬねのはひふへほばびぶべぼぱぴぷぺぽ'+
+                      'まみむめもやゆよらりるれろわをんーヴ';
+  roma: string     = 'a,i,u,e,o,ka,ki,ku,ke,ko,ga,gi,gu,ge,go,sa,si,su,se,so,za,zi,zu,ze,zo,' +
+                      'ta,ltu,ti,tu,te,to,da,di,du,de,do,'+
+                      'na,ni,nu,ne,no,ha,hi,hu,he,ho,ba,bi,bu,be,bo,pa,pi,pu,pe,po,'+
+                      'ma,mi,mu,me,mo,ya,yu,yo,ra,ri,ru,re,ro,wa,wo,n,-,vo';
+var
+  i: Integer;
+  c, nc: string;
+  romaList: TStringList;
+
+  function getOne: string;
+  begin
+    Result := '';
+    if i > Length(kana) then Exit;
+    if kana[i] in SysUtils.LeadBytes then
+    begin
+      Result := Result + kana[i];
+      Inc(i);
+      if i <= Length(kana) then
+      begin
+        Result := Result + kana[i];
+        Inc(i);
+      end;
+    end else
+    begin
+      Result := Result + kana[i];
+    end;
+  end;
+
+  function kana2roma(c: string): string;
+  var
+    j: Integer;
+  begin
+    Result := '';
+    j := JPosM(c, hira);
+    if j > 0 then
+    begin
+      Result := romaList.Strings[j-1];
+    end;
+  end;
+
+begin
+  kana := convToHiragana(kana);
+  romaList:= TStringList.Create;
+  romaList.Text := JReplace(roma, ',',#13#10,True);
+  i := 1;
+  while (i <= Length(kana)) do
+  begin
+    c := getOne;
+    if Result <> '' then
+    begin
+      if c = 'ゃ' then
+      begin
+        // きゃ : ki => kya
+        Delete(Result, Length(Result), 1);
+        Result := Result + 'ya';
+      end else
+      if c = 'ゅ' then
+      begin
+        Delete(Result, Length(Result), 1);
+        Result := Result + 'yu';
+      end else
+      if c = 'ょ' then
+      begin
+        Delete(Result, Length(Result), 1);
+        Result := Result + 'yo';
+      end else
+      if c = 'っ' then
+      begin
+        // かった : ka ta => ka-tta
+        nc := kana2roma(getOne);
+        Result := Result + Copy(nc,1,1) + nc;
+      end else
+      begin
+        Result := Result + kana2roma(c);
+      end;
+    end else
+    begin
+      Result := Result + kana2roma(c);
+    end;
+  end;
+  romaList.Free;
+  // 整形
+  Result := JReplace(Result, 'zyo', 'jo', True);
+end;
+
 function RomajiToKana(romaji: String): String;
 const
     kana_list = 'k,ｶｷｸｹｺ,s,ｻｼｽｾｿ,t,ﾀﾁﾂﾃﾄ,n,ﾅﾆﾇﾈﾉ,h,ﾊﾋﾌﾍﾎ,m,ﾏﾐﾑﾒﾓ,y,2ﾔ ｲ ﾕ ｲｪﾖ ,r,ﾗﾘﾙﾚﾛ,w,2ﾜ ｳｨｳ ｳｪｦ ,'+
@@ -1179,7 +1271,6 @@ begin
             Inc(p);
         end;
     end;
-
 end;
 
 {ｱ 愛知県 のような行頭の半角カナを削除して返す}

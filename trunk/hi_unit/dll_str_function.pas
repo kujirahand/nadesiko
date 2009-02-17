@@ -746,6 +746,20 @@ begin
   res := CutLine(hi_str(s), hi_int(a), 4);
   Result := hi_newStr(res);
 end;
+function sys_toRomaji(args: DWORD): PHiValue; stdcall;
+var
+  s: string;
+begin
+  s := getArgStr(args, 0, True);
+  Result := hi_newStr(KanaToRomaji(s));
+end;
+function sys_toRomaji2Kana(args: DWORD): PHiValue; stdcall;
+var
+  s: string;
+begin
+  s := getArgStr(args, 0, True);
+  Result := hi_newStr(RomajiToKana(s));
+end;
 
 
 
@@ -1160,6 +1174,8 @@ begin
   AddFunc  ('大文字変換','{文字列=?}Sを',715, sys_toUpper,'文字列Sを大文字に変換して返す','おおもじへんかん');
   AddFunc  ('小文字変換','{文字列=?}Sを',716, sys_toLower,'文字列Sを小文字に変換して返す','こもじへんかん');
   AddFunc  ('漢字読み取得','{文字列=?}Sを|Sの',717, sys_toHurigana,'文章SのふりがなをIMEより取得する(コンソール上では機能しない)','かんじよみしゅとく');
+  AddFunc  ('カナローマ字変換','{文字列=?}Sを|Sから',722, sys_toRomaji,'文字列Sにあるカタカナをローマ字に変換する','かなろーまじへんかん');
+  AddFunc  ('ローマ字カナ変換','{文字列=?}Sを|Sから',723, sys_toRomaji2Kana,'文字列Sにあるひらがなをローマ字に変換する','ろーまじかなへんかん');
   //-エンコード
   AddFunc  ('BASE64エンコード','{文字列=?}Sを',730, sys_Base64Encode,'文字列SをBASE64に変換して返す','BASE64えんこーど');
   AddFunc  ('BASE64デコード','{文字列=?}Sを',731, sys_Base64Decode,'BASE64データSを復元して返す','BASE64でこーど');
