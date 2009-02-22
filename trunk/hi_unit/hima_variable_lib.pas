@@ -18,24 +18,23 @@ uses hima_string, unit_string;
 // •¶š—ñ str ‚ğ •¶š—ñ splitter ‚Å•ª‚¯‚Ä”z—ñŒ`®‚Å PHiValue ‚É•Ô‚·
 function hi_split(str, splitter: PHiValue): PHiValue;
 var
-  s, kugiri, ss: AnsiString; sp, sp_last: PAnsiChar;
+  s,  kugiri, res: AnsiString;
+  sp: PAnsiChar;
   p: PHiValue;
 begin
   s := hi_str(str);
   kugiri := hi_str(splitter);
-  sp := PAnsiChar(s);
-  sp_last := sp + Length(s);
 
   // ”z—ñ‚Æ‚µ‚Ä•Ô‚·
   Result := hi_var_new;
   hi_ary_create(Result);
 
   // ‹æØ‚èˆ—
-  while sp < sp_last do
+  while (s <> '') do
   begin
-    ss := getTokenStr(sp, kugiri);
+    res := getToken_s(s, kugiri);
     p := hi_var_new;
-    hi_setStr(p, ss);
+    hi_setStr(p, res);
     hi_ary(Result).Add(p);
   end;
 end;
