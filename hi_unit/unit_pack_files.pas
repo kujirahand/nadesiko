@@ -116,6 +116,7 @@ function OpenPackFile(packExeFile: AnsiString): Boolean;
 var
   mem: THMemoryStream;
   fname: AnsiString;
+  guid: TGUID;
 begin
   Result := False;
 
@@ -133,7 +134,9 @@ begin
         if mem.Size = 0 then Exit;
 
         // packファイル展開用テンポラリファイル取得
-        fname := getOriginalFileName('', 'NAK');
+        //fname := getOriginalFileName('', 'NAK');
+        CreateGUID(guid);
+        fname := TempDir + '~nako_' + GUIDToString(guid) + '.pack';
         mem.SaveToFile(fname);
 
         //===========================================
