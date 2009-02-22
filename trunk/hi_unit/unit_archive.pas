@@ -32,7 +32,7 @@ procedure unyz1_extract(srcFile, desFile: string);
 
 
 var
-  LhaOption   : string = '-a1 -r2 -x1 -l0 -jp1 -o2 -ji0 -n0';
+  LhaOption   : string = '-a1 -r2 -x1 -l0 -jp1 -o0 -ji0 -n0';
   UnlhaOption : string = '-a1 -r2 -x1 -jp1 -c0 -m1';
   SfxOption   : string = '-x1 -r2 -gx0 -gw4';
   ArchivePassword: string = '';
