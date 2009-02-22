@@ -1792,14 +1792,7 @@ end;
 
 procedure TfrmNako.AppEventMessage(var Msg: tagMSG; var Handled: Boolean);
 begin
-  // Vista のコンポーネント消失問題(BTS:@55)
-  if WM_SYSKEYUP = Msg.message then
-  begin
-    if Msg.wParam = $12{Alt} then
-    begin
-      Self.Invalidate;
-    end;
-  end;
+  //
 end;
 
 initialization
