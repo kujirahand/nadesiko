@@ -77,7 +77,6 @@ type
     procedure AppEventDeactivate(Sender: TObject);
     procedure AppEventMinimize(Sender: TObject);
     procedure AppEventRestore(Sender: TObject);
-    procedure AppEventMessage(var Msg: tagMSG; var Handled: Boolean);
   private
     { Private 宣言 }
     FFlagFree: Boolean;
@@ -1691,7 +1690,6 @@ begin
   begin
     Self.Redraw;
     InvalidateRect(Self.Handle, nil, False);
-    //Self.Invalidate;
     flagRepaint := False;
   end;
   //
@@ -1788,11 +1786,6 @@ begin
   ginfo := GuiInfos[ 0 ];
   doEvent(@ginfo, EVENT_RESTORE);
   Self.Invalidate; // Vista で画面のコンポーネントが消える問題に対処
-end;
-
-procedure TfrmNako.AppEventMessage(var Msg: tagMSG; var Handled: Boolean);
-begin
-  //
 end;
 
 initialization
