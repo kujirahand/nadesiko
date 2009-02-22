@@ -33,7 +33,6 @@ object frmNako: TfrmNako
     OnActivate = AppEventActivate
     OnDeactivate = AppEventDeactivate
     OnIdle = AppEventIdle
-    OnMessage = AppEventMessage
     OnMinimize = AppEventMinimize
     OnRestore = AppEventRestore
     Left = 144

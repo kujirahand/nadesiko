@@ -464,7 +464,9 @@ begin
       (Copy(Result, Length(Result) - len + 1, len) = matubiku[i]) then
     begin
       Dec(p, len);
+      Dec(p, Length(tokenJosi));
       Result := Copy(Result, 1, Length(Result) - len);
+      tokenJosi := '';
       Break;
     end;
   end;
