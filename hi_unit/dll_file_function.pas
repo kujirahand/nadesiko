@@ -614,6 +614,7 @@ begin
            else path := hi_str(s);
 
   // (2) データの処理
+  unit_file.MainWindowHandle := nako_getMainWindowHandle;
   g := EnumAllFiles(path);
 
   // (3) 結果の代入
@@ -626,10 +627,40 @@ begin
       hi_newStr(g.Strings[i])
     );
   end;
-
-  g.Free;
+  FreeAndNil(g);
 end;
 
+function sys_enumAllFilesRelative(args: DWORD): PHiValue; stdcall;
+var
+  s: PHiValue;
+  tmp, path, basepath: AnsiString;
+  g: THStringList;
+  i,len: Integer;
+begin
+  // (1) 引数の取得
+  s := nako_getFuncArg(args, 0);
+  if s=nil then path := CheckPathYen( GetCurrentDir )
+           else path := hi_str(s);
+
+  // (2) データの処理
+  unit_file.MainWindowHandle := nako_getMainWindowHandle;
+  g := EnumAllFiles(path, basepath);
+  len := Length(basepath);
+
+  // (3) 結果の代入
+  Result := hi_var_new;
+  nako_ary_create(Result);
+  for i := 0 to g.Count - 1 do
+  begin
+    tmp := g.Strings[i];
+    System.Delete(tmp, 1, len);
+    nako_ary_add(
+      Result,
+      hi_newStr(tmp)
+    );
+  end;
+  FreeAndNil(g);
+end;
 
 function sys_enumAllDir(args: DWORD): PHiValue; stdcall;
 var
@@ -2881,7 +2912,8 @@ begin
   AddFunc  ('フォルダ列挙','{文字列=?}Sの|Sを|Sで',   534, sys_enumDirs, 'パスSにあるフォルダを配列形式で返す。引数を省略するとカレントディレクトリのフォルダ一覧を返す。','ふぉるだれっきょ');
   AddFunc  ('存在','Sが|Sの',       535, sys_FileExists, 'パスSにファイルかフォルダが存在するか確認してはい(=1)かいいえ(=0)で返す','そんざい');
   AddFunc  ('全ファイル列挙','{文字列=?}Sの|Sを|Sで', 536, sys_enumAllFiles,'パスSにあるファイルをサブフォルダも含め配列形式で返す。「;」で区切って複数の拡張子を指定可能。','ぜんふぁいるれっきょ');
-  AddFunc  ('全フォルダ列挙','{文字列=?}Sの|Sを|Sで', 680, sys_enumAllDir,'パスSにあるフォルダも再帰的に検索して配列形式で返す。。','ぜんふぉるだれっきょ');
+  AddFunc  ('全フォルダ列挙','{文字列=?}Sの|Sを|Sで', 680, sys_enumAllDir,'パスSにあるフォルダも再帰的に検索して配列形式で返す。','ぜんふぉるだれっきょ');
+  AddFunc  ('全ファイル相対パス列挙','{文字列=?}Sの|Sを|Sで', 679, sys_enumAllFilesRelative,'パスSにあるファイルをサブフォルダを含めて（パスSからの相対指定で）配列形式で返す。','ぜんふぁいるそうたいぱすれっきょ');
   //-コピー移動削除
   AddFunc  ('ファイルコピー','AからBへ|AをBに',540,sys_fileCopy,  'ファイルAからBへコピーする。','ふぁいるこぴー');
   AddFunc  ('ファイル移動',  'AからBへ|AをBに',541,sys_fileRename,  'ファイルAからBへ移動する。','ふぁいるいどう');
