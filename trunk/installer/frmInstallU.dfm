@@ -49,7 +49,7 @@ object frmNakoInstaller: TfrmNakoInstaller
     Top = 0
     Width = 470
     Height = 336
-    ActivePage = tabUninstall
+    ActivePage = tabStart
     Align = alClient
     MultiLine = True
     ParentShowHint = False
@@ -96,11 +96,17 @@ object frmNakoInstaller: TfrmNakoInstaller
           ParentFont = False
           OnClick = lblAboutLinkClick
         end
+        object imgLogo: TImage
+          Left = 8
+          Top = 144
+          Width = 433
+          Height = 121
+        end
         object edtAbout: TRichEdit
           Left = 16
           Top = 16
           Width = 425
-          Height = 225
+          Height = 97
           BorderStyle = bsNone
           Color = clBtnFace
           Lines.Strings = (

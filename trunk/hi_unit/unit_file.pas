@@ -28,7 +28,8 @@ function SHFileRename(const Source, Dest: AnsiString): Boolean;
 
 //EnumFile
 function EnumFiles(path: AnsiString): THStringList;
-function EnumAllFiles(path: AnsiString): THStringList;
+function EnumAllFiles(path: AnsiString; out basePath: string): THStringList; overload;
+function EnumAllFiles(path: AnsiString): THStringList; overload;
 function EnumAllDirs(path: AnsiString): THStringList;
 function EnumDirs(const path: AnsiString): THStringList;
 function CreateShortCut(SavePath, TargetApp, Arg, WorkDir: AnsiString; State: TWindowState2): Boolean;
@@ -439,9 +440,16 @@ begin
 
 end;
 
-function EnumAllFiles(path: AnsiString): THStringList;
+function EnumAllFiles(path: AnsiString): THStringList; overload;
 var
-  basePath: AnsiString;
+  temp: AnsiString;
+begin
+  Result := EnumAllFiles(path, temp);
+end;
+
+/// 全ファイル列挙、引数 path には、基本となるパスを返す
+function EnumAllFiles(path: AnsiString; out basePath: string): THStringList; overload;
+var
   s: AnsiString;
   hmain: THandle;
   smain: AnsiString;
@@ -459,7 +467,7 @@ var
 
     if hmain > 0 then
     begin
-      title := '検索中:' + base;
+      title := 'パス検索中:' + base;
       SetWindowText(hmain, PAnsiChar(title));
     end;
 
@@ -510,7 +518,6 @@ begin
     SetLength(smain, 1024);
     GetWindowTextA(hmain, PAnsiChar(smain), 1023);
   end;
-
 
   // 拡張子が;で区切られているので;までを切り出してそれぞれ列挙
   while True do

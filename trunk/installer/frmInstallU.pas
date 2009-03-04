@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, ExtCtrls, StdCtrls, jpeg, IniFiles, Registry,
-  shlobj, unit_install_page;
+  shlobj, unit_install_page, pngimage;
 
 type
   TfrmNakoInstaller = class(TForm)
@@ -55,6 +55,7 @@ type
     btnShowLog: TButton;
     btnShowDetailUninstall: TButton;
     edtLogU: TMemo;
+    imgLogo: TImage;
     procedure FormCreate(Sender: TObject);
     procedure btnNextClick(Sender: TObject);
     procedure btnPrevClick(Sender: TObject);
@@ -207,6 +208,13 @@ begin
   FlagDebug := False;
   FUninstallMode := False;
   init;
+  if imgLogo.Picture = nil then
+  begin
+    if FileExists(AppPath + 'logo.png') then
+    begin
+      imgLogo.Picture.LoadFromFile(AppPath + 'logo.png');
+    end;
+  end;
   checkParam;
 end;
 
