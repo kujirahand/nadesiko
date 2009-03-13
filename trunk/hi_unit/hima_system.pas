@@ -611,7 +611,7 @@ begin
   AddFunc  ('だ',  'A',                  241, sys_echo,     '～だ',  'だ');
   AddFunc  ('ある','{参照渡し=?}AがB|AがBで|Aに',      242, sys_calc_let,   '変数AにBを代入する。','ある');
   AddFunc  ('あります','{参照渡し=?}AがB|AがBで|Aに',  243, sys_calc_let,   '変数AにBを代入する。','あります');
-  AddFunc  ('する','{=?}Bを{参照渡し}Aと|Aに',     246, sys_calc_let,   '値Aを変数Bに代入する。','する');
+  AddFunc  ('する','{参照渡し}Bを{=?}Aと|Aに',     246, sys_calc_let,   '値Aを変数Bに代入する。','する');
 
   //+演算
   //-演算
