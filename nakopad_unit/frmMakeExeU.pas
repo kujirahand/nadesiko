@@ -89,7 +89,7 @@ var
   i: Integer;
   tempExe: string;
 
-  procedure _rewriteicon;
+  procedure _rewriteicon(exefile: string);
   var
     p: TIconChanger;
   begin
@@ -98,7 +98,7 @@ var
     //---
     p := TIconChanger.Create;
     try
-      p.Change(tempExe, IconFile);
+      p.Change(exefile, IconFile);
     finally
       p.Free;
     end;
@@ -206,9 +206,9 @@ begin
       end;
   end;
 
-  _rewriteIcon;
   WritePackExeFile(f, tempExe, AppPath+'packfile.bin');
-
+  _rewriteIcon(f);
+  
   //=========================
   // 依存ファイルのコピー
   _copyPlugins;
