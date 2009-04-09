@@ -1061,7 +1061,7 @@ var
   ado: TKAdo;
 begin
   ado := ado_getHandleFromArg(h);
-  f := hi_str(nako_getFuncArg(h, 0));
+  f := hi_str(nako_getFuncArg(h, 1));
   if ado = nil then raise Exception.Create('DBを操作する前にDBを開く必要があります。');
 
   Result := hi_newStr(ado.GetFieldValue(f));
