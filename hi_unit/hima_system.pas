@@ -1694,9 +1694,14 @@ begin
       if require >= 2 then
       begin
         PluginInit := GetProcAddress(h, 'PluginInit');
-        PluginInit(dnako_dll_handle);
-      end;
-      proc   := GetProcAddress(h, 'ImportNakoFunction');
+        if (dnako_dll_handle > 0)and(hInstance <> dnako_dll_handle) then
+        begin
+          PluginInit(dnako_dll_handle);
+        end else
+        begin
+          PluginInit(HInstance);
+        end;
+      end;      proc   := GetProcAddress(h, 'ImportNakoFunction');
       if Assigned(proc) then
       begin
         proc;
