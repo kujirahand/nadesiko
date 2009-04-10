@@ -171,6 +171,7 @@ function sys_mciClose(args: THiArray): PHiValue; stdcall;
 function sys_mciCommand(args: THiArray): PHiValue; stdcall;
 function sys_musPlay(args: THiArray): PHiValue; stdcall;
 function sys_musStop(args: THiArray): PHiValue; stdcall;
+function sys_musRec(args: THiArray): PHiValue; stdcall;
 
 function sys_calc_add(args: THiArray): PHiValue; stdcall;
 function sys_calc_sub(args: THiArray): PHiValue; stdcall;
@@ -4262,6 +4263,41 @@ begin
   begin
     Result := string(PAnsiChar(Result));
   end;
+end;
+
+function sys_musRec(args: THiArray): PHiValue; stdcall;
+var
+  cmd, ret: AnsiString;
+  fname: AnsiString;
+  sec: Integer;
+begin
+  // (1) à¯êîÇÃéÊìæ
+  fname := getArgStr(args, 0, True);
+  sec   := getArgInt(args, 1);
+
+  // (2) èàóù
+  // Ç‹Ç∏ÇÕÇ∆ÇËÇ†Ç¶Ç∏ï¬Ç∂ÇÈ
+  try
+    nako_mciSend('close nakoRec');
+  except end;
+
+  // äJÇ≠
+  cmd := 'open new alias nakoRec type waveaudio';
+  ret := nako_mciSend(cmd);
+
+  // ò^âπ
+  nako_mciSend('record nakoRec');
+  Sleep(sec * 1000);
+  nako_mciSend('stop nakoRec');
+
+  cmd := 'save nakoRec "'+fname+'"';
+  ret := nako_mciSend(cmd);
+
+  // ï¬Ç∂ÇÈ
+  nako_mciSend('close nakoRec');
+
+  // (3) åãâ ÇÃë„ì¸
+  Result := nil;
 end;
 
 function sys_musPlay(args: THiArray): PHiValue; stdcall;
