@@ -1435,6 +1435,49 @@ begin
 end;
 
 
+function __yahoo_recv(args: DWORD; IsBB: Boolean): PHiValue; stdcall;
+var
+  account, password, dir: string;
+  p_id, p_pass, p_opt, p_port, p_host: PHiValue;
+begin
+  // get Args
+  account  := getArgStr(args, 0);
+  password := getArgStr(args, 1);
+  dir      := getArgStr(args, 2);
+  // rewrite
+  p_id   := nako_getVariable('メールID');
+  p_pass := nako_getVariable('メールパスワード');
+  p_opt  := nako_getVariable('メールオプション');
+  p_port := nako_getVariable('メールポート');
+  p_host := nako_getVariable('メールホスト');
+
+  hi_setStr(p_id,   account);
+  hi_setStr(p_pass, password);
+  if IsBB then
+  begin
+    hi_setStr(p_host, 'ybbpop.mail.yahoo.co.jp');
+  end else
+  begin
+    hi_setStr(p_host, 'pop.mail.yahoo.co.jp');
+  end;
+  hi_setStr(p_opt,  '');
+  hi_setInt(p_port, 110);
+  // recv
+  Result := __sys_pop3_recv_indy10(dir);
+end;
+
+
+function sys_yahoo_recv(args: DWORD): PHiValue; stdcall;
+begin
+  Result := __yahoo_recv(args, False);
+end;
+
+function sys_yahoobb_recv(args: DWORD): PHiValue; stdcall;
+begin
+  Result := __yahoo_recv(args, True);
+end;
+
+
 procedure __sys_pop3_list_indy(Sender: TNetThread; ptr: Pointer);
 var
   pop3: TIdPOP3;
@@ -2174,6 +2217,48 @@ begin
   Result := sys_smtp_send_indy10(args);
 end;
 
+function __yahoo_send(args: DWORD; IsBB:Boolean): PHiValue; stdcall;
+var
+  account, password, dir: string;
+  p_id, p_pass, p_opt, p_port, p_host: PHiValue;
+begin
+  // get Args
+  account  := getArgStr(args, 0);
+  password := getArgStr(args, 1);
+  dir      := getArgStr(args, 2);
+  // rewrite
+  p_id   := nako_getVariable('メールID');
+  p_pass := nako_getVariable('メールパスワード');
+  p_opt  := nako_getVariable('メールオプション');
+  p_port := nako_getVariable('メールポート');
+  p_host := nako_getVariable('メールホスト');
+
+  hi_setStr(p_id,   account);
+  hi_setStr(p_pass, password);
+  if IsBB then
+  begin
+    hi_setStr(p_host, 'ybbsmtp.mail.yahoo.co.jp');
+  end else
+  begin
+    hi_setStr(p_host, 'smtp.mail.yahoo.co.jp');
+  end;
+  hi_setStr(p_opt,  'LOGIN');
+  hi_setInt(p_port, 587);
+  // recv
+  Result := sys_smtp_send_indy10(args);
+end;
+
+function sys_yahoo_send(args: DWORD): PHiValue; stdcall;
+begin
+  Result := __yahoo_send(args, False);
+end;
+
+function sys_yahoobb_send(args: DWORD): PHiValue; stdcall;
+begin
+  Result := __yahoo_send(args, False);
+end;
+
+
 var eml: TEml = nil; // EML処理のための変数
 
 function sys_eml_load(args: DWORD): PHiValue; stdcall;
@@ -2520,6 +2605,10 @@ begin
   AddFunc  ('メール削除',     'Aの',4064, sys_pop3_dele_indy10, 'POP3でA番目のメールを削除する', 'めーるさくじょ');
   AddFunc  ('GMAIL受信','ACCOUNTのPASSWORDでDIRへ|DIRに',4069, sys_gmail_recv, 'ACCOUNTとPASSWORDを利用してGMailを受信する。', 'GMAILじゅしん');
   AddFunc  ('GMAIL送信','ACCOUNTのPASSWORDで',4049, sys_gmail_send, 'ACCOUNTとPASSWORDを利用してGMailへ送信する。', 'GMAILそうしん');
+  AddFunc  ('YAHOOメール受信','ACCOUNTのPASSWORDでDIRへ|DIRに',4133, sys_yahoo_recv, 'ACCOUNTとPASSWORDを利用してYahoo!メールを受信する。', 'YAHOOめーるじゅしん');
+  AddFunc  ('YAHOOメール送信','ACCOUNTのPASSWORDで',4134, sys_yahoo_send, 'ACCOUNTとPASSWORDを利用してYahoo!メールを送信する。', 'YAHOOめーるじゅしん');
+  AddFunc  ('YAHOOBBメール受信','ACCOUNTのPASSWORDでDIRへ|DIRに',4135, sys_yahoobb_recv, 'ACCOUNTとPASSWORDを利用してYahoo!BBメールを受信する。', 'YAHOOBBめーるじゅしん');
+  AddFunc  ('YAHOOBBメール送信','ACCOUNTのPASSWORDで',4136, sys_yahoobb_send, 'ACCOUNTとPASSWORDを利用してYahoo!BBメールを送信する。', 'YAHOOBBめーるじゅしん');
   //-EML
   AddFunc  ('EMLファイル開く', 'Fの',4080, sys_eml_load , 'EMLファイルを開く', 'EMLふぁいるひらく');
   AddFunc  ('EMLパート数取得','',4081, sys_eml_part_count, 'EMLファイルにいくつパートがあるかを取得して返す。', 'EMLぱーとすうしゅとく');
