@@ -102,6 +102,8 @@ implementation
 uses mini_file_utils, unit_string, EasyMasks,
   nadesiko_version, Math;
 
+var AutoDeletePackFile: string = '';
+
 {オリジナル一時ファイル名の取得}
 function getOriginalFileName(dirname, header: AnsiString): AnsiString;
 begin
@@ -138,6 +140,7 @@ begin
         CreateGUID(guid);
         fname := TempDir + '~nako_' + GUIDToString(guid) + '.pack';
         mem.SaveToFile(fname);
+        AutoDeletePackFile := fname;
 
         //===========================================
         // MixFile を読み込む
@@ -797,6 +800,7 @@ initialization
   FileMixReader := nil;
 
 finalization
+begin
   if FileMixReaderSelfCreate then
   begin
     try
@@ -804,6 +808,14 @@ finalization
     except
     end;
   end;
+  if AutoDeletePackFile <> '' then
+  begin
+    if FileExists(AutoDeletePackFile) then
+     begin
+      DeleteFile(AutoDeletePackFile);
+     end;
+  end;
+end;
 
 end.
 

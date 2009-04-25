@@ -414,8 +414,10 @@ begin
       OnMouseDown := eventMouseDown;
       OnMouseMove := eventMouseMove;
       OnMouseUp   := eventMouseUp;
+      {$IF RTLVersion >=16}
       OnMouseEnter:= eventMouseEnter;
       OnMouseLeave:= eventMouseLeave;
+      {$ifend}
       OnMouseWheel:= eventMouseWheel;
       OnClick     := eventClick;
       OnDblClick  := eventDblClick;
@@ -1373,8 +1375,10 @@ begin
     OnMouseDown := self.eventMouseDown;
     OnMouseMove := self.eventMouseMove;
     OnMouseUp   := self.eventMouseUp;
+    {$IF RTLVersion >=16}
     OnMouseEnter:= self.eventMouseEnter;
     OnMouseLeave:= self.eventMouseLeave;
+    {$IFEND}
     OnMouseWheel:= self.eventMouseWheel;
   end;
 
