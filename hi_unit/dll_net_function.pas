@@ -66,12 +66,13 @@ implementation
 uses mini_file_utils, unit_file, KPop3, KSmtp, KTcp, KTCPW, unit_string2,
   WSockUtils, Icmp, KHttp, jconvert, md5, nako_dialog_function,
   nadesiko_version, messages, nako_dialog_const, CommCtrl, unit_kabin,
-  hima_types, unit_content_type, IdAttachment;
+  hima_types, unit_content_type, IdAttachment, unit_string;
 
 var pProgDialog: PHiValue = nil;
 var FNetDialog: TNetDialog = nil;
 
 const NAKO_HTTP_OPTION = 'HTTPオプション';
+const FTP_NG_PATTERN   = 'FTPフォルダ除外パターン';
 
 procedure alert(msg: string);
 begin
@@ -405,9 +406,10 @@ begin
   end;
 end;
 
+
 procedure proc_ftp_uploadDir(Sender: TNetThread; ftp: Tidftp);
 var
-  local, remote: String;
+  local, remote, pat: String;
 
   procedure _upload(local, remote: string);
   var
@@ -433,6 +435,10 @@ var
       for i := 0 to files.Count - 1 do
       begin
         tmp := files.Strings[i];
+        if pat <> '' then
+        begin
+          if MatchesMaskEx(tmp, pat) then Continue;
+        end;
         ftp.Put(local + tmp, tmp);
       end;
     finally
@@ -444,6 +450,10 @@ var
       for i := 0 to dirs.Count - 1 do
       begin
         tmp := dirs.Strings[i];
+        if pat <> '' then
+        begin
+          if MatchesMaskEx(tmp, pat) then Continue;
+        end;
         _upload(local + tmp + '\', tmp);
       end;
     finally
@@ -456,8 +466,11 @@ var
   end;
 
 begin
+  pat    := hi_str(nako_getVariable(FTP_NG_PATTERN));
+
   local  := PString(Sender.arg1)^;
   remote := PString(Sender.arg2)^;
+
 
   if Copy(local, Length(local), 1) <> '\' then
   begin
@@ -632,7 +645,7 @@ end;
 
 procedure proc_ftp_downloadDir(Sender: TNetThread; ftp: Tidftp);
 var
-  local, remote: string;
+  local, remote, pat: string;
   isError: Boolean;
   errors: string;
 
@@ -667,6 +680,7 @@ var
              (item.ModifiedDate > 0) then
           begin
             tmp := item.FileName;
+            if MatchesMaskEx(tmp, pat) then Continue;
             if tmp <> '' then
             begin
               p := PChar(tmp);
@@ -739,6 +753,8 @@ begin
   //
   local  := PString(Sender.arg1)^;
   remote := PString(Sender.arg2)^;
+
+  pat := hi_str(nako_getVariable(FTP_NG_PATTERN));
 
   isError := False;
   errors := '';
@@ -2569,6 +2585,7 @@ begin
   AddFunc  ('FTP転送モード設定','Sに',                        4023, sys_ftp_mode,           'FTPの転送モードを「バイナリ|アスキー」に変更する',   'FTPてんそうもーどせってい');
   AddFunc  ('FTPダウンロード',  'AをBへ|AからBに',            4024, sys_ftp_download,       'リモートファイルAをローカルファイルBへダウンロードする',   'FTPだうんろーど');
   AddFunc  ('FTPフォルダダウンロード',  'AをBへ|AからBに',    4037, sys_ftp_downloadDir,    'リモートパスAをローカルフォルダBへ一括ダウンロードする','FTPふぉるだだうんろーど');
+  AddStrVar('FTPフォルダ除外パターン',      '',4041,'','FTPふぉるだじょがいぱたーん');
   AddFunc  ('FTPファイル列挙',  'Sの|Sを',                    4025, sys_ftp_glob,           'FTPホストのファイルSを列挙する',   'FTPふぁいるれっきょ');
   AddFunc  ('FTPフォルダ列挙',  'Sの|Sを',                    4026, sys_ftp_globDir,        'FTPホストのフォルダSを列挙する',   'FTPふぉるだれっきょ');
   AddFunc  ('FTPフォルダ作成',  'Sへ|Sに|Sの',                4027, sys_ftp_mkdir,          'FTPホストへSのフォルダを作る',     'FTPふぉるださくせい');
