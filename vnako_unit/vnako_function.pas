@@ -43,6 +43,8 @@ const
   EVENT_MINIMIZE    = '最小化した時';
   EVENT_RESTORE     = '元通り時';
   EVENT_PAINT       = '描画する時';
+  EVENT_MOUSEENTER  = 'マウス入った時';
+  EVENT_MOUSELEAVE  = 'マウス出た時';
 
 const
 VCL_GUI_BUTTON = 0;
@@ -3391,6 +3393,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
           Font.Name := fontname;
@@ -3406,6 +3410,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
+          OnDragOver  := Bokan.eventDragOver;
+          OnDragDrop  := Bokan.eventDragDrop;
           Font.Name := fontname;
           Font.Size := fontsize;
           Font.Charset := DEFAULT_CHARSET;
@@ -3419,6 +3427,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           Font.Name := fontname;
           Font.Size := fontsize;
           Font.Charset := DEFAULT_CHARSET;
@@ -3434,6 +3444,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3455,6 +3467,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3474,6 +3488,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3494,9 +3510,13 @@ begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
           OnChange    := Bokan.eventChange;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
+          OnDragOver  := Bokan.eventDragOver;
+          OnDragDrop  := Bokan.eventDragDrop;
           Font.Name := fontname;
           Font.Size := fontsize;
           Font.Charset := DEFAULT_CHARSET;
@@ -3507,6 +3527,8 @@ begin
         o := TScrollBar.Create(Bokan);
         with TScrollBar(o) do begin
           OnChange    := Bokan.eventChange;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3521,6 +3543,8 @@ begin
           OnMouseDown   := Bokan.eventMouseDown;
           OnMouseMove   := Bokan.eventMouseMove;
           OnMouseUp     := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
         end;
@@ -3535,6 +3559,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
         end;
@@ -3548,6 +3574,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
         end;
@@ -3562,6 +3590,9 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
+          OnMouseWheel:= Bokan.eventMouseWheel;
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
         end;
@@ -3574,6 +3605,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3621,6 +3654,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3641,6 +3676,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
         end;
@@ -3669,6 +3706,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
           Font.Name := fontname;
@@ -3682,6 +3721,11 @@ begin
         with TPageControl(o) do begin
           OnChange    := Bokan.eventChange;
           OnResize    := Bokan.eventSizeChange;
+          OnMouseDown := Bokan.eventMouseDown;
+          OnMouseMove := Bokan.eventMouseMove;
+          OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
         end;
@@ -3692,6 +3736,8 @@ begin
         with TMonthCalendar(o) do begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3717,6 +3763,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           Canvas.Font.Name := fontname;
           Canvas.Font.Size := fontsize;
         end;
@@ -3737,6 +3785,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           Font.Name := fontname;
           Font.Size := fontsize;
           Font.Charset := DEFAULT_CHARSET;
@@ -3745,14 +3795,43 @@ begin
     VCL_GUI_STATUSBAR   :
       begin
         o := TStatusBar.Create(Bokan);
-        TStatusBar(o).SimplePanel := True;
+        with TStatusBar(o) do begin
+          SimplePanel := True;
+          OnClick := Bokan.eventClick;
+          OnDblClick := Bokan.eventDblClick;
+          OnDragOver  := Bokan.eventDragOver;
+          OnDragDrop  := Bokan.eventDragDrop;
+          OnMouseDown := Bokan.eventMouseDown;
+          OnMouseMove := Bokan.eventMouseMove;
+          OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
+          Font.Name := fontname;
+          Font.Size := fontsize;
+          Font.Charset := DEFAULT_CHARSET;
+        end;
       end;
     VCL_GUI_TOOLBAR     :
       begin
         o := TToolBar.Create(Bokan);
-        TToolBar(o).Flat := True;
-        TToolBar(o).Transparent := False;
-        TToolBar(o).Color := clBtnFace;
+        with TToolBar(o) do begin
+          Flat := True;
+          Transparent := False;
+          Color := clBtnFace;
+          OnClick := Bokan.eventClick;
+          OnDblClick := Bokan.eventDblClick;
+          OnResize    := Bokan.eventSizeChange;
+          OnDragOver  := Bokan.eventDragOver;
+          OnDragDrop  := Bokan.eventDragDrop;
+          OnMouseDown := Bokan.eventMouseDown;
+          OnMouseMove := Bokan.eventMouseMove;
+          OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
+          Font.Name := fontname;
+          Font.Size := fontsize;
+          Font.Charset := DEFAULT_CHARSET;
+        end;
       end;
     VCL_GUI_WEBBROWSER  :
       begin
@@ -3796,6 +3875,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
         end;
@@ -3833,10 +3914,13 @@ begin
             end;
           end;
           //------------------------------------------------
-          
+
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
           OnChange    := Bokan.eventChange;
+          OnMouseDown := Bokan.eventMouseDown;
+          OnMouseMove := Bokan.eventMouseMove;
+          OnMouseUp   := Bokan.eventMouseUp;
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3854,6 +3938,11 @@ begin
         with TValueListEditor(o) do begin
           OnClick    := Bokan.eventClick;
           OnDblClick := Bokan.eventDblClick;
+          OnMouseDown := Bokan.eventMouseDown;
+          OnMouseMove := Bokan.eventMouseMove;
+          OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3882,6 +3971,8 @@ begin
           OnMouseDown   := eventMouseDown;
           OnMouseMove   := eventMouseMove;
           OnMouseUp     := eventMouseUp;
+          OnMouseEnter  := eventMouseEnter;
+          OnMouseLeave  := eventMouseLeave;
           OnActivate    := FormActivate;
           //OnPaint       := eventPaint;
           Font.Name     := fontname;
@@ -3927,6 +4018,14 @@ begin
     VCL_GUI_TOOLBUTTON:
       begin
         o := TToolButton.Create(nil);
+        with TToolButton(o) do begin
+          OnClick    := Bokan.eventClick;
+          OnMouseDown := Bokan.eventMouseDown;
+          OnMouseMove := Bokan.eventMouseMove;
+          OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
+        end;
       end;
     VCL_GUI_TIMER:
       begin
@@ -3946,6 +4045,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
           Font.Name := fontname;
@@ -3963,6 +4064,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3984,6 +4087,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -4003,6 +4108,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -4023,9 +4130,13 @@ begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
           OnChange    := Bokan.eventChange;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
+          OnDragOver  := Bokan.eventDragOver;
+          OnDragDrop  := Bokan.eventDragDrop;
           Font.Name := fontname;
           Font.Size := fontsize;
           Font.Charset := DEFAULT_CHARSET;
@@ -4039,6 +4150,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -4074,6 +4187,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -4095,6 +4210,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
           Font.Name := fontname;
@@ -5721,6 +5838,12 @@ var
   begin
     e := TStatusBar(obj);
     if cmd = 'POPUP' then e.PopupMenu := TPopupMenu( hi_int(v) ) else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then setFontName(e.Font, hi_str(v)) else
+    if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size) end else
+    if cmd = '文字サイズSET' then e.Font.Size := hi_int(v) else
+    if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
+    if cmd = '文字色SET' then e.Font.Color := RGB2Color( hi_int(v) ) else
     if cmd = '分割取得'  then begin
       Result := hi_var_new;
       hi_setBool(Result, not e.SimplePanel);
@@ -5747,6 +5870,7 @@ var
   procedure _VCL_GUI_TOOLBAR;
   var b: TToolButton;
   begin
+    if cmd = 'POPUP' then TToolBar(obj).PopupMenu := TPopupMenu( hi_int(v) ) else
     if cmd = '画像設定' then
     begin
       if hi_int(v) = 0 then raise Exception.Create('空のイメージリストは設定できません。');
@@ -5782,6 +5906,7 @@ var
     if cmd = '文字色SET' then e.Font.Color := RGB2Color( hi_int(v) ) else
     if cmd = '背景色取得' then setRes(Color2RGB(e.Color))  else
     if cmd = '背景色設定' then e.Color := RGB2Color(hi_int(v)) else
+    if cmd = 'POPUP'        then e.PopupMenu := TPopupMenu( hi_int(v) ) else
   end;
   procedure _VCL_GUI_FORM;
   var e: TfrmNako; ico: TIcon; icoCreate: TjvIcon; s: string; bmp: TBitmap;
@@ -6122,6 +6247,7 @@ var
     if cmd = '文字サイズSET' then e.Font.Size := hi_int(v) else
     if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
     if cmd = '文字色SET' then e.Font.Color := RGB2Color( hi_int(v) ) else
+    if cmd = 'POPUP'        then e.PopupMenu := TPopupMenu( hi_int(v) ) else
     ;
   end;
   procedure _VCL_GUI_BIT_BUTTON;
@@ -6146,6 +6272,7 @@ var
     if cmd = '文字サイズSET' then e.Font.Size := hi_int(v) else
     if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
     if cmd = '文字色SET' then e.Font.Color := RGB2Color( hi_int(v) ) else
+    if cmd = 'POPUP'        then e.PopupMenu := TPopupMenu( hi_int(v) ) else
     ;
   end;
   procedure _VCL_GUI_ANIME;
