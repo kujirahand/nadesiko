@@ -2058,6 +2058,13 @@ begin
   Result := nil;
   Printer.EndDoc;
 end;
+function cmd_printPaperNewPage(h: DWORD): PHiValue; stdcall;
+begin
+  Result := nil;
+  Printer.NewPage;
+end;
+
+
 function cmd_printPaperWidth(h: DWORD): PHiValue; stdcall;
 begin
   Result := hi_newInt(Printer.PageWidth);
@@ -2778,29 +2785,43 @@ begin
   Result := nil;
 end;
 
-function cmd_picRotate(h: DWORD): PHiValue; stdcall;
+function cmd_picRotate(handle: DWORD): PHiValue; stdcall;
 var
   bmp: TBitmap;
   obj: TObject;
   o  : PHiValue;
-  a  : Integer;
+  a, w, h,cx, cy: Integer;
 begin
   // 引数
-  o   := nako_getFuncArg(h, 0);
+  o   := nako_getFuncArg(handle, 0);
   bmp := getBmp(o);
   obj := getGui(o);
-  a   := getArgInt(h, 1);
-  //
-  try
-    Rotate(bmp, a);
-  except
-  end;
+  a   := getArgInt(handle, 1);
   //
   if obj is TImage then
   begin
-    TImage(obj).Width  := bmp.Width;
-    TImage(obj).Height := bmp.Height;
+    //TImage(obj).Picture := nil;
+    {
+    if ((0 <= a)and(a <= 90))or((270 <= a)and(a <= 360)) then
+    begin
+      bmp.Width   := Round(cos(DegToRad(a)) * w + sin(DegToRad(a)) * h);
+      bmp.Height  := Round(sin(DegToRad(a)) * w + cos(DegToRad(a)) * h);
+    end else
+    begin
+      bmp.Height  := Round(Abs(cos(DegToRad(a)))*w+Abs(sin(DegToRad(a)))*h);
+      bmp.Width   := Round(Abs(sin(DegToRad(a)))*w+Abs(cos(DegToRad(a)))*h);
+    end;
+    }
+    //TImage(obj).Canvas.Draw(0,0,bmp);
+    //ShowMessage(IntToStr(Round(sin(DegToRad(90)) * bmp.Width)));
+    try
+      Rotate(bmp, a);
+    except
+    end;
   end;
+  //
+  TImage(obj).Width := bmp.Width;
+  TImage(obj).Height := bmp.Height;
   // 戻り
   Result := nil;
 end;
@@ -7384,6 +7405,7 @@ begin
   AddFunc('プリンタ描画終了', '', 2456, cmd_printEndDoc,  '', 'ぷりんたびょうがしゅうりょう');
   AddFunc('プリンタ用紙幅',   '', 2457, cmd_printPaperWidth,  '', 'ぷりんたようしたかさ');
   AddFunc('プリンタ用紙高さ', '', 2458, cmd_printPaperHeight,  '', 'ぷりんたようしたかさ');
+  AddFunc('プリンタ改ページ', '', 2465, cmd_printPaperNewPage,  '', 'ぷりんたかいぺーじ');
 
   AddFunc('プリンタ文字描画',     '{=?}SをX,Yへ', 2459, cmd_printTextOut,  '', 'ぷりんたもじびょうが');
   AddFunc('プリンタ文字幅取得',   '{=?}Sを', 2460, cmd_printGetCharWidth,  '', 'ぷりんたもじはばしゅとく');

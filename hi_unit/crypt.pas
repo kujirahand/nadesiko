@@ -4,7 +4,7 @@ unit crypt;
 
 interface
 
-function _crypt(pw,salt:PChar):PChar;cdecl;external;
+function _crypt(pw,salt:PAnsiChar):PAnsiChar;cdecl;external;
 
 implementation
 

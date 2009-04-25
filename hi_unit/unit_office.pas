@@ -1714,7 +1714,10 @@ begin
   end;
 
   FPpApp := FPp;
-  FPpApp.Visible := Visible;
+  try
+    FPpApp.Visible := Visible;
+  except
+  end;
   FActive := True;
 end;
 
