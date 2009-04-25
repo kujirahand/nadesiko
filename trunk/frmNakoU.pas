@@ -155,6 +155,8 @@ type
     procedure eventBrowserDocumentComplete(Sender: TObject; const pDisp: IDispatch;var URL: OleVariant);
     procedure eventBrowserDownloadComplete(Sender: TObject);
     procedure eventPaint(Sender: TObject);
+    procedure eventMouseEnter(Sender: TObject);
+    procedure eventMouseLeave(Sender: TObject);
     //
     procedure doEvent(group: PGuiInfo; eventName: string);
     //
@@ -412,6 +414,9 @@ begin
       OnMouseDown := eventMouseDown;
       OnMouseMove := eventMouseMove;
       OnMouseUp   := eventMouseUp;
+      OnMouseEnter:= eventMouseEnter;
+      OnMouseLeave:= eventMouseLeave;
+      OnMouseWheel:= eventMouseWheel;
       OnClick     := eventClick;
       OnDblClick  := eventDblClick;
       //OnPaint     := eventPaint;
@@ -1014,6 +1019,22 @@ begin
   doEvent(@ginfo, EVENT_MOUSEUP);
 end;
 
+procedure TfrmNako.eventMouseEnter(Sender: TObject);
+var
+  ginfo: TGuiInfo;
+begin
+  ginfo := GuiInfos[ TControl(Sender).Tag ];
+  doEvent(@ginfo, EVENT_MOUSEENTER);
+end;
+
+procedure TfrmNako.eventMouseLeave(Sender: TObject);
+var
+  ginfo: TGuiInfo;
+begin
+  ginfo := GuiInfos[ TControl(Sender).Tag ];
+  doEvent(@ginfo, EVENT_MOUSELEAVE);
+end;
+
 procedure TfrmNako.doEvent(group: PGuiInfo; eventName: string);
 var
   p, res: PHiValue;
@@ -1352,6 +1373,8 @@ begin
     OnMouseDown := self.eventMouseDown;
     OnMouseMove := self.eventMouseMove;
     OnMouseUp   := self.eventMouseUp;
+    OnMouseEnter:= self.eventMouseEnter;
+    OnMouseLeave:= self.eventMouseLeave;
     OnMouseWheel:= self.eventMouseWheel;
   end;
 
