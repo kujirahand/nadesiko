@@ -105,7 +105,29 @@ function ExpandTab(const s: AnsiString; tabCnt: Integer): AnsiString;
 // パスの終端に\をつける
 function CheckPathYen(s: AnsiString): string;
 
+// ";"で区切った複数のワイルドカードのパターンにマッチさせる
+function MatchesMaskEx(Filename, Masks: string): Boolean;
+
 implementation
+
+uses Masks;
+
+function MatchesMaskEx(Filename, Masks: string): Boolean;
+var
+  i: Integer;
+  list: THStringList;
+begin
+  Result := False;
+  list := SplitChar(';', Masks);
+  for i := 0 to list.Count - 1 do
+  begin
+    if MatchesMask(Filename, list.Strings[i]) then
+    begin
+      Result := True;
+    end;
+  end;
+  list.Free;
+end;
 
 function URLDecode(s: AnsiString):string;
 var
