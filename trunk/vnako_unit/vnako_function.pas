@@ -3414,8 +3414,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
           Font.Name := fontname;
@@ -3431,8 +3433,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
           Font.Name := fontname;
@@ -3448,8 +3452,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           Font.Name := fontname;
           Font.Size := fontsize;
           Font.Charset := DEFAULT_CHARSET;
@@ -3465,8 +3471,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3488,8 +3496,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3509,8 +3519,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3531,8 +3543,10 @@ begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
           OnChange    := Bokan.eventChange;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3548,8 +3562,10 @@ begin
         o := TScrollBar.Create(Bokan);
         with TScrollBar(o) do begin
           OnChange    := Bokan.eventChange;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3564,8 +3580,10 @@ begin
           OnMouseDown   := Bokan.eventMouseDown;
           OnMouseMove   := Bokan.eventMouseMove;
           OnMouseUp     := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
         end;
@@ -3580,8 +3598,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
         end;
@@ -3595,8 +3615,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
         end;
@@ -3611,8 +3633,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnMouseWheel:= Bokan.eventMouseWheel;
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
@@ -3626,8 +3650,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3675,8 +3701,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3697,8 +3725,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
         end;
@@ -3745,8 +3775,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
         end;
@@ -3757,8 +3789,10 @@ begin
         with TMonthCalendar(o) do begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3784,8 +3818,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           Canvas.Font.Name := fontname;
           Canvas.Font.Size := fontsize;
         end;
@@ -3806,8 +3842,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           Font.Name := fontname;
           Font.Size := fontsize;
           Font.Charset := DEFAULT_CHARSET;
@@ -3825,8 +3863,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           Font.Name := fontname;
           Font.Size := fontsize;
           Font.Charset := DEFAULT_CHARSET;
@@ -3847,8 +3887,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           Font.Name := fontname;
           Font.Size := fontsize;
           Font.Charset := DEFAULT_CHARSET;
@@ -3896,8 +3938,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
         end;
@@ -3962,8 +4006,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3992,8 +4038,10 @@ begin
           OnMouseDown   := eventMouseDown;
           OnMouseMove   := eventMouseMove;
           OnMouseUp     := eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter  := eventMouseEnter;
           OnMouseLeave  := eventMouseLeave;
+          {$IFEND}
           OnActivate    := FormActivate;
           //OnPaint       := eventPaint;
           Font.Name     := fontname;
@@ -4044,8 +4092,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
         end;
       end;
     VCL_GUI_TIMER:
@@ -4066,8 +4116,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
           Font.Name := fontname;
@@ -4085,8 +4137,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -4108,8 +4162,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -4129,8 +4185,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -4151,8 +4209,10 @@ begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
           OnChange    := Bokan.eventChange;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -4171,8 +4231,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -4208,8 +4270,10 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
+          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
