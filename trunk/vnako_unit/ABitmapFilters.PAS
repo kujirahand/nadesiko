@@ -84,7 +84,7 @@ type
     procedure Vivid(BMP:TBitmap;iPower:Byte);
 
     //変形
-    procedure Rotate(BMP2:TBitmap;degree:Integer);
+    procedure Rotate(SRCBMP:TBitmap; degree:Integer);
     procedure ChangeTopBottom(BMP:TBitmap);
     procedure Spin(Rad:Integer;BMP:TBitmap);
     procedure Mirror(BMP:TBitmap);
@@ -3142,81 +3142,80 @@ end;
 }
 
 {$R-}
-procedure Rotate(BMP2:TBitmap;degree:Integer);
+procedure Rotate(SRCBMP:TBitmap; degree:Integer);
 var
    x,y:Integer;
    dg,dg90:real;
-   bmp:TBitmap;
+   dstBmp:TBitmap;
    pBit,pBit2:pByteArray;
    tx,ty:Integer;
    sx,sy:Int64;
    tp,k,l :Integer;
-   sdg,cdg:Int64;
-   tw,th,xx,yy:Integer;
+   sdg,cdg:Integer;
+   a,tw,th,xx,yy:Integer;
    SrcLine,DestLine:array of Pointer;
-
+   dx,dy:Integer;
+   x1, y1: Integer;
+   x2, y2:Integer;
+   cx, cy: Integer;
 begin
-
    //コサインサインを求める
    dg:= (360-degree) * PI / 180;
    sdg:=Round(sin(dg) * 1024);
    cdg:=Round(cos(dg) * 1024);
 
    //増加分を計算する
+   dstBmp:=TBitmap.Create;
+   //bmp.Width :=BMP2.Width;
+   //bmp.Height:=BMP2.Height;
 
+   a := degree;
+   {
+  if ((0 <= a)and(a <= 90))or((270 <= a)and(a <= 360)) then
+  begin
+    bmp.Width   := Round(Abs(cos(DegToRad(a))) * BMP2.Width + Abs(sin(DegToRad(a))) * BMP2.Height);
+    bmp.Height  := Round(Abs(sin(DegToRad(a))) * BMP2.Width + Abs(cos(DegToRad(a))) * BMP2.Height);
+  end else
+  begin
+    bmp.Height  := Round(Abs(cos(DegToRad(a)))*BMP2.Width+Abs(sin(DegToRad(a)))*BMP2.Height);
+    bmp.Width   := Round(Abs(sin(DegToRad(a)))*BMP2.Width+Abs(cos(DegToRad(a)))*BMP2.Height);
+  end;
+  }
 
+  try
+  dstbmp.Width := Round(abs( srcBmp.Width * cos(DegToRad(a)))  + abs( srcBmp.Height * sin(DegToRad(a))));
+  dstbmp.Height := Round(abs( srcBmp.Width * sin(DegToRad(a)) ) + abs( srcBmp.Height * cos(DegToRad(a)) ));
+  except
+    ShowMessage(IntToStr(dstbmp.Height));
+  end;
 
-   bmp:=TBitmap.Create;
-   bmp.Width :=BMP2.Width;
-   bmp.Height:=BMP2.Height;
-   bmp.PixelFormat:=pf32bit;
-   bmp2.PixelFormat:=pf32bit;
+      //bmp.Width := Trunc((x-cx) * cos(DegToRad(a)) - (y-cy) * sin(DegToRad(a)) + cx);
+      //bmp.Height := Trunc((x-cx) * sin(DegToRad(a)) + (y-cy) * cos(DegToRad(a)) + cy);
 
+  {
+  x1 = (x2-cx) * cos(A) - (y2-cy) * sin(A) + cx
+  y1 = (x2-cx) * sin(A) + (y2-cy) * cos(A) + cy
+  ----
+  x2 = (x1-cx) * cos(-A) - (y1-cy) * sin(-A) + cx
+  y2 = (x1-cx) * sin(-A) + (y1-cy) * cos(-A) + cy
+  }
+  dstBmp.PixelFormat:=pf32bit;
+  srcBmp.PixelFormat:=pf32bit;
 
-   tw:=bmp2.Width div 2;
-   th:=bmp2.Height div 2;
+  cx:=srcBmp.Width div 2;
+  cy:=srcBmp.Height div 2;
 
-   SetLength(SrcLine,BMP2.Height);
-   SetLength(DestLine,BMP.Height);
-
-   for y:=0 to BMP2.Height-1 do begin
-       SrcLine[y] :=BMP2.ScanLine[y];
-       DestLine[y]:=BMP.ScanLine[y];
-   end;
-
-
-   yy:=-th;
-   for y:=0 to bmp2.Height-1 do begin
-     pBit :=DestLine[y];
-     k:=0;
-     inc(yy);
-     xx:=-tw;
-     for x:=0 to bmp2.Width-1 do begin
-         inc(xx);
-
-         tx:=((xx*cdg-yy*sdg) shr 10)+tw;
-         ty:=((xx*sdg+yy*cdg) shr 10)+th;
-
-         If (tx<bmp2.Width) and (ty<bmp2.Height) and (tx>=0) and (ty>=0) then begin
-            pBit2:=SrcLine[ty];
-            l:=tx shl 2;
-
-            pBit[k]:=pBit2[l];
-            inc(k);
-            inc(l);
-            pBit[k]:=pBit2[l];
-            inc(k);
-            inc(l);
-            pBit[k]:=pBit2[l];
-            inc(k,2);
-         end else inc(k,4);
-   end;
- end;
-
-
- BMP2.Assign(BMP);
- bmp.Free;
-
+  for y2 := 0 to srcBmp.Height - 1 do
+  begin
+    for x2 := 0 to srcBmp.Width - 1 do
+    begin
+      x1 := Trunc((x2-cx) * cos(DegToRad(a)) - (y2-cy) * sin(DegToRad(a)) + dstBmp.Width div 2);
+      y1 := Trunc((x2-cx) * sin(DegToRad(a)) + (y2-cy) * cos(DegToRad(a)) + dstBmp.Height div 2);
+      dstBmp.Canvas.Pixels[x1,y1] := srcBmp.Canvas.Pixels[x2, y2];
+    end;
+  end;
+  srcBmp.Assign(dstBmp);
+  dstBmp.Free;
 end;
 
 
