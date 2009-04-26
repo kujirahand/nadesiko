@@ -33,6 +33,14 @@ const
 
 type
   THiEditor = class(TEditorEx)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
   public
     procedure WMMousewheel(var Msg: TMessage); message WM_MOUSEWHEEL;
     function GetCaretXY: TPoint;
@@ -41,13 +49,29 @@ type
     procedure ViewFlag(s: string);
     procedure PutMark(tag: Integer);
     procedure GotoMark(tag: Integer);
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
   end;
 
   THiListView = class(TListView)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
   public
     nodes: THHash;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
   end;
 
   THiWinControl = class(TWinControl)
@@ -82,11 +106,18 @@ type
     FFlagFree: Boolean;
     DebugEditorHandle: Integer;
     FDragPoint: TPoint;
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
     function GetBackCanvas: TCanvas;
     procedure onExitSizeMove(var Msg: TMessage); message WM_EXITSIZEMOVE;
     procedure CopyDataMessage(var WMCopyData: TWMCopyData); message WM_COPYDATA;
     function Nadesiko_Load: Boolean;
     procedure ResizeBackBmp;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
   protected
     // ドラッグしてフォームを移動する場合
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState;
@@ -106,6 +137,11 @@ type
     procedure ChangeTrayIcon;
     procedure MovetoTasktray(HideForm:Boolean = True); // タスクトレイへ移動
     procedure LeaveTasktray(RestoreForm:Boolean = True);  // タスクトレイを離れる
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
   public
     { Public 宣言 }
     freeObjList: TList; // VCL_FREE で追加される
@@ -182,6 +218,17 @@ uses dnako_import,
   gui_benri, VistaAltFixUnit;
 
 {$R *.dfm}
+
+procedure _TrackMouseEvent(handle:HWND;time:Cardinal);
+var
+  tme:TTrackMouseEvent;
+begin
+  tme.cbSize := sizeof(tme);
+  tme.dwFlags := TME_HOVER;
+  tme.hwndTrack := Handle;
+  tme.dwHoverTime := Time;
+  TrackMouseEvent(tme);
+end;
 
 // mix file の取り出しとファイルの検索
 procedure ExtractMixFile(var fname: string);
@@ -339,6 +386,28 @@ begin
   end;
 end;
 
+procedure THiEditor.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure THiEditor.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure THiEditor.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
 { TfrmNako }
 
 procedure TfrmNako.ClearScreen(col: Integer);
@@ -414,10 +483,8 @@ begin
       OnMouseDown := eventMouseDown;
       OnMouseMove := eventMouseMove;
       OnMouseUp   := eventMouseUp;
-      {$IF RTLVersion >=16}
       OnMouseEnter:= eventMouseEnter;
       OnMouseLeave:= eventMouseLeave;
-      {$ifend}
       OnMouseWheel:= eventMouseWheel;
       OnClick     := eventClick;
       OnDblClick  := eventDblClick;
@@ -1375,10 +1442,8 @@ begin
     OnMouseDown := self.eventMouseDown;
     OnMouseMove := self.eventMouseMove;
     OnMouseUp   := self.eventMouseUp;
-    {$IF RTLVersion >=16}
     OnMouseEnter:= self.eventMouseEnter;
     OnMouseLeave:= self.eventMouseLeave;
-    {$IFEND}
     OnMouseWheel:= self.eventMouseWheel;
   end;
 
@@ -1659,6 +1724,28 @@ begin
   hi_setInt(p, Integer(bokan));
 end;
 
+procedure TfrmNako.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TfrmNako.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TfrmNako.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
 { THiListView }
 
 constructor THiListView.Create(AOwner: TComponent);
@@ -1671,6 +1758,28 @@ destructor THiListView.Destroy;
 begin
   nodes.Free;
   inherited;
+end;
+
+procedure THiListView.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure THiListView.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure THiListView.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
 end;
 
 { THiWinControl }

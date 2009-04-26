@@ -3,13 +3,20 @@ unit unit_nakopanel;
 interface
 
 uses
-  Classes, Forms, StdCtrls, ExtCtrls, Graphics, Controls;
+  Classes, Forms, StdCtrls, ExtCtrls, Graphics, Controls, Messages;
 
 type
   TNakoPanel = class(TPanel)
   private
     FColor: TColor;
     FImage: TImage;
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
     procedure setColor(const Value: TColor);
     procedure doClick(Sender:TObject);
     procedure doDblClick(Sender:TObject);
@@ -25,6 +32,10 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     procedure redrawBack;
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
   protected
     procedure Resize; override;
   published
@@ -35,6 +46,8 @@ type
   end;
 
 implementation
+
+uses Windows;
 
 { TNakoPanel }
 
@@ -141,6 +154,34 @@ procedure TNakoPanel.setText(const Value: string);
 begin
   Self.Caption := Value;
   redrawBack;
+end;
+
+procedure TNakoPanel.CMMouseEnter(var Msg:TMessage);
+var
+  tme:TTrackMouseEvent;
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  tme.cbSize := sizeof(tme);
+  tme.dwFlags := TME_HOVER;
+  tme.hwndTrack := Handle;
+  tme.dwHoverTime := FHoverTime;
+  TrackMouseEvent(tme);
+end;
+
+procedure TNakoPanel.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TNakoPanel.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
 end;
 
 end.
