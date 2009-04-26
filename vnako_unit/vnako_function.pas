@@ -133,6 +133,21 @@ type
     name    : string;
     fileDrop: TFileDrop;
   end;
+  TImage = class(ExtCtrls.TImage)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
 
 var
   guiCount: Integer = 1; // ID = 0 : •êŠÍ
@@ -187,6 +202,439 @@ function IsDialogConvNum: Boolean;
 
 function ShowModalCheck(Form, Parent: TForm): Integer;
 
+type
+  TButton = class(StdCtrls.TButton)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TBitBtn = class(Buttons.TBitBtn)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TSpeedButton = class(Buttons.TSpeedButton)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TListBox = class(StdCtrls.TListBox)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TComboBox = class(StdCtrls.TComboBox)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TScrollBar = class(StdCtrls.TScrollBar)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TProgressBar = class(ComCtrls.TProgressBar)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TGroupBox = class(StdCtrls.TGroupBox)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TScrollBox = class(Forms.TScrollBox)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TCheckBox = class(StdCtrls.TCheckBox)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TStrSortGrid = class(StrSortGrid.TStrSortGrid)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TLabel = class(StdCtrls.TLabel)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TPageControl = class(ComCtrls.TPageControl)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TMonthCalendar = class(ComCtrls.TMonthCalendar)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TStatusBar = class(ComCtrls.TStatusBar)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TToolBar = class(ComCtrls.TToolBar)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TTrackBox = class(TrackBox.TTrackBox)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TValueListEditor = class(ValEdit.TValueListEditor)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TToolButton = class(ComCtrls.TToolButton)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TTntButton = class(TntStdCtrls.TTntButton)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TTntEdit = class(TntStdCtrls.TTntEdit)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TTntMemo = class(TntStdCtrls.TTntMemo)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TTntListBox = class(TntStdCtrls.TTntListBox)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TTntComboBox = class(TntStdCtrls.TTntComboBox)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TTntCheckBox = class(TntStdCtrls.TTntCheckBox)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TTntStringGrid = class(TntGrids.TTntStringGrid)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
+  TTntLabel = class(TntStdCtrls.TTntLabel)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
 
 implementation
 
@@ -238,6 +686,662 @@ var
   tabCount,
   printLog: PHiValue;
   printLogBuf: TRingBufferString;
+
+procedure _TrackMouseEvent(handle:HWND;time:Cardinal);
+var
+  tme:TTrackMouseEvent;
+begin
+  tme.cbSize := sizeof(tme);
+  tme.dwFlags := TME_HOVER;
+  tme.hwndTrack := Handle;
+  tme.dwHoverTime := Time;
+  TrackMouseEvent(tme);
+end;
+
+{TButton}
+procedure TButton.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TButton.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TButton.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TBitBtn}
+procedure TBitBtn.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TBitBtn.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TBitBtn.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TSpeedButton}
+procedure TSpeedButton.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  //_TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TSpeedButton.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TSpeedButton.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TListBox}
+procedure TListBox.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TListBox.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TListBox.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TComboBox}
+procedure TComboBox.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TComboBox.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TComboBox.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TScrollBar}
+procedure TScrollBar.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TScrollBar.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TScrollBar.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TProgressBar}
+procedure TProgressBar.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TProgressBar.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TProgressBar.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TGroupBox}
+procedure TGroupBox.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TGroupBox.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TGroupBox.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TScrollBox}
+procedure TScrollBox.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TScrollBox.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TScrollBox.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TCheckBox}
+procedure TCheckBox.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TCheckBox.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TCheckBox.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TStrSortGrid}
+procedure TStrSortGrid.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TStrSortGrid.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TStrSortGrid.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TImage}
+procedure TImage.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  //_TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TImage.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TImage.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TLabel}
+procedure TLabel.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  //_TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TLabel.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TLabel.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TPageControl}
+procedure TPageControl.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TPageControl.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TPageControl.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TMonthCalendar}
+procedure TMonthCalendar.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TMonthCalendar.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TMonthCalendar.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TStatusBar}
+procedure TStatusBar.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TStatusBar.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TStatusBar.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TToolBar}
+procedure TToolBar.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TToolBar.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TToolBar.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TTrackBox}
+procedure TTrackBox.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  //_TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TTrackBox.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TTrackBox.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TValueListEditor}
+procedure TValueListEditor.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TValueListEditor.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TValueListEditor.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TToolButton}
+procedure TToolButton.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  //_TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TToolButton.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TToolButton.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TTntButton}
+procedure TTntButton.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TTntButton.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TTntButton.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TTntEdit}
+procedure TTntEdit.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TTntEdit.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TTntEdit.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TTntMemo}
+procedure TTntMemo.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TTntMemo.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TTntMemo.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TTntListBox}
+procedure TTntListBox.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TTntListBox.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TTntListBox.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TTntComboBox}
+procedure TTntComboBox.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TTntComboBox.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TTntComboBox.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TTntCheckBox}
+procedure TTntCheckBox.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TTntCheckBox.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TTntCheckBox.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TTntStringGrid}
+procedure TTntStringGrid.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TTntStringGrid.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TTntStringGrid.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TTntLabel}
+procedure TTntLabel.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  //_TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TTntLabel.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TTntLabel.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
 
 constructor TRingBufferString.Create(maxsize:integer);
 begin
@@ -2790,7 +3894,7 @@ var
   bmp: TBitmap;
   obj: TObject;
   o  : PHiValue;
-  a, w, h,cx, cy: Integer;
+  a{, w, h,cx, cy}: Integer;
 begin
   // ˆø”
   o   := nako_getFuncArg(handle, 0);
@@ -3414,10 +4518,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
           Font.Name := fontname;
@@ -3433,10 +4535,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
           Font.Name := fontname;
@@ -3452,10 +4552,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           Font.Name := fontname;
           Font.Size := fontsize;
           Font.Charset := DEFAULT_CHARSET;
@@ -3471,10 +4569,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3496,10 +4592,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3519,10 +4613,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3543,10 +4635,8 @@ begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
           OnChange    := Bokan.eventChange;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3562,10 +4652,8 @@ begin
         o := TScrollBar.Create(Bokan);
         with TScrollBar(o) do begin
           OnChange    := Bokan.eventChange;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3580,10 +4668,8 @@ begin
           OnMouseDown   := Bokan.eventMouseDown;
           OnMouseMove   := Bokan.eventMouseMove;
           OnMouseUp     := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
         end;
@@ -3598,10 +4684,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
         end;
@@ -3615,10 +4699,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
         end;
@@ -3633,10 +4715,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnMouseWheel:= Bokan.eventMouseWheel;
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
@@ -3650,10 +4730,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3701,10 +4779,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3725,10 +4801,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
         end;
@@ -3775,10 +4849,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
         end;
@@ -3789,10 +4861,8 @@ begin
         with TMonthCalendar(o) do begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -3818,10 +4888,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           Canvas.Font.Name := fontname;
           Canvas.Font.Size := fontsize;
         end;
@@ -3842,10 +4910,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           Font.Name := fontname;
           Font.Size := fontsize;
           Font.Charset := DEFAULT_CHARSET;
@@ -3863,10 +4929,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           Font.Name := fontname;
           Font.Size := fontsize;
           Font.Charset := DEFAULT_CHARSET;
@@ -3887,10 +4951,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           Font.Name := fontname;
           Font.Size := fontsize;
           Font.Charset := DEFAULT_CHARSET;
@@ -3938,10 +5000,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
         end;
@@ -3986,6 +5046,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
+          OnMouseEnter:= Bokan.eventMouseEnter;
+          OnMouseLeave:= Bokan.eventMouseLeave;
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -4006,10 +5068,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -4038,10 +5098,8 @@ begin
           OnMouseDown   := eventMouseDown;
           OnMouseMove   := eventMouseMove;
           OnMouseUp     := eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter  := eventMouseEnter;
           OnMouseLeave  := eventMouseLeave;
-          {$IFEND}
           OnActivate    := FormActivate;
           //OnPaint       := eventPaint;
           Font.Name     := fontname;
@@ -4092,10 +5150,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
         end;
       end;
     VCL_GUI_TIMER:
@@ -4116,10 +5172,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
           Font.Name := fontname;
@@ -4137,10 +5191,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -4162,10 +5214,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -4185,10 +5235,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -4209,10 +5257,8 @@ begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
           OnChange    := Bokan.eventChange;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -4231,10 +5277,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -4270,10 +5314,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          {$IF RTLVersion >=16}
           OnMouseEnter:= Bokan.eventMouseEnter;
           OnMouseLeave:= Bokan.eventMouseLeave;
-          {$IFEND}
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;

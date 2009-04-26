@@ -12,7 +12,7 @@ unit memoXP;
 interface
 
 uses
-  Windows, Messages, SysUtils, StdCtrls
+  Windows, Messages, SysUtils, StdCtrls, Classes, Controls
   {$IFDEF VER150},themes{$ENDIF}
   ;
 
@@ -24,8 +24,15 @@ type
   
   TMemoXP = class(TMemo)
   private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
     procedure SetSelText(Value: string);
     function GetSelectionB: TSelection;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
   protected
     function GetSelStart: Integer; reintroduce; override;
     function GetSelLength: Integer; reintroduce; override;
@@ -35,6 +42,11 @@ type
     // CaretPos
     function GetCaretPos: TPoint; reintroduce; override;
     procedure SetCaretPos(const Value: TPoint); reintroduce; override;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
   published
     property SelStart: Integer read GetSelStart write SetSelStart;
     property SelLength: Integer read GetSelLength write SetSelLength;
@@ -44,14 +56,26 @@ type
 
   TEditXP = class(TEdit)
   private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
     procedure SetSelText(Value: string);
     function GetSelectionB: TSelection;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
   protected
     function GetSelStart: Integer; override;
     function GetSelLength: Integer; override;
     function GetSelText: string; override;
     procedure SetSelStart(Value: Integer); override;
     procedure SetSelLength(Value: Integer); override;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
   published
     property SelStart: Integer read GetSelStart write SetSelStart;
     property SelLength: Integer read GetSelLength write SetSelLength;
@@ -63,6 +87,7 @@ function IsXp: Boolean;
 
 implementation
 
+uses Forms;
 
 function IsXp: Boolean;
 var
@@ -139,6 +164,17 @@ begin
     end;
     Inc(Result);
   end;
+end;
+
+procedure _TrackMouseEvent(handle:HWND;time:Cardinal);
+var
+  tme:TTrackMouseEvent;
+begin
+  tme.cbSize := sizeof(tme);
+  tme.dwFlags := TME_HOVER;
+  tme.hwndTrack := Handle;
+  tme.dwHoverTime := Time;
+  TrackMouseEvent(tme);
 end;
 
 { TMemoXP }
@@ -241,6 +277,28 @@ begin
   SendMessage(Handle, EM_REPLACESEL, 0, Longint(PChar(Value)));
 end;
 
+procedure TMemoXP.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TMemoXP.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TMemoXP.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
 { TEditXP }
 
 
@@ -313,6 +371,28 @@ end;
 procedure TEditXP.SetSelText(Value: string);
 begin
   SendMessage(Handle, EM_REPLACESEL, 0, Longint(PChar(Value)));
+end;
+
+procedure TEditXP.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  _TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TEditXP.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TEditXP.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
 end;
 
 end.
