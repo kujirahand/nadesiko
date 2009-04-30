@@ -181,6 +181,7 @@ function sys_calc_div(args: THiArray): PHiValue; stdcall;
 function sys_calc_mod(args: THiArray): PHiValue; stdcall;
 function sys_calc_add2(args: THiArray): PHiValue; stdcall;
 function sys_calc_pow(args: THiArray): PHiValue; stdcall;
+function sys_calc_baisu(args: THiArray): PHiValue; stdcall;
 
 function sys_calc_add_b(args: THiArray): PHiValue; stdcall;
 function sys_calc_sub_b(args: THiArray): PHiValue; stdcall;
@@ -4709,6 +4710,16 @@ begin
   // (3) ñﬂÇËílÇê›íË
   Result := c;
 end;
+
+function sys_calc_baisu(args: THiArray): PHiValue;
+var
+  a, b: Integer;
+begin
+  a := getArgInt(args, 0, True);
+  b := getArgInt(args, 1);
+  Result := hi_newBool((a Mod b) = 0);
+end;
+
 function sys_calc_pow(args: THiArray): PHiValue;
 var
   a, b, c: PHiValue;
