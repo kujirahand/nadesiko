@@ -24,9 +24,8 @@ uses
     ,DesignIntf
     ,DesignEditors;
   {$ELSE}
-    ,Dsgnintf
+    ,Dsgnintf;
   {$ENDIF}
-  ;
 
 procedure Register;
 
