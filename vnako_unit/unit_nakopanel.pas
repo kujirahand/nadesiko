@@ -6,6 +6,22 @@ uses
   Classes, Forms, StdCtrls, ExtCtrls, Graphics, Controls, Messages;
 
 type
+  TNakoImage = class(ExtCtrls.TImage)
+  private
+    FHoverTime : Cardinal;
+    FOnMouseEnter : TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseHover : TMouseEvent;
+    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  public
+    property HoverTime:Cardinal read FHoverTime write FHoverTime;
+    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
+  end;
+
   TNakoPanel = class(TPanel)
   private
     FColor: TColor;
@@ -26,6 +42,8 @@ type
       X, Y: Integer);
     procedure doMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure doMouseEnter(Sender:TObject);
+    procedure doMouseLeave(Sender:TObject);
     function getCanvas: TCanvas;
     function getText: string;
     procedure setText(const Value: string);
@@ -49,6 +67,29 @@ implementation
 
 uses Windows;
 
+ { TNakoImage }
+procedure TNakoImage.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+    FOnMouseEnter(self);
+  //_TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TNakoImage.CMMouseLeave(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
+
+procedure TNakoImage.WMMouseHover(var Msg:TMessage);
+begin
+  if Assigned(FOnMouseHover) then
+  begin
+    with TWMMouse(Msg) do
+      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
 { TNakoPanel }
 
 constructor TNakoPanel.Create(AOwner: TComponent);
@@ -68,6 +109,8 @@ begin
   FImage.OnMouseDown := doMouseDown;
   FImage.OnMouseMove := doMouseMove;
   FImage.OnMouseUp := doMouseUp;
+  FImage.OnMouseEnter:= doMouseEnter;
+  FImage.OnMouseLeave:= doMouseLeave;
 end;
 
 procedure TNakoPanel.doClick(Sender: TObject);
@@ -96,6 +139,16 @@ procedure TNakoPanel.doMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   if Assigned(OnMouseUp) then OnMouseUp(Self, Button, Shift, X, Y);
+end;
+
+procedure TNakoPanel.doMouseEnter(Sender: TObject);
+begin
+  if Assigned(OnMouseEnter) then OnMouseEnter(Self);
+end;
+
+procedure TNakoPanel.doMouseLeave(Sender: TObject);
+begin
+  if Assigned(OnMouseLeave) then OnMouseLeave(Self);
 end;
 
 function TNakoPanel.getCanvas: TCanvas;

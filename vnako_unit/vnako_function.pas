@@ -133,21 +133,6 @@ type
     name    : string;
     fileDrop: TFileDrop;
   end;
-  TImage = class(ExtCtrls.TImage)
-  private
-    FHoverTime : Cardinal;
-    FOnMouseEnter : TNotifyEvent;
-    FOnMouseLeave : TNotifyEvent;
-    FOnMouseHover : TMouseEvent;
-    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
-    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
-    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
-  public
-    property HoverTime:Cardinal read FHoverTime write FHoverTime;
-    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
-    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
-    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
-  end;
 
 var
   guiCount: Integer = 1; // ID = 0 : •êŠÍ
@@ -943,29 +928,6 @@ begin
 end;
 
 procedure TStrSortGrid.WMMouseHover(var Msg:TMessage);
-begin
-  if Assigned(FOnMouseHover) then
-  begin
-    with TWMMouse(Msg) do
-      FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
-  end;
-end;
-
-{TImage}
-procedure TImage.CMMouseEnter(var Msg:TMessage);
-begin
-  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
-    FOnMouseEnter(self);
-  //_TrackMouseEvent(Self.Handle,FHoverTime);
-end;
-
-procedure TImage.CMMouseLeave(var Msg:TMessage);
-begin
-  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
-    FOnMouseLeave(Self);
-end;
-
-procedure TImage.WMMouseHover(var Msg:TMessage);
 begin
   if Assigned(FOnMouseHover) then
   begin
@@ -4794,8 +4756,8 @@ begin
       end;
     VCL_GUI_IMAGE       :
       begin
-        o := TImage.Create(Bokan);
-        with TImage(o) do begin
+        o := TNakoImage.Create(Bokan);
+        with TNakoImage(o) do begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
           OnMouseDown := Bokan.eventMouseDown;
