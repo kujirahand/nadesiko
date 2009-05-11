@@ -45,6 +45,9 @@ const
   EVENT_PAINT       = '描画する時';
   EVENT_MOUSEENTER  = 'マウス入った時';
   EVENT_MOUSELEAVE  = 'マウス出た時';
+  EVENT_LISTOPEN    = 'リスト開いた時';
+  EVENT_LISTCLOSE   = 'リスト閉じた時';
+  EVENT_LISTSELECT  = 'リスト選択した時';
 
 const
 VCL_GUI_BUTTON = 0;
@@ -4604,6 +4607,9 @@ begin
           OnKeyUp     := Bokan.eventKeyUp;
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
+          OnDropDown  := Bokan.eventListOpen;
+          OnCloseUp   := Bokan.eventListClose;
+          OnSelect    := Bokan.eventListSelect;
           Font.Name := fontname;
           Font.Size := fontsize;
           Font.Charset := DEFAULT_CHARSET;
@@ -5226,6 +5232,9 @@ begin
           OnKeyUp     := Bokan.eventKeyUp;
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
+          OnDropDown  := Bokan.eventListOpen;
+          OnCloseUp   := Bokan.eventListClose;
+          OnSelect    := Bokan.eventListSelect;
           Font.Name := fontname;
           Font.Size := fontsize;
           Font.Charset := DEFAULT_CHARSET;
