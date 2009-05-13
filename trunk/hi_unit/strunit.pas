@@ -754,6 +754,22 @@ begin
       Inc(p,2); Continue;
     end;
     if p^ <> '<' then begin Inc(p); Continue; end;
+    // <!-- --> <![CDATA[]]> ‚È‚Ç‚Ì<!‚ÅŽn‚Ü‚é‚à‚Ì‚ð“Ç‚Ý”ò‚Î‚·
+    if (p+1)^ = '!' then
+    begin
+      Inc(p,2);
+      while p^ <> #0 do
+      begin
+        if p^ in LeadBytes then
+        begin
+          Inc(p,2); Continue;
+        end;
+        if p^ = '>' then begin Inc(p); Break; end;
+        Inc(p);
+      end;
+      Continue;
+    end;
+
     pp := p;
     Inc(pp);
     s := getTagName(pp);
@@ -794,6 +810,22 @@ begin
       Inc(p,2); Continue;
     end;
     if p^ <> '<' then begin Inc(p); Continue; end;
+    // <!-- --> <![CDATA[]]> ‚È‚Ç‚Ì<!‚ÅŽn‚Ü‚é‚à‚Ì‚ð“Ç‚Ý”ò‚Î‚·
+    if (p+1)^ = '!' then
+    begin
+      Inc(p,2);
+      while p^ <> #0 do
+      begin
+        if p^ in LeadBytes then
+        begin
+          Inc(p,2); Continue;
+        end;
+        if p^ = '>' then begin Inc(p); Break; end;
+        Inc(p);
+      end;
+      Continue;
+    end;
+    
     Inc(p);
     s := getTagName(p);
     skipTagEnd(p);
@@ -979,6 +1011,23 @@ begin
       if p^ = '<' then
       begin
         Inc(p);
+
+        // <!-- --> <![CDATA[]]> ‚È‚Ç‚Ì<!‚ÅŽn‚Ü‚é‚à‚Ì‚ð“Ç‚Ý”ò‚Î‚·
+        if p^ = '!' then
+        begin
+          Inc(p);
+          while p^ <> #0 do
+          begin
+            if p^ in LeadBytes then
+            begin
+              Inc(p,2); Continue;
+            end;
+            if p^ = '>' then begin Inc(p); Break; end;
+            Inc(p);
+          end;
+          Continue;
+        end;
+
         readTag;
       end else
       begin
