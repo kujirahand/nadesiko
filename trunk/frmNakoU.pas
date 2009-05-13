@@ -193,6 +193,9 @@ type
     procedure eventPaint(Sender: TObject);
     procedure eventMouseEnter(Sender: TObject);
     procedure eventMouseLeave(Sender: TObject);
+    procedure eventListOpen(Sender: TObject);
+    procedure eventListClose(Sender: TObject);
+    procedure eventListSelect(Sender: TObject);
     //
     procedure doEvent(group: PGuiInfo; eventName: string);
     //
@@ -1102,6 +1105,30 @@ var
 begin
   ginfo := GuiInfos[ TControl(Sender).Tag ];
   doEvent(@ginfo, EVENT_MOUSELEAVE);
+end;
+
+procedure TfrmNako.eventListOpen(Sender: TObject);
+var
+  ginfo: TGuiInfo;
+begin
+  ginfo := GuiInfos[ TControl(Sender).Tag ];
+  doEvent(@ginfo, EVENT_LISTOPEN);
+end;
+
+procedure TfrmNako.eventListClose(Sender: TObject);
+var
+  ginfo: TGuiInfo;
+begin
+  ginfo := GuiInfos[ TControl(Sender).Tag ];
+  doEvent(@ginfo, EVENT_LISTCLOSE);
+end;
+
+procedure TfrmNako.eventListSelect(Sender: TObject);
+var
+  ginfo: TGuiInfo;
+begin
+  ginfo := GuiInfos[ TControl(Sender).Tag ];
+  doEvent(@ginfo, EVENT_LISTSELECT);
 end;
 
 procedure TfrmNako.doEvent(group: PGuiInfo; eventName: string);
