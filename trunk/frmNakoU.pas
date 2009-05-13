@@ -1905,7 +1905,11 @@ begin
   if UseDebug then
   begin
     s := ExtractFilePath(ParamStr(0)) + 'report.txt';
-    nako_makeReport(PChar(s));
+    try
+      nako_makeReport(PChar(s));
+    except
+      MessageBox(Self.Handle,'report.txtÇÃçÏê¨Ç…é∏îsÇµÇ‹ÇµÇΩÅB','Ç»Ç≈ÇµÇ±',MB_OK or MB_ICONERROR);
+    end;
   end;
 end;
 
