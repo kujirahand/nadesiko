@@ -314,7 +314,7 @@ begin
   end;
 
   // default dir
-  s := ini.ReadString('setup', 'dir', ProgramFilesDir + HeadKey + '\');
+  s := ini.ReadString('setup', 'dir', ProgramFilesDir + 'nadesiko_lang\');
   edtDir.Text := s;
 
   // option
