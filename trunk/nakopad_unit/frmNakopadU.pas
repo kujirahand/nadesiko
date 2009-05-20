@@ -383,6 +383,15 @@ type
     panelTools: TPanel;
     Panel11: TPanel;
     lstInsertParts: TListBox;
+    N64: TMenuItem;
+    mnuDiffView: TMenuItem;
+    splitLR: TSplitter;
+    panelOtehon: TPanel;
+    edtC: TEditorEx;
+    panelOtehonBottom: TPanel;
+    panelDiff: TPanel;
+    edtDiff: TEditorEx;
+    btnDiff: TButton;
     procedure mnuCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure mnuViewLeftPanelClick(Sender: TObject);
@@ -594,6 +603,13 @@ type
     procedure mnuMakeBatchFileClick(Sender: TObject);
     procedure tabsMainDrawTab(Control: TCustomTabControl;
       TabIndex: Integer; const Rect: TRect; Active: Boolean);
+    procedure mnuDiffViewClick(Sender: TObject);
+    procedure edtCDrawLine(Sender: TObject; LineStr: String; X, Y,
+      Index: Integer; ARect: TRect; Selected: Boolean);
+    procedure edtBCaretMoved(Sender: TObject);
+    procedure btnDiffClick(Sender: TObject);
+    procedure edtBMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
   private
     { Private 宣言 }
     ini: TIniFile;
@@ -3021,13 +3037,8 @@ procedure TfrmNakopad.edtBKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   showRowCol;
-  if (FCodeDown = 13)and(FCodePress = 13)and(Key = 13) then
-  begin
-    autoIndent;
-    Exit;
-  end;
-  FCodeDown := 0; FCodePress := 0;
 end;
+
 procedure TfrmNakopad.edtBKeyPress(Sender: TObject; var Key: Char);
 begin
   FCodePress := Ord(Key);
@@ -5825,6 +5836,125 @@ begin
   with Control.Canvas do
   begin
     TextOut(Rect.Left + 2, Rect.Top + 2, cap);
+  end;
+end;
+
+procedure TfrmNakopad.mnuDiffViewClick(Sender: TObject);
+begin
+  if panelOtehon.Width < 8 then
+  begin
+    if edtC.Lines.Text = '' then
+    begin
+      edtC.Lines.Text := 'お手本をこちらに貼り付けます。';
+    end;
+    panelOtehon.Width := panelOtehon.Parent.Width div 2;
+    edtC.Font.Assign(edtB.Font);
+    edtC.Font.Height := edtB.Font.Height;
+    edtC.Margin.Assign(edtB.Margin);
+  end else
+  begin
+    panelOtehon.Width := 0;
+  end;
+  mnuDiffView.Checked := (panelOtehon.Width >= 8);
+end;
+
+procedure TfrmNakopad.edtCDrawLine(Sender: TObject; LineStr: String; X, Y,
+  Index: Integer; ARect: TRect; Selected: Boolean);
+var
+  flagDiff: Boolean;
+begin
+  //
+  flagDiff := False;
+  //
+  // if edtActive = edtC then Exit;
+  if edtActive.RowCount <= Index then
+  begin
+    flagDiff := True;
+  end else
+  begin
+    if convToHalfAnk(edtActive.LineString(Index)) <>
+      convToHalfAnk(edtC.LineString(Index)) then
+    begin
+      flagDiff := True;
+    end;
+  end;
+  if not Selected then
+  begin
+    if flagDiff then
+    begin
+      edtC.Canvas.Brush.Style := bsSolid;
+      edtC.Canvas.Brush.Color := RGB(255,200,200);
+      edtC.Canvas.Pen.Style   := psClear;
+      edtC.Canvas.Rectangle(ARect);
+      edtC.Canvas.TextRect(ARect, X, Y, LineStr);
+    end;
+  end;
+  //
+end;
+
+procedure TfrmNakopad.edtBCaretMoved(Sender: TObject);
+begin
+  if edtC.Width > 4 then
+  begin
+    if edtC.RowCount > edtB.Row then
+    begin
+      edtC.Row := edtB.Row;
+      edtC.Caret.Assign(edtB.Caret);
+    end;
+  end;
+end;
+
+procedure TfrmNakopad.btnDiffClick(Sender: TObject);
+var
+  res, bat, cmd, tmp1, tmp2: string;
+  i: Integer;
+begin
+  tmp1 := TempDir + '左(見本)';
+  tmp2 := TempDir + '右';
+  bat  := TempDir + 'nako_diff.bat';
+  edtC.Lines.SaveToFile(tmp1);
+  edtB.Lines.SaveToFile(tmp2);
+  cmd :=  'cd "'+TempDir+'"'#13#10+
+          'fc /N 左(見本) 右>a.txt'#13#10;
+  WriteTextFile(bat, cmd);
+  RunApp(bat, False);
+  Sleep(300);
+  res := TempDir + 'a.txt';
+  for i := 1 to 5 * 2 do
+  begin
+    if FileExists(res) then Break;
+    Sleep(500);
+  end;
+  if FileExists(res) then
+  begin
+    ReadTextFile(res, cmd);
+    edtDiff.Lines.Text := cmd;
+  end;
+end;
+
+procedure TfrmNakopad.edtBMouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+var
+  s: string;
+  c: Integer;
+begin
+  showRowCol;
+  // 左バーをクリック
+  if X < edtB.LeftMargin then
+  begin
+    //
+    c := edtB.Row;
+    if c < 0 then Exit;
+    edtB.SelLength := 0;
+    s := edtB.LineString(c);
+    if Copy(s, Length(s)-12+1, 12) = '。デバッグ。' then
+    begin
+      s := Copy(s, 1, Length(s)-12);
+    end else
+    begin
+      s := s + '。デバッグ。';
+    end;
+    edtB.Lines.Strings[c] := s;
   end;
 end;
 
