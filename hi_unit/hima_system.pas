@@ -930,7 +930,7 @@ begin
   AddFunc('再生', 'FILEを', 498, sys_musPlay,'音楽ファイルFILEを再生する。','さいせい');
   AddFunc('停止', '',    499, sys_musStop,'「再生」した音楽を停止する。','ていし');
   AddFunc('演奏', 'FILEを', 495, sys_musPlay,'音楽ファイルFILEを演奏する。『再生』と同じ。','えんそう');
-  AddFunc('秒録音', 'FILEへSEC|FILEに', 485, sys_musRec,'ファイルFILEへSEC秒だけ録音する。','びょうろくおん');
+  AddFunc('秒録音', 'FILEへSEC|FILEに', 485, sys_musRec,'ファイルFILE(WAV形式)へSEC秒だけ録音する。','びょうろくおん');
   //-MCI
   AddFunc('MCI開く','FILEをAで',  490,sys_mciOpen, '音楽ファイルFILEをエイリアスAで開く。(MIDI/WAV/MP3/WMAなどが再生可能)','MCIひらく');
   AddFunc('MCI再生','Aを',        491,sys_mciPlay, '「MCI開く」で開いたエイリアスAを再生する。','MCIさいせい');
