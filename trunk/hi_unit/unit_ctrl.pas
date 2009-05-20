@@ -334,6 +334,7 @@ function sub_EnumWindowProc( h: HWND; lp: LPARAM): BOOL; stdcall;
 var
   ps, ts, s: string;
   pstr: PString;
+  txt: string;
 begin
   Result := True; //Continue
   pstr := PString(lp);
@@ -345,8 +346,10 @@ begin
   // ID
   s := IntToStr(GetWindowLong(h, GWL_ID));
   //------------------------------------------------------------------------
-  //               handle              class                     text                     id
-  pstr^ := pstr^ + IntToStr(h) + ',' + string(PChar(ps)) + ',' + string(PChar(ts)) + ',' + s + #13#10;
+  //               handle              class                   text              id
+  txt := string(PChar(ts));
+  txt := StringReplace(txt, '"', '""', [rfReplaceAll]);
+  pstr^ := pstr^ + IntToStr(h) + ',"' + string(PChar(ps)) + '","' + txt + '",' + s + #13#10;
 end;
 
 
