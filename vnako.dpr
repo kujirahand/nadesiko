@@ -3,6 +3,8 @@ program vnako;
 {%File 'component\hedit251\heverdef.inc'}
 
 uses
+  SysUtils,
+  Classes,
   Forms,
   frmNakoU in 'frmNakoU.pas' {frmNako},
   vnako_function in 'vnako_unit\vnako_function.pas',

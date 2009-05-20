@@ -1,9 +1,9 @@
 object frmNako: TfrmNako
   Left = 192
   Top = 130
-  Width = 598
-  Height = 398
   Caption = #12394#12391#12375#12371
+  ClientHeight = 371
+  ClientWidth = 590
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,7 +12,6 @@ object frmNako: TfrmNako
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
-  Position = poDefaultPosOnly
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
