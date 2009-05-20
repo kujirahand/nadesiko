@@ -13,8 +13,7 @@ unit StrUnit;
 ------------------------------------------------------------------------------*)
 interface
 uses
-  Windows, SysUtils, Classes {$IFDEF VER140},Variants{$ENDIF}
-  {$IFDEF VER150},Variants{$ENDIF},imm, Forms;
+  Windows, SysUtils, Classes, Variants,imm, Forms;
 
 type
   TCharSet = set of Char;
