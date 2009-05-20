@@ -3037,6 +3037,12 @@ procedure TfrmNakopad.edtBKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   showRowCol;
+  if (FCodeDown = 13)and(FCodePress = 13)and(Key = 13) then
+  begin
+    autoIndent;
+    Exit;
+  end;
+  FCodeDown := 0; FCodePress := 0;
 end;
 
 procedure TfrmNakopad.edtBKeyPress(Sender: TObject; var Key: Char);
