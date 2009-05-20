@@ -530,31 +530,32 @@ begin
   inherited CreateFountainColors;
 
   // 色分けの生成
-  FAnk := CreateFountainColor;
-  FAsmBlock := CreateFountainColor;
-  FComment := CreateFountainColor;
-  FDBCS := CreateFountainColor;
-  FInt := CreateFountainColor;
-  FStr := CreateFountainColor;
-  FSymbol := CreateFountainColor;
-  FJosi := CreateFountainColor;
-  FDefLine := CreateFountainColor;
-  FMember := CreateFountainColor;
+  FAnk        := CreateFountainColor;
+  FAsmBlock   := CreateFountainColor;
+  FComment    := CreateFountainColor;
+  FDBCS       := CreateFountainColor;
+  FInt        := CreateFountainColor;
+  FStr        := CreateFountainColor;
+  FSymbol     := CreateFountainColor;
+  FJosi       := CreateFountainColor;
+  FDefLine    := CreateFountainColor;
+  FMember     := CreateFountainColor;
 
   // デフォルト配色の決定
-  FInt.Color      := clGreen;
-  FComment.Color  := clMaroon;
+  FInt.Color      := clNavy;
   FStr.Color      := clNavy;
-  FSymbol.Color   := clBlue;
+  FComment.Color  := clGreen;
+  FSymbol.Color   := clTeal;
   FJosi.Color     := clMaroon;
 
-  FDefLine.Color  := clRed;
+  FDefLine.Color  := clFuchsia;
   FDefLine.Style  := [fsBold];
 
   FMember.Color   := clBlue;
   //FMember.Style   := [fsBold];
 
-  Reserve.Style   := [fsBold];
+  Reserve.Color   := clNavy;
+  Reserve.Style   := [];
 
 end;
 
@@ -632,7 +633,7 @@ begin
   Item := Brackets.Add;
   Item.LeftBracket := '/*';
   Item.RightBracket := '*/';
-  Item.ItemColor.Color := clMaroon;
+  Item.ItemColor.Color := clGreen;
 
 end;
 
