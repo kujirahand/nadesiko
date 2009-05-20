@@ -49,7 +49,7 @@ object frmNakoInstaller: TfrmNakoInstaller
     Top = 0
     Width = 470
     Height = 336
-    ActivePage = tabStart
+    ActivePage = tabOption
     Align = alClient
     MultiLine = True
     ParentShowHint = False
