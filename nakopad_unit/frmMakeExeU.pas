@@ -87,7 +87,7 @@ var
   f,s: string;
   p: TFileMixWriter;
   i: Integer;
-  tempExe: string;
+  tempExe, temporaryExe: string;
 
   procedure _rewriteicon(exefile: string);
   var
@@ -206,9 +206,11 @@ begin
       end;
   end;
 
-  WritePackExeFile(f, tempExe, AppPath+'packfile.bin');
-  _rewriteIcon(f);
-  
+  temporaryExe := TempDir + 'nako' + FormatDateTime('yymmddhhnnsszzz', Now) + '.exe';
+  CopyFile(PChar(tempExe),PChar(temporaryExe), False);
+  _rewriteIcon(temporaryExe);
+  WritePackExeFile(f, temporaryExe, AppPath+'packfile.bin');
+
   //=========================
   // 依存ファイルのコピー
   _copyPlugins;
