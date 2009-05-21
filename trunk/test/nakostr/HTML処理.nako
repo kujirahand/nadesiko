@@ -1,0 +1,40 @@
+
+# Cf.@256
+●テスト_NAKOSTR_HTML処理_タグ切り出し
+　SCRIPTとは文字列=『<script type="text/javascript">//<![CDATA[/*It's test code!*/
+function test() {
+ var hoge = document.getElementById(hoge);
+ hoge.innerHTML = "<strong>It\s the test XHTML source for nadesiko.</strong>";
+}
+// ]]></script>』の改行を空に置き換え
+　PARAとは文字列=『<p id="hoge"><!--It's test!-->
+   これはなでしこのテスト用XHTMLソースです。
+  </p><!--段落<p>ここまで-->』
+　SRCとは文字列=「<?xml version="1.0" encoding="Shift_JIS"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="ja" lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS" />
+  <title>テスト</title>
+{SCRIPT}
+ </head>
+ <body onload="test();">
+  <h1>なでしこのテストですよ</h1>
+{PARA}
+ </body>
+</html>」
+　# script要素の内容のCDATAセクションを正しく処理できているか
+　SRCから`script`のタグ切り出し。
+　それとSCRIPTでテスト実行。
+　# p要素の内容のコメントを正しく処理できているか
+　SRCから`body/p`の階層タグ切り出し
+　それとPARAでテスト実行。
+
+/*
+●テスト_NAKOSTR_HTML処理_タグ削除
+　TESTとは文字列=`TEST STRING`
+　SRCとは文字列=「<mydata><![CDATA[<{TEST}>]]></mydata>」
+　SRCからタグ削除
+　それとTESTでテスト実行
+#*/
+
