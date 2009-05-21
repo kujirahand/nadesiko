@@ -15,6 +15,7 @@ msagent.dll,4520-4599
 nakodate.dll,4600-4650
 nakomidi.dll,7000-7030
 nako_exif.dll,7100-7199
+nakolua.dll,7200-7299
 ---
 ---pro
 nako_pdf.dll,6500-6549
