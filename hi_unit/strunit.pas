@@ -724,6 +724,41 @@ var
     end;
   end;
 
+  function skipSection(var p: PChar):Boolean;
+  begin
+    // <!-- --> <![CDATA[]]> などの<!で始まるものを読み飛ばす
+    Result := False;
+    if (p+1)^ = '!' then
+    begin
+      Inc(p,2);
+      if AnsiStrComp(p,'--') = 0 then
+      begin
+        while p^ <> #0 do
+        begin
+          if p^ in LeadBytes then
+          begin
+            Inc(p,2); Continue;
+          end;
+          if AnsiStrComp(p,'-->') = 0 then begin Inc(p,3); Break; end;
+          Inc(p);
+        end;
+      end
+      else if AnsiStrComp(p,'[CDATA[') = 0 then
+      begin
+        while p^ <> #0 do
+        begin
+          if p^ in LeadBytes then
+          begin
+            Inc(p,2); Continue;
+          end;
+          if AnsiStrComp(p,']]>') = 0 then begin Inc(p,3); Break; end;
+          Inc(p);
+        end;
+      end;
+      Result := True;
+    end;
+  end;
+
   function isBlankTag(p:Pchar):boolean;
   begin
     Result:=False;
@@ -754,21 +789,7 @@ begin
       Inc(p,2); Continue;
     end;
     if p^ <> '<' then begin Inc(p); Continue; end;
-    // <!-- --> <![CDATA[]]> などの<!で始まるものを読み飛ばす
-    if (p+1)^ = '!' then
-    begin
-      Inc(p,2);
-      while p^ <> #0 do
-      begin
-        if p^ in LeadBytes then
-        begin
-          Inc(p,2); Continue;
-        end;
-        if p^ = '>' then begin Inc(p); Break; end;
-        Inc(p);
-      end;
-      Continue;
-    end;
+    if skipSection(p) then Continue;
 
     pp := p;
     Inc(pp);
@@ -810,22 +831,8 @@ begin
       Inc(p,2); Continue;
     end;
     if p^ <> '<' then begin Inc(p); Continue; end;
-    // <!-- --> <![CDATA[]]> などの<!で始まるものを読み飛ばす
-    if (p+1)^ = '!' then
-    begin
-      Inc(p,2);
-      while p^ <> #0 do
-      begin
-        if p^ in LeadBytes then
-        begin
-          Inc(p,2); Continue;
-        end;
-        if p^ = '>' then begin Inc(p); Break; end;
-        Inc(p);
-      end;
-      Continue;
-    end;
-    
+    if skipSection(p) then Continue;
+
     Inc(p);
     s := getTagName(p);
     skipTagEnd(p);
@@ -1013,17 +1020,32 @@ begin
         Inc(p);
 
         // <!-- --> <![CDATA[]]> などの<!で始まるものを読み飛ばす
-        if p^ = '!' then
+        if (p)^ = '!' then
         begin
           Inc(p);
-          while p^ <> #0 do
+          if AnsiStrComp(p,'--') = 0 then
           begin
-            if p^ in LeadBytes then
+            while p^ <> #0 do
             begin
-              Inc(p,2); Continue;
+              if p^ in LeadBytes then
+              begin
+                Inc(p,2); Continue;
+              end;
+              if AnsiStrComp(p,'-->') = 0 then begin Inc(p,3); Break; end;
+              Inc(p);
             end;
-            if p^ = '>' then begin Inc(p); Break; end;
-            Inc(p);
+          end
+          else if AnsiStrComp(p,'[CDATA[') = 0 then
+          begin
+            while p^ <> #0 do
+            begin
+              if p^ in LeadBytes then
+              begin
+                Inc(p,2); Continue;
+              end;
+              if AnsiStrComp(p,']]>') = 0 then begin Inc(p,3); Break; end;
+              Inc(p);
+            end;
           end;
           Continue;
         end;
