@@ -1,9 +1,10 @@
 object frmNako: TfrmNako
   Left = 192
   Top = 130
+  Width = 598
+  Height = 398
+  AutoScroll = True
   Caption = #12394#12391#12375#12371
-  ClientHeight = 371
-  ClientWidth = 590
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

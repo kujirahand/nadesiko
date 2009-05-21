@@ -2307,6 +2307,10 @@ object frmNakopad: TfrmNakopad
         Caption = #12502#12521#12531#12463#25991#23383#12434#26126#31034#12377#12427
         OnClick = mnuShowBlankClick
       end
+      object mnuInsDebug: TMenuItem
+        Caption = #24038#12496#12540#12463#12522#12483#12463#12391#12300#12487#12496#12483#12464#12301#12434#25407#20837#12377#12427
+        OnClick = mnuInsDebugClick
+      end
       object N60: TMenuItem
         Caption = '-'
       end
