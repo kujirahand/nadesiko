@@ -141,6 +141,7 @@ var
   guiCount: Integer = 1; // ID = 0 : 母艦
   GuiInfos: array [0..2047] of TGuiInfo; // 最大 2048 もあればいいでしょう...
   EventObject: PHiValue = nil;
+  parentObj: TComponent = nil;
 
 // なでしこに必要な関数を追加する
 procedure RegistCallbackFunction(bokanHandle: Integer);
@@ -4450,6 +4451,21 @@ begin
   bokan.freeObjList.Add(obj);
 end;
 
+function vcl_setDefaultParentObj(h: DWORD): PHiValue; stdcall;
+var
+  defp: PHiValue;
+begin
+  defp := nako_getFuncArg(h, 0);
+  if defp.VType <> varGroup then
+  begin
+    parentObj := Bokan;
+  end else
+  begin
+    parentObj := getGui(defp) as TComponent;
+  end;
+  Result := nil;
+end;
+
 function vcl_create(h: DWORD): PHiValue; stdcall;
 var
   g,n,t: PHiValue;
@@ -4459,6 +4475,7 @@ var
   fontsize: Integer;
   fontname: string;
   i: Integer;
+  defp: PHiValue;
 begin
   // (1) 引数の取得
   g := nako_getFuncArg(h, 0); // group
@@ -4471,13 +4488,15 @@ begin
   getFont(bokan.Canvas);
   fontname := bokan.Canvas.Font.Name;
   fontsize := bokan.Canvas.Font.Size;
-  
+
+  if parentObj = nil then parentObj := Bokan;
+
   // (2) 処理
   //todo: VCL_CREATE
   case oType of
     VCL_GUI_BUTTON:
       begin
-        o := TButton.Create(Bokan);
+        o := TButton.Create(parentObj);
         with TButton(o) do begin
           OnClick := Bokan.eventClick;
           OnMouseDown := Bokan.eventMouseDown;
@@ -4494,7 +4513,7 @@ begin
       end;
     VCL_GUI_BIT_BUTTON:
       begin
-        o := TBitBtn.Create(Bokan);
+        o := TBitBtn.Create(parentObj);
         with TBitBtn(o) do begin
           OnClick := Bokan.eventClick;
           OnMouseDown := Bokan.eventMouseDown;
@@ -4511,7 +4530,7 @@ begin
       end;
     VCL_GUI_PIC_BUTTON:
       begin
-        o := TSpeedButton.Create(Bokan);
+        o := TSpeedButton.Create(parentObj);
         with TSpeedButton(o) do begin
           OnClick := Bokan.eventClick;
           OnMouseDown := Bokan.eventMouseDown;
@@ -4526,7 +4545,7 @@ begin
       end;
     VCL_GUI_EDIT        :
       begin
-        o := TEditXP.Create(Bokan);
+        o := TEditXP.Create(parentObj);
         with TEditXP(o) do begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
@@ -4548,7 +4567,7 @@ begin
       end;
     VCL_GUI_MEMO        :
       begin
-        o := TMemoXP.Create(Bokan);
+        o := TMemoXP.Create(parentObj);
         with TMemoXP(o) do begin
           ScrollBars := ssBoth;
           OnClick     := Bokan.eventClick;
@@ -4571,7 +4590,7 @@ begin
       end;
     VCL_GUI_LIST        :
       begin
-        o := TListBox.Create(Bokan);
+        o := TListBox.Create(parentObj);
         with TListBox(o) do begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
@@ -4594,7 +4613,7 @@ begin
       end;
     VCL_GUI_COMBO       :
       begin
-        o := TComboBox.Create(Bokan);
+        o := TComboBox.Create(parentObj);
         with TComboBox(o) do begin
           AutoComplete := False;
           OnClick     := Bokan.eventClick;
@@ -4617,7 +4636,7 @@ begin
       end;
     VCL_GUI_BAR         :
       begin
-        o := TScrollBar.Create(Bokan);
+        o := TScrollBar.Create(parentObj);
         with TScrollBar(o) do begin
           OnChange    := Bokan.eventChange;
           OnMouseEnter:= Bokan.eventMouseEnter;
@@ -4631,7 +4650,7 @@ begin
       end;
     VCL_GUI_PROGRESS    :
       begin
-        o := TProgressBar.Create(Bokan);
+        o := TProgressBar.Create(parentObj);
         with TProgressBar(o) do begin
           OnMouseDown   := Bokan.eventMouseDown;
           OnMouseMove   := Bokan.eventMouseMove;
@@ -4644,7 +4663,7 @@ begin
       end;
     VCL_GUI_PANEL       :
       begin
-        o := TNakoPanel.Create(Bokan);
+        o := TNakoPanel.Create(parentObj);
         with TNakoPanel(o) do begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
@@ -4660,7 +4679,7 @@ begin
       end;
     VCL_GUI_GROUPBOX    :
       begin
-        o := TGroupBox.Create(Bokan);
+        o := TGroupBox.Create(parentObj);
         with TGroupBox(o) do begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
@@ -4675,7 +4694,7 @@ begin
       end;
     VCL_GUI_SCROLL_PANEL :
       begin
-        o := TScrollBox.Create(Bokan);
+        o := TScrollBox.Create(parentObj);
         with TScrollBox(o) do begin
           OnClick   := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
@@ -4692,7 +4711,7 @@ begin
       end;
     VCL_GUI_CHECK       :
       begin
-        o := TCheckBox.Create(Bokan);
+        o := TCheckBox.Create(parentObj);
         with TCheckBox(o) do begin
           OnClick     := Bokan.eventClick;
           OnMouseDown := Bokan.eventMouseDown;
@@ -4712,7 +4731,7 @@ begin
       end;
     VCL_GUI_RADIO       :
       begin
-        o := TRadioGroup.Create(Bokan);
+        o := TRadioGroup.Create(parentObj);
         with TRadioGroup(o) do begin
           OnClick   := Bokan.eventClick;
           OnDragOver  := Bokan.eventDragOver;
@@ -4724,7 +4743,7 @@ begin
       end;
     VCL_GUI_RADIOGROUP:
       begin
-        o := TRadioGroup.Create(Bokan);
+        o := TRadioGroup.Create(parentObj);
         with TRadioGroup(o) do begin
           OnClick   := Bokan.eventClick;
           OnDragOver  := Bokan.eventDragOver;
@@ -4736,7 +4755,7 @@ begin
       end;
     VCL_GUI_GRID        :
       begin
-        o := TStrSortGrid.Create(Bokan);
+        o := TStrSortGrid.Create(parentObj);
         with TStrSortGrid(o) do begin
           FixedCols := 0;
           DefaultColWidth := 32;
@@ -4762,7 +4781,7 @@ begin
       end;
     VCL_GUI_IMAGE       :
       begin
-        o := TNakoImage.Create(Bokan);
+        o := TNakoImage.Create(parentObj);
         with TNakoImage(o) do begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
@@ -4777,7 +4796,7 @@ begin
       end;
     VCL_GUI_ANIME:
       begin
-        o := TAnimeBox.Create(Bokan);
+        o := TAnimeBox.Create(parentObj);
         with TAnimeBox(o) do begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
@@ -4790,7 +4809,7 @@ begin
       end;
     VCL_GUI_LABEL       :
       begin
-        o := TLabel.Create(Bokan);
+        o := TLabel.Create(parentObj);
         with TLabel(o) do begin
           AutoSize := False;
           Transparent := True;
@@ -4810,7 +4829,7 @@ begin
       end;
     VCL_GUI_TABPAGE     :
       begin
-        o := TPageControl.Create(Bokan);
+        o := TPageControl.Create(parentObj);
         with TPageControl(o) do begin
           OnChange    := Bokan.eventChange;
           OnResize    := Bokan.eventSizeChange;
@@ -4825,7 +4844,7 @@ begin
       end;
     VCL_GUI_CALENDER    :
       begin
-        o := TMonthCalendar.Create(Bokan);
+        o := TMonthCalendar.Create(parentObj);
         with TMonthCalendar(o) do begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
@@ -4842,7 +4861,7 @@ begin
       end;
     VCL_GUI_TREEVIEW    :
       begin
-        o := THiTreeView.Create(Bokan);
+        o := THiTreeView.Create(parentObj);
         with THiTreeView(o) do begin
           ReadOnly := True;
           OnClick     := Bokan.eventClick;
@@ -4864,7 +4883,7 @@ begin
       end;
     VCL_GUI_LISTVIEW    :
       begin
-        o := THiListView.Create(Bokan);
+        o := THiListView.Create(parentObj);
         with THiListView(o) do begin
           MultiSelect := False;
           ReadOnly := True;
@@ -4887,7 +4906,7 @@ begin
       end;
     VCL_GUI_STATUSBAR   :
       begin
-        o := TStatusBar.Create(Bokan);
+        o := TStatusBar.Create(parentObj);
         with TStatusBar(o) do begin
           SimplePanel := True;
           OnClick := Bokan.eventClick;
@@ -4906,7 +4925,7 @@ begin
       end;
     VCL_GUI_TOOLBAR     :
       begin
-        o := TToolBar.Create(Bokan);
+        o := TToolBar.Create(parentObj);
         with TToolBar(o) do begin
           Flat := True;
           Transparent := False;
@@ -4928,7 +4947,7 @@ begin
       end;
     VCL_GUI_WEBBROWSER  :
       begin
-        o := TUIWebBrowser.Create(Bokan);
+        o := TUIWebBrowser.Create(parentObj);
         with TUIWebBrowser(o) do begin
           OnBeforeNavigate2 := Bokan.eventBrowserNavigate;
           OnNavigateComplete2 := Bokan.eventNavigateComplete;
@@ -4940,7 +4959,7 @@ begin
       end;
     VCL_GUI_SPINEDIT    :
       begin
-        o := TSpinEdit.Create(Bokan);
+        o := TSpinEdit.Create(parentObj);
         with TSpinEdit(o) do begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
@@ -4960,7 +4979,7 @@ begin
       end;
     VCL_GUI_TRACKBOX    :
       begin
-        o := TTrackBox.Create(Bokan);
+        o := TTrackBox.Create(parentObj);
         with TTrackBox(o) do begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
@@ -4976,7 +4995,7 @@ begin
       end;
     VCL_GUI_TEDITOR     :
       begin
-        o := THiEditor.Create(Bokan);
+        o := THiEditor.Create(parentObj);
         if Bokan.edtPropNormal = nil then
         begin
           Bokan.edtPropNormal := TEditorProp.Create(Bokan);
@@ -5029,7 +5048,7 @@ begin
       end;
     VCL_GUI_PROPEDIT    :
       begin
-        o := TValueListEditor.Create(Bokan);
+        o := TValueListEditor.Create(parentObj);
         with TValueListEditor(o) do begin
           OnClick    := Bokan.eventClick;
           OnDblClick := Bokan.eventDblClick;
@@ -5077,21 +5096,21 @@ begin
       end;
     VCL_GUI_MAINMENU:
       begin
-        o := TMainMenu.Create(Bokan);
+        o := TMainMenu.Create(parentObj);
         TMainMenu(o).AutoHotkeys := maManual;
         TMainMenu(o).AutoLineReduction := maManual;
         if Bokan.Menu = nil then Bokan.Menu := TMainMenu(o);
       end;
     VCL_GUI_POPUPMENU:
       begin
-        o := TPopupMenu.Create(Bokan);
+        o := TPopupMenu.Create(parentObj);
         TPopupMenu(o).AutoHotkeys := maManual;
         TPopupMenu(o).AutoLineReduction := maManual;
         //with TPopupMenu(o) do begin end;
       end;
     VCL_GUI_MENUITEM:
       begin
-        o := TMenuItem.Create(nil);
+        o := TMenuItem.Create(parentObj);
         TMenuItem(o).AutoHotkeys := maParent;
         TMenuItem(o).AutoLineReduction := maParent;
 
@@ -5101,7 +5120,7 @@ begin
       end;
     VCL_GUI_SPLITTER:
       begin
-        o := TSplitter.Create(nil);
+        o := TSplitter.Create(parentObj);
         with TSplitter(o) do begin
           OnMoved := Bokan.eventChange;
         end;
@@ -5112,7 +5131,7 @@ begin
       end;
     VCL_GUI_TOOLBUTTON:
       begin
-        o := TToolButton.Create(nil);
+        o := TToolButton.Create(parentObj);
         with TToolButton(o) do begin
           OnClick    := Bokan.eventClick;
           OnMouseDown := Bokan.eventMouseDown;
@@ -5124,7 +5143,7 @@ begin
       end;
     VCL_GUI_TIMER:
       begin
-        o := TTimer.Create(nil);
+        o := TTimer.Create(parentObj);
         with TTImer(o) do
         begin
           Enabled := False;
@@ -5134,7 +5153,7 @@ begin
     // UNICODE COMPONENT
     VCL_GUI_UBUTTON:
       begin
-        o := TTntButton.Create(Bokan);
+        o := TTntButton.Create(parentObj);
         with TTntButton(o) do begin
           OnClick := Bokan.eventClick;
           OnMouseDown := Bokan.eventMouseDown;
@@ -5151,7 +5170,7 @@ begin
       end;
     VCL_GUI_UEDIT        :
       begin
-        o := TTntEdit.Create(Bokan);
+        o := TTntEdit.Create(parentObj);
         with TTntEdit(o) do begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
@@ -5173,7 +5192,7 @@ begin
       end;
     VCL_GUI_UMEMO        :
       begin
-        o := TTntMemo.Create(Bokan);
+        o := TTntMemo.Create(parentObj);
         with TTntMemo(o) do begin
           ScrollBars := ssBoth;
           OnClick     := Bokan.eventClick;
@@ -5196,7 +5215,7 @@ begin
       end;
     VCL_GUI_ULIST        :
       begin
-        o := TTntListBox.Create(Bokan);
+        o := TTntListBox.Create(parentObj);
         with TTntListBox(o) do begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
@@ -5219,7 +5238,7 @@ begin
       end;
     VCL_GUI_UCOMBO       :
       begin
-        o := TTntComboBox.Create(Bokan);
+        o := TTntComboBox.Create(parentObj);
         with TTntComboBox(o) do begin
           AutoComplete := False;
           OnClick     := Bokan.eventClick;
@@ -5242,7 +5261,7 @@ begin
       end;
     VCL_GUI_UCHECK       :
       begin
-        o := TTntCheckBox.Create(Bokan);
+        o := TTntCheckBox.Create(parentObj);
         with TTntCheckBox(o) do begin
           OnClick     := Bokan.eventClick;
           OnMouseDown := Bokan.eventMouseDown;
@@ -5262,7 +5281,7 @@ begin
       end;
     VCL_GUI_URADIO       :
       begin
-        o := TTntRadioGroup.Create(Bokan);
+        o := TTntRadioGroup.Create(parentObj);
         with TTntRadioGroup(o) do begin
           OnClick   := Bokan.eventClick;
           OnDragOver  := Bokan.eventDragOver;
@@ -5274,7 +5293,7 @@ begin
       end;
     VCL_GUI_UGRID        :
       begin
-        o := TTntStringGrid.Create(Bokan);
+        o := TTntStringGrid.Create(parentObj);
         with TTntStringGrid(o) do begin
           FixedCols := 0;
           DefaultColWidth := 32;
@@ -5299,7 +5318,7 @@ begin
       end;
     VCL_GUI_ULABEL       :
       begin
-        o := TTntLabel.Create(Bokan);
+        o := TTntLabel.Create(parentObj);
         with TTntLabel(o) do begin
           AutoSize := False;
           Transparent := True;
@@ -5334,7 +5353,7 @@ begin
   if (o is TControl)and(not(o is TfrmNako)) then
   begin
     with TControl(o) do begin
-      Parent := Bokan;
+      Parent := TWinControl(parentObj);
       Left := hi_int(baseX);
       if (hi_int(baseY) + Height) < bokan.ClientHeight then
       begin
@@ -8383,6 +8402,7 @@ begin
   // AddIntVar('ツールボタン', 0, 6031, '(GUI部品)','つーるぼたん');
   // AddIntVar('アニメ', 0, 6033, '(GUI部品)','あにめ');
   // AddIntVar('画像ボタン', 0, 6034, '(GUI部品)','がぞうぼたん');
+  // AddIntVar('スクロールパネル', 0, 6035, '(GUI部品)','すくろーるぱねる');
 
   //-イベント
   AddIntVar('インスタンスハンドル', HInstance,      2200, 'インスタンスハンドル', 'いんすたんすはんどる');
@@ -8399,6 +8419,7 @@ begin
   AddIntVar('アプリケーションハンドル', Application.Handle, 2212, 'アプリケーションのウィンドウハンドル','あぷりけーしょんはんどる');
 
   //-VCL関連
+  AddFunc('デフォルト親部品設定', '{グループ}OBJに|OBJへ|OBJを', 2318, vcl_setDefaultParentObj, '基準となる親部品を指定する', 'でふぉるとおやぶひんせってい');
   AddFunc('VCL_CREATE', '{グループ}A,NAME,TYPE', 2300, vcl_create, 'VCL GUI部品を作成','VCL_CREATE');
   AddFunc('VCL_GET','OBJ,PROP',   2301, vcl_getprop, 'VCL GUI部品のプロパティを取得(OBJにはGUIオブジェクトを直接指定)','VCL_GET');
   AddFunc('VCL_SET','OBJ,PROP,V', 2302, vcl_setprop, 'VCL GUI部品のプロパティを設定(OBJにはGUIオブジェクトを直接指定)','VCL_SET');
