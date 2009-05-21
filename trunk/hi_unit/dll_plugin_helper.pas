@@ -255,7 +255,10 @@ begin
   if chk(ExtractFilePath(ParamStr(0)) + fname) then Exit;
   // apppath + lib
   if chk(ExtractFilePath(ParamStr(0)) + 'lib\' + fname) then Exit;
-
+  // plug-ins
+  f := nako_getPluginsDir;
+  if chk(f + fname) then Exit;
+  
   // ç≈å„Ç‹Ç≈å©Ç¬Ç©ÇÁÇ»Ç©Ç¡ÇΩ
   Result := False;
 end;

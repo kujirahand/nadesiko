@@ -61,7 +61,8 @@ begin
   if _lua_loaded = False then
   begin
     dll := 'lua5.1.dll';
-    if not CheckFileExists(dll) then raise Exception.Create('lua.dll‚ª‚ ‚è‚Ü‚¹‚ñB');
+    if not CheckFileExists(dll) then
+      raise Exception.Create('lua5.1.dll‚ª‚ ‚è‚Ü‚¹‚ñB');
     Lua_LoadLibrary(dll);
     _lua_loaded := True;
   end;
