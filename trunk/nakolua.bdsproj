@@ -131,7 +131,7 @@
 		</Directories>
 		<Parameters>
 			<Parameters Name="RunParams">test.nako</Parameters>
-			<Parameters Name="HostApplication">vnako.exe</Parameters>
+			<Parameters Name="HostApplication">C:\svn\nadesiko\vnako.exe</Parameters>
 			<Parameters Name="Launcher"></Parameters>
 			<Parameters Name="UseLauncher">False</Parameters>
 			<Parameters Name="DebugCWD"></Parameters>

@@ -1438,7 +1438,7 @@ end;
 
 procedure TfrmNako.ResizeBackBmp;
 var
-  a, tmp: TBitmap;
+  tmp: TBitmap;
 begin
   // ビットマップの作り直し
   tmp := TBitmap.Create;
@@ -1450,7 +1450,7 @@ begin
     Brush.Color := Self.Color;
     Brush.Style := bsSolid;
     Pen.Color   := Self.Color;
-    Pen.Style   := psSolid;
+    Pen.Style   := psClear;
     Rectangle(0,0,tmp.Width,tmp.Height);
   end;
 
@@ -1458,9 +1458,12 @@ begin
   tmp.Canvas.Draw(0, 0, backBmp);
 
   //
-  a := backBmp;
-  backBmp := tmp;
-  FreeAndNil(a);
+  if backBmp = nil then
+  begin
+    backBmp := TBitmap.Create;
+  end;
+  backBmp.Assign(tmp);
+  FreeAndNil(tmp);
   //
   with backBmp do begin
     Tag := Self.Tag;

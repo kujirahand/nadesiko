@@ -392,6 +392,7 @@ type
     panelDiff: TPanel;
     edtDiff: TEditorEx;
     btnDiff: TButton;
+    mnuInsDebug: TMenuItem;
     procedure mnuCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure mnuViewLeftPanelClick(Sender: TObject);
@@ -610,6 +611,7 @@ type
     procedure btnDiffClick(Sender: TObject);
     procedure edtBMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure mnuInsDebugClick(Sender: TObject);
   private
     { Private 宣言 }
     ini: TIniFile;
@@ -1018,6 +1020,7 @@ begin
     edtB.Fountain := edtA.Fountain;
   end;
   changeBlankMark(ini.ReadBool('Edit','ShowBlank', False));
+  mnuInsDebug.Checked := ini.ReadBool('Edit','mnuInsDebug', True);
 
   // タブ
   sheetAction.TabVisible  := ini.ReadBool('tab', 'sheetAction.visible', sheetAction.TabVisible);
@@ -5947,6 +5950,8 @@ const
   debug = ';デバッグ;';
 begin
   showRowCol;
+  if not mnuInsDebug.Checked then Exit;
+
   // 左バーをクリック
   if X < edtB.LeftMargin then
   begin
@@ -5972,6 +5977,12 @@ begin
     end;
     edtB.Row := c;
   end;
+end;
+
+procedure TfrmNakopad.mnuInsDebugClick(Sender: TObject);
+begin
+  mnuInsDebug.Checked := not mnuInsDebug.Checked;
+  ini.WriteBool('Edit', 'mnuInsDebug', mnuInsDebug.Checked);
 end;
 
 end.
