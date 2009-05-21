@@ -888,8 +888,8 @@ begin
   FDataBuffer[FBufferCount].ptr  :=ptr;
   FDataBuffer[FBufferCount].src  :=src;
   FDataBuffer[FBufferCount].dtype:=dtype;
-  inc(FBufferCount);
   Result:=FDataBuffer[FBufferCount].ptr;
+  inc(FBufferCount);
 end;
 
 procedure THimaRecord.BufferClear;
@@ -897,7 +897,7 @@ var i:integer;
 begin
   if FBufferCount <> 0 then
   begin
-    for i:=0 to FBufferCount do begin
+    for i:=0 to FBufferCount - 1 do begin
       FreeMem(FDataBuffer[i].ptr);
     end;
     FBufferCount := 0;
@@ -911,7 +911,7 @@ var
 begin
   if FBufferCount <> 0 then
   begin
-    for i:=0 to FBufferCount do
+    for i:=0 to FBufferCount - 1 do
     begin
       with FDataBuffer[i] do
       begin
@@ -1365,28 +1365,49 @@ var
         SetPointerIndex(Index, (value^.ptr));
       end;
       REC_DTYPE_4FLOAT:   begin
-        GetMem(fptr,4);
-        fptr^:= hi_float(value);
-        SetBuffer(fptr,value,REC_DTYPE_4FLOAT);
+        if (value^.VType = varStr) and (value^.Size > 4) then
+        begin
+          fptr := Pointer(value^.ptr_s);
+        end
+        else
+        begin
+          GetMem(fptr,4);
+          fptr^:= hi_float(value);
+          SetBuffer(fptr,value,REC_DTYPE_4FLOAT);
+        end;
         SetPointerIndex(Index, fptr);
       end;
       REC_DTYPE_8REAL:    begin
-        GetMem(dptr,8);
-        dptr^:= hi_float(value);
-        SetBuffer(dptr,value,REC_DTYPE_8REAL);
+        if (value^.VType = varStr) and (value^.Size > 8) then
+        begin
+          dptr := Pointer(value^.ptr_s);
+        end
+        else
+        begin
+          GetMem(dptr,8);
+          dptr^:= hi_float(value);
+          SetBuffer(dptr,value,REC_DTYPE_8REAL);
+        end;
         SetPointerIndex(Index, dptr);
       end;
       REC_DTYPE_8INT64,
       REC_DTYPE_8QWORD:
       begin
-        f:=hi_float(value);
-        while f >= pow2_64 do f := f - pow2_64;
-        while f < -pow2_64 do f := f + pow2_64 + 1;
-        if f > High(Int64) then f := Low(Int64)+f-High(Int64)-1;
-        if f <  Low(Int64) then f := High(Int64)+f-Low(Int64)+1;
-        GetMem(iptr,8);
-        iptr^:= Round(f);
-        SetBuffer(iptr,value,r.DType[2]);
+        if (value^.VType = varStr) and (value^.Size > 8) then
+        begin
+          iptr := Pointer(value^.ptr_s);
+        end
+        else
+        begin
+          f:=hi_float(value);
+          while f >= pow2_64 do f := f - pow2_64;
+          while f < -pow2_64 do f := f + pow2_64 + 1;
+          if f > High(Int64) then f := Low(Int64)+f-High(Int64)-1;
+          if f <  Low(Int64) then f := High(Int64)+f-Low(Int64)+1;
+          GetMem(iptr,8);
+          iptr^:= Round(f);
+          SetBuffer(iptr,value,r.DType[2]);
+        end;
         SetPointerIndex(Index, iptr);
       end;
       REC_DTYPE__EXT:     SetPAnsiCharIndex(Index, value^.ptr);
