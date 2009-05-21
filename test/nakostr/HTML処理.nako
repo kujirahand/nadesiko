@@ -1,5 +1,3 @@
-;デバッグ;
-
 # Cf.@256
 ●テスト_NAKOSTR_HTML処理_タグ切り出し
 　SCRIPTとは文字列=『<script type="text/javascript">//<![CDATA[/*It's test code!*/
@@ -10,7 +8,7 @@ function test() {
 // ]]></script>』の改行を空に置き換え
 　PARAとは文字列=『<p id="hoge"><!--It's test!-->
    これはなでしこのテスト用XHTMLソースです。
-  </p><!--段落<p>ここまで-->』
+  <!--段落<p>ここまで--></p>』
 　SRCとは文字列=「<?xml version="1.0" encoding="Shift_JIS"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xml:lang="ja" lang="ja" xmlns="http://www.w3.org/1999/xhtml">
@@ -28,13 +26,14 @@ function test() {
 　SRCから`script`のタグ切り出し。
 　それとSCRIPTでテスト実行。
 　# p要素の内容のコメントを正しく処理できているか
+　SRCから`p`のタグ切り出し
+　それとPARAでテスト実行。
 　SRCから`body/p`の階層タグ切り出し
 　それとPARAでテスト実行。
 
 ●テスト_NAKOSTR_HTML処理_タグ削除
-　TESTとは文字列=`TEST STRING`
-　SRCとは文字列=「<mydata><![CDATA[<{TEST}>]]></mydata>」
+　TESTとは文字列=`<TEST STRING>`
+　SRCとは文字列=「<mydata><![CDATA[{TEST}]]></mydata>」
 　SRCからタグ削除
-　＃それとTESTでテスト実行
-　それと空でテスト実行＃タグ削除がCDATAに対応していないため(TODO?)
+　それとTESTでテスト実行
 
