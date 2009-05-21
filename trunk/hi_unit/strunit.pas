@@ -608,9 +608,12 @@ end;
 {HTML Ç©ÇÁ É^ÉOÇéÊÇËèúÇ≠}
 function DeleteTag(const html: string): String;
 var
-  i: Integer;
+  i, j: Integer;
   txt: String;
   TagIn: Boolean;
+const
+  CDATA_IN  = '<![CDATA[';
+  CDATA_OUT = ']]>';
 begin
     txt := Trim(html);
     if txt = '' then Exit;
@@ -631,6 +634,24 @@ begin
             Inc(i,2);
             Continue;
         end;
+
+        // Check "<![CDATA[ .. ]]>"
+        if Copy(txt, i, Length(CDATA_IN)) = CDATA_IN then
+        begin
+          Inc(i, Length(CDATA_IN));
+          j := JPosEx(CDATA_OUT, txt, i);
+          if j = 0 then // MAYBE BROKEN?
+          begin
+            Result := Result + CDATA_IN + txt;
+            Break;
+          end;
+          Result := Result + Copy(txt, i, (j-i));
+          i := j;
+          Inc(i, Length(CDATA_OUT));
+          Continue;
+        end;
+        
+
         case txt[i] of
             '<': //TAG in
             begin
@@ -728,32 +749,32 @@ var
   begin
     // <!-- --> <![CDATA[]]> Ç»Ç«ÇÃ<!Ç≈énÇ‹ÇÈÇ‡ÇÃÇì«Ç›îÚÇŒÇ∑
     Result := False;
-    if (p+1)^ = '!' then
+    if (p+1)^ <> '!' then Exit;
+
+    Inc(p,2); // skip <!
+    if AnsiStrLComp(p,'--', 2) = 0 then
     begin
-      Inc(p,2);
-      if AnsiStrComp(p,'--') = 0 then
+      while p^ <> #0 do
       begin
-        while p^ <> #0 do
+        if p^ in LeadBytes then
         begin
-          if p^ in LeadBytes then
-          begin
-            Inc(p,2); Continue;
-          end;
-          if AnsiStrComp(p,'-->') = 0 then begin Inc(p,3); Break; end;
-          Inc(p);
+          Inc(p,2); Continue;
         end;
-      end
-      else if AnsiStrComp(p,'[CDATA[') = 0 then
+        if AnsiStrLComp(p,'-->', 3) = 0 then begin Inc(p,3); Break; end;
+        Inc(p);
+      end;
+      Result := True;
+    end
+    else if AnsiStrLComp(p,'[CDATA[', 7) = 0 then
+    begin
+      while p^ <> #0 do
       begin
-        while p^ <> #0 do
+        if p^ in LeadBytes then
         begin
-          if p^ in LeadBytes then
-          begin
-            Inc(p,2); Continue;
-          end;
-          if AnsiStrComp(p,']]>') = 0 then begin Inc(p,3); Break; end;
-          Inc(p);
+          Inc(p,2); Continue;
         end;
+        if AnsiStrLComp(p,']]>', 3) = 0 then begin Inc(p,3); Break; end;
+        Inc(p);
       end;
       Result := True;
     end;
@@ -789,8 +810,10 @@ begin
       Inc(p,2); Continue;
     end;
     if p^ <> '<' then begin Inc(p); Continue; end;
-    if skipSection(p) then Continue;
-
+    if skipSection(p) then
+    begin
+      Continue;
+    end;
     pp := p;
     Inc(pp);
     s := getTagName(pp);
