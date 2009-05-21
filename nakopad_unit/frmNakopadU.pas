@@ -5942,7 +5942,9 @@ procedure TfrmNakopad.edtBMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
   s: string;
-  c: Integer;
+  c, debugLen: Integer;
+const
+  debug = ';デバッグ;';
 begin
   showRowCol;
   // 左バーをクリック
@@ -5951,16 +5953,24 @@ begin
     //
     c := edtB.Row;
     if c < 0 then Exit;
+    debugLen := Length(debug);
     edtB.SelLength := 0;
     s := edtB.LineString(c);
-    if Copy(s, Length(s)-12+1, 12) = '。デバッグ。' then
+    if Copy(s, Length(s)-debugLen+1, debugLen) = debug then
     begin
-      s := Copy(s, 1, Length(s)-12);
+      s := Copy(s, 1, Length(s)-debugLen);
     end else
     begin
-      s := s + '。デバッグ。';
+      s := s + debug;
     end;
-    edtB.Lines.Strings[c] := s;
+    if c >= edtB.Lines.Count then
+    begin
+      edtB.Lines.Insert(0, s);
+    end else
+    begin
+      edtB.Lines.Strings[c] := s;
+    end;
+    edtB.Row := c;
   end;
 end;
 
