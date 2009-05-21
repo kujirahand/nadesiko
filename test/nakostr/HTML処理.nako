@@ -1,3 +1,4 @@
+;デバッグ;
 
 # Cf.@256
 ●テスト_NAKOSTR_HTML処理_タグ切り出し
@@ -30,11 +31,10 @@ function test() {
 　SRCから`body/p`の階層タグ切り出し
 　それとPARAでテスト実行。
 
-/*
 ●テスト_NAKOSTR_HTML処理_タグ削除
 　TESTとは文字列=`TEST STRING`
 　SRCとは文字列=「<mydata><![CDATA[<{TEST}>]]></mydata>」
 　SRCからタグ削除
-　それとTESTでテスト実行
-#*/
+　＃それとTESTでテスト実行
+　それと空でテスト実行＃タグ削除がCDATAに対応していないため(TODO?)
 
