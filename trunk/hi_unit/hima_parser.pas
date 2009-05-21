@@ -1359,6 +1359,12 @@ var
 
       // DLL関数名(C風)を得る
       funcName := Trim(getToken_s(cDec, '('));
+      if PAnsiChar(funcName)^ = '*' then
+      begin
+        ret := 'P' + ret;
+        System.Delete(funcName, 1, 1);
+      end;      
+
       // 引数を得る
       sarg := Trim(getToken_s(cDec, ')'));
       if SameText(sarg,'VOID') then sarg := '';
@@ -1429,7 +1435,7 @@ var
           h := LoadLibraryA(PAnsiChar(dllName));
         end;
         if h <= 0 then begin
-          raise Exception.Create('DLL「'+dllName+'」が見当たりません。');
+          raise Exception.Create('DLL「'+dllName+'」が読み込めません。エラーコード:'+IntToStr(GetLastError));
         end;
       end;
       HiSystem.DllHInstList.AddNum(h);
