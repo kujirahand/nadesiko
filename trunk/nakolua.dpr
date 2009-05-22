@@ -49,6 +49,42 @@ begin
   Result := 0;              // 戻り値は0
 end;
 
+function nakolua_print(L: Plua_State): Integer; cdecl;
+var
+  s, src: AnsiString;
+  r: PHiValue;
+begin
+  s := LuaToString(L, 1); // arg 1
+  // ESCAPE "{"
+  s := StringReplace(s, '』', '』&「{二重カッコ閉じ}」&『', [rfReplaceAll]);
+  src := Format('『%s』を表示。',[s]);
+  if not nako_evalEx(PAnsiChar(src), r) then
+  begin
+    //
+  end;
+  nako_var_free(r);
+  //
+  Result := 0;            // 戻り値は0
+end;
+
+function nakolua_eval(L: Plua_State): Integer; cdecl;
+var
+  s, src: AnsiString;
+  r: PHiValue;
+begin
+  s := LuaToString(L, 1); // arg 1
+  // ESCAPE "{"
+  s := StringReplace(s, '』', '』&「{二重カッコ閉じ}」&『', [rfReplaceAll]);
+  src := Format('『%s』をナデシコする。',[s]);
+  if not nako_evalEx(PAnsiChar(src), r) then
+  begin
+    //
+  end;
+  LuaPushString(L, hi_str(r));
+  nako_var_free(r);
+  //
+  Result := 1;            // 戻り値は0
+end;
 //------------------------------------------------------------------------------
 // 登録する関数
 //------------------------------------------------------------------------------
@@ -69,8 +105,10 @@ begin
   // library
   KLua.OpenLibs;
   // add function
-  lua_register(KLua.Handle, 'nako_get', nakolua_getVar);
-  lua_register(KLua.Handle, 'nako_set', nakolua_setVar);
+  lua_register(KLua.Handle, 'nako_get',   nakolua_getVar);
+  lua_register(KLua.Handle, 'nako_set',   nakolua_setVar);
+  lua_register(KLua.Handle, 'nako_eval',  nakolua_eval);
+  lua_register(KLua.Handle, 'print',      nakolua_print);
 end;
 
 function procExecLua(h: DWORD): PHiValue; stdcall;
@@ -149,6 +187,7 @@ begin
 end;
 function PluginFin: DWORD; stdcall;
 begin
+  KLua.Close;
   Result := 0;
 end;
 
