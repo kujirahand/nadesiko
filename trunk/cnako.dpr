@@ -14,7 +14,8 @@ uses
   mt19937 in 'hi_unit\mt19937.pas',
   hima_stream in 'hi_unit\hima_stream.pas',
   mini_file_utils in 'hi_unit\mini_file_utils.pas',
-  EasyMasks in 'hi_unit\EasyMasks.pas';
+  EasyMasks in 'hi_unit\EasyMasks.pas',
+  nadesiko_version in 'nadesiko_version.pas';
 
 var
   _nako_loader: TDnakoLoader;
