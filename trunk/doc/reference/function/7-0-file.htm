@@ -1,0 +1,123 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>ファイルのコピーや圧縮について</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">ファイルのコピーや圧縮について</A></H1>
+<DIV class="lead">　ファイルのコピーや圧縮・解凍を手軽に行えるようになっています。定期的にファイルのバックアップを取るのは大切です。</DIV>
+<DIV class="index"><A href="7-0-file.htm#head1">■ファイルのコピー</A><BR>
+<A href="7-0-file.htm#head2">■特殊フォルダ</A><BR>
+<A href="7-0-file.htm#head3">■圧縮と解凍</A><BR>
+<A href="7-0-file.htm#head4">■列挙</A><BR>
+<A href="7-0-file.htm#head5">■パス操作</A><BR>
+<A href="7-0-file.htm#head6">■ドライブ情報</A><BR>
+<A href="7-0-file.htm#head7">■ファイル情報</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">ファイルのコピー</A></H2>
+
+<P></P>
+<P>ファイルのコピーは、『AからBへファイルコピー』のように行います。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「c:\a.txt」</SPAN>から<SPAN class="code-string">「d:\a.txt」</SPAN>へファイルコピー<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head2">特殊フォルダ</A></H2>
+
+<P></P>
+<P>なでしこでは、デスクトップや、マイドキュメントといった特殊フォルダが予め定義されています。</P>
+<DIV class="code"><CODE>
+マイドキュメントを表示。<BR>
+デスクトップを表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head3">圧縮と解凍</A></H2>
+
+<P></P>
+<P>標準の状態では、LZH形式の圧縮と解凍が行えます。7-zip.dll&nbsp;や&nbsp;cab32.dll&nbsp;をダウンロードして、なでしこのフォルダか、システムフォルダへコピーすると、ZIPやCAB形式の圧縮解凍が行えます。</P>
+<DIV class="code"><CODE>
+マイドキュメントを<SPAN class="code-string">「{デスクトップ}test.lzh」</SPAN>へ圧縮。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>圧縮・解凍形式は拡張子により区別されます。</P>
+<P></P>
+<H2><A name="head4">列挙</A></H2>
+
+<P></P>
+<P>『ファイル列挙』ではフォルダ内のファイルを列挙することができます。</P>
+<P>以下のプログラムはマイドキュメントにある拡張子が「.doc」（ワードのファイル）を列挙して表示します。</P>
+<DIV class="code"><CODE>
+マイドキュメント＆<SPAN class="code-string">「*.doc」</SPAN>のファイル列挙して言う。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>『全ファイル列挙』を使うと、サブフォルダ以下の全てのファイルを列挙できます。『全ファイル列挙』で列挙されるのはフルパス付のファイル名です。</P>
+<DIV class="code"><CODE>
+マイドキュメント＆<SPAN class="code-string">「*.doc」</SPAN>の全ファイル列挙して言う。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+<H2><A name="head5">パス操作</A></H2>
+
+<P></P>
+<P>なでしこでは、WINDOWSのパスからファイル名を取り出したり、パスの終端へ「\」をつけるなどのパス操作のための命令があります。</P>
+<DIV class="code"><CODE>
+基本パスは<SPAN class="code-string">「c:\a\b\」</SPAN><BR>
+対象パスは<SPAN class="code-string">「..\z\a.txt」</SPAN><BR>
+基本パスを対象で相対パス展開して表示<BR>
+<SPAN class="code-string">「---」</SPAN>を表示。<BR>
+パスは<SPAN class="code-string">「c:\a\b\c\test.txt」</SPAN><BR>
+パスからパス抽出して表示。<BR>
+パスからファイル名抽出して表示。<BR>
+パスから拡張子抽出して表示。<BR>
+パスを<SPAN class="code-string">「.exe」</SPAN>に拡張子変更して表示。<BR>
+<SPAN class="code-string">「---」</SPAN>を表示。<BR>
+<SPAN class="code-string">「c:\a」</SPAN>の終端パス追加して表示<BR>
+<SPAN class="code-string">「c:\a\」</SPAN>の終端パス削除して表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head6">ドライブ情報</A></H2>
+
+<P></P>
+<P>ドライブ情報は『使用可能ドライブ取得』で取得できます。</P>
+<DIV class="code"><CODE>
+使用可能ドライブ取得<BR>
+反復<BR>
+　　ドライブ名はそれ<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;種類はドライブ名のドライブ種類<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<SPAN class="code-string">「｛ドライブ名｝（｛種類｝）」</SPAN>を表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+<H2><A name="head7">ファイル情報</A></H2>
+
+<P></P>
+<P>ファイルのサイズや日付を取得することもできます。</P>
+<DIV class="code"><CODE>
+Fは<SPAN class="code-string">「{ランタイムパス}vnako.exe」</SPAN><BR>
+Fのファイルサイズを表示<BR>
+Fのファイル日付を表示<BR>
+
+</CODE></DIV>
+
+<P></P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

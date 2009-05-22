@@ -1,0 +1,74 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>なでしこでWindowsAPIおよび外部ＤＬＬを呼ぶ方法</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">なでしこでWindowsAPIおよび外部ＤＬＬを呼ぶ方法</A></H1>
+<DIV class="lead">なでしこでは、外部ＤＬＬで宣言している関数をなでしこの命令としてインポートすることができる。</DIV>
+<DIV class="index"><A href="sys-1-DLL-WindowsAPI.htm#head1">■【書式】</A><BR>
+<A href="sys-1-DLL-WindowsAPI.htm#head2">■DLLを呼ぶ際に注意すべきこと</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">【書式】</A></H2>
+
+<P></P>
+<DIV class="code"><CODE>
+<SPAN class="code-function">＊なでしこ名（引数宣言）=&nbsp;DLL(&quot;DLL名&quot;,&quot;C言語宣言&quot;)</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<UL>
+  <LI>なでしこ名
+</UL>
+
+<P>　なでしこの命令の名前</P>
+<UL>
+  <LI>引数宣言
+</UL>
+
+<P></P>
+<P>　必ずＣ言語宣言と同じ数の引数を書くこと</P>
+<UL>
+  <LI>ＤＬＬ名
+</UL>
+
+<P>　ＤＬＬの名前</P>
+<UL>
+  <LI>Ｃ言語宣言
+</UL>
+
+<P></P>
+<P>　例えばダイアログを表示するＡＰＩの場合、以下のように宣言ができる。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-function">●MessageBox(h,t,c,u)&nbsp;=DLL(&quot;user32.dll&quot;,&nbsp;&quot;int&nbsp;MessageBoxA(</SPAN><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;HWND&nbsp;hWnd,	//&nbsp;handle&nbsp;of&nbsp;owner&nbsp;window<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;LPCTSTR&nbsp;lpText,	//&nbsp;address&nbsp;of&nbsp;text&nbsp;in&nbsp;message&nbsp;box<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;LPCTSTR&nbsp;lpCaption,	//&nbsp;address&nbsp;of&nbsp;title&nbsp;of&nbsp;message&nbsp;box&nbsp;&nbsp;<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;UINT&nbsp;uType&nbsp;	//&nbsp;style&nbsp;of&nbsp;message&nbsp;box<BR>
+)&quot;)<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>基本的に、引数の型として利用できるのは、以下の９種類だがWindowsSDKでよく使われるUINTやLPCTSTRやHWND、BOOLなどは、以下の型に単純置換されるようになっている。</P>
+<P>CHAR/BYTE/SHORT/WORD/LONG/DWORD/POINTER/CHAR*/VOID</P>
+<P>また、&quot;LP*&quot;&nbsp;&quot;P*&quot;はPOINTERに。&quot;H*&quot;はDWORD型に単純置換される。</P>
+<P></P>
+<H2><A name="head2">DLLを呼ぶ際に注意すべきこと</A></H2>
+
+<P></P>
+<P>なでしこでは内部に、文字列、整数や実数など実際の型をバイナリで管理している。</P>
+<P>ＤＬＬ呼び出しで、宣言にポインタ型があった場合、単純に変数のデータポインタを引数と与えてしまう。</P>
+<P>そのため、文字列のポインタを与えるところで、整数へのポインタを与えると、内部でアクセス違反が発生してしまう。文字列を引数に持つＤＬＬ関数を呼ぶ場合には、</P>
+<P>変数&nbsp;=&nbsp;TOSTR(変数)</P>
+<P>として、呼び出す変数の型に注意すること。整数へのポインタを利用したい場合は、</P>
+<P>変数P&nbsp;=&nbsp;POINTER(整数変数)&nbsp;</P>
+<P>と変数データへのポインタを取得して関数を呼ぶ。</P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

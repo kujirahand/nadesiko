@@ -1,0 +1,91 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>MS&nbsp;Agent&nbsp;を使う</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">MS&nbsp;Agent&nbsp;を使う</A></H1>
+<DIV class="lead">マイクロソフトのAgentを利用すると、キャラクターをアニメーションさせたり、日本語や英語などを話したりすることができます。</DIV>
+<DIV class="index"><A href="11-0-msagent.htm#head1">■コンポーネントのダウンロード</A><BR>
+<A href="11-0-msagent.htm#head2">■インストールできたか確認</A><BR>
+<A href="11-0-msagent.htm#head3">■一番簡単なサンプル</A><BR>
+<A href="11-0-msagent.htm#head4">■任意のエージェントをロードする</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">コンポーネントのダウンロード</A></H2>
+
+<P></P>
+<P>MS&nbsp;Agent&nbsp;を使うには、基本コンポーネント、読み上げ用のコンポーネント言語コンポーネントの３種類のインストールが必要になります。</P>
+<P>Windows&nbsp;XPだと、基本コンポーネントだけが標準でインストールされていたりしてなかなかややこしいのです。</P>
+<P></P>
+<P>　リンク先は英語ですが、上から順にダウンロードしてインストールすればなんとなくインストールできます。</P>
+<A href="http://www.microsoft.com/msagent/downloads/user.asp">→ダウンロードページ</A>
+<P></P>
+<H2><A name="head2">インストールできたか確認</A></H2>
+
+<P></P>
+<P>インスールできたかどうかは以下のプログラムで確認できます。実行してエラーが表示されなければインストールが成功しています。</P>
+<DIV class="code"><CODE>
+エージェント動作チェック。<BR>
+もし、それがいいえならば<SPAN class="code-string">「基本コンポーネントがありません」</SPAN>と言う<BR>
+<BR>
+<SPAN class="code-string">「日本語」</SPAN>のエージェント言語チェック<BR>
+もし、それがいいえならば<SPAN class="code-string">「日本語の言語コンポーネントがありません」</SPAN>と言う<BR>
+<BR>
+<SPAN class="code-string">「英語」</SPAN>のエージェント言語チェック<BR>
+もし、それがいいえならば<SPAN class="code-string">「英語の言語コンポーネントがありません」</SPAN>と言う<BR>
+<BR>
+エージェントSAPIチェック<BR>
+もし、それがいいえならば<SPAN class="code-string">「読み上げエンジンがありません」</SPAN>と言う<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head3">一番簡単なサンプル</A></H2>
+
+<P></P>
+<P>Agent機能を使うには、まず、『エージェントマーリン召喚』命令で、エージェントを呼び出します。&nbsp;</P>
+<DIV class="code"><CODE>
+エージェントマーリン召喚。<BR>
+<SPAN class="code-string">「こんにちは」</SPAN>とエージェント言う。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>Agent&nbsp;は何かの表情を表現することができます。</P>
+<DIV class="code"><CODE>
+エージェントマーリン召喚<BR>
+<SPAN class="code-string">「挨拶」</SPAN>のエージェント動作<BR>
+<SPAN class="code-string">「こんにちは」</SPAN>とエージェント言う<BR>
+<SPAN class="code-string">「混乱」</SPAN>のエージェント動作<BR>
+<SPAN class="code-string">「困ったなー」</SPAN>とエージェント言う<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>動作できる表情は、「挨拶」「混乱」「祝福」「説明」「発表」「読む」「書く」「休む」「驚く」などです。これは各エージェントのキャラクターにより異なります。</P>
+<P></P>
+<H2><A name="head4">任意のエージェントをロードする</A></H2>
+
+<P></P>
+<P>マーリン以外にもいろいろなエージェントがいます。エージェントのダウンロードは以下のサイトよりできます。</P>
+<A href="http://www.agentry.net/catalog/index.php">→agentry.net</A>
+<P></P>
+<P>任意のエージェントのロードは以下のように行います。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「Robby.acs」</SPAN>から<SPAN class="code-string">「Robby」</SPAN>をエージェント召喚。<BR>
+<SPAN class="code-string">「ロボットです」</SPAN>とエージェント言う。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+<P></P>
+<P></P>
+<P></P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

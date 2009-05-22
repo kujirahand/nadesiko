@@ -1,0 +1,79 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>文字列処理について</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">文字列処理について</A></H1>
+<DIV class="lead">　基本的な文章の整形の命令について。</DIV>
+<DIV class="index"><A href="2-0-str.htm#head1">■文章の整形</A><BR>
+　　<A href="2-0-str.htm#head2">┣文字列の置換</A><BR>
+　　<A href="2-0-str.htm#head3">┣指定の形式に変換</A><BR>
+　　<A href="2-0-str.htm#head4">┣区切る</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">文章の整形</A></H2>
+
+<P></P>
+<P>基本的な整形処理は、標準の組み込み命令として用意されています。拡張命令は、プラグインのplug-ins\nakostr.dllに用意されています。</P>
+<H3><A name="head2">文字列の置換</A></H3>
+
+<P></P>
+<P>文字列を置換するには、『置換』命令を使います。文字列の一番はじめの文字列だけを置換するには『単置換』命令を使います。</P>
+<P>以下のプログラムを実行すると、「とけい」の「い」が「る」に置換され、「とける」と表示されます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「とけい」</SPAN>の<SPAN class="code-string">「い」</SPAN>を<SPAN class="code-string">「る」</SPAN>に置換。<BR>
+それを表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H3><A name="head3">指定の形式に変換</A></H3>
+
+<P></P>
+<P>ゼロで埋めて数字を表示するには『ゼロ埋め』命令を使います。また、通貨形式にカンマで区切るには『通貨形式』命令を使います。</P>
+<DIV class="code"><CODE>
+123を5でゼロ埋めして表示。&nbsp;<SPAN class="code-comment">#&nbsp;00123</SPAN><BR>
+123456789を通貨形式で表示。<SPAN class="code-comment">#&nbsp;123,456,789</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>また、もっと細かく形式指定したい場合には『形式指定』命令を使います。以下は『指定形式』の使用例です。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-comment">#&nbsp;---&nbsp;空白文字で指定数字を埋める</SPAN><BR>
+10を<SPAN class="code-string">「%5d」</SPAN>で形式指定して表示。&nbsp;<SPAN class="code-comment">#&nbsp;___10</SPAN><BR>
+<SPAN class="code-comment">#&nbsp;---&nbsp;ゼロで数字を埋める</SPAN><BR>
+10を<SPAN class="code-string">「%.5d」</SPAN>で形式指定して表示。<SPAN class="code-comment">#&nbsp;00010</SPAN><BR>
+<SPAN class="code-comment">#&nbsp;---&nbsp;浮動小数点の下２桁だけ表示</SPAN><BR>
+3.1415を<SPAN class="code-string">「%.2f」</SPAN>で形式指定して表示。<SPAN class="code-comment">#&nbsp;3.14</SPAN><BR>
+<SPAN class="code-comment">#&nbsp;---&nbsp;金額表示</SPAN><BR>
+12345を<SPAN class="code-string">「%m」</SPAN>で形式指定して表示。<SPAN class="code-comment">#&nbsp;\12,345</SPAN><BR>
+<SPAN class="code-comment">#&nbsp;---&nbsp;16進数表示</SPAN><BR>
+255を<SPAN class="code-string">「%X」</SPAN>で形式指定して表示。<SPAN class="code-comment">#&nbsp;FF</SPAN><BR>
+255を<SPAN class="code-string">「%.4X」</SPAN>で形式指定して表示。<SPAN class="code-comment">#&nbsp;00FF</SPAN><BR>
+<SPAN class="code-comment">#&nbsp;---&nbsp;文字列を空白で埋めて表示</SPAN><BR>
+<SPAN class="code-string">「abc」</SPAN>を<SPAN class="code-string">「%5s」</SPAN>で形式指定して表示。<SPAN class="code-comment">#__abc</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<H3><A name="head4">区切る</A></H3>
+
+<P></P>
+<P>『区切る』命令を使うと特定の文字列で文字列を区切って配列に分けることができます。</P>
+<P>以下のプログラムは『区切る』命令と『配列結合』命令を使った例です。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「a,b,c」</SPAN>を<SPAN class="code-string">「,」</SPAN>で区切る。<BR>
+それを<SPAN class="code-string">「:」</SPAN>で配列結合して表示。<SPAN class="code-comment">#a:b:c</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

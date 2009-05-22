@@ -1,0 +1,227 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META name="keyword" content="プログラミング言語, なでしこ, 定型処理, バッチ処理, 教育">
+<META name="description" content="なでしこは日本語で簡単にプログラミングができる簡単ツールです。">
+<META name="GENERATOR" content="IBM WebSphere Homepage Builder V6.0.1 for Windows">
+<TITLE>定型処理編</TITLE>
+<LINK rel="stylesheet" href="../nako_man.css" type="text/css">
+</HEAD>
+<BODY text="#4d4d4d" link="#000099" vlink="#582c56" alink="#cc00cc">
+<CENTER>
+<TABLE border="0" width="780" cellpadding="0" cellspacing="0">
+  <TBODY>
+    <TR>
+      <TD align="right"><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">定型処理編</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="../index.htm"><IMG src="../../logo_nadesiko_title.gif" width="293" height="76" border="0" alt="なでしこ"></A></TD>
+    </TR>
+    <TR>
+      <TD><IMG src="../../line.gif" width="780" height="8" border="0"></TD>
+    </TR>
+    <TR>
+      <TD>
+      <TABLE border="0" width="780" cellpadding="4" cellspacing="0">
+        <TBODY>
+          <TR>
+            <TD width="142"><IMG src="../../about/dmy.gif" width="8" height="8" border="0"></TD>
+            <TD width="142"></TD>
+            <TD width="322"></TD>
+            <TD width="142"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">定型処理編～画像処理について</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" align="center"><IMG src="teikei-title.gif" width="300" height="200" border="0"></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">画像処理の基本</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>なでしこでは、画像サイズの変更や部分的な抜き出し、画像のモザイク処理や形式の変更など、一通りの画像処理が可能になっています。</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD>画像の処理をするためには、画像を『イメージ部品』を使います。以下はイメージ部品に画像を読み込み、『画像ネガポジ』命令でネガポジ反転処理を行い、デスクトップへ保存するというプログラムです。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code">Ｇとは<B>イメージ</B>。<FONT color="#993333"># イメージ部品を作る</FONT><BR>
+            Ｇの<B>画像</B>は<FONT color="#0066ff">「{ランタイムパス}doc\logo-nadesiko.jpg」</FONT><BR>
+            Ｇを<B>画像ネガポジ</B><BR>
+            Ｇを<FONT color="#0066ff">「{デスクトップ}test.jpg」</FONT>へ<B>画像保存</B></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>このとき、『画像保存』の「test.jpg」を「test.png」というように拡張子を「.PNG」にすればＰＮＧ形式で画像が保存されます。また、「test.bmp」にすればＢＭＰ形式になります。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">画像をリサイズして保存</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>画像をリサイズするのも同じように『画像リサイズ』を使います。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code">Ｇとはイメージ<BR>
+Ｇの画像は「{ランタイムパス}nadesiko.png」<BR>
+            Ｇを64,64で<B>画像リサイズ</B><BR>
+            Ｇを「{デスクトップ}test.bmp」へ画像保存</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">.</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">きれいに合成する</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>画像をきれいに合成したい場合があります。そんなときは、一度マスクを作っておきます。そして、マスク画像を画像ＡＮＤコピー。元画像を画像ＯＲすることできれいにコピーできます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">
+            <TABLE border="1" cellpadding="2" cellspacing="1">
+              <TBODY>
+                <TR>
+                  <TD bgcolor="#ffcccc"></TD>
+                  <TD bgcolor="#ffcccc">画像</TD>
+                  <TD bgcolor="#ffcccc">操作</TD>
+                </TR>
+                <TR>
+                  <TD bgcolor="#ffcccc">（１）</TD>
+                  <TD bgcolor="#ffcccc"><IMG src="../../pic/hito.gif" width="32" height="32" border="0">キャラ<BR>
+                  <IMG src="../../pic/map.gif" width="32" height="32" border="0">背景</TD>
+                  <TD bgcolor="#ffcccc">合成したいキャラ画像と背景画像を用意します。</TD>
+                </TR>
+                <TR>
+                  <TD bgcolor="#ffcccc">（２）</TD>
+                  <TD align="left" bgcolor="#ffcccc"><IMG src="../../pic/hito-mask.gif" width="32" height="32" border="0">マスク</TD>
+                  <TD bgcolor="#ffcccc">マスク画像を作ります。（画像マスク作成）</TD>
+                </TR>
+                <TR>
+                  <TD bgcolor="#ffcccc">（３）</TD>
+                  <TD bgcolor="#ffcccc"><IMG src="../../pic/map-mask.gif" width="32" height="32" border="0">ＡＮＤ</TD>
+                  <TD bgcolor="#ffcccc">背景にマスクを重ねます。（画像ＡＮＤコピー）</TD>
+                </TR>
+                <TR>
+                  <TD bgcolor="#ffcccc">（４）</TD>
+                  <TD bgcolor="#ffcccc"><IMG src="../../pic/map-hito.gif" width="32" height="32" border="0">ＯＲ</TD>
+                  <TD bgcolor="#ffcccc">背景にキャラを重ねて完成です。（画像ＯＲコピー）</TD>
+                </TR>
+              </TBODY>
+            </TABLE>
+            </TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">上の手順をプログラムすると以下のようになります。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code"><FONT color="#993333"># （１）画像をイメージに読み込み</FONT><BR>
+背景画像とはイメージ<BR>
+背景画像について<BR>
+　　Ｘは０<BR>
+　　Ｙは０<BR>
+            　　画像は<FONT color="#0066ff">「{ランタイムパス}doc\pic\map.gif」</FONT><BR>
+キャラ画像とはイメージ<BR>
+キャラ画像について<BR>
+　　Ｘは０<BR>
+            　　Ｙは32<BR>
+            　　画像は<FONT color="#0066ff">「{ランタイムパス}doc\pic\hito.gif」</FONT><BR>
+マスク画像とはイメージ<BR>
+マスク画像について<BR>
+　　Ｘは０<BR>
+            　　Ｙは64<BR>
+            　　画像は<FONT color="#0066ff">「キャラ画像」</FONT>。<BR>
+合成画像とはイメージ<BR>
+合成画像について<BR>
+　　Ｘは０<BR>
+            　　Ｙは96<BR>
+            　　画像は<FONT color="#0066ff">「背景画像」</FONT><BR>
+<BR>
+            <FONT color="#993333"># （２）マスクを作成する<BR>
+            </FONT>マスク画像を0で画像マスク作成<BR>
+            <FONT color="#993333"># （３）背景にマスクをＡＮＤで重ねる<BR>
+            </FONT>マスク画像を合成画像の0,0へ画像ANDコピー。<BR>
+            <FONT color="#993333"># （４）背景にキャラをＯＲで重ねる<BR>
+            </FONT>キャラ画像を合成画像の0,0へ画像ORコピー。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">もっと簡単に画像を重ねるには『画像合成』命令を使います。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code">背景画像とはイメージ<BR>
+キャラ画像とはイメージ<BR>
+背景画像の画像は「{ランタイムパス}doc\pic\map.gif」<BR>
+キャラ画像の画像は「{ランタイムパス}doc\pic\hito.gif」<BR>
+            <FONT color="#993333"># 合成処理</FONT><BR>
+            キャラ画像を背景画像の0,0へ画像合成</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD>.</TD>
+            <TD></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">
+            <HR>
+            前のページ<A href="04-1-office.htm">←エクセル・ワード・DB</A>
+            <HR>
+            </TD>
+            <TD></TD>
+          </TR>
+        </TBODY>
+      </TABLE>
+      </TD>
+    </TR>
+    <TR>
+      <TD><A href="http://nadesi.com/">なでしこWEB &gt; </A><A href="../index.htm">マニュアル</A><A href="http://nadesi.com/"> &gt; </A><A href="index.htm">定型処理編</A></TD>
+    </TR>
+  </TBODY>
+</TABLE>
+</CENTER>
+<CENTER></CENTER>
+<CENTER></CENTER>
+</BODY>
+</HTML>

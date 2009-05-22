@@ -1,0 +1,131 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>命令</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">命令</A></H1>
+<DIV class="lead">　なでしこの命令は、日本語的に使う方法と、従来のプログラミング言語のように、関数的に使う２種類の方法があります。　また独自の命令を定義することもできます。</DIV>
+<DIV class="index"><A href="1-3-command.htm#head1">■命令の実行</A><BR>
+<A href="1-3-command.htm#head2">■命令の結果を取得</A><BR>
+<A href="1-3-command.htm#head3">■ユーザー定義命令</A><BR>
+<A href="1-3-command.htm#head4">■助詞の複数登録</A><BR>
+<A href="1-3-command.htm#head5">■参照渡しと値渡し</A><BR>
+</DIV>
+<P></P>
+<P></P>
+<H2><A name="head1">命令の実行</A></H2>
+
+<P></P>
+<P></P>
+<P>　なでしこでは、これを併用して使うことができます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-comment">＃日本語的</SPAN><BR>
+３の乱数を表示する<BR>
+<BR>
+<SPAN class="code-comment">＃関数的</SPAN><BR>
+A&nbsp;=&nbsp;INT(3.14)&nbsp;+&nbsp;3<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>　日本語的に命令を呼ぶ場合は、助詞さえしっかり合致していれば、引数の順番が入れ替わっても問題なく引数が特定されます。</P>
+<P>　関数的に命令を呼ぶ場合は、引数の助詞を省略して書くことが許されますが、引数の順番を入れ替えることはできません。</P>
+<P>　また、関数的に呼ぶ場合で引数を省略して記述する時、先頭から引数が省略されます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-comment">＃引数省略の例・・・引数Ａが省略可能な場合</SPAN><BR>
+<SPAN class="code-function">●表示テスト（{=?}ＡのＢからＣを）</SPAN><BR>
+　　<SPAN class="code-string">「｛Ａ｝、｛Ｂ｝、｛Ｃ｝」</SPAN>を表示。<BR>
+<BR>
+<SPAN class="code-string">「Ａ」</SPAN>の<SPAN class="code-string">「Ｂ」</SPAN>から<SPAN class="code-string">「Ｃ」</SPAN>を表示テスト。<SPAN class="code-comment">＃結果→Ａ、Ｂ、Ｃ</SPAN><BR>
+<SPAN class="code-string">「Ｂ」</SPAN>から<SPAN class="code-string">「Ｃ」</SPAN>を表示テスト。<SPAN class="code-comment">＃結果→、Ｂ、Ｃ</SPAN><BR>
+表示テスト(<SPAN class="code-string">「Ｂ」</SPAN>,<SPAN class="code-string">「Ｃ」</SPAN>)。<SPAN class="code-comment">＃結果→、Ｂ、Ｃ</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+<H2><A name="head2">命令の結果を取得</A></H2>
+
+<P></P>
+<P>　命令を実行した場合、多くの命令は命令の実行結果を、特殊変数『それ』に代入します。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「とまと」</SPAN>の<SPAN class="code-string">「ま」</SPAN>を<SPAN class="code-string">「と」</SPAN>に置換。<BR>
+それを表示。<SPAN class="code-comment">＃置換結果の<SPAN class="code-string">「ととと」</SPAN>が表示される</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>　関数的に命令を実行した場合は、代入式によって命令の結果が変数に代入されます。</P>
+<DIV class="code"><CODE>
+Ａ＝<SPAN class="code-string">「とまと」</SPAN>の<SPAN class="code-string">「ま」</SPAN>を<SPAN class="code-string">「と」</SPAN>に置換<BR>
+Ａを表示。<SPAN class="code-comment">＃置換結果の<SPAN class="code-string">「ととと」</SPAN>が表示される</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+<H2><A name="head3">ユーザー定義命令</A></H2>
+
+<P></P>
+<P>　命令をユーザーが独自に定義することができます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-comment">#&nbsp;書式</SPAN><BR>
+<SPAN class="code-function">●関数名（引数リスト）</SPAN><BR>
+　　定義内容...<BR>
+<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>　例えば、２つの数値を足すだけの簡単な命令を定義してみます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-comment">＃定義</SPAN><BR>
+<SPAN class="code-function">●テストする（ＡとＢを）</SPAN><BR>
+　　それは、Ａ＋Ｂ<BR>
+<SPAN class="code-comment">＃利用</SPAN><BR>
+３と５をテストして表示。<SPAN class="code-comment">＃結果８が表示される</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>　定義する命令に戻り値がある場合は、特殊変数『それ』に代入します。</P>
+<P></P>
+<H2><A name="head4">助詞の複数登録</A></H2>
+
+<P></P>
+<P>　なでしこでは、命令１つに対し、複数の助詞を複数登録できる仕組みになってます。たとえば、『言う』命令では、『Sと言う』という書き方と、『Sを言う』という書き方ができます。そこで、『Sと｜Sを』というように、二種類の助詞を登録しておいて、どちらを指定しても、引数Sを特定できるようにしています。</P>
+<P>　ユーザー命令の定義のときも、同じように複数の助詞が登録できます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-function">●テスト（Sの｜Sを）</SPAN><BR>
+　　<SPAN class="code-string">「引数の内容は、｛S}」</SPAN>と表示。<BR>
+<BR>
+<SPAN class="code-comment">＃登録してある助詞ならどれを使っても同じ結果が得られる。</SPAN><BR>
+<SPAN class="code-string">「あ」</SPAN>のテスト。<BR>
+<SPAN class="code-string">「い」</SPAN>をテスト。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head5">参照渡しと値渡し</A></H2>
+
+<P></P>
+<P>原則的に関数の引数は値渡しで関数に渡されます。例外はグループ・配列・ハッシュでこれは参照渡しされます。</P>
+<P>しかし、関数の宣言で参照渡しと値渡しを明示して宣言できるようになっています。以下は参照渡しで文字列を呼び出す例だ。以下のテストの{参照渡し}を{値渡し}に変えてみると引数の渡され方がどうなっているのかを調べることができます。</P>
+<DIV class="code"><CODE>
+Ａは<SPAN class="code-string">「あいうえお」</SPAN><BR>
+Ａをテスト。<BR>
+Ａを表示。<SPAN class="code-comment">＃表示結果→参照渡しだと改変された</SPAN><BR>
+待機。<BR>
+<SPAN class="code-function">●テスト（{参照渡し}Ｓを）</SPAN><BR>
+　　Ｓ＝<SPAN class="code-string">「参照渡しなので改変された」</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

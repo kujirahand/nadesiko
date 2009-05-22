@@ -1,0 +1,161 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>モーダルダイアログ</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">モーダルダイアログ</A></H1>
+<DIV class="lead">　モーダルダイアログはファイルの選択ダイアログや色の選択ダイアログを出し、ユーザーに質問します。</DIV>
+<DIV class="index"><A href="3-0-dialog.htm#head1">■モーダルダイアログ</A><BR>
+　　<A href="3-0-dialog.htm#head2">┣文字列を入力するダイアログ</A><BR>
+　　<A href="3-0-dialog.htm#head3">┣選択ダイアログ</A><BR>
+　　<A href="3-0-dialog.htm#head4">┣項目記入</A><BR>
+　　<A href="3-0-dialog.htm#head5">┣数値入力</A><BR>
+<A href="3-0-dialog.htm#head6">■ダイアログオプション</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">モーダルダイアログ</A></H2>
+
+<P></P>
+<P>モーダルダイアログは、ユーザーの選択が終わりダイアログが終わるまで別のフォームの操作ができないようになります。</P>
+<P>そのため、プログラムは、上から下へと流れるように記述できるようになるので便利です。</P>
+<H3><A name="head2">文字列を入力するダイアログ</A></H3>
+
+<P></P>
+<P>『尋ねる』命令、『メモ記入』命令を使うとユーザーから値を入力することができます。</P>
+<P>以下のプログラムは、ユーザーから値を入力し、それを画面に表示するプログラムです。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「名前は？」</SPAN>と尋ねる。<BR>
+それを表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>『メモ記入』命令も『尋ねる』命令と同様に使えますが、『メモ記入』の方は、メモ帳のようなエディタ画面を出して値を入力できます。</P>
+<P></P>
+<H3><A name="head3">選択ダイアログ</A></H3>
+
+<P></P>
+<P>『リスト選択』命令を使えばリストから１つの項目を選びます。</P>
+<DIV class="code"><CODE>
+「ニンジン<BR>
+レンコン<BR>
+サンショウ」でリスト選択して表示<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+<P>また、『ボタン選択』命令(vnako専用)と使うとボタンに選択肢を表示して選んでもらえます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「どれにしますか？」</SPAN>を「カレー<BR>
+パスタ<BR>
+ハンバーグ」でボタン選択して表示<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+<H3><A name="head4">項目記入</A></H3>
+
+<P></P>
+<P>『項目記入』命令(vnako専用)を使うと多くの項目を一度に入力することができます。例えば、FTPのホスト名、パスワードなどを一度に入力するプログラムが以下になります。</P>
+<DIV class="code"><CODE>
+「HOST=ftp.xxx.xx<BR>
+ID=<BR>
+PASSWORD=<BR>
+PORT=21」と項目記入して、FTP設定に代入。<BR>
+もし、FTP設定が空ならば、おわる。<BR>
+FTP設定@<SPAN class="code-string">「HOST」</SPAN>を表示<BR>
+FTP設定@<SPAN class="code-string">「ID」</SPAN>を表示<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>『項目記入』の引数には、「キー=値」の形式で値を指定します。すると、返り値にハッシュ形式で値を返します。ハッシュ形式なので『変数名＠キー』の形で返り値から任意のキーを取り出すことができます。</P>
+<P>また、項目記入ではオプションを指定することにより、より詳しい入力規則を設定できます。</P>
+<TABLE border="1" cellpadding="4" cellspacing="1">
+<TR><TD>オプション</TD>
+<TD>意味</TD>
+<TD>利用例</TD>
+</TR>
+<TR><TD>?(選択肢1|選択肢2|選択肢3)</TD>
+<TD>コンボから選択肢を選択できる</TD>
+<TD>?(エビ|ウニ|イクラ)エビ&nbsp;</TD>
+</TR>
+<TR><TD>?f&nbsp;または&nbsp;?f(拡張子リスト)</TD>
+<TD>ファイル選択ダイアログでファイルを選択できる</TD>
+<TD>?f(テキストファイル|*.txt)&nbsp;</TD>
+</TR>
+<TR><TD>?d(初期フォルダ)</TD>
+<TD>フォルダ選択ダイアログでフォルダを選択できる</TD>
+<TD>?d(c:\)</TD>
+</TR>
+<TR><TD>?c&nbsp;</TD>
+<TD>色選択ダイアログで色番号を選択できる。</TD>
+<TD>?c&nbsp;</TD>
+</TR>
+<TR><TD>?s&nbsp;</TD>
+<TD>IMEをオンにする</TD>
+<TD>?s&nbsp;</TD>
+</TR>
+<TR><TD>?e&nbsp;</TD>
+<TD>IMEをオフにする</TD>
+<TD>?e&nbsp;</TD>
+</TR>
+</TABLE>
+
+<P></P>
+<P></P>
+<H3><A name="head5">数値入力</A></H3>
+
+<P></P>
+<P>『数値入力』命令を使うと、数値入力ダイアログを表示します。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「数値を入力してください」</SPAN>の数値入力して表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head6">ダイアログオプション</A></H2>
+
+<P></P>
+<P>ダイアログの命令は手軽に使えるのが魅力ですが、IMEの状態を制御したいとか初期値を設定しておきたい場合など、もうちょっと細かい設定をしたい場合があります。その場合、以下の変数に値を設定しておきます。</P>
+<TABLE border="1" cellpadding="4" cellspacing="1">
+<TR><TD>変数名</TD>
+<TD>役割</TD>
+</TR>
+<TR><TD>ダイアログ初期値</TD>
+<TD>ダイアログの初期値を設定したい場合</TD>
+</TR>
+<TR><TD>ダイアログキャンセル値</TD>
+<TD>キャンセルボタンを押したときに返される値</TD>
+</TR>
+<TR><TD>ダイアログIME</TD>
+<TD>IMEの状態を制御したい場合</TD>
+</TR>
+<TR><TD>ダイアログ数値変換</TD>
+<TD>『尋ねる』の入力結果を必ず文字列にしたい場合はオフを指定する</TD>
+</TR>
+</TABLE>
+
+<P></P>
+<P>このうち『ダイアログIME』に設定する値は、IMEオン｜IMEオフ｜IMEかな｜IMEカナ｜IME半角のいづれかを指定します。</P>
+<DIV class="code"><CODE>
+ダイアログ初期値は<SPAN class="code-string">「太郎」</SPAN><BR>
+ダイアログキャンセル値は<SPAN class="code-string">「名無し」</SPAN><BR>
+ダイアログIMEは<SPAN class="code-string">「IMEカタカナ」</SPAN><BR>
+<SPAN class="code-string">「名前は？」</SPAN>と尋ねる<BR>
+それを言う<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+<P></P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

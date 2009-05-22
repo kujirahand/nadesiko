@@ -1,0 +1,240 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META name="keyword" content="プログラミング言語, なでしこ, 定型処理, バッチ処理, 教育">
+<META name="description" content="なでしこは日本語で簡単にプログラミングができる簡単ツールです。">
+<META name="GENERATOR" content="IBM WebSphere Homepage Builder V6.0.1 for Windows">
+<TITLE>定型処理編</TITLE>
+<LINK rel="stylesheet" href="../nako_man.css" type="text/css">
+</HEAD>
+<BODY text="#4d4d4d" link="#000099" vlink="#582c56" alink="#cc00cc">
+<CENTER>
+<TABLE border="0" width="780" cellpadding="0" cellspacing="0">
+  <TBODY>
+    <TR>
+      <TD align="right"><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">定型処理編</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="../index.htm"><IMG src="../../logo_nadesiko_title.gif" width="293" height="76" border="0" alt="なでしこ"></A></TD>
+    </TR>
+    <TR>
+      <TD><IMG src="../../line.gif" width="780" height="8" border="0"></TD>
+    </TR>
+    <TR>
+      <TD>
+      <TABLE border="0" width="780" cellpadding="4" cellspacing="0">
+        <TBODY>
+          <TR>
+            <TD width="142"><IMG src="../../about/dmy.gif" width="8" height="8" border="0"></TD>
+            <TD width="142"></TD>
+            <TD width="322"></TD>
+            <TD width="142"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">定型処理編～ファイルのバックアップ</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" align="center"><IMG src="teikei-title.gif" width="300" height="200" border="0"></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">ファイルのコピー</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>今度はファイルのコピーなどファイルのバックアップを取る方法を覚えましょう。</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>→『<A href="http://pcweb.mycom.co.jp/column/nihongoprog/">１０行プログラミング</A>』でも<A href="http://pcweb.mycom.co.jp/column/nihongoprog/004/">重要データのバックアップについて</A>コラムを書きました。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>単純にファイルをコピーするには以下のように書きます。これだけなら簡単です。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD class="code">「ファイルA」を「ファイルB」へ<B>ファイルコピー</B>。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>ただし、WINDOWSでは、ファイルAを指定するのが極端に面倒なんです。マイドキュメントにある「a.txt」をデスクトップへコピーしてみましょう。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code"><FONT color="#3366ff">「C:\Documents and Settings\上司\My Documents\a.txt」</FONT>を<FONT color="#3366ff">「C:\Documents and Settings\上司\デスクトップ\a.txt」</FONT>へファイルコピー。<BR>
+</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="buka.gif" width="90" height="90" border="0"></TD>
+            <TD>うわぁ。「a.txt」がどうして<FONT color="#3366ff">「C:\Documents and Settings\上司\My Documents\a.txt」</FONT>なんて長い名前になるんですか？というかこの意味不明な文字はなんですか？</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>ファイル名の指定をよくみてください。先頭に「c:\」という文字がありますね？これが「Cドライブ」を表しています。そして、それに続く「\」記号までの部分「<FONT color="#3366ff">Documents and Settings</FONT>」がフォルダの名前です。パソコンによってマイドキュメントの場所は違うのですが、<FONT color="#3366ff">「C:\Documents and Settings\上司\My Documents\」</FONT>というのが私のパソコンのマイドキュメントを表す<B>パス</B>(*1)です。長いでしょう？</TD>
+            <TD class="menuG">(*1)パスとは、ファイルの所在を表す文字列です。例えば、「C:\test\a.txt」なら、Cドライブにある&lt;test&gt;フォルダの中の&quot;a.txt&quot;というファイルを表します。</TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>そこで、なでしこでは、マイドキュメントを『マイドキュメント』という名前の変数で表せるようになっています。デスクトップも同様です。これを使えば、上の長いプログラムが下のようにすっきりしたものになります。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code"><FONT color="#3366ff">「｛マイドキュメント｝a.txt」</FONT>を、<BR>
+            <FONT color="#3366ff">「{デスクトップ}a.txt」</FONT>へ、ファイルコピー。</TD>
+            <TD class="menuG">(*2)一行が長すぎる場合は文末に読点「、」をおくことにより次の文と意味を続けることができます。</TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="buka.gif" width="90" height="90" border="0"></TD>
+            <TD>これなら、だいぶ短くなって、人間が読めるレベルになりましたね。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="left" colspan="2" class="newsTitle">ワイルドカードを使ってコピー</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>１つだけのコピーなら、プログラムを書くより手作業でコピーしたほうが早いのですが、ワイルドカードを使うと複数のファイルを一気にコピーすることができるようになります。<BR>
+            <BR>
+            以下のプログラムは、マイドキュメントにある拡張子が「.txt」のファイルをデスクトップにコピーするというものです。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code"><FONT color="#3366ff">「{マイドキュメント}*.txt」</FONT>を、<BR>
+            <B>デスクトップ</B>へファイルコピー。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>もし、エクセルのファイルだけをコピーしたい場合は同様に「*.txt」の部分をエクセルの拡張子である「*.xls」に変えて以下のようにします。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code"><FONT color="#3366ff">「{マイドキュメント}*.xls」</FONT>を、<BR>
+            <B>デスクトップ</B>へファイルコピー。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">圧縮してコピー</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>なでしこでは、圧縮の処理も簡単に記述できるようになっています。『AをBへ圧縮』とこれだけです。<BR>
+            ファイルコピーのときと同じように書けばOKです。<BR>
+            以下のプログラムはマイドキュメントの内容を全部圧縮してデスクトップの「backup.lzh」というファイルへ圧縮します。</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">マイドキュメントを、<BR>
+            デスクトップ＆「backup.lzh」へ圧縮。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD>圧縮する場合は、必ず、圧縮先のファイルを「xxx.lzh」のように、拡張子を「.lzh」にする必要があります。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">ZIPやCABに圧縮してコピー</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>もし、LZH形式ではなく、ZIPやCAB形式で圧縮したい場合は、まず、以下のWEBサイトから7-zip32.dllとcab32.dllを入手します。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">7-zip32.dll: <A href="http://www.csdinc.co.jp/archiver/lib/7-zip32.html">http://www.csdinc.co.jp/archiver/lib/7-zip32.html</A><BR>
+            cab32.dll: <A href="http://www.csdinc.co.jp/archiver/lib/cab32.html">http://www.csdinc.co.jp/archiver/lib/cab32.html</A></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>そのあとは、LZHと同じです。ただ、圧縮先のファイル名を、「xxx.zip」や「xxx.cab」にするだけです。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code"># ZIP形式<BR>
+            マイドキュメントを、<BR>
+            デスクトップ＆「backup.zip」へ圧縮。<BR>
+            # CAB形式<BR>
+            マイドキュメントを、<BR>
+            デスクトップ＆「backup.cab」へ圧縮。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD>＞</TD>
+            <TD></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">
+            <HR>
+            次のページ<A href="03-1-net.htm">→ネットワークについて</A><BR>
+            前のページ<A href="01-2-str_conv.htm">←文字列の整形</A>
+            <HR>
+            </TD>
+            <TD></TD>
+          </TR>
+        </TBODY>
+      </TABLE>
+      </TD>
+    </TR>
+    <TR>
+      <TD><A href="http://nadesi.com/">なでしこWEB &gt; </A><A href="../index.htm">マニュアル</A><A href="http://nadesi.com/"> &gt; </A><A href="index.htm">定型処理編</A></TD>
+    </TR>
+  </TBODY>
+</TABLE>
+</CENTER>
+<CENTER></CENTER>
+<CENTER></CENTER>
+</BODY>
+</HTML>

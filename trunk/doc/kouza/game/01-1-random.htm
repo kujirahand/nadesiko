@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META name="keyword" content="プログラミング言語, なでしこ, 定型処理, バッチ処理, 教育">
+<META name="description" content="なでしこは日本語で簡単にプログラミングができる簡単ツールです。">
+<META name="GENERATOR" content="IBM WebSphere Homepage Builder V6.0.1 for Windows">
+<TITLE>ゲーム製作編</TITLE>
+<LINK rel="stylesheet" href="../nako_man.css" type="text/css">
+</HEAD>
+<BODY text="#4d4d4d" link="#000099" vlink="#582c56" alink="#cc00cc">
+<CENTER>
+<TABLE border="0" width="780" cellpadding="0" cellspacing="0">
+  <TBODY>
+    <TR>
+      <TD align="right"><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">ゲーム製作編</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="../index.htm"><IMG src="../../logo_nadesiko_title.gif" width="293" height="76" border="0" alt="なでしこ"></A></TD>
+    </TR>
+    <TR>
+      <TD><IMG src="../../line.gif" width="780" height="8" border="0"></TD>
+    </TR>
+    <TR>
+      <TD>
+      <TABLE border="0" width="780" cellpadding="4" cellspacing="0">
+        <TBODY>
+          <TR>
+            <TD width="142"><IMG src="../../about/dmy.gif" width="8" height="8" border="0"></TD>
+            <TD width="142"></TD>
+            <TD width="322"></TD>
+            <TD width="142"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">ゲーム製作編</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" align="center"><IMG src="game-title.gif" width="300" height="200" border="0"></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">サイコロを作ろう！</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center"><IMG src="usagi.gif" width="100" height="100" border="0"></TD>
+            <TD>ゲームの基本は乱数だ。『乱数』命令は常に違う数字を返すという命令。これがないとゲームがとてもつまらなくなる。いつも同じ目の出るスゴロクなんて面白くないでしょう？</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="ufo.gif" width="100" height="100" border="0"></TD>
+            <TD>それじゃぁ『乱数』ってどうやって使うの？</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="usagi.gif" width="100" height="100" border="0"></TD>
+            <TD>乱数の使い方は以下のように使うのです。下のプログラムを実行してみよう！</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">Rは、６の乱数<BR>
+            Rを表示</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>これを実行すると、０とか３とか、実行するたびに常に違う数字が表示されます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="ufo.gif" width="100" height="100" border="0"></TD>
+            <TD>『６の乱数』って使うと、０～５までの適当な数字が表示されるんだよね？</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="usagi.gif" width="100" height="100" border="0"></TD>
+            <TD>そう！サイコロを作ろうと思ったら、１～６の数字を表示したいので、以下のように『６の乱数＋１』と改良します。これで、１～６の適当な数字が表示されるよ。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">＃サイコロの代わりになるプログラム<BR>
+            Rは、６の乱数＋１<BR>
+            Rを表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">数当てゲーム</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="usagi.gif" width="100" height="100" border="0"></TD>
+            <TD>これだけ分かれば、数当てゲームが作れるよ。<BR>
+            作ってみよう！</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code"><FONT color="#993333">＃数当てゲーム<BR>
+            </FONT>Ｒ=６の乱数＋１<BR>
+            「１～６のど～れだ？」と尋ねる。<BR>
+もし（Ｒ＝それ）ならば<BR>
+　　「当たり！」と言う<BR>
+違えば<BR>
+　　「ハズレ。答えは｛R}でした。」と言う<BR>
+ここまで<BR>
+</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="ufo.gif" width="100" height="100" border="0"></TD>
+            <TD>１～６の適当な数字を入力すると、当たりかハズレか判定するという簡単な仕組みだね。<BR>
+            <BR>
+            でもこれが意外と何度も遊んでしまうんだよ～。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">
+            <HR>
+            次のページ<A href="02-1-quiz.htm">→クイズゲーム</A><BR>
+            <HR>
+            </TD>
+            <TD></TD>
+          </TR>
+        </TBODY>
+      </TABLE>
+      </TD>
+    </TR>
+    <TR>
+      <TD><A href="http://nadesi.com/">なでしこWEB &gt; </A><A href="../index.htm">マニュアル</A><A href="http://nadesi.com/"> &gt; </A><A href="index.htm">ゲーム製作編</A></TD>
+    </TR>
+  </TBODY>
+</TABLE>
+</CENTER>
+<CENTER></CENTER>
+<CENTER></CENTER>
+</BODY>
+</HTML>

@@ -1,0 +1,88 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>イメージ</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">イメージ</A></H1>
+<DIV class="lead">『イメージ』部品は画像を表示したり画像処理をするのに便利な部品です。ぱらぱらアニメを表示するには『アニメ』部品を使います。</DIV>
+<DIV class="index"><A href="5-0-image.htm#head1">■画像を表示する方法</A><BR>
+<A href="5-0-image.htm#head2">■アニメ部品</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">画像を表示する方法</A></H2>
+
+<P></P>
+<P>イメージ部品へ画像を表示するのは『イメージの画像は「ファイル名」』と書きます。</P>
+<DIV class="code"><CODE>
+Aイメージとはイメージ<BR>
+Aイメージの画像は<SPAN class="code-string">「nadesiko.png」</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>また、イメージ部品の画像へ他のイメージ部品の画像を設定することもできます。その場合、部品を「イメージ名」と文字列として渡す必要があります。</P>
+<DIV class="code"><CODE>
+Aイメージとはイメージ<BR>
+Aイメージの画像は<SPAN class="code-string">「nadesiko.png」</SPAN><BR>
+Bイメージとはイメージ<BR>
+Bイメージの画像は<SPAN class="code-string">「Aイメージ」</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>一度イメージに画像をロードしてしまえば、画像処理も簡単です。「画像ｘｘ」という命令があるのでこれを使うことでフィルター処理が簡単に行えます。</P>
+<DIV class="code"><CODE>
+対象とはイメージ<BR>
+対象の画像は<SPAN class="code-string">「nadesiko.png」</SPAN><BR>
+１秒待つ<BR>
+対象の画像は<SPAN class="code-string">「nadesiko.png」</SPAN><BR>
+対象に4の画像モザイク<BR>
+１秒待つ<BR>
+対象の画像は<SPAN class="code-string">「nadesiko.png」</SPAN><BR>
+対象を画像ネガポジ<BR>
+１秒待つ<BR>
+対象の画像は<SPAN class="code-string">「nadesiko.png」</SPAN><BR>
+対象を画像右回転<BR>
+１秒待つ<BR>
+対象の画像は<SPAN class="code-string">「nadesiko.png」</SPAN><BR>
+対象を32,32で画像リサイズ<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head2">アニメ部品</A></H2>
+
+<P></P>
+<P>ぱらぱらアニメを表示するには『アニメ』部品が使えます。以下のように『画像』へ複数の画像を設定します。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-comment">#セルの描画</SPAN><BR>
+セル１とはイメージ<BR>
+その可視はオフ<BR>
+そのW=128<BR>
+そのH=128<BR>
+セル２とはイメージ<BR>
+その可視はオフ<BR>
+そのW=128<BR>
+そのH=128<BR>
+セル１へ<SPAN class="code-string">「88,94,56,94,21,76,16,38,48,16,88,25,107,53」</SPAN>で多角形。<BR>
+セル２へ<SPAN class="code-string">「52,98,50,77,29,77,24,48,37,31,54,40,74,27,97,23,100,43,79,50,110,73,102,94,82,92,69,107」</SPAN>で多角形。<BR>
+<BR>
+<SPAN class="code-comment">#アニメの設定</SPAN><BR>
+テストアニメとはアニメ<BR>
+そのX=10<BR>
+そのY=10<BR>
+その画像は「セル１<BR>
+セル２」<BR>
+その値は300<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>前半がイメージ部品への描画後半で描画したイメージをアニメ部品に設定しています。「アニメの値」はアニメの画像更新間隔でミリ秒の単位でしています。ここでは「値は300」として300ミリ秒に一回アニメを動かしています。</P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META name="keyword" content="プログラミング言語, なでしこ, 定型処理, バッチ処理, 教育">
+<META name="description" content="なでしこは日本語で簡単にプログラミングができる簡単ツールです。">
+<META name="GENERATOR" content="IBM WebSphere Homepage Builder V6.0.1 for Windows">
+<TITLE>プログラミング基礎編</TITLE>
+<LINK rel="stylesheet" href="../nako_man.css" type="text/css">
+</HEAD>
+<BODY text="#4d4d4d" link="#000099" vlink="#582c56" alink="#cc00cc">
+<CENTER>
+<TABLE border="0" width="780" cellpadding="0" cellspacing="0">
+  <TBODY>
+    <TR>
+      <TD align="right"><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="../index.htm"><IMG src="../logo_nadesiko_title.gif" width="293" height="76" border="0" alt="なでしこ"></A></TD>
+    </TR>
+    <TR>
+      <TD><IMG src="../line.gif" width="780" height="8" border="0"></TD>
+    </TR>
+    <TR>
+      <TD>
+      <TABLE border="0" width="780" cellpadding="4" cellspacing="0">
+        <TBODY>
+          <TR>
+            <TD width="142"><IMG src="../about/dmy.gif" width="8" height="8" border="0"></TD>
+            <TD width="142"></TD>
+            <TD width="322"></TD>
+            <TD width="142"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">プログラミング基礎編～ハッシュ</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" align="center"><IMG src="kiso-title.gif" width="300" height="200" border="0"></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">ハッシュとは・・・</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>「配列変数に似た機能でハッシュ機能があります。配列変数が番号を使ってデータにアクセスするように、ハッシュは、文字を使ってデータにアクセスします。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">田中さんの成績</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>ハッシュは、配列変数のようなものなので、連想配列とも呼ばれます。<BR>
+            配列変数の『配列￥番号』を、『ハッシュ@キー名』のようにアクセスします。<BR>
+            下のプログラムはハッシュを使って、田中さんの成績を表したものです。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code">田中とはハッシュ<BR>
+田中@「国語」は80<BR>
+田中@「数学」は40<BR>
+田中@「社会」は92<BR>
+田中@「理科」は67<BR>
+<BR>
+成績表示とはプロパティエディタ<BR>
+成績表示のテキストは田中</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="left" colspan="2">これを実行すると、<BR>
+            国語＝８０<BR>
+            数学＝４０<BR>
+            社会＝９２<BR>
+            理科＝６７<BR>
+            のようにプロパティエディタに表示されます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>上のプログラムだと、あまりハッシュの有り難味がありませんので、ユーザーが入力した科目を表示するというプログラムを作ってみます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">田中@「国語」は80<BR>田中@「数学」は40<BR>田中@「社会」は92<BR>田中@「理科」は67<BR>
+            <BR>「知りたい科目は？」と尋ねて、科目に代入。<BR>田中@科目を表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>これを実行して、国語と入力すると、８０が表示されます。また、数学と入力すれば、４０が表示されます。<BR>
+            このようにハッシュを使うと、好きなデータをキーによって取り出すことができるのです。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">アンケートの集計</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>ハッシュを使ってアンケートを集計してみましょう。<BR>以下は１０人に行った納豆のアンケートの集計プログラムです。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="left" colspan="2" class="code">アンケートは「好き<BR>嫌い<BR>好き<BR>好き<BR>嫌い<BR>好き<BR>好き<BR>嫌い<BR>嫌い<BR>好き」<BR>結果は「」<BR>番号を０から９まで繰り返す<BR>　　キーは、アンケート[番号]<BR>　　キーを表示。<BR>　　結果＠キーは、結果＠キー 
++ 1<BR>
+            <BR>「--- 結果 ---<BR>{結果}」を表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="../pic/c008cut.gif" width="64" height="64" border="0"></TD>
+            <TD>プログラムを実行すると、<BR>好き=6<BR>嫌い=4<BR>
+            と集計の結果が表示されます。<BR>
+            <BR>
+            まず、配列変数「アンケート」に好きか嫌いかを代入します。これを「繰り返し」構文で、変数「キー」に好きか嫌いを得ます。そして、ハッシュ変数『結果』で好きか嫌いの数を数えます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="../pic/c008cut.gif" width="64" height="64" border="0"></TD>
+            <TD>実はこの例ではあらかじめアンケートの数量を固定してしまってるのでそれほど有り難味がありません。次の反復構文を使うとアンケートの集計がぐっと楽になります。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">
+            <HR>
+            次のページ<A href="09-1-each.htm">→反復</A><BR>
+            前のページ<A href="03-1-variable.htm">←変数を使う</A>
+            <HR>
+            </TD>
+            <TD></TD>
+          </TR>
+        </TBODY>
+      </TABLE>
+      </TD>
+    </TR>
+    <TR>
+      <TD><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+  </TBODY>
+</TABLE>
+</CENTER>
+<CENTER></CENTER>
+<CENTER></CENTER>
+</BODY>
+</HTML>

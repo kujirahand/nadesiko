@@ -1,0 +1,158 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>計算</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">計算</A></H1>
+<DIV class="lead">四則演算や比較などを行う演算子とその役割を紹介します。</DIV>
+<DIV class="index"><A href="1-7-calc.htm#head1">■四則演算</A><BR>
+<A href="1-7-calc.htm#head2">■比較のための演算子</A><BR>
+<A href="1-7-calc.htm#head3">■ビット操作のための演算子</A><BR>
+<A href="1-7-calc.htm#head4">■論理演算のための演算子</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">四則演算</A></H2>
+
+<P></P>
+<UL>
+  <LI>A&nbsp;+&nbsp;B　（足し算）
+</UL>
+
+<P></P>
+<P>数値同士の足し算を行います。</P>
+<UL>
+  <LI>A&nbsp;-&nbsp;B&nbsp;&nbsp;(引き算)
+</UL>
+
+<P></P>
+<P>数値同士の引き算を行います。</P>
+<UL>
+  <LI>A&nbsp;×&nbsp;B&nbsp;（掛け算）
+</UL>
+
+<P></P>
+<P>数値同士の掛け算を行います。</P>
+<UL>
+  <LI>A&nbsp;*&nbsp;B　（掛け算）
+</UL>
+
+<P></P>
+<P>数値同士の掛け算を行います。</P>
+<UL>
+  <LI>A&nbsp;÷&nbsp;B&nbsp;（割り算）
+</UL>
+
+<P></P>
+<P>数値同士の割り算を行います。</P>
+<UL>
+  <LI>A&nbsp;/&nbsp;B&nbsp;(割り算)
+</UL>
+
+<P></P>
+<P>数値同士の割り算を行います。</P>
+<UL>
+  <LI>A&nbsp;%&nbsp;B&nbsp;(割り算の余り)
+</UL>
+
+<P></P>
+<P>割り算の余りを求めます。</P>
+<UL>
+  <LI>A&nbsp;^&nbsp;B&nbsp;（累乗）
+</UL>
+
+<P></P>
+<P>ＡのＢ乗を求めます。</P>
+<UL>
+  <LI>A&nbsp;&amp;&nbsp;B&nbsp;(文字列の足し算)
+</UL>
+
+<P></P>
+<P>文字列同士、足し算を行います。</P>
+<H2><A name="head2">比較のための演算子</A></H2>
+
+<P></P>
+<UL>
+  <LI>A&nbsp;=&nbsp;B&nbsp;(代入/比較)
+</UL>
+
+<P></P>
+<P>計算式の中では、AとBが等しいかどうか比較し、プログラムの構文では、代入を表します。</P>
+<UL>
+  <LI>A&nbsp;==&nbsp;B&nbsp;(比較：等しい)
+</UL>
+
+<P></P>
+<P>計算式の中で、AとBが等しいかどうか比較します。</P>
+<UL>
+  <LI>A&nbsp;&lt;&gt;&nbsp;B&nbsp;(比較：等しくない)
+</UL>
+
+<P></P>
+<P>計算式の中で、AとBが等しくないかどうか比較します。</P>
+<UL>
+  <LI>A&nbsp;!=&nbsp;B,&nbsp;A&nbsp;≠&nbsp;B&nbsp;(比較：等しくない)
+</UL>
+
+<P></P>
+<P>計算式の中で、AとBが等しくないかどうか比較する。</P>
+<UL>
+  <LI>A&nbsp;&gt;&nbsp;B&nbsp;(比較：超)
+</UL>
+
+<P></P>
+<P>計算式の中で、AがBより大きいか比較します。</P>
+<UL>
+  <LI>A&nbsp;&gt;=&nbsp;B,&nbsp;A≧B&nbsp;（比較：以上）
+</UL>
+
+<P></P>
+<P>計算式の中で、AがB以上かどうか比較します。</P>
+<UL>
+  <LI>A&nbsp;&lt;&nbsp;B&nbsp;(比較：未満)
+</UL>
+
+<P></P>
+<P>計算式の中で、AがBより小さいか比較します。</P>
+<UL>
+  <LI>A&nbsp;&lt;=&nbsp;B,&nbsp;A≦B&nbsp;（比較：以下）
+</UL>
+
+<P></P>
+<P>計算式の中で、AがB以下かどうか比較します。</P>
+<H2><A name="head3">ビット操作のための演算子</A></H2>
+
+<P></P>
+<UL>
+  <LI>A&nbsp;&lt;&lt;&nbsp;B&nbsp;（ビット演算）
+</UL>
+
+<P></P>
+<P>数値Aを左方向にBビットシフトさせます。</P>
+<UL>
+  <LI>A&nbsp;&gt;&gt;&nbsp;B&nbsp;（ビット演算）
+</UL>
+
+<P></P>
+<P>数値Aを右方向にBビットシフトさせます。</P>
+<H2><A name="head4">論理演算のための演算子</A></H2>
+
+<P></P>
+<UL>
+  <LI>A&nbsp;または&nbsp;B,&nbsp;A&nbsp;||&nbsp;B&nbsp;(理論演算&nbsp;OR)
+</UL>
+
+<P></P>
+<P>比較式Ａが真または比較式Ｂが真ならば真(=1)を返し、違えば偽(=0)を返します。</P>
+<UL>
+  <LI>A&nbsp;かつ&nbsp;B,&nbsp;A&nbsp;&amp;&amp;&nbsp;B&nbsp;(理論演算&nbsp;AND)
+</UL>
+
+<P></P>
+<P>比較式Ａが真かつ比較式Ｂが真ならば真(=1)を返し、違えば偽(=0)を返します。</P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

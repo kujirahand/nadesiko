@@ -1,0 +1,115 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>メールの送受信について</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">メールの送受信について</A></H1>
+<DIV class="lead">　なでしこではほんの数行のプログラムでメールの送受信プログラムを書く事ができます。</DIV>
+<DIV class="index"><A href="6-0-mail.htm#head1">■用途いろいろ</A><BR>
+<A href="6-0-mail.htm#head2">■メールの受信</A><BR>
+<A href="6-0-mail.htm#head3">■メールの送信</A><BR>
+　　<A href="6-0-mail.htm#head4">┣ＣＣとＢＣＣ</A><BR>
+　　<A href="6-0-mail.htm#head5">┣添付ファイル</A><BR>
+　　<A href="6-0-mail.htm#head6">┣ＨＴＭＬメール</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">用途いろいろ</A></H2>
+
+<P></P>
+<P>なでしこを使えば、ほんの数行のプログラムでメール送受信のプログラムを書く事ができます。</P>
+<P>出先でちょっとメールをチェックしたいときにＵＳＢメモリに入れた「なでしこ」でメールチェックだけすることもできます。</P>
+<P>また、メールをくれた人に自動応答でメールを返信したいとか、メールの送信の際に、データベースから拾った顧客情報に沿って自動的にメールを送信するなど、プログラム次第でいろいろな可能性があります。</P>
+<P>なでしこのメール送受信には、標準プラグインのplug-ins\nakonet.dllを利用します。また、GMail&nbsp;など&nbsp;通信にSSLが必要な時には、「libeay32.dll」と「ssleay32.dll」が必要となります。</P>
+<H2><A name="head2">メールの受信</A></H2>
+
+<P></P>
+<P>メールの受信は以下のプログラムのように行います。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-comment">#-------------------------------------</SPAN><BR>
+<SPAN class="code-comment">#&nbsp;メールの設定(以下を書き換えます)</SPAN><BR>
+メールホストは、<SPAN class="code-string">「mail.xxx.jp」</SPAN><BR>
+メールIDは、<SPAN class="code-string">「xxx」</SPAN><BR>
+メールパスワードは、<SPAN class="code-string">「xxx」</SPAN><BR>
+メールオプションは、<SPAN class="code-string">「」</SPAN><SPAN class="code-comment">#&nbsp;必要ならば<SPAN class="code-string">「APOP」</SPAN>や<SPAN class="code-string">「SSL」</SPAN>を。</SPAN><BR>
+メールポート＝110&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN class="code-comment">#&nbsp;SSLなら&nbsp;995&nbsp;を指定。</SPAN><BR>
+メール受信時削除は、いいえ<BR>
+<SPAN class="code-comment">#-------------------------------------</SPAN><BR>
+<SPAN class="code-comment">#&nbsp;実際のメール受信処理</SPAN><BR>
+<SPAN class="code-string">「{デスクトップ}メール受信\」</SPAN>へメール受信。<BR>
+<SPAN class="code-string">「｛それ｝件のメールを受信しました。」</SPAN>と言う。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>まず、プログラムの前半で、メールサーバーの設定を記述します。この設定は、プロバイダやサーバーから指定されたものを正確に記述する必要があります。設定が正しく記述されたなら『「フォルダ」へメール受信』と書けばメールが受信できます。</P>
+<P></P>
+<H2><A name="head3">メールの送信</A></H2>
+
+<P></P>
+<P>メールの送信も、受信と同じで、サーバーから指示された設定を行ってメールを送信します。その際、メールサーバーによってはＳＭＴＰ認証やＳＳＬ認証が必要となります。また、最近では、メール送信用のポートを&nbsp;587&nbsp;に設定する例が多くあります。これは迷惑メールの対策として行われているものです。この制限がないサーバーでは、25&nbsp;番を設定しないと送信できないので注意してください。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-comment">#-------------------------------------</SPAN><BR>
+<SPAN class="code-comment">#&nbsp;メールの設定(以下を書き換えます)</SPAN><BR>
+メールホストは、<SPAN class="code-string">「mail.xxx.jp」</SPAN><BR>
+<SPAN class="code-comment">#-------------------------------------</SPAN><BR>
+<SPAN class="code-comment">#&nbsp;SMTP認証が必要なサーバーでのみ設定します</SPAN><BR>
+メールIDは、<SPAN class="code-string">「xxxx」</SPAN><BR>
+メールパスワードは、<SPAN class="code-string">「xxx」</SPAN><BR>
+メールオプションは、<SPAN class="code-string">「LOGIN」</SPAN><SPAN class="code-comment">#&nbsp;認証方式<SPAN class="code-string">「LOGIN/PLAIN/SSL」</SPAN>を。</SPAN><BR>
+メールポート＝25&nbsp;<SPAN class="code-comment">#&nbsp;迷惑メール対策があるなら&nbsp;587を、SSLなら&nbsp;465&nbsp;を指定</SPAN><BR>
+<SPAN class="code-comment">#-------------------------------------</SPAN><BR>
+<SPAN class="code-comment">#&nbsp;メールの内容について</SPAN><BR>
+メール差出人は<SPAN class="code-string">「xxx@xxx.com」</SPAN><BR>
+メール宛先は<SPAN class="code-string">「xxx@xxx.com」</SPAN><BR>
+メール件名は<SPAN class="code-string">「なでしこのテスト」</SPAN><BR>
+メール本文は「こんにちは！<BR>
+なでしこでメール送信のテストです。」<BR>
+<SPAN class="code-comment">#-------------------------------------</SPAN><BR>
+<SPAN class="code-comment">#&nbsp;実際の送信処理</SPAN><BR>
+メール送信。<BR>
+<SPAN class="code-string">「送信が終わりました」</SPAN>と表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H3><A name="head4">ＣＣとＢＣＣ</A></H3>
+
+<P></P>
+<P>ＣＣとＢＣＣは複数の人数に一度同じ内容のメールを送るときに使います。指定の方法は、以下のように書きます。</P>
+<DIV class="code"><CODE>
+メールＣＣは<SPAN class="code-string">「aaa@aaa.jp,&nbsp;bbb@bbb.jp,&nbsp;ccc@ccc.jp」</SPAN><BR>
+メールＢＣＣは<SPAN class="code-string">「ddd@ddd.jp,&nbsp;eee@eee.jp」</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<H3><A name="head5">添付ファイル</A></H3>
+
+<P></P>
+<P>メールに画像や音楽などを添付する場合は以下のように、メール送信の前で、一行に一つずつファイル名を書きます。</P>
+<DIV class="code"><CODE>
+メール添付ファイルは「{母艦パス}test1.jpg<BR>
+{母艦パス}test2.jpg」<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H3><A name="head6">ＨＴＭＬメール</A></H3>
+
+<P></P>
+<P>受信者にＨＴＭＬメールを送るときは、メール送信の前で、以下のようにＨＴＭＬを書きます。</P>
+<DIV class="code"><CODE>
+メールＨＴＭＬは『&lt;html&gt;<BR>
+&lt;body&gt;&lt;h1&gt;hello!&lt;/h1&gt;<BR>
+&lt;/body&gt;&lt;/html&gt;』<BR>
+
+</CODE></DIV>
+
+<P></P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

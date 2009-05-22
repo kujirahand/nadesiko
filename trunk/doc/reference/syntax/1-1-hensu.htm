@@ -1,0 +1,127 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>変数</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">変数</A></H1>
+<DIV class="lead">　なでしこには明確な型が存在しますが、それほど意識しなくても使えるようになってます。少し規模の大きなプログラムを作るときには、型を明確にすることでエラーチェックが楽になります。</DIV>
+<DIV class="index"><A href="1-1-hensu.htm#head1">■変数の名前</A><BR>
+<A href="1-1-hensu.htm#head2">■変数の宣言</A><BR>
+<A href="1-1-hensu.htm#head3">■変数宣言の強要</A><BR>
+<A href="1-1-hensu.htm#head4">■変数初期化の強要</A><BR>
+<A href="1-1-hensu.htm#head5">■変数への代入</A><BR>
+<A href="1-1-hensu.htm#head6">■グローバル変数・ローカル変数</A><BR>
+　　<A href="1-1-hensu.htm#head7">┣定数</A><BR>
+<A href="1-1-hensu.htm#head8">■セッター／ゲッターの設定</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">変数の名前</A></H2>
+
+<P></P>
+<P>　なでしこでは助詞により単語を区切っていきます。そのため、助詞を含む単語は変数名は使えません。</P>
+<A href="9-1-josi.htm">→助詞の一覧</A>
+<P></P>
+<DIV class="code"><CODE>
+<SPAN class="code-comment">＃変数に使える例</SPAN><BR>
+値段は、５０円。<BR>
+<BR>
+<SPAN class="code-comment">＃変数に使えない例</SPAN><BR>
+かに味噌は、３５０円。<SPAN class="code-comment">＃←<SPAN class="code-string">「に」</SPAN>で変数名が切れる</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head2">変数の宣言</A></H2>
+
+<P></P>
+<P>　初期状態では、変数の宣言は必要ありません。しかし、変数宣言をしないで使うと、思わぬ書き間違いをすることがあるので、変数を宣言が必要にできます。</P>
+<P>　変数宣言をするには、以下のように『(変数)とは(型)。』のように書きます。</P>
+<DIV class="code"><CODE>
+変数Ｓとは文字列。<BR>
+変数Ａとは整数。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>　変数の型には、文字列、整数、数値、配列、ハッシュの種類があります。</P>
+<P></P>
+<H2><A name="head3">変数宣言の強要</A></H2>
+
+<P></P>
+<P>　プログラム中に、『!変数宣言が必要』と書くとプログラムのそれ以降の部分で変数宣言が強要されます。</P>
+<P>　変数宣言の強要を解除するには、『!変数宣言が不要』と書きます。</P>
+<H2><A name="head4">変数初期化の強要</A></H2>
+
+<P></P>
+<P>　小規模のプログラムを作っているとき、全ての変数を宣言するのは面倒ですが、それでも、書き間違いを防ぎたい場合があります。そんなときは、『！変数初期化が必要』と書いてください。それ以降の部分で、初期化されてない変数があればエラーを出すようになります。</P>
+<P>　変数初期化の強要を解除するには『!変数初期化が不要』と書きます。</P>
+<H2><A name="head5">変数への代入</A></H2>
+
+<P></P>
+<P>　変数への代入方法は３つの方法があります。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-comment">#1つめの方法（=を使った代入式）</SPAN><BR>
+変数&nbsp;=&nbsp;値<BR>
+<BR>
+<SPAN class="code-comment">#2つめの方法（はを使った代入式）</SPAN><BR>
+変数は値<BR>
+<BR>
+<SPAN class="code-comment">#3つめの方法（<SPAN class="code-string">「代入」</SPAN>命令を使う）</SPAN><BR>
+値を変数に代入。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head6">グローバル変数・ローカル変数</A></H2>
+
+<P></P>
+<P>関数の外で宣言された変数は、グローバル変数になります。関数の中で宣言された変数は、ローカル変数になります。</P>
+<H3><A name="head7">定数</A></H3>
+
+<P></P>
+<P>オプション指令「！」をつけて以下のように宣言した変数は強制的にグローバルな定数になります。定数は書き換えすることができない変数です。</P>
+<P>「！」をつけて宣言した定数は、プログラム実行前のプリプロセスの段階で定義されます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-comment">#定数の定義</SPAN><BR>
+!変数Ａとは変数<BR>
+!変数Ｂ&nbsp;=&nbsp;32<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head8">セッター／ゲッターの設定</A></H2>
+
+<P></P>
+<P>変数の設定と取得に関数を割り当てることができます。変数の代入時に特別な処理を行わせたい場合に便利です。</P>
+<P>以下の例では、Ａに設定と取得の処理を割り当てて、Ａに値が設定されるたびに設定された内容を画面に表示する例です。</P>
+<DIV class="code"><CODE>
+ＦＡとは整数<BR>
+ＦＡ＝５０<BR>
+<BR>
+<SPAN class="code-function">＊Ａ取得</SPAN><BR>
+　それ＝ＦＡ<BR>
+<BR>
+<SPAN class="code-function">＊Ａ設定（Ｖ）</SPAN><BR>
+　<SPAN class="code-string">「Ａに｛Ｖ｝が設定されました。」</SPAN>と表示<BR>
+　ＦＡ＝Ｖ<BR>
+<BR>
+<SPAN class="code-comment">＃セッターゲッターの設定</SPAN><BR>
+Ａとは整数　←Ａ設定　→Ａ取得<BR>
+<BR>
+<SPAN class="code-comment">＃利用</SPAN><BR>
+Ａ＝３０<BR>
+Ａを言う<BR>
+Ａ＝１００<BR>
+Ａを言う<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>さらに便利な例としては、システム命令の、「作業フォルダ」があります。作業フォルダにパスが代入されると「作業フォルダ設定」を呼び、作業フォルダが参照されると「作業フォルダ取得」を呼び出しています。あたかも、変数を操作しているような感覚で、命令を呼び出すことができます。</P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

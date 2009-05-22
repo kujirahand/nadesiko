@@ -1,0 +1,247 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>制御構文</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">制御構文</A></H1>
+<DIV class="lead">　なでしこには日本語を用いたさまざまな制御構文でプログラムの流れを制御することができます。</DIV>
+<DIV class="index"><A href="1-6-koubun.htm#head1">■繰り返し</A><BR>
+　　<A href="1-6-koubun.htm#head2">┣単純な繰り返し</A><BR>
+　　<A href="1-6-koubun.htm#head3">┣カウンター付きの繰り返し</A><BR>
+　　<A href="1-6-koubun.htm#head4">┣条件付きの繰り返し</A><BR>
+<A href="1-6-koubun.htm#head5">■条件分岐</A><BR>
+　　<A href="1-6-koubun.htm#head6">┣単純な分岐</A><BR>
+　　<A href="1-6-koubun.htm#head7">┣複雑な分岐</A><BR>
+<A href="1-6-koubun.htm#head8">■各要素を反復実行</A><BR>
+<A href="1-6-koubun.htm#head9">■例外処理</A><BR>
+<A href="1-6-koubun.htm#head10">■インデントについて</A><BR>
+<A href="1-6-koubun.htm#head11">■『ここまで』について</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">繰り返し</A></H2>
+
+<P></P>
+<H3><A name="head2">単純な繰り返し</A></H3>
+
+<P></P>
+<P>同じプログラムを何度も繰り返す場合、『？回、～する。』のように書くとプログラムが繰り返されます。</P>
+<DIV class="code"><CODE>
+10回<SPAN class="code-string">「こんにちは」</SPAN>と表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>また、繰り返したい文章が複数の文に分かれるときは、以下のようにインデントで字下げして、繰り返したいプログラムを書きます。</P>
+<DIV class="code"><CODE>
+10回<BR>
+　　<SPAN class="code-string">「こんにちは」</SPAN>と表示。<BR>
+　　<SPAN class="code-string">「やぁ！」</SPAN>と表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>現在何回目の繰り返しなのかを知るには、システム変数の『回数』を使います。</P>
+<DIV class="code"><CODE>
+１０回<BR>
+　　<SPAN class="code-string">「今は｛回数｝回目の繰り返し」</SPAN>と表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>また、繰り返しの最後を明示したい場合は「ここまで」または「ここまで回」と書きます。</P>
+<DIV class="code"><CODE>
+１０回<BR>
+　　<SPAN class="code-string">「わん」</SPAN>と表示<BR>
+ここまで<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>１つのブロックが長い場合や、入れ子が複雑な場合に、「ここまで回」を記述することで構文の終わりをチェックさせることができます。詳しくは後述します。</P>
+<H3><A name="head3">カウンター付きの繰り返し</A></H3>
+
+<P></P>
+<P>繰り返しの最中に、今何回目の繰り返しかを知りたい場合がよくあります。そんなときは、カウンター付きの繰り返しを使うと便利です。これは、『(カウンター変数名)で、(開始値)から、(終了値)まで、繰り返す』と書きます。</P>
+<DIV class="code"><CODE>
+カウンタで１から８まで繰り返す<BR>
+　　<SPAN class="code-string">「今は、｛カウンタ｝回目の実行です。」</SPAN>と表示。<BR>
+　　<SPAN class="code-string">「こんにちは」</SPAN>と表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+<DIV class="code"><CODE>
+２から５まで繰り返す<BR>
+　　それを表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H3><A name="head4">条件付きの繰り返し</A></H3>
+
+<P></P>
+<P>さらに繰り返しですが、何回繰り返すというのではなくて、この条件の間繰り返したいという場合もあります。この場合は、『（条件式）の間～する』と書きます。</P>
+<DIV class="code"><CODE>
+Ａは１<BR>
+Ａが１０以下の間<BR>
+　　<SPAN class="code-string">「Ａ＝｛Ａ｝」</SPAN>と表示。<BR>
+　　Ａに１を足して、Ａに代入。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>単純な条件の場合は、『ＡがＢ以下』や『ＡがＢ以上』『ＡがＢ未満』『ＡがＢ超』などの日本語らしい条件を書くことができます。</P>
+<P>もっと複雑な条件式を書くときは以下のように書きます。</P>
+<DIV class="code"><CODE>
+Ａ＝１<BR>
+(A*2&nbsp;&lt;&nbsp;50)の間<BR>
+　　<SPAN class="code-string">「Ａ＝｛Ａ｝」</SPAN>と表示。<BR>
+　　Ａに２を足してＡに代入。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head5">条件分岐</A></H2>
+
+<P></P>
+<P>条件によって実行するプログラムを変更したいときに、条件分岐の構文を使います。</P>
+<H3><A name="head6">単純な分岐</A></H3>
+
+<P></P>
+<P>単純な分岐には、次のような構文を用います。『もし（条件）ならば（真の式）違えば（偽の式）』。</P>
+<DIV class="code"><CODE>
+天気は<SPAN class="code-string">「雨」</SPAN><BR>
+もし、天気が<SPAN class="code-string">「晴れ」</SPAN>ならば<BR>
+　　<SPAN class="code-string">「遠足に行く」</SPAN>と表示<BR>
+違えば<BR>
+　　<SPAN class="code-string">「遠足中止」</SPAN>と表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>『もし～ならば～違えば～』構文では、『違えば』の直後に『もし～』とつなげることで連続した分岐判定を行えます。</P>
+<DIV class="code"><CODE>
+天気は<SPAN class="code-string">「雪」</SPAN><BR>
+もし、天気が<SPAN class="code-string">「晴れ」</SPAN>ならば<BR>
+　　<SPAN class="code-string">「遠足に行く」</SPAN>と表示<BR>
+違えば、もし、天気が<SPAN class="code-string">「雨」</SPAN>ならば<BR>
+　　<SPAN class="code-string">「遠足中止」</SPAN>と表示<BR>
+違えば、もし、天気が<SPAN class="code-string">「雪」</SPAN>ならば<BR>
+　　<SPAN class="code-string">「雪合戦」</SPAN>と表示<BR>
+違えば<BR>
+　　<SPAN class="code-string">「連絡を待つ」</SPAN>と表示<BR>
+ここまで<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H3><A name="head7">複雑な分岐</A></H3>
+
+<P></P>
+<P>分岐する項目が多いときは、『Ａで条件分岐。Ｂならば～。Ｃならば～。違えば～。』という書式の構文を使います。</P>
+<DIV class="code"><CODE>
+天気は<SPAN class="code-string">「雪」</SPAN>。<BR>
+天気で条件分岐<BR>
+　　<SPAN class="code-string">「晴れ」</SPAN>ならば、<SPAN class="code-string">「遠足に行く」</SPAN>と表示。<BR>
+　　<SPAN class="code-string">「雨」</SPAN>ならば、<SPAN class="code-string">「授業に変更」</SPAN>と表示。<BR>
+　　<SPAN class="code-string">「曇り」</SPAN>ならば、<SPAN class="code-string">「遠足と授業の用意をして登校」</SPAN>と表示。<BR>
+　　<SPAN class="code-string">「雪」</SPAN>ならば、<SPAN class="code-string">「雪合戦の準備をして登校」</SPAN>と表示。<BR>
+　　違えば、<SPAN class="code-string">「授業に変更」</SPAN>と表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>注意としては、条件分岐を使う場合は、必ず、「条件分岐」と書いた後に、インデントで条件を字下げする必要があることです。</P>
+<H2><A name="head8">各要素を反復実行</A></H2>
+
+<P></P>
+<P>『反復』構文は、他の言語でいうイテレーター（反復子）の働きをします。例えば、文章がならば、文章の各一行ずつを順に反復して実行します。また、配列変数ならば、配列変数の各要素を反復実行します。</P>
+<P>書式は、『（データ）を反復。（反復内容）』です。</P>
+<P>　『反復』構文の実行では、各要素を、変数『それ』に代入してから反復内容を実行します。</P>
+<P>　以下のプログラムは、文章の各行を表示します。</P>
+<DIV class="code"><CODE>
+「あああああ<BR>
+いいいいい<BR>
+ううううう<BR>
+えええええ<BR>
+おおおおお」を、反復<BR>
+　　それを表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>また、変数『それ』の内容は命令実行と共に書き換えられてしまうことが多いので変数『対象』にも、変数『それ』と同じ値が代入されるようになっています。</P>
+<DIV class="code"><CODE>
+「あああああ<BR>
+いいいいい<BR>
+ううううう<BR>
+えええええ<BR>
+おおおおお」を、反復<BR>
+　　対象を表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+<H2><A name="head9">例外処理</A></H2>
+
+<P></P>
+<P>　ファイルの読み取りなどは常に成功するとは限りません。ファイルがなかったり、ロックされているとエラーで読み取ることができずエラーが起きます。しかし、エラーが起きては困ることがあります。そんなとき使うのが、例外処理です。</P>
+<DIV class="code"><CODE>
+エラー監視<BR>
+　　<SPAN class="code-string">「存在しないファイル」</SPAN>を読む<BR>
+エラーならば<BR>
+　　<SPAN class="code-string">「ファイルが開けませんでした。｛改行｝」</SPAN>＆<BR>
+　　<SPAN class="code-string">「{エラーメッセージ}」</SPAN>と言う<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>「エラー監視」から「エラーならば」の間に書いたプログラム中を実行中にエラーが発生した場合に、「エラーならば」以降のプログラムを実行します。</P>
+<P></P>
+<H2><A name="head10">インデントについて</A></H2>
+
+<P></P>
+<P>　字下げ（インデント）は、基本的に、半角・全角スペースで行います。全角スペースは、半角スペース２つ分として計算します。</P>
+<P>　また、タブでのインデントは、タブの位置によって１～４文字として計算しますが、タブは、エディタの設定タブ幅によって幅が違うので、混乱の元になるので、あまりおすすめしません。</P>
+<P></P>
+<H2><A name="head11">『ここまで』について</A></H2>
+
+<P></P>
+<P>『回』『反復』『もし』などのインデントを使う制御構文で構文の最後が分かりにくい時があります。そのときに、『ここまで』と構文の最後を明示できるようにするものです。</P>
+<DIV class="code"><CODE>
+１０回<BR>
+　　<SPAN class="code-string">「わん」</SPAN>と表示<BR>
+ここまで回<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>もし、おかしなところで、『ここまで』と書くとエラーになります。そのため、インデントが複雑な場合に文法チェックするのにも役立ちます。</P>
+<DIV class="code"><CODE>
+１０回<BR>
+　　<SPAN class="code-string">「わん」</SPAN>と表示<BR>
+　　ここまで回　<SPAN class="code-comment">＃　エラー</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>また『ここまで』の後に書く制御構文の名前は省略ができます。</P>
+<DIV class="code"><CODE>
+１０回<BR>
+　　<SPAN class="code-string">「わん」</SPAN>と表示<BR>
+ここまで<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+<P></P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

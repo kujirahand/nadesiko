@@ -1,0 +1,52 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>タイマー機能</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">タイマー機能</A></H1>
+<DIV class="lead">なでしこにはタイマーの機能があります。タイマーはグループとして用意されてます。</DIV>
+<DIV class="index"><A href="13-0-timer.htm#head1">■一番簡単なサンプル</A><BR>
+<A href="13-0-timer.htm#head2">■タイマーで時計を作る</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">一番簡単なサンプル</A></H2>
+
+<P></P>
+<P>以下が一番簡単なサンプルです。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-comment">#タイマーの利用例</SPAN><BR>
+<SPAN class="code-comment">#-----------------------</SPAN><BR>
+Aタイマーとはタイマー。<BR>
+Aタイマーについて<BR>
+　　値は1000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN class="code-comment">#&nbsp;時間をミリ秒で指定</SPAN><BR>
+　　時満ちた時は～&nbsp;<SPAN class="code-comment">#&nbsp;イベントを設定</SPAN><BR>
+　　　　<SPAN class="code-string">「１秒経過」</SPAN>を表示<BR>
+　　開始。&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN class="code-comment">#&nbsp;タイマーを開始する</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>上記のように、まず、タイマーを生成し、何ミリ間隔のタイマーかを『値』で指定します。次に、タイマーに指定した秒数が過ぎたときに何をするのかのイベントを指定します。そして、最後にタイマーを開始します。</P>
+<P>タイマーの間隔は、ミリ秒で指定しますが、実際には１ミリ秒の精度はなく、OSの種類や設定により精度が異なります。</P>
+<H2><A name="head2">タイマーで時計を作る</A></H2>
+
+<P></P>
+<P>それでは、タイマーを使って簡単な時計を作ってみます。</P>
+<DIV class="code"><CODE>
+時計ラベルとはラベル。<SPAN class="code-comment">#時間の表示用</SPAN><BR>
+時間タイマーとはタイマー。<BR>
+時間タイマーについて<BR>
+　　値は1000&nbsp;<SPAN class="code-comment">#&nbsp;時間をミリ秒で指定</SPAN><BR>
+　　時満ちた時は～時計ラベルは今。<BR>
+　　開始<BR>
+
+</CODE></DIV>
+
+<P></P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

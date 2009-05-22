@@ -1,0 +1,276 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META name="keyword" content="プログラミング言語, なでしこ, 定型処理, バッチ処理, 教育">
+<META name="description" content="なでしこは日本語で簡単にプログラミングができる簡単ツールです。">
+<META name="GENERATOR" content="IBM WebSphere Homepage Builder V6.0.1 for Windows">
+<TITLE>プログラミング基礎編</TITLE>
+<LINK rel="stylesheet" href="../nako_man.css" type="text/css">
+</HEAD>
+<BODY text="#4d4d4d" link="#000099" vlink="#582c56" alink="#cc00cc">
+<CENTER>
+<TABLE border="0" width="780" cellpadding="0" cellspacing="0">
+  <TBODY>
+    <TR>
+      <TD align="right"><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="../index.htm"><IMG src="../logo_nadesiko_title.gif" width="293" height="76" border="0" alt="なでしこ"></A></TD>
+    </TR>
+    <TR>
+      <TD><IMG src="../line.gif" width="780" height="8" border="0"></TD>
+    </TR>
+    <TR>
+      <TD>
+      <TABLE border="0" width="780" cellpadding="4" cellspacing="0">
+        <TBODY>
+          <TR>
+            <TD width="142"><IMG src="../about/dmy.gif" width="8" height="8" border="0"></TD>
+            <TD width="142"></TD>
+            <TD width="322"></TD>
+            <TD width="142"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">プログラミング基礎編～反復</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" align="center"><IMG src="kiso-title.gif" width="300" height="200" border="0"></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">反復とは・・・</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>
+            <P class=lead>配列変数の一要素ずつ、長い文章の一行ずつを一つずつ処理したいことがあります。そのときは、『反復』構文を使うと便利です。</P>
+            </TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">反復</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>それでは『反復』命令を使った例を見ていきましょう。次のプログラムは配列変数の各要素を全部画面に表示するプログラムを作ってみます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code">動物￥０＝「イヌ」<BR>
+動物￥１＝「サル」<BR>
+動物￥２＝「キジ」<BR>
+動物を反復<BR>
+　　それを表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="seito.gif" width="90" height="82" border="0"></TD>
+            <TD>これを実行すると・・・<BR>
+            イヌ<BR>
+            サル<BR>
+            キジ<BR>
+            ・・・と表示されます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>反復構文では、各配列の数だけ繰り返し内容を実行します。そのとき、変数『それ』に各要素が代入されます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code"><FONT color=#ff0000>（データ）</FONT>を<B>反復</B><BR>　　　　<FONT 
+color=#ff0000>（内容）</FONT></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>例えば、配列変数の各要素や文章の一行ずつを一つずつ【ｘｘ】とカッコをつけて表示したい場合に、『反復』構文を作ると簡単に表示できます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code">動物は、<FONT color=#0066cc>「トラ<BR>ゾウ<BR>
+            ウマ」</FONT><BR>
+            <BR>動物を反復<BR>　　<FONT 
+color=#0066cc>「【　</FONT><FONT color=#ff0000>{それ}　</FONT><FONT 
+color=#0066cc>】」</FONT>を表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="left" colspan="2">プログラムを実行すると以下のように表示されます。<BR>-----<BR>
+            【　トラ　】<BR>
+            【　ゾウ　】<BR>
+            【　ウマ　】</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">『それ』の代わりに『対象』を使う</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>変数『それ』と同じように『対象』を使うことでも反復の要素の値を利用できます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code">動物￥０＝「カバ」<BR>
+動物￥１＝「サル」<BR>
+動物￥２＝「キジ」<BR>
+動物を反復<BR>
+            　　「【　{<B>対象</B>}　】」を表示。<BR>
+</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="seito.gif" width="90" height="82" border="0"></TD>
+            <TD>このプログラムを実行すると以下のように表示されます。<BR>
+            ---<BR>
+            【　カバ　】<BR>
+            【　サル　】<BR>
+            【　キジ　】</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>変数『それ』というのは、何か命令を使うとすぐに書き換えられてしまうものです。そこで、『対象』という変数を使って反復する対象を得ることができるようになっているのです。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">反復を使って計算をしてみよう！</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>次に反復を使って計算をしてみようと思います。<BR>
+            うどん屋を想像してみてください。働き者のご主人がコツコツうどんを作るお店です。<BR>
+            ある日、突然うどんの仕入れ値段が１００円高くになってしまいました。そこで止む無くメニューを全て１００円高くする場合です。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code">値段表は<FONT color="#000099">「600<BR>
+            630<BR>
+            800<BR>
+            850<BR>
+            1200」</FONT><BR>
+            値段表を反復<BR>
+            　　<B>対象</B>に１００を足して表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="seito.gif" width="90" height="82" border="0"></TD>
+            <TD>これを実行すると以下のように値段表より１００円高い金額が表示されます。<BR>
+            ---<BR>
+            700<BR>
+730<BR>
+900<BR>
+950<BR>
+1300<BR>
+</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">二次元配列変数を反復する</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>さっきのは値段だけでしたが、普通値段表といったら、「料理名, 値段」と組になっているはずですね。今度は二次元配列変数を反復してみます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code"><FONT color="#009900"># 値段表</FONT><BR>
+値段表は「かけうどん,600<BR>
+たぬきうどん,630<BR>
+ざるそば,800<BR>
+日替わり定食,850<BR>
+天ぷらうどん,1200」<BR>
+            <FONT color="#009900"># CSVファイルを二次元配列変数に変換</FONT><BR>
+            値段表を<B>ＣＳＶ取得</B>して値段表に代入。<BR>
+            <FONT color="#009900"># 反復</FONT><BR>
+            値段表を<B>反復</B><BR>
+            　　料理は<B>対象</B>￥０<BR>
+            　　値段は<B>対象</B>￥１<BR>
+            　　値段は値段＋１００<BR>
+            　　「{料理}, {値段}」を表示。<BR>
+    <BR>
+            </TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="seito.gif" width="90" height="82" border="0"></TD>
+            <TD>これを実行すると100円高い値段になって表示されます。<BR>
+            ---<BR>
+            かけうどん, 700<BR>
+たぬきうどん, 730<BR>
+ざるそば, 900<BR>
+日替わり定食, 950<BR>
+            天ぷらうどん, 1300<BR>
+            <BR>
+</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>ここで新しい命令が出てきました。『ＣＳＶ取得』命令とは、カンマで区切られた文字列を強制的に二次元配列変数に変換する命令です。<BR>
+            <BR>
+            これでうどん屋の値段表を二次元配列変数に変換しておき、二次元配列変数を『反復』構文で繰り返しています。<BR>
+            <BR>
+            するとどうでしょう！二次元を一要素ずつ実行すると、一次元の配列として取り出すことができるんです。それで『対象￥０』で料理の名前、『対象￥１』で値段を取得することができます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">
+            <HR>
+            次のページ<A href="09-2-each_hash.htm">→反復＋ハッシュ</A><BR>
+            前のページ<A href="08-1-hash.htm">←ハッシュを使う</A>
+            <HR>
+            </TD>
+            <TD></TD>
+          </TR>
+        </TBODY>
+      </TABLE>
+      </TD>
+    </TR>
+    <TR>
+      <TD><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+  </TBODY>
+</TABLE>
+</CENTER>
+<CENTER></CENTER>
+<CENTER></CENTER>
+</BODY>
+</HTML>

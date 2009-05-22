@@ -1,0 +1,359 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>ワイルドカード</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">ワイルドカード</A></H1>
+<DIV class="lead">なでしこのワイルドカードはVisualBasicの&quot;Like&quot;の上位互換です。一部に独自の拡張を施すしているので強力です。</DIV>
+<DIV class="index"><A href="2-2-wildcard.htm#head1">■ワイルドカードとは？</A><BR>
+<A href="2-2-wildcard.htm#head2">■ワイルドカードで調べる</A><BR>
+<A href="2-2-wildcard.htm#head3">■ワイルドカードの規則</A><BR>
+　　<A href="2-2-wildcard.htm#head4">┣『#』のパターン</A><BR>
+　　<A href="2-2-wildcard.htm#head5">┣『[str]』のパターン</A><BR>
+　　<A href="2-2-wildcard.htm#head6">┣『[!str]』のパターン</A><BR>
+　　<A href="2-2-wildcard.htm#head7">┣『[*str]』『[+str]』のパターン</A><BR>
+　　<A href="2-2-wildcard.htm#head8">┣『[=a|b]』のパターン</A><BR>
+　　<A href="2-2-wildcard.htm#head9">┣『(str)』のパターン</A><BR>
+<A href="2-2-wildcard.htm#head10">■ワイルドカード置換</A><BR>
+<A href="2-2-wildcard.htm#head11">■ワイルドカード区切る</A><BR>
+</DIV>
+<P></P>
+<P></P>
+<H2><A name="head1">ワイルドカードとは？</A></H2>
+
+<P></P>
+<P>ワイルドカードは、トランプのジョーカーに似ています。「?」や「*」の記号を用いることで、あらゆる文字を表すことができるのです。一般的には、ファイルを検索するときや、データベースを検索するときに使います。</P>
+<P>例えば、ファイルを検索するときに、「*.txt」を検索すると、「aaa.txt」や「bbb.txt」、「ccc.txt」など、ワイルドカードのパターンに一致したファイルを検索結果として取り出すことができます。</P>
+<P>ワイルドカードの意味としては、「*」が任意の複数文字、「?」が任意の１文字を表します。</P>
+<P>ですので、「no?.txt」を検索すれば、「no1.txt」、「no2.txt」、「no3.txt」などが取り出されます。</P>
+<P></P>
+<P></P>
+<H2><A name="head2">ワイルドカードで調べる</A></H2>
+
+<P></P>
+<P>なでしこで、ある文字列が、ワイルドカードのパターンに一致するかどうか調べるには、『ワイルドカード一致』という命令を使います。</P>
+<P>以下は、ワイルドカードのパターンを「*.doc」にして、ファイル一覧から一つずつパターンに一致するかどうか調べるプログラムです。</P>
+<P>プログラム:一致.nako</P>
+<DIV class="code"><CODE>
+パターンは<SPAN class="code-string">「*.doc」</SPAN><BR>
+ファイル一覧は「2005年顧客名簿.xls<BR>
+2006年顧客名簿.xls<BR>
+2005年決算報告.doc<BR>
+2006年決算報告.doc」<BR>
+<BR>
+ファイル一覧を反復<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;対象がパターンにワイルドカード一致するか。<BR>
+　　もし、それがはいならば、対象を表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>これを実行すると、&quot;.doc&quot;の拡張子を持つ以下の２つが表示されます。</P>
+<UL>
+  <LI>2005年決算報告.doc
+  <LI>2006年決算報告.doc
+</UL>
+
+<P></P>
+<P>次に「2005年*」というパターンで調べてみます。</P>
+<P>プログラム:一致2.nako</P>
+<DIV class="code"><CODE>
+パターンは<SPAN class="code-string">「2005*」</SPAN><BR>
+ファイル一覧は「2005年顧客名簿.xls<BR>
+2006年顧客名簿.xls<BR>
+2005年決算報告.doc<BR>
+2006年決算報告.doc」<BR>
+<BR>
+ファイル一覧を反復<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;対象がパターンにワイルドカード一致するか。<BR>
+　　もし、それがはいならば、対象を表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>これを実行すると、以下のように2005年から始まるファイルが表示されます。</P>
+<UL>
+  <LI>2005年顧客名簿.xls
+  <LI>2005年決算報告.doc
+</UL>
+
+<P></P>
+<P>このように、ワイルドカードを使うと、そのパターンに合うものだけを取り出すことができるので、とても便利です。</P>
+<P></P>
+<P></P>
+<H2><A name="head3">ワイルドカードの規則</A></H2>
+
+<P></P>
+<P>なでしこで使えるワイルドカードをまとめたのが以下の表です。</P>
+<TABLE border="1" cellpadding="4" cellspacing="1">
+<TR><TD>パターン</TD>
+<TD>&nbsp;意味</TD>
+</TR>
+<TR><TD>*</TD>
+<TD>&nbsp;任意の０文字以上の文字列</TD>
+</TR>
+<TR><TD>?</TD>
+<TD>&nbsp;任意の１文字</TD>
+</TR>
+<TR><TD>#</TD>
+<TD>&nbsp;任意の数字１字</TD>
+</TR>
+<TR><TD>[str]</TD>
+<TD>&nbsp;strに指定した文字列のうちのどれか１文字</TD>
+</TR>
+<TR><TD>[!str]</TD>
+<TD>&nbsp;strに指定した文字列以外の１文字</TD>
+</TR>
+<TR><TD>[*str]</TD>
+<TD>&nbsp;strのどれか１文字の０回以上の繰り返し</TD>
+</TR>
+<TR><TD>[+str]</TD>
+<TD>&nbsp;strのどれか１文字の１回以上の繰り返し</TD>
+</TR>
+<TR><TD>[=a|b]</TD>
+<TD>&nbsp;文字列aかbのどちらか</TD>
+</TR>
+<TR><TD>[*!str]</TD>
+<TD>&nbsp;str以外の０回以上の繰り返し</TD>
+</TR>
+<TR><TD>[+!str]</TD>
+<TD>&nbsp;str以外の１回以上の繰り返し</TD>
+</TR>
+<TR><TD>\</TD>
+<TD>&nbsp;シーケンス文字。\tでタブ、\nで改行、\[で[の意味</TD>
+</TR>
+<TR><TD>(str)</TD>
+<TD>&nbsp;strに一致する部分を別途抽出する</TD>
+</TR>
+</TABLE>
+
+<P></P>
+<P>※ＶＢのLikeでは、上の&quot;*&quot;から&quot;[!str]&quot;までが使えます。</P>
+<P>それでは、上で解説しなかった部分を解説します。</P>
+<P></P>
+<H3><A name="head4">『#』のパターン</A></H3>
+
+<P></P>
+<P>『#』は任意の数字１字を表します。郵便番号などが正しく入力されたか調べるのに便利でしょう。</P>
+<P>以下のプログラムは、郵便番号を尋ね、入力された形式が、「###-####」のパターンにあてはまるか確認する例です。</P>
+<P>プログラム:郵便番号チェック.nako</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「郵便番号は？(<SPAN class="code-comment">###-####)」</SPAN>と尋ねる。</SPAN><BR>
+郵便番号は、それ。<BR>
+郵便番号を<SPAN class="code-string">「<SPAN class="code-comment">###-####」</SPAN>でワイルドカード一致。</SPAN><BR>
+もし、それがはいならば<BR>
+　　<SPAN class="code-string">「正しく入力されました」</SPAN>と言う<BR>
+違えば<BR>
+　　<SPAN class="code-string">「形式が違います。」</SPAN>と言う。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>例えば、「123-4567」と入力すれば、「正しく入力されました」と表示され、「abc-defg」や「12-3456」と入力すると、「形式が違います」と表示されます。</P>
+<P></P>
+<H3><A name="head5">『[str]』のパターン</A></H3>
+
+<P></P>
+<P>『[str]』のパターンでは、strに指定した文字列のうち、どれか１文字を表します。例えば、時間を入力する場合に、「12:30:00」と書く人もいれば、「12時30分00秒」と書く人もいます。このどちらかの形式のどちらでも良い場合、パターンに、『*[時:]*[分:]*』と指定すれば、漢字で書いても、コロン(「:」)で書いても良いことになります。</P>
+<P>以下のプログラムは、いろいろな形式の文字列データを１行ずつ調べていって、時間の形式『*[時:]*[分:]*』に当てはまるものだけを表示する例です。</P>
+<P>プログラム:時間チェック.nako</P>
+<DIV class="code"><CODE>
+パターンは<SPAN class="code-string">「*[時:]*[分:]*」</SPAN><BR>
+データは「2005/1/1<BR>
+20時30分20秒<BR>
+04:05:12<BR>
+2005年1月20日」<BR>
+<BR>
+データを反復<BR>
+　　対象をパターンでワイルドカード一致。<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;もし、それがはいならば、対象を表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>このプログラムを実行すると、以下の通り、時間形式のデータだけを表示することができます。</P>
+<UL>
+  <LI>20時30分20秒
+  <LI>04:05:12
+</UL>
+
+<P></P>
+<P>また、strに指定する文字列は『[a-c]』のように指定して、aからcまでの範囲を表すこともできます。</P>
+<P>以下のプログラムは、アルファベットをチーム名にしたデータの中から、BチームからDチームまでの範囲を表示します。</P>
+<P>プログラム:一致3.nako</P>
+<DIV class="code"><CODE>
+「Aチーム<BR>
+Bチーム<BR>
+Cチーム<BR>
+Dチーム<BR>
+Eチーム」を反復<BR>
+　　対象が<SPAN class="code-string">「[B-D]チーム」</SPAN>にワイルドカード一致するか。<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;もし、それがはいならば、対象を表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>プログラムを実行すると、以下のようにＢ～Ｄのチーム名が表示されます。</P>
+<UL>
+  <LI>Bチーム
+  <LI>Cチーム
+  <LI>Dチーム
+</UL>
+
+<P></P>
+<P></P>
+<P></P>
+<H3><A name="head6">『[!str]』のパターン</A></H3>
+
+<P></P>
+<P>次にワイルドカードの『[!str]』のパターンですが、これは、strに指定した以外の１文字を表します。</P>
+<P>数字以外の１文字を表す場合は、『[!0-9]』と指定できます。</P>
+<P></P>
+<P></P>
+<H3><A name="head7">『[*str]』『[+str]』のパターン</A></H3>
+
+<P></P>
+<P>これは、strに指定した文字列のうちのどれかが繰り返し使われた場合のパターンを表します。</P>
+<P>プログラムとして書くと、若干見づらくなってしまいますので、パターンがマッチするかどうかだけを書いてみます。</P>
+<TABLE border="1" cellpadding="4" cellspacing="1">
+<TR><TD>対象文字列</TD>
+<TD>&nbsp;ワイルドカード</TD>
+<TD>&nbsp;結果</TD>
+</TR>
+<TR><TD>すもも</TD>
+<TD>す[*も]</TD>
+<TD>はい</TD>
+</TR>
+<TR><TD>すもももももも</TD>
+<TD>す[*も]</TD>
+<TD>はい</TD>
+</TR>
+<TR><TD>すし</TD>
+<TD>す[*も]</TD>
+<TD>いいえ</TD>
+</TR>
+</TABLE>
+
+<P></P>
+<P>このように、『す[*も]』と書いた場合、「すもも」も「すももももも」もマッチするのです。しかし、「すし」には、「も」が含まれないので、マッチしません。</P>
+<P>さて、『[*str]』と『[+str]』の違いですが、『[*str]』を指定した場合は、0文字以上の繰り返しです。そして、『[+str]』と指定した場合は、1文字以上の繰り返しです。</P>
+<P>即ち、『[*str]』の場合は、strに指定した文字列があってもなくても良く、『[+str]』の場合は、必ず１文字以上はないとマッチしないということになります。</P>
+<TABLE border="1" cellpadding="4" cellspacing="1">
+<TR><TD>対象文字列</TD>
+<TD>&nbsp;ワイルドカード</TD>
+<TD>&nbsp;結果</TD>
+</TR>
+<TR><TD>す</TD>
+<TD>す[*も]</TD>
+<TD>はい</TD>
+</TR>
+<TR><TD>す</TD>
+<TD>す[+も]</TD>
+<TD>いいえ</TD>
+</TR>
+<TR><TD>すし</TD>
+<TD>す[*め]し</TD>
+<TD>はい</TD>
+</TR>
+<TR><TD>すし</TD>
+<TD>す[+め]し</TD>
+<TD>いいえ</TD>
+</TR>
+</TABLE>
+
+<P></P>
+<P></P>
+<H3><A name="head8">『[=a|b]』のパターン</A></H3>
+
+<P></P>
+<P>これは、文字列aか、文字列bのどちらかを表します。</P>
+<TABLE border="1" cellpadding="4" cellspacing="1">
+<TR><TD>対象文字列</TD>
+<TD>&nbsp;ワイルドカード</TD>
+<TD>&nbsp;結果</TD>
+</TR>
+<TR><TD>トマト</TD>
+<TD>ト[=マト|ースト]</TD>
+<TD>はい</TD>
+</TR>
+<TR><TD>トースト</TD>
+<TD>ト[=マト|ースト]</TD>
+<TD>はい</TD>
+</TR>
+<TR><TD>トイレ</TD>
+<TD>ト[=マト|ースト]</TD>
+<TD>いいえ</TD>
+</TR>
+</TABLE>
+
+<P></P>
+<P></P>
+<H3><A name="head9">『(str)』のパターン</A></H3>
+
+<P></P>
+<P>『(str)』は特別な意味を持ちます。パターンを、『(a*c)』のようにカッコで括ると、カッコの内側にマッチした文字を抽出することができます。</P>
+<P>抽出した文字列は、『抽出文字列』という変数に代入されます。以下のプログラムを実行して結果を確かめてみましょう。</P>
+<P>プログラム:抽出文字列.nako</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「123-456」</SPAN>を<SPAN class="code-string">「(*)-(*)」</SPAN>でワイルドカード一致。<BR>
+抽出文字列を言う。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>このプログラムを実行すると、以下のようにカッコで括った部分にマッチした文字列を抜き出すことができます。</P>
+<UL>
+  <LI>123
+  <LI>456
+</UL>
+
+<P></P>
+<P></P>
+<P></P>
+<H2><A name="head10">ワイルドカード置換</A></H2>
+
+<P></P>
+<P>ワイルドカードを使って文字列を置換することができます。</P>
+<P>プログラム:ワイルドカード置換.nako</P>
+<DIV class="code"><CODE>
+文章は<SPAN class="code-string">「東京大学を受験～東大に合格」</SPAN><BR>
+文章の<SPAN class="code-string">「東[*京]大[*学]」</SPAN>を<SPAN class="code-string">「京大」</SPAN>にワイルドカード置換。<BR>
+それを言う<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>これを実行すると『京大を受験～京大に合格』と置換されます。</P>
+<P></P>
+<H2><A name="head11">ワイルドカード区切る</A></H2>
+
+<P></P>
+<P>ワイルドカードで文字列を区切ることもできます。</P>
+<P>プログラム:ワイルドカード区切る.nako</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「2005/02/03&nbsp;04:22:11」</SPAN>を<SPAN class="code-string">「[/:&nbsp;]」</SPAN>でワイルドカード区切る。<BR>
+それを言う。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>これを実行すると、&quot;/&quot;や&quot;:&quot;や&quot;&nbsp;&quot;で区切られるので、結果以下のように各数値のみを取り出すことができます。</P>
+<DIV class="code"><CODE>
+2005<BR>
+02<BR>
+03<BR>
+04<BR>
+22<BR>
+11<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

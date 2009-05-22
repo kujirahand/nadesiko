@@ -1,0 +1,104 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>音楽の再生</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">音楽の再生</A></H1>
+<DIV class="lead">　なでしこで手軽に音楽再生できます。</DIV>
+<DIV class="index"><A href="4-0-play.htm#head1">■再生方法</A><BR>
+　　<A href="4-0-play.htm#head2">┣音で知らせる</A><BR>
+<A href="4-0-play.htm#head3">■ＭＣＩ</A><BR>
+　　<A href="4-0-play.htm#head4">┣ＭＣＩ送信</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">再生方法</A></H2>
+
+<P></P>
+<P>『再生』命令を使うと、さまざまな音楽ファイルを再生できます。内部的にはMCIを利用しているので、メディアプレイヤーで再生できるファイルの種類なら再生できます。</P>
+<P>Windows&nbsp;Media&nbsp;Player&nbsp;9.00がインストールされいている場合は、MIDI,&nbsp;WMA,&nbsp;WAV,&nbsp;AU,&nbsp;AIFF,&nbsp;MP3,&nbsp;AVI,&nbsp;MPEGなどを演奏できるようです。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「xxx.mid」</SPAN>を再生<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>『停止』命令で演奏を停止できます。</P>
+<H3><A name="head2">音で知らせる</A></H3>
+
+<P></P>
+<P>ピッと音を鳴らすだけならば、「BEEP」と書くと音が鳴らせます。</P>
+<H2><A name="head3">ＭＣＩ</A></H2>
+
+<P></P>
+<P>ＭＣＩ命令を使うと、もう少し細かく演奏を制御できます。『ＭＣＩ開く』でファイルを開きます。そのとき、開いたファイルをなんという識別子を使って制御するかを指定します。（これは半角英数で指定します。）</P>
+<P>その後、『ＭＣＩ再生』や『ＭＣＩ停止』などの命令を識別子を使って制御できます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「音楽ファイル.mp3」</SPAN>を<SPAN class="code-string">「music」</SPAN>でMCI開く<BR>
+<SPAN class="code-string">「music」</SPAN>をMCI再生<BR>
+<SPAN class="code-string">「停止」</SPAN>と言う<BR>
+<SPAN class="code-string">「music」</SPAN>をMCI閉じる<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>また、『ＭＣＩ開く』では識別子を指定してファイルを開くことができますので、複数のファイルを開いておいて、任意のタイミングで再生するということが可能になります。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「MCIを開きます」</SPAN>と言う<BR>
+<SPAN class="code-string">「xxxx.mid」</SPAN>を<SPAN class="code-string">「p1」</SPAN>でMCI開く<BR>
+<SPAN class="code-string">「xxxx.mid」</SPAN>を<SPAN class="code-string">「p2」</SPAN>でMCI開く<BR>
+<SPAN class="code-string">「xxxx.mid」</SPAN>を<SPAN class="code-string">「p3」</SPAN>でMCI開く<BR>
+<SPAN class="code-string">「再生します」</SPAN>と言う<BR>
+<SPAN class="code-string">「p2」</SPAN>をMCI再生<BR>
+<SPAN class="code-string">「停止します」</SPAN>と言う<BR>
+<SPAN class="code-string">「p2」</SPAN>をMCI停止<BR>
+<SPAN class="code-string">「MCIを閉じます」</SPAN>と言う<BR>
+<SPAN class="code-string">「p1」</SPAN>をMCI閉じる<BR>
+<SPAN class="code-string">「p2」</SPAN>をMCI閉じる<BR>
+<SPAN class="code-string">「p3」</SPAN>をMCI閉じる<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H3><A name="head4">ＭＣＩ送信</A></H3>
+
+<P></P>
+<P>ＭＣＩ送信命令を使うと、さらに細かい指定が可能になります。例えば以下は、繰り返し再生を行う例です。（ただし、再生する音楽の種類によってはサポートしないこともあります。）</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「音楽ファイル.mp3」</SPAN>を<SPAN class="code-string">「music」</SPAN>でMCI開く<BR>
+<SPAN class="code-string">「play&nbsp;music&nbsp;repeat」</SPAN>をMCI送信<BR>
+<SPAN class="code-string">「停止」</SPAN>と言う<BR>
+<SPAN class="code-string">「music」</SPAN>をMCI閉じる<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>そのほかのＭＣＩコマンドの例です。他にもありますが、代表的なものをのせておきます。</P>
+<TABLE border="1" cellpadding="4" cellspacing="1">
+<TR><TD>コマンド</TD>
+<TD>&nbsp;説明</TD>
+</TR>
+<TR><TD>play&nbsp;NAME&nbsp;repeat</TD>
+<TD>&nbsp;音楽をループ演奏する</TD>
+</TR>
+<TR><TD>pause&nbsp;NAME</TD>
+<TD>&nbsp;音楽を一時停止する</TD>
+</TR>
+<TR><TD>seek&nbsp;NAME&nbsp;to&nbsp;POS</TD>
+<TD>&nbsp;演奏位置をPOSに変更する</TD>
+</TR>
+<TR><TD>status&nbsp;NAME&nbsp;length</TD>
+<TD>&nbsp;演奏の長さを求める</TD>
+</TR>
+<TR><TD>status&nbsp;NAME&nbsp;position</TD>
+<TD>&nbsp;曲の演奏位置を求める</TD>
+</TR>
+</TABLE>
+
+<P></P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

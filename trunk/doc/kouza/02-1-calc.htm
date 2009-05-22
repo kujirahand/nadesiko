@@ -1,0 +1,296 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META name="keyword" content="プログラミング言語, なでしこ, 定型処理, バッチ処理, 教育">
+<META name="description" content="なでしこは日本語で簡単にプログラミングができる簡単ツールです。">
+<META name="GENERATOR" content="IBM WebSphere Homepage Builder V6.0.1 for Windows">
+<TITLE>プログラミング基礎編</TITLE>
+<LINK rel="stylesheet" href="../nako_man.css" type="text/css">
+</HEAD>
+<BODY text="#4d4d4d" link="#000099" vlink="#582c56" alink="#cc00cc">
+<CENTER>
+<TABLE border="0" width="780" cellpadding="0" cellspacing="0">
+  <TBODY>
+    <TR>
+      <TD align="right"><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="../index.htm"><IMG src="../logo_nadesiko_title.gif" width="293" height="76" border="0" alt="なでしこ"></A></TD>
+    </TR>
+    <TR>
+      <TD><IMG src="../line.gif" width="780" height="8" border="0"></TD>
+    </TR>
+    <TR>
+      <TD>
+      <TABLE border="0" width="780" cellpadding="4" cellspacing="0">
+        <TBODY>
+          <TR>
+            <TD width="142"><IMG src="../about/dmy.gif" width="8" height="8" border="0"></TD>
+            <TD width="142"></TD>
+            <TD width="322"></TD>
+            <TD width="142"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">プログラミング基礎編～計算機の代わりに使う</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" align="center"><IMG src="kiso-title.gif" width="300" height="200" border="0"></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">なでしこを電卓として使う</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>　次になでしこを電卓の代わりとして使ってみましょう。以下が、１＋１を計算して画面に表示するプログラムです。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code"><BR>
+            １＋１を表示。<BR>
+            <BR>
+            </TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>プログラムを実行すると、画面に２が表示されます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">１＋１だけじゃだめなの？</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"><IMG src="seito.gif" width="90" height="82" border="0"></TD>
+            <TD>先生、質問！<BR>
+            １＋１だけじゃ計算してくれないのですか？</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>それでは、『１＋１』とだけエディタに書いて実行してみましょう。どうでしたか？</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="seito.gif" width="90" height="82" border="0"></TD>
+            <TD>『１＋１』を実行してみましたが、何も表示されませんでした。１＋１だけだと計算してくれないんですね？</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>そんなことはありません。『１＋１』を計算します。しかし、計算しただけでは、画面に表示されないんです。分かりますか？<BR>
+            <BR>
+            プログラムでは、計算しただけではだめなんです。計算した結果を『表示』する必要があるんです。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">クジラに計算した結果を言わせよう！</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" bgcolor="#004e98"><IMG src="kujira-hello.png" width="142" height="70" border="0"></TD>
+            <TD>
+            <P>計算した結果を表示するには、『表示』という命令を使うのが一番簡単ですが、<A href="01-1-hello.htm">前のページ</A>でやったクジラの台詞として計算結果を表示させることもできます。</P>
+            </TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>では、『１＋２×３』という計算の結果をクジラにしゃべらせてみましょう。以下が、クジラに計算の結果をしゃべらせるプログラムです。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code"><BR>
+            クジラが１＋２×３を言う。<BR>
+            <BR>
+            </TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="../pic/a011cut.gif" width="64" height="64" border="0"></TD>
+            <TD>１＋２×３の計算の答えは７です。(*1)<BR>
+            ですので、クジラも　７　と答えたはずです。<BR>
+            このように、足し算・引き算よりも掛け算・割り算を優先して計算してくれます。</TD>
+            <TD class="menuG">（*1)掛け算は足し算よりも優先度が高いので先に計算する決まりです。先日、芸能人のためのクイズ番組でこの問題が出題され、計算が正しくできない芸能人がたくさんいました・・・もし、できなくても、プログラムはできますので安心してください。</TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>また、（１＋２）×３などとカッコで括ると、カッコの中を優先して計算するようになります。以下のプログラムを実行すると、答えの９が表示されます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code"><BR>
+            （１＋２）×３を表示。<BR>
+            <BR>
+            </TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">複雑な計算</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>さて、もっと複雑な計算をさせてみましょう。なでしこを使えば相当複雑な計算もあっというまに答えを出してくれます。数字ばかり見ていても面白くないので問題を出します。この問題をプログラムを使って解いてみましょう。</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center" bgcolor="#ccffcc">問題<BR>
+            <IMG src="../pic/a015icn.gif" width="32" height="32" border="0"></TD>
+            <TD bgcolor="#ccffcc"><p>仲の良い友達2人と（合計３人で）スキーに行きました。スキー場までは、レンタカーを借りていきました。レンタカーの料金が７０００円、高速道路の料金が片道４０００円でした。</p>
+              <p>仲の良い友達同士なので、この費用は割り勘ということで等分に３で割ることにしました。一人分の費用はいくらでしょうか。</p></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="seito.gif" width="90" height="82" border="0"></TD>
+            <TD>え～っと・・・<BR>
+            レンタカー代が７０００円<BR>
+            高速道路代が４０００円（片道）×２<BR>
+            これを３で割ればいいのですよね？<BR>
+            以下のようなプログラムで問題を解くことができました。合ってますか？</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">（７０００＋４０００×２）÷３を表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD><p>よくできました。これを計算すると一人分の旅費である<br>
+              ５０００と結果が表示されます。</p>
+              </TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">計算できる演算子の一覧</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>なでしこでどんな計算ができるのか一覧表にしてみました。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">
+            <TABLE border="1">
+              <TBODY>
+                <TR>
+                  <TD bgcolor="#ffffcc">演算子</TD>
+                  <TD bgcolor="#ffffcc">意味</TD>
+                  <TD bgcolor="#ffffcc">例</TD>
+                  <TD bgcolor="#ffffcc">答え</TD>
+                </TR>
+                <TR>
+                  <TD>＋</TD>
+                  <TD>たしざん</TD>
+                  <TD>３＋５を表示</TD>
+                  <TD>8</TD>
+                </TR>
+                <TR>
+                  <TD>－</TD>
+                  <TD>ひきざん</TD>
+                  <TD>３－２を表示</TD>
+                  <TD>1</TD>
+                </TR>
+                <TR>
+                  <TD>×　または　＊</TD>
+                  <TD>かけざん</TD>
+                  <TD>２×３を表示</TD>
+                  <TD>6</TD>
+                </TR>
+                <TR>
+                  <TD>÷　または　／</TD>
+                  <TD>わりざん</TD>
+                  <TD>４÷２を表示</TD>
+                  <TD>2</TD>
+                </TR>
+                <TR>
+                  <TD>％</TD>
+                  <TD>わりざんのあまり</TD>
+                  <TD>10％３を表示</TD>
+                  <TD>１</TD>
+                </TR>
+                <TR>
+                  <TD>＾</TD>
+                  <TD>べき乗</TD>
+                  <TD>２＾３を表示</TD>
+                  <TD>8</TD>
+                </TR>
+              </TBODY>
+            </TABLE>
+            </TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>ここで注目したいのが、掛け算として使える「＊」と割り算として使える「／」の記号です。WINDOWSの標準の電卓を起動してみてください。そこでも同じように掛け算と割り算の意味として使われています。<BR>
+            また、一般的なプログラミング言語でも、この記号を使って計算をさせることができるので覚えておいて損はないでしょう！</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">
+            <HR>
+            次のページ<A href="03-1-variable.htm">→変数を使う</A><BR>
+            前のページ<A href="01-1-hello.htm">←プログラミング基礎編</A>
+            <HR>
+            </TD>
+            <TD></TD>
+          </TR>
+        </TBODY>
+      </TABLE>
+      </TD>
+    </TR>
+    <TR>
+      <TD><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+  </TBODY>
+</TABLE>
+</CENTER>
+<CENTER></CENTER>
+<CENTER></CENTER>
+</BODY>
+</HTML>

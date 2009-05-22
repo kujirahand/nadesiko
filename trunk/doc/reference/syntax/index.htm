@@ -1,0 +1,145 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>なでしこマニュアル目次</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A></DIV>
+<H1>なでしこマニュアル</H1>
+<DIV class="lead"><A href="1-0-token.htm">単語の切り分けと種類</A>／<A href="1-1-hensu.htm">変数</A>／<A href="1-2-1-num.htm">数値</A>／<A href="1-2-str.htm">文字列</A>／<A href="1-3-command.htm">命令</A>／<A href="1-4-array.htm">配列変数とハッシュ</A>／<A href="1-5-group.htm">グループ分け（オブジェクト指向ライク）</A>／<A href="1-6-koubun.htm">制御構文</A>／<A href="1-7-calc.htm">計算</A>／<A href="9-1-josi.htm">助詞・単位のリスト</A>／<A href="Z-2-Event.htm">イベントについて</A>／<A href="Z-3-namespace.htm">ネームスペースについて</A>／</DIV>
+<P>
+<H3>★<A href="1-0-token.htm">単語の切り分けと種類</A></H3>
+<DIV class="head">　なでしこは助詞によりプログラムの区切りを見つけます。ここでは単語の切り分け方の規則と種類について説明します。</DIV>
+<DIV class="index"><A href="1-0-token.htm#head1">■単語の切り分け</A><BR>
+<A href="1-0-token.htm#head2">■コメントの種類</A><BR>
+<A href="1-0-token.htm#head3">■文字列</A><BR>
+<A href="1-0-token.htm#head4">■ブロック</A><BR>
+　　<A href="1-0-token.htm#head5">┣ブロックの範囲</A><BR>
+<A href="1-0-token.htm#head6">■ライン（一行）</A><BR>
+</DIV></P>
+<P>
+<H3>★<A href="1-1-hensu.htm">変数</A></H3>
+<DIV class="head">　なでしこには明確な型が存在しますが、それほど意識しなくても使えるようになってます。少し規模の大きなプログラムを作るときには、型を明確にすることでエラーチェックが楽になります。</DIV>
+<DIV class="index"><A href="1-1-hensu.htm#head1">■変数の名前</A><BR>
+<A href="1-1-hensu.htm#head2">■変数の宣言</A><BR>
+<A href="1-1-hensu.htm#head3">■変数宣言の強要</A><BR>
+<A href="1-1-hensu.htm#head4">■変数初期化の強要</A><BR>
+<A href="1-1-hensu.htm#head5">■変数への代入</A><BR>
+<A href="1-1-hensu.htm#head6">■グローバル変数・ローカル変数</A><BR>
+　　<A href="1-1-hensu.htm#head7">┣定数</A><BR>
+<A href="1-1-hensu.htm#head8">■セッター／ゲッターの設定</A><BR>
+</DIV></P>
+<P>
+<H3>★<A href="1-2-1-num.htm">数値</A></H3>
+<DIV class="head">　なでしこで扱うことができるのは、整数と実数です。</DIV>
+<DIV class="index"><A href="1-2-1-num.htm#head1">■数値の記述</A><BR>
+<A href="1-2-1-num.htm#head2">■数値変数の宣言</A><BR>
+<A href="1-2-1-num.htm#head3">■位取り（ＳＩ単位）</A><BR>
+　　<A href="1-2-1-num.htm#head4">┣単位一覧</A><BR>
+<A href="1-2-1-num.htm#head5">■単位</A><BR>
+<A href="1-2-1-num.htm#head6">■計算の正確さ</A><BR>
+</DIV></P>
+<P>
+<H3>★<A href="1-2-str.htm">文字列</A></H3>
+<DIV class="head">　なでしこの文字列は展開ありと展開なしの２種類があり、展開ありの文字列では文字列の中に変数を埋め込むことができます。　また配列変数としてアクセスすることにより、文字列の特定の行を簡単に抜き出すことができます。</DIV>
+<DIV class="index"><A href="1-2-str.htm#head1">■文字列の指定</A><BR>
+<A href="1-2-str.htm#head2">■展開について</A><BR>
+<A href="1-2-str.htm#head3">■改行などの特殊記号は、以下のように表す&nbsp;</A><BR>
+<A href="1-2-str.htm#head4">■連続した特殊記号</A><BR>
+<A href="1-2-str.htm#head5">■アスキーコードの埋め込みについて</A><BR>
+<A href="1-2-str.htm#head6">■文字列中で「」や｛｝を表示する方法</A><BR>
+<A href="1-2-str.htm#head7">■配列としてアクセス</A><BR>
+</DIV></P>
+<P>
+<H3>★<A href="1-3-command.htm">命令</A></H3>
+<DIV class="head">　なでしこの命令は、日本語的に使う方法と、従来のプログラミング言語のように、関数的に使う２種類の方法があります。　また独自の命令を定義することもできます。</DIV>
+<DIV class="index"><A href="1-3-command.htm#head1">■命令の実行</A><BR>
+<A href="1-3-command.htm#head2">■命令の結果を取得</A><BR>
+<A href="1-3-command.htm#head3">■ユーザー定義命令</A><BR>
+<A href="1-3-command.htm#head4">■助詞の複数登録</A><BR>
+<A href="1-3-command.htm#head5">■参照渡しと値渡し</A><BR>
+</DIV></P>
+<P>
+<H3>★<A href="1-4-array.htm">配列変数とハッシュ</A></H3>
+<DIV class="head">　配列変数は変数にインデックス番号を使ってアクセスできます。　ハッシュを使うと文字列を使って変数にアクセスできます。</DIV>
+<DIV class="index"><A href="1-4-array.htm#head1">■配列変数への利用</A><BR>
+<A href="1-4-array.htm#head2">■ハッシュの利用</A><BR>
+<A href="1-4-array.htm#head3">■多次元配列と多次元ハッシュ</A><BR>
+</DIV></P>
+<P>
+<H3>★<A href="1-5-group.htm">グループ分け（オブジェクト指向ライク）</A></H3>
+<DIV class="head">　クラスを定義して、そのクラスのインスタンスを生成するという従来のオブジェクト指向は、概念を覚えるまでに時間もかかり、なでしこの簡単、手軽と言う思想に反します。そこで、構造体をちょっとだけ拡張したものを『グループ』と呼ぶことにして、このグループをなでしこのオブジェクト指向としました。</DIV>
+<DIV class="index"><A href="1-5-group.htm#head1">■グループとは?</A><BR>
+<A href="1-5-group.htm#head2">■グループが提供する機能</A><BR>
+　　<A href="1-5-group.htm#head3">┣分類分け</A><BR>
+　　<A href="1-5-group.htm#head4">┣グループ項目のコピー</A><BR>
+　　<A href="1-5-group.htm#head5">┣グループ内関数</A><BR>
+　　<A href="1-5-group.htm#head6">┣グループ・ミックス</A><BR>
+　　<A href="1-5-group.htm#head7">┣セッター・ゲッター</A><BR>
+　　<A href="1-5-group.htm#head8">┣コンストラクター</A><BR>
+<A href="1-5-group.htm#head9">■グループの利用</A><BR>
+　　<A href="1-5-group.htm#head10">┣オブジェクト.メンバ変数</A><BR>
+　　<A href="1-5-group.htm#head11">┣グループ内関数</A><BR>
+　　<A href="1-5-group.htm#head12">┣グループイベント</A><BR>
+<A href="1-5-group.htm#head13">■グループの定義</A><BR>
+　　<A href="1-5-group.htm#head14">┣グループを利用する意義</A><BR>
+　　<A href="1-5-group.htm#head15">┣定義方法</A><BR>
+　　<A href="1-5-group.htm#head16">┣定義例</A><BR>
+<A href="1-5-group.htm#head17">■ゲッターとセッター</A><BR>
+<A href="1-5-group.htm#head18">■コンストラクター</A><BR>
+　　<A href="1-5-group.htm#head19">┣初期メンバ</A><BR>
+<A href="1-5-group.htm#head20">■デフォルトの設定</A><BR>
+<A href="1-5-group.htm#head21">■グループメンバと同名のシステム命令を呼ぶ方法</A><BR>
+<A href="1-5-group.htm#head22">■グループメンバーの動的決定</A><BR>
+　　<A href="1-5-group.htm#head23">┣関数内で動的に生成したグループについて</A><BR>
+<A href="1-5-group.htm#head24">■その他</A><BR>
+　　<A href="1-5-group.htm#head25">┣グループ内で自分自身を表す</A><BR>
+　　<A href="1-5-group.htm#head26">┣グループメンバにグループを指定する</A><BR>
+</DIV></P>
+<P>
+<H3>★<A href="1-6-koubun.htm">制御構文</A></H3>
+<DIV class="head">　なでしこには日本語を用いたさまざまな制御構文でプログラムの流れを制御することができます。</DIV>
+<DIV class="index"><A href="1-6-koubun.htm#head1">■繰り返し</A><BR>
+　　<A href="1-6-koubun.htm#head2">┣単純な繰り返し</A><BR>
+　　<A href="1-6-koubun.htm#head3">┣カウンター付きの繰り返し</A><BR>
+　　<A href="1-6-koubun.htm#head4">┣条件付きの繰り返し</A><BR>
+<A href="1-6-koubun.htm#head5">■条件分岐</A><BR>
+　　<A href="1-6-koubun.htm#head6">┣単純な分岐</A><BR>
+　　<A href="1-6-koubun.htm#head7">┣複雑な分岐</A><BR>
+<A href="1-6-koubun.htm#head8">■各要素を反復実行</A><BR>
+<A href="1-6-koubun.htm#head9">■例外処理</A><BR>
+<A href="1-6-koubun.htm#head10">■インデントについて</A><BR>
+<A href="1-6-koubun.htm#head11">■『ここまで』について</A><BR>
+</DIV></P>
+<P>
+<H3>★<A href="1-7-calc.htm">計算</A></H3>
+<DIV class="head">四則演算や比較などを行う演算子とその役割を紹介します。</DIV>
+<DIV class="index"><A href="1-7-calc.htm#head1">■四則演算</A><BR>
+<A href="1-7-calc.htm#head2">■比較のための演算子</A><BR>
+<A href="1-7-calc.htm#head3">■ビット操作のための演算子</A><BR>
+<A href="1-7-calc.htm#head4">■論理演算のための演算子</A><BR>
+</DIV></P>
+<P>
+<H3>★<A href="9-1-josi.htm">助詞・単位のリスト</A></H3>
+<DIV class="head"></DIV>
+<DIV class="index"><A href="9-1-josi.htm#head1">■助詞一覧</A><BR>
+<A href="9-1-josi.htm#head2">■コメント的単位</A><BR>
+<A href="9-1-josi.htm#head3">■SI単位一覧</A><BR>
+</DIV></P>
+<P>
+<H3>★<A href="Z-2-Event.htm">イベントについて</A></H3>
+<DIV class="head"></DIV>
+<DIV class="index"><A href="Z-2-Event.htm#head1">■イベントとは？</A><BR>
+<A href="Z-2-Event.htm#head2">■何に使うの？</A><BR>
+<A href="Z-2-Event.htm#head3">■テスト</A><BR>
+</DIV></P>
+<P>
+<H3>★<A href="Z-3-namespace.htm">ネームスペースについて</A></H3>
+<DIV class="head">なでしこの拡張ライブラリを作っていくときどうしてもグローバル変数の変数名が重なってしまうことがあります。そこで、『ライブラリファイル名：変数』の形でアクセスすることで重なってしまった変数名も解決することができます。</DIV>
+<DIV class="index"><A href="Z-3-namespace.htm#head1">■ネームスペースの宣言について</A><BR>
+<A href="Z-3-namespace.htm#head2">■ネームスペースの使い方</A><BR>
+</DIV></P>
+
+<BR><DIV class="head"><A href="../index.htm">→戻る</A></DIV>
+</BODY>
+</HTML>

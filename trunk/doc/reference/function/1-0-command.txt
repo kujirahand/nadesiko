@@ -1,0 +1,23 @@
+★命令の一覧
+
+♪概要
+　なでしこの組み込み命令、標準のプラグインで提供される命令の一覧です。
+
+■テキスト
+
+命令の一覧がテキストファイルで用意されています。
+なでしこエディタの左部の命令一覧を使うと見やすいです。
+
+♪リンク～../../tools/command.txt
+
+
+■WEBマニュアル
+
+WEBにはさらに詳しい解説があります。
+
+♪リンク～http://nadesi.com/doc/cmd/index.htm～公式命令の一覧
+
+♪リンク～http://www.geocities.jp/moka21/teatime/soft/nadesiko/command.html～命令一覧(mokaさんによる)
+
+♪リンク～http://www.geocities.jp/ken_nadesiko/vnako_index.htm～vnakoグループ一覧（けんさんによる）
+

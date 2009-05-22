@@ -1,0 +1,49 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>ネームスペースについて</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">ネームスペースについて</A></H1>
+<DIV class="lead">なでしこの拡張ライブラリを作っていくときどうしてもグローバル変数の変数名が重なってしまうことがあります。そこで、『ライブラリファイル名：変数』の形でアクセスすることで重なってしまった変数名も解決することができます。</DIV>
+<DIV class="index"><A href="Z-3-namespace.htm#head1">■ネームスペースの宣言について</A><BR>
+<A href="Z-3-namespace.htm#head2">■ネームスペースの使い方</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">ネームスペースの宣言について</A></H2>
+
+<P></P>
+<P>変数を宣言するとネームスペースは自動的につけられます。例えば、vnako.nakoというファイルのネームスペースは、vnakoになり、test.nakoなら、testがネームスペース名になります。</P>
+<H2><A name="head2">ネームスペースの使い方</A></H2>
+
+<P></P>
+<P>『ライブラリファイル名：変数』と書くことで目指すファイルで宣言されている変数にアクセスすることができます。</P>
+<P></P>
+<DIV class="code"><CODE>
+Aとは変数<BR>
+Bとは変数<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+<DIV class="code"><CODE>
+!<SPAN class="code-string">『test.nako』</SPAN>を取り込む<BR>
+Aとは変数<BR>
+A=50<BR>
+test:A=30<BR>
+Aを言う<BR>
+test:Aを言う<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>つまり、「A」と「test:A」は別の変数となります。</P>
+<P>ただし、ここで、a.nakoに、Aが宣言されてなければ、test:Aには、Aとだけ書けばアクセスできる。それはグローバルで宣言した変数はファイル間を越えてグローバルなスコープを持つため。</P>
+<P></P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>
