@@ -738,7 +738,7 @@ implementation
 
 uses gui_benri, unit_string, unit_windows_api, StrUnit, Math,
   wildcard, frmMakeExeU, jconvert, jconvertex, MSCryptUnit, frmFindU,
-  frmReplaceU, md5, unit_file, nkf, unit_blowfish, SHA1;
+  frmReplaceU, md5, unit_file, nkf, unit_blowfish, SHA1, vnako_message;
 
 {$R *.dfm}
 
@@ -1692,6 +1692,7 @@ begin
 end;
 
 var send_cmd: string;
+var send_msg: Integer;
 
 function findNakoStop(h: HWND; lp: LPARAM): BOOL; stdcall;
 var
@@ -1701,7 +1702,8 @@ begin
   GetClassName(h, @s[1], 511); s := string( PChar(s) );
   if s = 'TfrmNako' then
   begin
-    SendCOPYDATA(h, send_cmd, 1001, lp);
+    // SendCOPYDATA(h, send_cmd, 1001, lp);
+    PostMessage(h, send_msg, 0, lp);
   end;
   Result := True;
 end;
@@ -1709,12 +1711,14 @@ end;
 procedure TfrmNakopad.mnuStopClick(Sender: TObject);
 begin
   send_cmd := 'break';
+  send_msg := WM_VNAKO_BREAK;
   EnumWindows(@findNakoStop, Self.Handle);
 end;
 
 procedure TfrmNakopad.mnuPauseClick(Sender: TObject);
 begin
   send_cmd := 'pause';
+  send_msg := WM_VNAKO_STOP;
   EnumWindows(@findNakoStop, Self.Handle);
 end;
 
@@ -4277,6 +4281,7 @@ end;
 procedure TfrmNakopad.mnuStopAllClick(Sender: TObject);
 begin
   send_cmd := 'break-all';
+  send_msg := WM_VNAKO_BREAK_ALL;
   EnumWindows(@findNakoStop, Self.Handle);
 end;
 

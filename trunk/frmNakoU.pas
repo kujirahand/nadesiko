@@ -25,7 +25,8 @@ uses
   XPMan,
 {$IFEND}
   IdBaseComponent, IdComponent, IdTCPServer, TntStdCtrls,
-  TntExtCtrls, TntGrids
+  TntExtCtrls, TntGrids,
+  vnako_message
   ;
 
 const
@@ -113,6 +114,9 @@ type
     function GetBackCanvas: TCanvas;
     procedure onExitSizeMove(var Msg: TMessage); message WM_EXITSIZEMOVE;
     procedure CopyDataMessage(var WMCopyData: TWMCopyData); message WM_COPYDATA;
+    procedure _WM_VNAKO_STOP(var Msg: TMessage); message WM_VNAKO_STOP;
+    procedure _WM_VNAKO_BREAK(var Msg: TMessage); message WM_VNAKO_BREAK;
+    procedure _WM_VNAKO_BREAK_ALL(var Msg: TMessage); message WM_VNAKO_BREAK_ALL;
     function Nadesiko_Load: Boolean;
     procedure ResizeBackBmp;
     procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
@@ -1385,6 +1389,7 @@ var
   msg: string;
   ginfo: TGuiInfo;
   p: PHiValue;
+  tm: TMessage;
 begin
   ginfo := GuiInfos[ self.Tag ];
 
@@ -1393,29 +1398,18 @@ begin
   // マクロの実行など
   if (msg = 'break')and(WMCopyData.CopyDataStruct.dwData = 1001) then //エディタから強制ストップを受けた
   begin
-    if (THandle(DebugEditorHandle) = WMCopyData.From) then
-    begin
-      nako_stop;
-      FinishTasktray;
-      Close;
-    end;
+    tm.WParam := WMCopyData.From;
+    _WM_VNAKO_BREAK(tm);
   end else
   if (msg = 'break-all')and(WMCopyData.CopyDataStruct.dwData = 1001) then //エディタから強制ストップを受けた
   begin
-    if Self.Handle <> WMCopyData.From then // 自分自身以外を終了
-    begin
-      nako_stop;
-      FinishTasktray;
-      Close;
-    end;
+    tm.WParam := WMCopyData.From;
+    _WM_VNAKO_BREAK_ALL(tm);
   end else
   if (msg = 'pause')and(WMCopyData.CopyDataStruct.dwData = 1001) then //エディタから強制ストップを受けた
   begin
-    Application.ProcessMessages;
-    if (THandle(DebugEditorHandle) = WMCopyData.From) then
-    begin
-      ShowModalCheck(frmDebug(Self), Bokan);
-    end;
+    tm.WParam := WMCopyData.From;
+    _WM_VNAKO_STOP(tm);
   end else
   begin
     // ユーザーの定義イベント
@@ -1550,6 +1544,35 @@ begin
     WM_LBUTTONDOWN: doEvent(@GuiInfos[0], 'タスクトレイクリックした時');
     WM_RBUTTONDOWN: doEvent(@GuiInfos[0], 'タスクトレイ右クリックした時');
     WM_MOUSEMOVE:   doEvent(@GuiInfos[0], 'タスクトレイ通過した時');
+  end;
+end;
+
+procedure TfrmNako._WM_VNAKO_BREAK(var Msg: TMessage);
+begin
+  if (THandle(DebugEditorHandle) = THandle(Msg.LParam)) then
+  begin
+    nako_stop;
+    FinishTasktray;
+    Close;
+  end;
+end;
+
+procedure TfrmNako._WM_VNAKO_BREAK_ALL(var Msg: TMessage);
+begin
+  if Self.Handle <> THandle(Msg.LParam) then // 自分自身以外を終了
+  begin
+    nako_stop;
+    FinishTasktray;
+    Close;
+  end;
+end;
+
+procedure TfrmNako._WM_VNAKO_STOP(var Msg: TMessage);
+begin
+  Application.ProcessMessages;
+  if (THandle(DebugEditorHandle) = THandle(Msg.LParam)) then
+  begin
+    ShowModalCheck(frmDebug(Self), Bokan);
   end;
 end;
 
