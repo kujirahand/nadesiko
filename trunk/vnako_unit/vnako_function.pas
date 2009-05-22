@@ -6311,11 +6311,29 @@ var
   procedure _VCL_GUI_TEDITOR;
   var e: THiEditor;
 
+    function _setHTMLColor: TFountain;
+    var t: THTMLFountain;
+    begin
+      t := THTMLFountain.Create(Bokan);
+      t.Mail.Color := clBlue;
+      t.Mail.Style := [fsUnderline];
+      t.Url.Color := clBlue;
+      t.Url.Style := [fsUnderline];
+      t.Ampersand.Color := clMaroon;
+      t.Str.Color := clNavy;
+      t.TagAttribute.Color := clRed;
+      t.TagAttributeValue.Color := clOlive;
+      t.TagColor.Color := clMaroon;
+      t.TagElement.Color := clMaroon;
+      t.Brackets.BracketItems[0].ItemColor.Color := clGreen;
+      Result := t;
+    end;
+
     procedure setcoloring;
     var s: string;
     begin
       s := UpperCase(hi_str(v));
-      if s = 'HTML'     then e.Fountain := THTMLFountain.Create(Bokan) else
+      if s = 'HTML'     then e.Fountain := _setHTMLColor else
       if s = 'DELPHI'   then e.Fountain := TDelphiFountain.Create(Bokan) else
       if s = 'PERL'     then e.Fountain := TPerlFountain.Create(Bokan) else
       if s = 'CPP'      then e.Fountain := TCppFountain.Create(Bokan) else
