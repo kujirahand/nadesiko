@@ -1,0 +1,98 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>MS&nbsp;Excel/Word&nbsp;と連携する</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">MS&nbsp;Excel/Word&nbsp;と連携する</A></H1>
+<DIV class="lead">　なでしこから、MicrosoftのExcel/Wordを操作することができます。</DIV>
+<DIV class="index"><A href="5-0-office.htm#head1">■活用テクニック</A><BR>
+　　<A href="5-0-office.htm#head2">┣Excel&nbsp;+&nbsp;Word&nbsp;+&nbsp;なでしこで可能性広がる！</A><BR>
+　　<A href="5-0-office.htm#head3">┣雛形にデータを差し込んで印刷</A><BR>
+　　<A href="5-0-office.htm#head4">┣情報の取得から見積書の印刷まで</A><BR>
+　　<A href="5-0-office.htm#head5">┣業務データの整理に</A><BR>
+<A href="5-0-office.htm#head6">■Excel編</A><BR>
+　　<A href="5-0-office.htm#head7">┣エクセル起動～エクセル終了</A><BR>
+　　<A href="5-0-office.htm#head8">┣セルへの書き込み</A><BR>
+　　<A href="5-0-office.htm#head9">┣印刷</A><BR>
+　　<A href="5-0-office.htm#head10">┣ＣＳＶファイル</A><BR>
+　　<A href="5-0-office.htm#head11">┣Tips</A><BR>
+<A href="5-0-office.htm#head12">■Word編</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">活用テクニック</A></H2>
+
+<P></P>
+<H3><A name="head2">Excel&nbsp;+&nbsp;Word&nbsp;+&nbsp;なでしこで可能性広がる！</A></H3>
+
+<P></P>
+<P>　いまや、ExcelやWordは趣味に仕事に大活躍です。なでしこから、ExcelやWordを操作することで、ExcelやWordを何倍にも便利に利用することができます。</P>
+<H3><A name="head3">雛形にデータを差し込んで印刷</A></H3>
+
+<P></P>
+<P>　例えば、Wordで誕生日会やクリスマス会のカードの雛形を作っておいたとします。そして、なでしこで読み込んだデータファイルなどの情報を雛形に流し込みます。すると、カードが自動的に完成します。</P>
+<P>　カードの作成から印刷までの工程をボタン一発でこなすことができるのです。</P>
+<H3><A name="head4">情報の取得から見積書の印刷まで</A></H3>
+
+<P></P>
+<P>　また、見積書の作成など、もともとExcelでやると簡単ですので、これも見積書のフォーマットだけ用意しておき、後から、なでしこでＷＥＢやファイルから情報を取り出し、なでしこからExcelのセルへデータを書き込むようにすれば、なでしこで見積書が作成できます。</P>
+<H3><A name="head5">業務データの整理に</A></H3>
+
+<P></P>
+<P>　ExcelもWordも単体のファイルでは便利なのですが、複数のファイルを連続操作するのは、なかなか難しいものです。なでしこで、特定のフォルダにあるExcel/Wordの文書を連続で処理することで今まで手作業でやっていた業務データの整理が簡単になります。</P>
+<P></P>
+<H2><A name="head6">Excel編</A></H2>
+
+<P></P>
+<H3><A name="head7">エクセル起動～エクセル終了</A></H3>
+
+<P></P>
+<P>エクセルを起動するには、『エクセル起動』と書くだけです。エクセルのファイルを開くには以下のように書きます。</P>
+<DIV class="code"><CODE>
+エクセル起動。<BR>
+デスクトップ&amp;<SPAN class="code-string">「Book1.xls」</SPAN>をエクセル開く。<BR>
+<SPAN class="code-string">「おわります」</SPAN>と言う。<BR>
+エクセル終了。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>また、最後にエクセルを終了させるには、『エクセル終了』と書きます。</P>
+<H3><A name="head8">セルへの書き込み</A></H3>
+
+<P></P>
+<P>エクセルのセルに値を書き込むには、『エクセルセル設定』命令を使います。</P>
+<DIV class="code"><CODE>
+エクセル起動。<BR>
+デスクトップ&amp;<SPAN class="code-string">「Book1.xls」</SPAN>をエクセル開く。<BR>
+<SPAN class="code-string">「A1」</SPAN>へ<SPAN class="code-string">「テスト！」</SPAN>をエクセルセル設定<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>セルの指定は、上のサンプルのように「Ａ１」とか「Ｃ５」のように、エクセルの列には、Ａ～ＺＺを、エクセルの行には、１～ｎを書きます。</P>
+<H3><A name="head9">印刷</A></H3>
+
+<P></P>
+<P>直接印刷を行うには、『エクセルシート印刷』命令を使います。印刷プレビューを表示するには『エクセルシート印刷プレビュー』命令を使います。また、ブック全体を印刷するには、『エクセルブック印刷』命令を使います。</P>
+<H3><A name="head10">ＣＳＶファイル</A></H3>
+
+<P></P>
+<P>エクセルデータをＣＳＶファイルに変換するには、『エクセルCSV保存』命令を使います。</P>
+<H3><A name="head11">Tips</A></H3>
+
+<P></P>
+<P>エクセルのセルをたくさん取得したい場合は、範囲を『エクセル選択』で選択して『エクセルコピー』でクリップボードにコピーする方が速度が早いです。</P>
+<P>また、データが膨大な場合は、一度ＣＳＶファイルへ保存してＣＳＶをなでしこで読み直したほうが処理は早く終わります。</P>
+<P></P>
+<H2><A name="head12">Word編</A></H2>
+
+<P></P>
+<P>なでしこからWordを起動するには、『ワード起動』命令を使います。また終了するには『ワード終了』命令を使います。</P>
+<P>ワードに文字列を挿入するには、Word文書内にブックマークを挿入しておき、なでしこから、『ワードブックマーク挿入』命令を使って文字列を挿入します。</P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

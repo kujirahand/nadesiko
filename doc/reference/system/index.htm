@@ -1,0 +1,60 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>なでしこマニュアル目次</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A></DIV>
+<H1>なでしこマニュアル</H1>
+<DIV class="lead"><A href="sys-1-DLL-WindowsAPI.htm">なでしこでWindowsAPIおよび外部ＤＬＬを呼ぶ方法</A>／<A href="sys-2-plugins.htm">プラグインについて</A>／<A href="sys-3-cnako.htm">cnako.exe&nbsp;について</A>／<A href="sys-4-make_exe.htm">プログラム中から実行ファイル作成について</A>／<A href="tools-01-txt2htm.htm">txt2htmについて</A>／</DIV>
+<P>
+<H3>★<A href="sys-1-DLL-WindowsAPI.htm">なでしこでWindowsAPIおよび外部ＤＬＬを呼ぶ方法</A></H3>
+<DIV class="head">なでしこでは、外部ＤＬＬで宣言している関数をなでしこの命令としてインポートすることができる。</DIV>
+<DIV class="index"><A href="sys-1-DLL-WindowsAPI.htm#head1">■【書式】</A><BR>
+<A href="sys-1-DLL-WindowsAPI.htm#head2">■DLLを呼ぶ際に注意すべきこと</A><BR>
+</DIV></P>
+<P>
+<H3>★<A href="sys-2-plugins.htm">プラグインについて</A></H3>
+<DIV class="head">　なでしこ用のプラグインをplug-insフォルダに入れておくと、なでしこが起動時に自動的にプラグインを読み込み、なでしこに命令や変数・文字列などが追加されます。</DIV>
+<DIV class="index"><A href="sys-2-plugins.htm#head1">■プラグインは何をしている？</A><BR>
+<A href="sys-2-plugins.htm#head2">■プラグインの作り方</A><BR>
+　　<A href="sys-2-plugins.htm#head3">┣procedure&nbsp;ImportNakoFunction;&nbsp;stdcall;</A><BR>
+　　<A href="sys-2-plugins.htm#head4">┣function&nbsp;PluginInfo(str:&nbsp;PChar;&nbsp;len:&nbsp;Integer):&nbsp;Integer;&nbsp;stdcall;</A><BR>
+　　<A href="sys-2-plugins.htm#head5">┣function&nbsp;PluginVersion:&nbsp;DWORD;&nbsp;stdcall;</A><BR>
+　　<A href="sys-2-plugins.htm#head6">┣function&nbsp;PluginRequire:&nbsp;DWORD;&nbsp;stdcall;</A><BR>
+<A href="sys-2-plugins.htm#head7">■プラグイン作成のための補助ユニット</A><BR>
+　　<A href="sys-2-plugins.htm#head8">┣ヘルパーユニット</A><BR>
+<A href="sys-2-plugins.htm#head9">■プラグイン関数を作る方法</A><BR>
+　　<A href="sys-2-plugins.htm#head10">┣前準備</A><BR>
+　　<A href="sys-2-plugins.htm#head11">┣関数の定義</A><BR>
+　　<A href="sys-2-plugins.htm#head12">┣引数の取得</A><BR>
+　　<A href="sys-2-plugins.htm#head13">┣戻り値の処理</A><BR>
+　　<A href="sys-2-plugins.htm#head14">┣システムに関数を登録</A><BR>
+　　<A href="sys-2-plugins.htm#head15">┣コンパイル</A><BR>
+</DIV></P>
+<P>
+<H3>★<A href="sys-3-cnako.htm">cnako.exe&nbsp;について</A></H3>
+<DIV class="head">　cnako.exe&nbsp;はコンソール版のなでしこです。</DIV>
+<DIV class="index"><A href="sys-3-cnako.htm#head1">■コマンドライン（実行時引数）</A><BR>
+</DIV></P>
+<P>
+<H3>★<A href="sys-4-make_exe.htm">プログラム中から実行ファイル作成について</A></H3>
+<DIV class="head">　なでしこのプログラムから、なでしこの実行ファイルを作る方法があります。</DIV>
+<DIV class="index"><A href="sys-4-make_exe.htm#head1">■実行ファイルの作成手順</A><BR>
+</DIV></P>
+<P>
+<H3>★<A href="tools-01-txt2htm.htm">txt2htmについて</A></H3>
+<DIV class="head">　マニュアルフォルダに、txt2htm.nakoというなでしこのプログラムがあります。これは、手軽にマニュアルを作れるようにと思って作られたものです。普通のテキストファイルと同じように書くことで、ＨＴＭＬのマニュアルを作れます。</DIV>
+<DIV class="index"><A href="tools-01-txt2htm.htm#head1">■マークアップ</A><BR>
+<A href="tools-01-txt2htm.htm#head2">■記述例</A><BR>
+<A href="tools-01-txt2htm.htm#head3">■コマンド</A><BR>
+　　<A href="tools-01-txt2htm.htm#head4">┣♪ソース</A><BR>
+　　<A href="tools-01-txt2htm.htm#head5">┣♪概要</A><BR>
+　　<A href="tools-01-txt2htm.htm#head6">┣♪リンク～(URL)～(リンクの説明)</A><BR>
+　　<A href="tools-01-txt2htm.htm#head7">┣♪ポイント</A><BR>
+　　<A href="tools-01-txt2htm.htm#head8">┣♪画像～(URL)～(画像の説明)</A><BR>
+</DIV></P>
+
+<BR><DIV class="head"><A href="../index.htm">→戻る</A></DIV>
+</BODY>
+</HTML>

@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META name="keyword" content="プログラミング言語, なでしこ, 定型処理, バッチ処理, 教育">
+<META name="description" content="なでしこは日本語で簡単にプログラミングができる簡単ツールです。">
+<META name="GENERATOR" content="IBM WebSphere Homepage Builder V6.0.1 for Windows">
+<TITLE>なでしことは？（詳細）</TITLE>
+<LINK rel="stylesheet" href="../nako_man.css" type="text/css">
+</HEAD>
+<BODY text="#4d4d4d" link="#000099" vlink="#582c56" alink="#cc00cc">
+<CENTER>
+<TABLE border="0" width="780" cellpadding="0" cellspacing="0">
+  <TBODY>
+    <TR>
+      <TD align="right"><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">なでしことは？</A> &gt; ひまわりとの違い</TD>
+    </TR>
+    <TR>
+      <TD><A><IMG src="../logo_nadesiko_title.gif" width="293" height="76" border="0" alt="なでしこ"></A></TD>
+    </TR>
+    <TR>
+      <TD><IMG src="line.gif" width="780" height="8" border="0"></TD>
+    </TR>
+    <TR>
+      <TD>
+      <TABLE border="0" width="780" cellpadding="5" cellspacing="0">
+        <TBODY>
+          <TR>
+            <TD width="142"><IMG src="dmy.gif" width="8" height="8" border="0"></TD>
+            <TD width="142"></TD>
+            <TD width="322"></TD>
+            <TD width="142"></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">「ひまわり」から「なでしこ」へ</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center"><IMG src="../pic/nako_icon.gif" width="32" height="32" border="0"></TD>
+            <TD>　なでしこは、2001年夏に公開された「ひまわり」の後継プログラミング言語です。なでしこになってさらに文法が洗練されました。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle"><A name=head1>「なでしこ」になって新しくなったこと</A></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"><IMG src="../pic/c008cut.gif" width="64" height="64" border="0"></TD>
+            <TD>（１）実行速度が１０倍以上速くなった<BR>
+            （２）機能がライブラリに分けられて配布サイズが小さくなった<BR>
+            （３）単語の区切りの句読点が不要になった<BR>
+            （４）インデントによる構造化表現に変わった<BR>
+            （５）オブジェクト指向っぽいグループ機能が追加された<BR>
+            （６）その他、いくつかの文法に手が加えられた</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle"><A name=head2>書きやすさ、読みやすさの改良</A></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center"><IMG src="../pic/c006cut.gif" width="64" height="64" border="0"></TD>
+            <TD>
+            <P>　一番の改善点は、文法の大幅改善です。たとえば、ひまわりでは、単語ごとに読点をつけて、分かち書きしなくてはなりませんが、なでしこになりこれが不要になり、今まで以上に書きやすくなりました。</P>
+            <P>　命令の助詞について、明確な言い換えができるようになり、また、インデントによる構造化表現により、すっきりとした読みやすいプログラムになりました。</P>
+            <P>　あと、中規模以上のプログラムを組むときに便利な、変数宣言の厳格化指定もできるようになりました。これで、変数名の書き間違いに苦しむことも減ります。</P>
+            </TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle"><A name=head3>オブジェクト指向っぽい</A></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"><IMG src="../pic/b015cut.gif" width="64" height="64" border="0"></TD>
+            <TD>
+            <P>　大きな文法の変更としては、オブジェクト指向っぽいものとして、『グループ機能』というのを導入したことがあげられます。</P>
+<P>　これは、変数をグループにまとめて管理しようというものです。プログラムを作っていると、変数の数が多くなってなかなか管理が大変になります。そんなときに威力を発揮するのがこのグループ機能です。</P>
+            <P>　以下のプログラムは、グループを利用している例です。（「#」行はコメント）</P>
+            </TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="mini" bgcolor="#ffffcc"><CODE><SPAN class=code-comment>#&nbsp;ミカンという名前のグループを定義します。</SPAN><BR>
+            <SPAN 
+class=code-function>■グループ　ミカン</SPAN><BR>　・品種<BR>　・生産地<BR>　・重さ<BR>　・甘さ<BR>
+            <BR>
+            <SPAN 
+class=code-comment>#&nbsp;ミカングループを利用します。</SPAN><BR>ミカンの品種は<SPAN 
+class=code-string>「早生」</SPAN><BR>ミカンの生産地は<SPAN 
+class=code-string>「三ケ日」</SPAN><BR>
+            <BR>ミカンの品種を言う。&nbsp;&nbsp;<SPAN 
+class=code-comment>#&nbsp;→<SPAN 
+class=code-string>「早生」</SPAN>と表示される</SPAN><BR>ミカンの生産地を言う。<SPAN 
+class=code-comment>#&nbsp;→<SPAN class=code-string>「三ケ日」</SPAN>と表示される</SPAN></CODE></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"><IMG src="../pic/b013cut.gif" width="64" height="64" border="0"></TD>
+            <TD>
+            <P>　どうでしょうか？普通の変数と同じように使えるのですが、変数をグループに分けておくことにより、変数の管理が楽になると思います。</P>
+            <P>　ここでは詳しく述べませんが、グループ機能では、グループとしてまとめた変数を、複製したり、機能追加したり、グループ内の変数を列挙したりと、便利な機能がいろいろとついているのです。</P>
+            </TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle"><A name=head4>互換性の問題</A></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"><IMG src="../pic/c006cut.gif" width="64" height="64" border="0"></TD>
+            <TD>
+            <P>　なでしこになり、ひまわりから少し文法が変わりました。&nbsp;&nbsp;単純なプログラムでは、ひまわりで作ったものが、なでしこでも同じように動く場合もありますが、残念ながら互換性はありません。</P>
+            </TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+          </TR>
+        </TBODY>
+      </TABLE>
+      </TD>
+    </TR>
+    <TR>
+      <TD><A href="more-info.htm">→なでしこについて詳細</A><BR>
+      <A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">なでしことは？</A> &gt; ひまわりとの違い</TD>
+    </TR>
+  </TBODY>
+</TABLE>
+</CENTER>
+<CENTER></CENTER>
+<CENTER></CENTER>
+</BODY>
+</HTML>

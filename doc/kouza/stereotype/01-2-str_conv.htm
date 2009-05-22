@@ -1,0 +1,333 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META name="keyword" content="プログラミング言語, なでしこ, 定型処理, バッチ処理, 教育">
+<META name="description" content="なでしこは日本語で簡単にプログラミングができる簡単ツールです。">
+<META name="GENERATOR" content="IBM WebSphere Homepage Builder V6.0.1 for Windows">
+<TITLE>定型処理編</TITLE>
+<LINK rel="stylesheet" href="../nako_man.css" type="text/css">
+</HEAD>
+<BODY text="#4d4d4d" link="#000099" vlink="#582c56" alink="#cc00cc">
+<CENTER>
+<TABLE border="0" width="780" cellpadding="0" cellspacing="0">
+  <TBODY>
+    <TR>
+      <TD align="right"><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">定型処理編</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="../index.htm"><IMG src="../../logo_nadesiko_title.gif" width="293" height="76" border="0" alt="なでしこ"></A></TD>
+    </TR>
+    <TR>
+      <TD><IMG src="../../line.gif" width="780" height="8" border="0"></TD>
+    </TR>
+    <TR>
+      <TD>
+      <TABLE border="0" width="780" cellpadding="4" cellspacing="0">
+        <TBODY>
+          <TR>
+            <TD width="142"><IMG src="../../about/dmy.gif" width="8" height="8" border="0"></TD>
+            <TD width="142"></TD>
+            <TD width="322"></TD>
+            <TD width="142"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">定型処理編～文字列の整形</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" align="center"><IMG src="teikei-title.gif" width="300" height="200" border="0"></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">一行ずつ処理する</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>次に文章を一行ずつ処理してみたいと思います。一行ずつ処理する場合は『反復』命令を使うと一行ずつ処理できます。以下は文章に行番号をつけて表示するプログラムです。</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD class="code">文章は<FONT color="#0000cc">「あいうえお<FONT color="#0000cc"><BR>
+            </FONT>かきけこ<BR>
+            さしすせそ」</FONT><BR>
+            <BR>
+            文章を<B>反復</B><BR>
+            　　<FONT color="#0000cc">「｛回数｝：｛それ｝」</FONT>を表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>これを実行すると以下のように表示されます。<BR>
+            ---<BR>
+            1：あいうえお<BR>
+2：かきけこ<BR>
+            3：さしすせそ<BR>
+            ---<BR>
+            文字列を『反復』構文にかけると文字列の一行ずつが取りだされて、変数『それ』に代入されるのです。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="buka.gif" width="90" height="90" border="0"></TD>
+            <TD>表示するだけだと、データを利用できませんね。前のページでやったように『言う』命令で結果を確認してからコピーする方法は無いのですか？</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>結果を変数に貯めておいて最後に『言う』命令で表示させれば、結果を確認してからコピーできます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">文章は<FONT color="#0000cc">「あいうえお<FONT color="#0000cc"><BR>
+            </FONT>かきけこ<BR>
+            さしすせそ」</FONT><BR>
+            <BR>
+            結果は空<BR>
+            文章を<B>反復</B><BR>
+            　　結果に<FONT color="#0000cc">「｛回数｝：｛それ｝」</FONT>を一行追加。<BR>
+            <BR>
+            結果を言う</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="buka.gif" width="90" height="90" border="0"></TD>
+            <TD>変数『結果』に一行追加して最後に結果を表示するわけね。でもちょっと面倒だわ。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>そう言われると思ったので、別の方法を紹介します。実は『表示』で表示した文字列は『表示ログ』という変数に記録されているのです。ですから最後に『表示ログを言う』の一文を書き足せば、今まで表示した内容を確認した後、文字の上を右クリックすることで表示した内容をコピーできます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">文章は<FONT color="#0000ff">「あいうえお<BR>
+            かきけこ<BR>
+            さしすせそ」</FONT><BR>
+<BR>
+文章を反復<BR>
+            　　<FONT color="#0000ff">「｛回数｝：｛それ｝」</FONT>を<B>表示</B>。<BR>
+<BR>
+            <B>表示ログ</B>を言う</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="left" colspan="2" class="newsTitle">一行の中で必要なところだけ取り出す</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>次に文章の中にある必要な部分だけ取り出す処理を書いてみましょう。例えば、以下のようなうどん屋のメニューがあったとします。このメニュー表から料理の名前と値段だけを取り出してみましょう。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code">---メニュー---<BR>
+            クジラうどん-店長自慢の一品-800円-★★★<BR>
+            たぬきうどん-素朴な味が癖になる-500円-★<BR>
+            カレーうどん-マイルドな味わい-750円-★<BR>
+            特大天ぷらうどん-巨大なエビがさっくり-900円-★★★<BR>
+            カルシウムうどん-魚の骨が香ばしいうどん-600円-★★</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD>このメニュー表を良く見ると、<BR>
+            『メニュー名 - コメント - 値段 - 評価』<BR>
+            という順番で並んでします。この並び順に注目すると簡単に取り出せます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code">データは<FONT color="#0000cc">「クジラうどん-店長自慢の一品-800円-★★★<BR>
+            たぬきうどん-素朴な味が癖になる-500円-★<BR>
+            カレーうどん-マイルドな味わい-750円-★<BR>
+            特大天ぷらうどん-巨大なエビがさっくり-900円-★★★<BR>
+            カルシウムうどん-魚の骨が香ばしいうどん-600円-★★」</FONT><BR>
+<BR>
+            データを反復<BR>
+            　　<FONT color="#0000cc">「-」</FONT>で<B>区切る</B>　　<FONT color="#009999"># 「-」の記号で区切る</FONT><BR>
+            　　名前＝それ￥０<BR>
+            　　値段＝それ￥２<BR>
+            　　<FONT color="#0000cc">「{名前},{値段}」</FONT>を表示。<BR>
+            表示ログを言う。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">このプログラムを実行すると以下の結果が得られます。<BR>
+            ---<BR>
+            クジラうどん,800円<BR>
+たぬきうどん,500円<BR>
+カレーうどん,750円<BR>
+特大天ぷらうどん,900円<BR>
+カルシウムうどん,600円<BR>
+            ---</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>メニューのデータが 『メニュー名 - コメント - 値段 - 評価』と、「-」の記号で区切られているのに注目し、なでしこの『区切る』という命令で区切ったのです。区切られたデータは変数「それ」に配列形式で得られるので、『それ￥０』というのでメニューの名前を、『それ￥２』というのでメニューの値段を取り出しています。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">切り取って調べる</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>次にもっと複雑な形をしたデータから必要な部分だけを抜き出してみましょう。データの例として取り上げるのは、商品データです。さっきのデータと違って『ID:商品名(値段)コメント』の形式で並んでおりちょっと大変そうです。</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code">ID:商品名(値段)コメント<BR>
+001:ピンク色のせっけん(500円)ピンクがすごい<BR>
+002:４レンズあるメガネ(1200円)奇抜<BR>
+003:飲めるガソリン(800円)まずそう</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD>そこで使うのが『<B>切り取る</B>』という命令です。この命令を使うと任意の区切り文字までを取り出すことができます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>『切り取る』命令は、『SのAまでを切り取る』という形式で使い、Sの内容から区切り文字Aまでを切り取って、変数『それ』に答えを返します。以下は『切り取る』命令の簡単な使用例です。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">文章は<FONT color="#3366ff">「ささ＝かまぼこ」</FONT><BR>
+            文章の<FONT color="#3366ff">「＝」</FONT>までを<B>切り取る</B><BR>
+それを表示<BR>
+文章を表示</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD>上のプログラムを実行すると<BR>
+            ---<BR>
+            ささ<BR>
+            かまぼこ<BR>
+            ---<BR>
+            と表示されます。文章の「＝」までを切り取った内容が「ささ」となり、文章の内容から「ささ＝」までが切り取られているのが分かるでしょうか。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>さて、『切り取る』を覚えたところで、本題に戻りましょう。先ほどの商品データから『商品名,
+            値段』のデータを取り出すプログラムが以下です。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code">データは<FONT color="#0000ff">「ID:商品名(値段)コメント<BR>
+            001:ピンク色のせっけん(500円)ピンクがすごい<BR>
+            002:４レンズあるメガネ(1200円)奇抜<BR>
+            003:飲めるガソリン(800円)まずそう」<BR>
+            </FONT><BR>
+データを反復<BR>
+　　対象はそれ<BR>
+            　　対象の<FONT color="#0000ff">「:」</FONT>まで<B>切り取る</B><BR>
+　　IDはそれ<BR>
+            　　対象の<FONT color="#0000ff">「(」</FONT>まで<B>切り取る</B><BR>
+　　商品名はそれ<BR>
+            　　対象の<FONT color="#0000ff">「)」</FONT>まで<B>切り取る</B><BR>
+　　値段はそれ<BR>
+　　コメントは対象。<BR>
+            　　<FONT color="#0000ff">「{商品名},{値段}」</FONT>を表示<BR>
+<BR>
+表示ログを言う</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD>プログラムを実行すると以下が表示されます。<BR>
+            ---<BR>
+            商品名,値段<BR>
+ピンク色のせっけん,500円<BR>
+４レンズあるメガネ,1200円<BR>
+飲めるガソリン,800円<BR>
+            ---</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">巨大なファイルを一行ずつ処理する</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>時には、ものすごく巨大なファイルを開いて一行ずつ処理したいときがあります。そんなとき、『開く』命令を使うと処理に膨大な時間がかかる場合があります。そんな時に使うのが『(ファイル名)を毎行読む』という命令です。これは『反復』構文と組みあせて使います。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">「History.txt」を毎行読む。<BR>
+            反復<BR>
+            　　<FONT color="#009999">＃ここで毎行行う処理<BR>
+            　　</FONT>表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD>＞</TD>
+            <TD></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">
+            <HR>
+            次のページ<A href="02-1-filecopy.htm">→ファイルのバックアップ</A><BR>
+            前のページ<A href="01-1-basic.htm">←文章整形の基本</A>
+            <HR>
+            </TD>
+            <TD></TD>
+          </TR>
+        </TBODY>
+      </TABLE>
+      </TD>
+    </TR>
+    <TR>
+      <TD><A href="http://nadesi.com/">なでしこWEB &gt; </A><A href="../index.htm">マニュアル</A><A href="http://nadesi.com/"> &gt; </A><A href="index.htm">定型処理編</A></TD>
+    </TR>
+  </TBODY>
+</TABLE>
+</CENTER>
+<CENTER></CENTER>
+<CENTER></CENTER>
+</BODY>
+</HTML>

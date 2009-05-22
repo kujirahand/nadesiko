@@ -1,0 +1,135 @@
+A      { text-decoration: none; }
+A:HOVER{ color : red; text-decoration : underline; }
+H1{
+  font-size: 22px;
+  color: white;
+  background-color: orange;
+  border-width: 0 0 3px 0;
+  border-color: red;
+  border-style: dashed;
+  margin: 8px 0px 8px 0px;
+  padding: 4px 8px 4px 8px;
+}
+
+H2{
+  font-size: 18px;
+  color: white;
+  background-color: orange;
+  border-width: 0 0 0 8px;
+  border-color: red;
+  border-style: solid;
+  margin: 16px 0px 8px 0px;
+  padding: 4px 8px 4px 8px;
+}
+
+H3{
+  font-size: 16px;
+  font-weight: bold;
+  color: #FF6666;
+  width: 100%;
+  border-width: 0 0 2 0px;
+  border-color: orange;
+  border-style: solid;
+  margin: 16px 0px 8px 0px;
+  padding: 4px 8px 4px 8px;
+}
+
+.code{
+  font-size: 14px;
+  background:#FFFFCC;
+  border-color: green;
+  border-width: 2px;
+  border-style: solid;
+  margin: 8px 0px 8px 0px;
+  padding: 4px 8px 4px 8px;  
+}
+
+.head {
+  background-color: #FFF0F0;
+  font-size: 12px;
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+}
+
+.lead {
+  font-face: ÇlÇr ÉSÉVÉbÉN;
+  font-size: 14px;
+  margin: 8px 8px 8px 8px;
+  padding: 8px 8px 8px 8px;
+  color: Black;
+  background-color: #F0F0F0;
+}
+
+.index {
+  font-face: ÇlÇr ÉSÉVÉbÉN;
+  font-size: 12px;
+  margin: 8px 8px 8px 32px;
+  padding: 8px 8px 8px 8px;
+  color: black;
+  background-color: #FFF0F0;
+}
+
+.sub {
+  font-face: ÇlÇr ÉSÉVÉbÉN;
+  font-size: 12px;
+  margin: 8px 8px 8px 32px;
+  padding: 8px 8px 8px 8px;
+  color: black;
+  background-color: #FFFAF0;
+}
+
+.text {
+  height: auto;
+  font-face: ÇlÇr ÉSÉVÉbÉN;
+  font-size: 14px;
+  padding: 8px 8px 8px 8px;
+  color: black;
+  background-color: #F0F0F0;
+}
+
+.point {
+  font-face: ÇlÇr ÉSÉVÉbÉN;
+  font-size: 14px;
+  padding: 8px 8px 8px 8px;
+  color: white;
+  background-color: orange;
+}
+
+.description {
+  font-face: ÇlÇr ÉSÉVÉbÉN;
+  font-size: 14px;
+  padding: 8px 8px 8px 8px;
+  color: black;
+  background-color: #FFCC88;
+}
+
+.keyword {
+  font-face: ÇlÇr ÉSÉVÉbÉN;
+  font-size: 9px;
+  padding: 8px 8px 8px 8px;
+  color: gray;
+  background-color: white;
+}
+
+.homework {
+  font-face: ÇlÇr ÉSÉVÉbÉN;
+  font-size: 14px;
+  padding: 8px 8px 8px 8px;
+  color: black;
+  background-color: #FFCCCC;
+}
+
+.rem {
+  color: #CC0099;
+}
+
+.code-string {
+  color: #0000AA;
+}
+.code-comment {
+  color: #993300;
+}
+.code-function {
+  color: #FF0000;
+  font-weight: bold;
+}

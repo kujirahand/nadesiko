@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META name="keyword" content="プログラミング言語, なでしこ, 定型処理, バッチ処理, 教育">
+<META name="description" content="なでしこは日本語で簡単にプログラミングができる簡単ツールです。">
+<META name="GENERATOR" content="IBM WebSphere Homepage Builder V6.0.1 for Windows">
+<TITLE>プログラミング基礎編</TITLE>
+<LINK rel="stylesheet" href="../nako_man.css" type="text/css">
+</HEAD>
+<BODY text="#4d4d4d" link="#000099" vlink="#582c56" alink="#cc00cc">
+<CENTER>
+<TABLE border="0" width="780" cellpadding="0" cellspacing="0">
+  <TBODY>
+    <TR>
+      <TD align="right"><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="../index.htm"><IMG src="../logo_nadesiko_title.gif" width="293" height="76" border="0" alt="なでしこ"></A></TD>
+    </TR>
+    <TR>
+      <TD><IMG src="../line.gif" width="780" height="8" border="0"></TD>
+    </TR>
+    <TR>
+      <TD>
+      <TABLE border="0" width="780" cellpadding="4" cellspacing="0">
+        <TBODY>
+          <TR>
+            <TD width="142"><IMG src="../about/dmy.gif" width="8" height="8" border="0"></TD>
+            <TD width="142"></TD>
+            <TD width="322"></TD>
+            <TD width="142"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">プログラミング基礎編～反復＋ハッシュの利用</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" align="center"><IMG src="kiso-title.gif" width="300" height="200" border="0"></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">反復＋ハッシュ</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>
+            <P class=lead>前回やった反復構文と、前々回やったハッシュを組み合わせることでアンケートの集計などが行えます。</P>
+            </TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">簡単なアンケート</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>ここは、とあるオーディション会場、スターを目指す若者たちが、自分の熱い魂を歌に託しています。<BR>
+            今回、審査員の３人は自分の持ち点１０点をそれぞれ気に入った人に割り振ることができるというシステムでの審査方法です。投票結果は以下のようになりました。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="seito.gif" width="90" height="82" border="0"></TD>
+            <TD class="code">わかな=7<BR>
+            わかな=8<BR>
+            ちはる=3<BR>
+            まきこ=2<BR>
+            まきこ=1<BR>
+            ちはる=2<BR>
+            わかな=7</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>これを誰が何点獲得したのか集計するのが今回のプログラムです。ハッシュ＋反復で集計すると以下のようになります。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code">データは「わかな=7<BR>
+わかな=8<BR>
+ちはる=3<BR>
+まきこ=2<BR>
+まきこ=1<BR>
+ちはる=2<BR>
+わかな=7」<BR>
+<BR>
+集計とはハッシュ。<BR>
+            データを反復 <FONT color="#0066cc"># ............................(1)</FONT><BR>
+　　対象を「=」で区切る<BR>
+            　　名前はそれ￥０<BR>
+            　　点数はそれ￥１<BR>
+            　　集計＠名前＝（集計＠名前）＋点数 <FONT color="#0066cc"># ............ (2)</FONT><BR>
+<BR>
+集計を言う。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="seito.gif" width="90" height="82" border="0"></TD>
+            <TD>これを実行すると・・・<BR>
+            　わかな=22<BR>
+            　まきこ=3<BR>
+            　ちはる=5<BR>
+            ・・・と表示されます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>まず(1)の反復構文でデータを反復します。反復内容は変数「対象」に代入されていますので、これを「=」で区切ります。反復されるデータは「名前=点数」と「=」で区切られているからです。<BR>
+            そうして名前と点数に区切ることができたら、(2)でハッシュを使って点数を加算します。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">
+            <HR>
+            前のページ<A href="09-1-each.htm">←反復</A>
+            <HR>
+            【次のステップ】<BR>
+            　<A href="stereotype/index.htm">→定型処理編</A><BR>
+            　<A href="game/index.htm">→ゲーム編</A><BR>
+            　<A href="gui/index.htm">→ツール製作編</A><BR>
+            <HR>
+            </TD>
+            <TD></TD>
+          </TR>
+        </TBODY>
+      </TABLE>
+      </TD>
+    </TR>
+    <TR>
+      <TD><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+  </TBODY>
+</TABLE>
+</CENTER>
+<CENTER></CENTER>
+<CENTER></CENTER>
+</BODY>
+</HTML>

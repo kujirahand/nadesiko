@@ -1,0 +1,108 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>GUI部品の利用法</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">GUI部品の利用法</A></H1>
+<DIV class="lead">　GUI部品の多くはなでしこのグループ機能を利用して実装されています。そこで、GUI部品を利用するにはまず『名前とは部品名』としてGUI部品を生成する処理が必要になります。</DIV>
+<DIV class="index"><A href="1-1-howto.htm#head1">■GUI部品の作り方</A><BR>
+<A href="1-1-howto.htm#head2">■サイズの変更</A><BR>
+<A href="1-1-howto.htm#head3">■ボタンとエディタの連携</A><BR>
+<A href="1-1-howto.htm#head4">■名前の省略「これ」「その」</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">GUI部品の作り方</A></H2>
+
+<P></P>
+<P>　では、まずOKというボタンを作り、ボタンを押すとOKと表示するプログラムを作ってみましょう。</P>
+<DIV class="code"><CODE>
+OKボタンとはボタン。<BR>
+OKボタンをクリックした時は～<SPAN class="code-string">「OK」</SPAN>と言う。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>どうでしょうか。一行目の『OKボタンとはボタン』と書くとボタンが画面上に生成されます。次の行で、ボタンにイベントを設定しています。</P>
+<P>イベントは、各部品により設定できる項目が違います。ボタンでは『クリックした時』というイベントが用意されています。</P>
+<P>イベントは『グループ名のイベント名は～内容』と書くことで設定できます。</P>
+<P>　次に、ボタンのテキストを変更してみます。</P>
+<DIV class="code"><CODE>
+OKボタンとはボタン<BR>
+OKボタンのテキストは<SPAN class="code-string">「おっけー」</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>このように、『OKボタンのテキストは「ｘｘｘ」』と書くことでボタンのテキストを変更できます。</P>
+<P>【注意】『OKボタンのテキストは～「ｘｘｘ」』と『～』を書くと、正しくテキストが設定されません。『～』はイベントを書くときだけに使います。</P>
+<P>また、イベントを記述するときも、以下のようにイベント内容をインデントする場合は、『～』が不要です。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-comment">＃インデントするときはイベントの記述でも<SPAN class="code-string">『～』</SPAN>は不要</SPAN><BR>
+OKボタンとはボタン<BR>
+OKボタンのイベントは<BR>
+　　<SPAN class="code-string">「OK」</SPAN>と言う。<BR>
+　　<SPAN class="code-string">「本当にOKだよ！」</SPAN>と言う<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head2">サイズの変更</A></H2>
+
+<P></P>
+<P>GUI部品のサイズを変更するには「W」と「H」という変数を位置は「X」と「Y」で変更できます。</P>
+<DIV class="code"><CODE>
+OKボタンとはボタン。<BR>
+OKボタンのXは100&nbsp;<SPAN class="code-comment">#&nbsp;X</SPAN><BR>
+OKボタンのYは100&nbsp;<SPAN class="code-comment">#&nbsp;Y</SPAN><BR>
+OKボタンのWは300&nbsp;<SPAN class="code-comment">#&nbsp;幅</SPAN><BR>
+OKボタンのHは200&nbsp;<SPAN class="code-comment">#&nbsp;高さ</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head3">ボタンとエディタの連携</A></H2>
+
+<P></P>
+<P>次にボタンとエディタの連携の方法を見てみましょう。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「名前を入力してください」</SPAN>と表示。<BR>
+<SPAN class="code-comment">#&nbsp;エディタの作成</SPAN><BR>
+名前エディタとはエディタ。<BR>
+名前エディタのテキストは<SPAN class="code-string">「くじら」</SPAN><BR>
+<SPAN class="code-comment">#&nbsp;ボタンの作成</SPAN><BR>
+自己紹介ボタンとはボタン。<BR>
+自己紹介ボタンをクリックした時は<BR>
+　　<SPAN class="code-string">「｛名前エディタ｝です。よろしく！」</SPAN>と言う<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>上のプログラムを実行すると、名前エディタに入力した名前を使って「ｘｘです。よろしく！」と表示します。</P>
+<P></P>
+<H2><A name="head4">名前の省略「これ」「その」</A></H2>
+
+<P></P>
+<P>ボタンやエディタなどの部品で、座標などのデータを設定するとき、いちいち名前を書いていくと非常に面倒です。そこで直前に代入したグループを省略して使うことができるのが「これ」と「その」です。</P>
+<P>先ほどのボタンとエディタを連携して使うプログラムを書き直してみます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「名前を入力してください」</SPAN>と表示。<BR>
+<SPAN class="code-comment">#&nbsp;エディタの作成</SPAN><BR>
+名前エディタとはエディタ。<BR>
+そのテキストは<SPAN class="code-string">「くじら」</SPAN><BR>
+<SPAN class="code-comment">#&nbsp;ボタンの作成</SPAN><BR>
+自己紹介ボタンとはボタン。<BR>
+これをクリックした時は<BR>
+　　<SPAN class="code-string">「｛名前エディタ｝です。よろしく！」</SPAN>と言う<BR>
+<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>この省略を使うとプログラムの入力が楽になります。</P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

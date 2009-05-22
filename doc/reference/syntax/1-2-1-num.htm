@@ -1,0 +1,71 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>数値</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">数値</A></H1>
+<DIV class="lead">　なでしこで扱うことができるのは、整数と実数です。</DIV>
+<DIV class="index"><A href="1-2-1-num.htm#head1">■数値の記述</A><BR>
+<A href="1-2-1-num.htm#head2">■数値変数の宣言</A><BR>
+<A href="1-2-1-num.htm#head3">■位取り（ＳＩ単位）</A><BR>
+　　<A href="1-2-1-num.htm#head4">┣単位一覧</A><BR>
+<A href="1-2-1-num.htm#head5">■単位</A><BR>
+<A href="1-2-1-num.htm#head6">■計算の正確さ</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">数値の記述</A></H2>
+
+<P></P>
+<P>数値を記述するには、16&nbsp;とか&nbsp;30&nbsp;と書くだけです。１６進表記にしたい場合は「$」をつけて&nbsp;$FF&nbsp;と書きます。</P>
+<H2><A name="head2">数値変数の宣言</A></H2>
+
+<P></P>
+<P>整数・実数の変数を使うには、以下のように宣言します。</P>
+<DIV class="code"><CODE>
+Ａとは整数。<SPAN class="code-comment">#整数</SPAN><BR>
+Ｂとは数値。<SPAN class="code-comment">#実数</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head3">位取り（ＳＩ単位）</A></H2>
+
+<P></P>
+<P>数値の後に、ＳＩ単位（cやk、または、万や百万)を書くと、位取りされて数値が指定できます。</P>
+<DIV class="code"><CODE>
+A=5_k<BR>
+Aを表示。<SPAN class="code-comment">#&nbsp;5000が表示される</SPAN><BR>
+B=3千<BR>
+Bを表示。<SPAN class="code-comment">#&nbsp;3000が表示される</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>（注意）あくまでも位取りのための補助機能なので、『５千６百３十』のような指定はできません！</P>
+<H3><A name="head4">単位一覧</A></H3>
+
+<P></P>
+<A href="9-1-josi.htm">→単位・助詞の一覧はこちら</A>
+<P></P>
+<H2><A name="head5">単位</A></H2>
+
+<P></P>
+<P>数値の後に、'個','円','つ','本','冊'などを書くとこれを単位とみなします。単位はあくまでもコメントのようなもので、あってもなくても同じ動作をします。</P>
+<DIV class="code"><CODE>
+単位の種類<BR>
+<SPAN class="code-comment">'メートル','ドット','個','円','つ','本','冊','px','cm','mm','m','kg','g'</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head6">計算の正確さ</A></H2>
+
+<P></P>
+<P>なでしこの内部では、Borland&nbsp;Delphi&nbsp;Extended&nbsp;型(10バイト)を使って計算を行っています。これは、(3.6&nbsp;x&nbsp;10^-4951&nbsp;から&nbsp;1.1&nbsp;x&nbsp;10^4932)&nbsp;の範囲の数値を扱うことができます。但し、浮動小数点型ですので、大きすぎたり小さすぎたりする計算を行う場合には、その計算精度が落ちますので注意してください。</P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

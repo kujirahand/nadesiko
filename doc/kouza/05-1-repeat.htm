@@ -1,0 +1,256 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META name="keyword" content="プログラミング言語, なでしこ, 定型処理, バッチ処理, 教育">
+<META name="description" content="なでしこは日本語で簡単にプログラミングができる簡単ツールです。">
+<META name="GENERATOR" content="IBM WebSphere Homepage Builder V6.0.1 for Windows">
+<TITLE>プログラミング基礎編</TITLE>
+<LINK rel="stylesheet" href="../nako_man.css" type="text/css">
+</HEAD>
+<BODY text="#4d4d4d" link="#000099" vlink="#582c56" alink="#cc00cc">
+<CENTER>
+<TABLE border="0" width="780" cellpadding="0" cellspacing="0">
+  <TBODY>
+    <TR>
+      <TD align="right"><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="../index.htm"><IMG src="../logo_nadesiko_title.gif" width="293" height="76" border="0" alt="なでしこ"></A></TD>
+    </TR>
+    <TR>
+      <TD><IMG src="../line.gif" width="780" height="8" border="0"></TD>
+    </TR>
+    <TR>
+      <TD>
+      <TABLE border="0" width="780" cellpadding="4" cellspacing="0">
+        <TBODY>
+          <TR>
+            <TD width="142"><IMG src="../about/dmy.gif" width="8" height="8" border="0"></TD>
+            <TD width="142"></TD>
+            <TD width="322"></TD>
+            <TD width="142"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">プログラミング基礎編～繰り返し</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" align="center"><IMG src="kiso-title.gif" width="300" height="200" border="0"></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">繰り返し</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>プログラムで同じことを何度も繰り返すときには『？回～』構文や『繰り返す』構文を使います。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">５回、「ワン」と表示する</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>プログラムを作るとき、何度も同じことを実行したいときがあります。例えば、５回、「ワン」と表示するプログラムを作ってみます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">「ワン」と表示。<BR>「ワン」と表示。<BR>「ワン」と表示。<BR>「ワン」と表示。<BR>「ワン」と表示。</TD>
+            <TD class="menuG">(<B>注意</B>)なでしこでは文のインデント（字下げ）によってプログラムの構造を判断していますので、「もし・・・ならば」と「違えば」の次の行は必ず同じようにインデントするようにしてください。</TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>これを実行すると、「ワン」と５回表示されます。ただ、これだと、何度も同じコトを書く必要があります。<BR>そこで、『？回～』構文を使うと、これを省略して書くことができます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">５回<BR>　　　「ワン」と表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>これを実行すると、先と同じように５回「ワン」と表示されます。さっきは５回だったので、まだコピーして貼り付けてを繰り返せば手作業でもできますが、これが１００回だったらどうでしょう？非常に面倒ですね。『？回～』というこの書き方を覚えれば楽になりますね。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">本当に繰り返すのか検証する</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"><IMG src="seito.gif" width="90" height="82" border="0"></TD>
+            <TD>これって、千回でも１万回でも繰り返してくれるんですか？</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>もちろんです。<BR>
+            それでは、１から１万までを、１＋２＋３＋４＋５＋...と足し算するプログラムを作ってみます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="../pic/c008cut.gif" width="64" height="64" border="0"></TD>
+            <TD class="code">結果は、０<BR>数は、１<BR>
+            10000回<BR>　　結果は、結果＋数<BR>　　数は、数＋１<BR>
+            <BR>結果を表示。<BR>
+</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="seito.gif" width="90" height="82" border="0"></TD>
+            <TD>プログラムを実行すると、50005000が表示されます。これって合ってるんですか？</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>それでは、それを確かめるために、計算機で、１から１万まで足して確認してください！！<BR>
+            って・・・本当に足す人はいないと思いますが・・・<BR>
+            <BR>
+            計算機で足さなくても、1+10000, 2+9999, 3+9998 ... の組み合わせが5000個あると考えると、以下の方法で答えを見つける方法もあります。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">最後は、1万<BR>結果は、（１＋最後）×最後÷２<BR>結果を表示</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="seito.gif" width="90" height="82" border="0"></TD>
+            <TD>プログラムを実行すると、50005000が表示されます。良かった！本当に１万回足してくれるということなんですね。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">『回数』変数をチェックする</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>何回も繰り返しているとき、その繰り返し回数が何回目か知りたい場合もあります。そのときは、<B>変数「回数」</B>をチェックすると何回目の繰り返しかを調べることができます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD>　</TD>
+            <TD class="code">１０回<BR>　　　<FONT color=#0066ff>「</FONT><FONT color=#ff0000>｛回数｝</FONT><FONT 
+color=#0066ff>回目です。」</FONT>と表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>これを実行すると、下のように表示されます。 <BR>
+            <TABLE border="1">
+              <TBODY>
+                <TR>
+                  <TD bgcolor="#ccccff">1回目です<BR>2回目です<BR>...<BR>9回目です<BR>10回目です</TD>
+                </TR>
+              </TBODY>
+            </TABLE>
+            </TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">『繰り返す』構文を使う</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"><IMG src="sensei.gif" width="90" height="88" border="0" align="middle"></TD>
+            <TD valign="middle">回数を覚えると、３から８まで、６から２０までと、実行したい場合があります。その場合は、『繰り返す』構文を使います。<BR>
+            </TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="../pic/c008cut.gif" width="64" height="64" border="0"></TD>
+            <TD>『繰り返す』構文は、以下の書式で使います。<BR>
+            回数の変わりに、カウンタ変数に指定した変数を利用して回数を知ることができます。以下が『繰り返す』構文の書式です。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="left" colspan="2" bgcolor="#ccffff"><FONT color=#ff0000>（カウンタ変数）</FONT><B>を</B><FONT 
+color=#ff0000>（開始値）</FONT><B>から</B><FONT 
+color=#ff0000>（終了値）</FONT><B>まで繰り返す</B><BR>
+            　　　<FONT 
+color=#ff0000>（繰り返すプログラム）</FONT></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">『繰り返す』文を使うと、１から１万まで繰り返すプログラムを書くと以下のようになります。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code"><FONT color=#993333>結果</FONT>は、０<BR>
+            <FONT 
+color=#993333>数</FONT><B>を</B><FONT color=#336600>１</FONT><B>から</B><FONT 
+color=#336600>10000</FONT><B>まで繰り返す</B><BR>　　　<FONT 
+color=#993333>結果</FONT>は、<FONT color=#993333>結果</FONT>＋<FONT 
+color=#993333>数</FONT><BR>
+            <FONT color=#993333>結果</FONT>を表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>実行した結果は、先ほどと同じように、50005000 が表示されます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="seito.gif" width="90" height="82" border="0"></TD>
+            <TD>へぇ。『繰り返す』構文を使うと開始値と終了値が指定できて『？回』構文より便利なんですね。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">
+            <HR>
+            次のページ<A href="06-1-array.htm">→配列変数</A><BR>
+            前のページ<A href="03-1-variable.htm">←条件分岐</A>
+            <HR>
+            </TD>
+            <TD></TD>
+          </TR>
+        </TBODY>
+      </TABLE>
+      </TD>
+    </TR>
+    <TR>
+      <TD><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+  </TBODY>
+</TABLE>
+</CENTER>
+<CENTER></CENTER>
+<CENTER></CENTER>
+</BODY>
+</HTML>

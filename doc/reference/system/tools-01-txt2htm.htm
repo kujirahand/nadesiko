@@ -1,0 +1,122 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>txt2htmについて</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">txt2htmについて</A></H1>
+<DIV class="lead">　マニュアルフォルダに、txt2htm.nakoというなでしこのプログラムがあります。これは、手軽にマニュアルを作れるようにと思って作られたものです。普通のテキストファイルと同じように書くことで、ＨＴＭＬのマニュアルを作れます。</DIV>
+<DIV class="index"><A href="tools-01-txt2htm.htm#head1">■マークアップ</A><BR>
+<A href="tools-01-txt2htm.htm#head2">■記述例</A><BR>
+<A href="tools-01-txt2htm.htm#head3">■コマンド</A><BR>
+　　<A href="tools-01-txt2htm.htm#head4">┣♪ソース</A><BR>
+　　<A href="tools-01-txt2htm.htm#head5">┣♪概要</A><BR>
+　　<A href="tools-01-txt2htm.htm#head6">┣♪リンク～(URL)～(リンクの説明)</A><BR>
+　　<A href="tools-01-txt2htm.htm#head7">┣♪ポイント</A><BR>
+　　<A href="tools-01-txt2htm.htm#head8">┣♪画像～(URL)～(画像の説明)</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">マークアップ</A></H2>
+
+<P>　普通のテキストと同じように書くと言っても、いくつかの意味のある記号を用います。</P>
+<UL>
+  <LI>★タイトル
+  <LI>■大見出し
+  <LI>●小見出し
+  <LI>♪(コマンド)
+</UL>
+
+<P></P>
+<H2><A name="head2">記述例</A></H2>
+
+<P></P>
+<DIV class="code"><CODE>
+★変数について<BR>
+<BR>
+♪概要<BR>
+変数とは数字とか文章とかそういうものを閉まっておける箱のようなものです。<BR>
+<BR>
+<SPAN class="code-function">■変数の使い方</SPAN><BR>
+<BR>
+変数の使い方は簡単です。<BR>
+<BR>
+<SPAN class="code-function">●変数への代入</SPAN><BR>
+<BR>
+♪ソース～？<BR>
+変数は<SPAN class="code-string">「変数の内容」</SPAN><BR>
+？<BR>
+<BR>
+<SPAN class="code-function">●変数の参照</SPAN><BR>
+<BR>
+♪ソース～＄<BR>
+変数を表示。<BR>
+＄<BR>
+<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>...とこのように気楽にソースを書くことができます。</P>
+<H2><A name="head3">コマンド</A></H2>
+
+<P></P>
+<P>コマンドをあらわす♪記号には以下の種類があります。</P>
+<UL>
+  <LI>♪ソース～(終端記号)
+  <LI>♪概要
+  <LI>♪リンク～(URL)～(リンクの説明)
+  <LI>♪ポイント
+  <LI>♪画像～(URL)～(画像の説明)
+</UL>
+
+<P></P>
+<H3><A name="head4">♪ソース</A></H3>
+
+<P></P>
+<P>ソースコードを書くときに使います。</P>
+<DIV class="code"><CODE>
+♪ソース～→→<BR>
+ソース・・・・・・・<BR>
+・・・・・・・・・・<BR>
+・・・・・・・・・・<BR>
+→→<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>と、ソースコードに使われてない記号を適当に決めて終端文字にすることができます。</P>
+<P></P>
+<H3><A name="head5">♪概要</A></H3>
+
+<P></P>
+<P>概要は、「{改行}{改行}」までの部分を切り取って概要とする。</P>
+<DIV class="code"><CODE>
+♪概要<BR>
+概要概要概要概要概要概要概要概要概要<BR>
+概要概要概要概要概要概要概要概要概要<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+<H3><A name="head6">♪リンク～(URL)～(リンクの説明)</A></H3>
+
+<P></P>
+<P>リンクを書くときは、『♪リンク～link.htm～リンクタイトル』のように書くことができます。</P>
+<P></P>
+<H3><A name="head7">♪ポイント</A></H3>
+
+<P></P>
+<P>ポイントも、「{改行}{改行}」までの部分を切り取ってポイントとします。</P>
+<P></P>
+<H3><A name="head8">♪画像～(URL)～(画像の説明)</A></H3>
+
+<P></P>
+<P>画像を挿入するときは、『♪画像～(URL)～(画像の説明)』のように書きます。画像の説明を書くと、IMGタグにALT属性を加え、さらに、画像の右横に解説を添えます。</P>
+<P></P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

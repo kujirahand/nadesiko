@@ -1,0 +1,203 @@
+★プラグインについて
+
+♪概要
+　なでしこ用のプラグインをplug-insフォルダに入れておくと、
+なでしこが起動時に自動的にプラグインを読み込み、
+なでしこに命令や変数・文字列などが追加されます。
+
+■プラグインは何をしている？
+
+なでしこは起動時に、実行ファイルと同じフォルダかplug-insフォルダに
+あるＤＬＬファイルを探します。
+そして、ＤＬＬファイルがプラグインだと認識したら、プラグイン用の
+関数をインポートします。
+
+■プラグインの作り方
+
+dnako.dllのエクスポート関数を使うことでプラグインが作れます。
+
+プラグインに必要なのは、以下の４つの関数です。
+♪ソース～＠＠
+// プラグイン実行用の関数
+procedure ImportNakoFunction; stdcall;
+// プラグインの情報
+function PluginInfo(str: PChar; len: Integer): Integer; stdcall;
+// プラグインのバージョン
+function PluginVersion: DWORD; stdcall;
+// なでしこプラグインバージョン
+function PluginRequire: DWORD; stdcall;
+＠＠
+
+●procedure ImportNakoFunction; stdcall;
+
+なでしこに関数や文字列を追加するための関数で、
+プラグイン取り込み時に必ず実行されます。
+この手続きの中でなでしこの命令を定義すると良いでしょう。
+命令の定義の仕方については後述します。
+
+●function PluginInfo(str: PChar; len: Integer): Integer; stdcall;
+
+プラグインの情報を返す関数です。
+作者情報やプラグインの名前を str へ最大 len 文字コピーしてください。
+
+引数の意味
+
+=code
+str 　: 情報文字列をコピーします。
+len 　: 情報文字列取得のために確保されたバッファ長
+戻り値：情報文字列の長さ
+=/code
+
+●function PluginVersion: DWORD; stdcall;
+
+プラグインのバージョン情報を整数で返します。
+好きな数字を返しても大丈夫です。
+
+●function PluginRequire: DWORD; stdcall;
+
+なでしこプラグイン認識バージョンです。
+今のところ、バージョン1しか定義されていません。
+1以上の数値が返ってきたらバージョン違いのプラグインとして
+取り込みません。必ず1を返すように設計してください。
+
+■プラグイン作成のための補助ユニット
+
+Delphi用ですが、なでしこのプラグイン作成のためのＳＤＫが、
+以下のＵＲＬに用意されています。
+
+開発用プラグインの雛形↓
+
+♪リンク～http://nadesi.com/plugin_sdk.zip～→ＳＤＫのダウンロード
+
+●ヘルパーユニット
+
+なでしこのシステムに関数を登録するには、
+dnako.dllの関数、nako_addFunction を使いますが、
+なでしこ本体と同じように命令を登録するユニットを用意しています。
+上のリンクのプラグインの雛形に含んでいます。
+
+,ユニット名, 役割
+,dnako_import, dnakoがエクスポートする関数を定義
+,dnako_import_types.pas,なでしこで利用する型を定義
+,dll_plugin_helper.pas, プラグインを作るうえで便利な命令を定義
+
+
+■プラグイン関数を作る方法
+
+ここでは、Delphi でなでしこのプラグインを作る方法を解説します。
+
+●前準備
+
+まず、上で入手した、plugin_testが雛形になるのでこれを開きます。
+そして、別の名前で保存します。
+
+●関数の定義
+
+プラグイン用の関数は、コールバック関数として登録しますので
+ある一定の形式にしておかなくてはなりません。以下がその形ですが、
+この関数から、別の関数を呼べば良いだけのことなので、それほど
+気にしないでください。
+
+=code
+function TestFunc(HandleArg: DWORD): PHiValue; stdcall;
+=/code
+
+PHiValueというのは聞きなれない名前の型ですが、なでしこでは、
+この型を標準の型として表します。
+
+この型から整数を得る場合には、hi_int(PHiValue)とか、
+文字列の場合は、hi_str(PHiValue)とキャストのようにしてやることで
+任意の型に変換されたデータを得られます。
+
+●引数の取得
+
+なでしこのプログラムから与えられた引数を取得するには
+以下のようにします。
+
+=code
+function Test(HandleArg: DWORD): PHiValue; stdcall;
+var
+  arg0, arg1: PHiValue;
+  str: string;
+begin
+  // 引数の取得処理
+  arg0 := nako_getFuncArg(HandleArg, 0); // インデックス[0]番の引数を得る
+  arg1 := nako_getFuncArg(HandleArg, 1); // インデックス[1]番の引数を得る
+  ...
+=/code
+
+『nako_getFuncArg(HandleArg, Index)』と呼ぶことで、なでしこの
+引数を定義した順番に得ることができます。
+
+●戻り値の処理
+
+次に戻り値に関してですが、なでしこの関数は必ず、PHiValue型の
+戻り値を返すか、Rseult := nil とヌルをセットします。
+
+値を返す場合ですが、
+PHiValue型はポインタ型なので、New(ポインタ型)で作ることも
+できるのですが、値をうまく初期化してくれないので、
+以下のように、hi_va_new という特殊な関数を使って生成します。
+
+=code
+Result := hi_new_var;     // 値の生成
+hi_setInt(Result, 50);    // 50をセット
+hi_setStr(Result, 'abc'); // 'abc'をセット
+=/code
+
+PHiValue型を生成したら、hi_setInt(Result, 30) のように
+値を設定したら戻り値の設定が完了です。
+
+値をセットするには、以下の関数が用意されています。
+=code
+// 整数をセットする
+procedure hi_setInt  (v: PHiValue; num: Integer);
+// 実数をセットする
+procedure hi_setFloat(v: PHiValue; num: HFloat);
+// BOOL型をセットする
+procedure hi_setBool (v: PHiValue; b: Boolean);
+// 文字列をセットする
+procedure hi_setStr  (v: PHiValue; s: string);
+=/code
+
+配列やハッシュ、グループをセットする場合は、dnakoがエクスポートしている
+関数を使ってセットします。
+
+●システムに関数を登録
+
+さて、せっかく関数を作ってもシステムに登録しなくては意味が
+ありません。
+
+システムへの登録は、あらかじめ、雛形に用意されている
+ImportNakoFunction の中で行います。
+以下は、登録例です。
+
+=code
+procedure ImportNakoFunction; stdcall;
+begin
+  // なでしこシステムに関数を追加
+  AddFunc('テスト', 'Sの', 0, TestFunc, 'ただ引数を返すだけの簡単な関数', 'てすと');
+  AddFunc('テスト発言', 'Sと|Sで|SのSを', 0, TestSay, 'ただ引数を表示する簡単な関数', 'てすとはつげん');
+  // なでしこシステムに文字列を追加
+  AddStrVar('テスト文字列', '適当な値', 0, '定義する文字列','てすともじれつ');
+  // なでしこシステムに整数を追加
+  AddIntVar('テスト整数', 3, 0, '定義する整数','てすとせいすう');
+end;
+=/code
+
+AddFunc 関数は以下の書式で指定します。
+
+=code
+AddFunc( なでしこ関数名, 引数, IDタグ, Delphi関数名, '説明', 'よみ')
+=/code
+
+これを正しく作っておくとなでしこのマニュアル自動生成スクリプトを
+使って、command.txtの形式に自動変換することが可能です。
+（ちょっと改良が必要ですが...このあたりは今後の課題です。)
+
+●コンパイル
+
+コンパイルすると、DLLが生成されますので、これを
+なでしこのplug-insフォルダに放り込んで完成です。
+
+

@@ -1,0 +1,65 @@
+★なでしこでWindowsAPIおよび外部ＤＬＬを呼ぶ方法
+
+=lead
+なでしこでは、外部ＤＬＬで宣言している関数を
+なでしこの命令としてインポートすることができる。
+
+■【書式】
+
+=code
+＊なでしこ名（引数宣言）= DLL("DLL名","C言語宣言")
+=/code
+
+・なでしこ名
+　なでしこの命令の名前
+
+・引数宣言
+　引数名＋助詞、引数名＋助詞...と並べておく
+　必ずＣ言語宣言と同じ数の引数を書くこと
+
+・ＤＬＬ名
+　ＤＬＬの名前
+
+・Ｃ言語宣言
+　Ｃ言語におけるＤＬＬの宣言。
+　例えばダイアログを表示するＡＰＩの場合、以下のように
+宣言ができる。
+
+=code
+●MessageBox(h,t,c,u) =DLL("user32.dll", "int MessageBoxA(
+    HWND hWnd,	// handle of owner window
+    LPCTSTR lpText,	// address of text in message box
+    LPCTSTR lpCaption,	// address of title of message box  
+    UINT uType 	// style of message box
+)")
+=/code
+
+基本的に、引数の型として利用できるのは、以下の９種類だが
+WindowsSDKでよく使われるUINTやLPCTSTRやHWND、BOOLなどは、
+以下の型に単純置換されるようになっている。
+
+CHAR/BYTE/SHORT/WORD/LONG/DWORD/POINTER/CHAR*/VOID
+
+また、"LP*" "P*"はPOINTERに。"H*"はDWORD型に単純置換される。
+
+
+■DLLを呼ぶ際に注意すべきこと
+
+なでしこでは内部に、文字列、整数や実数など実際の型を
+バイナリで管理している。
+
+ＤＬＬ呼び出しで、宣言にポインタ型があった場合、
+単純に変数のデータポインタを引数と与えてしまう。
+
+そのため、文字列のポインタを与えるところで、整数への
+ポインタを与えると、内部でアクセス違反が発生してしまう。
+文字列を引数に持つＤＬＬ関数を呼ぶ場合には、
+
+変数 = TOSTR(変数)
+
+として、呼び出す変数の型に注意すること。
+整数へのポインタを利用したい場合は、
+
+変数P = POINTER(整数変数) 
+
+と変数データへのポインタを取得して関数を呼ぶ。

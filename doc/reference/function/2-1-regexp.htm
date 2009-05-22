@@ -1,0 +1,148 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>正規表現について</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">正規表現について</A></H1>
+<DIV class="lead">　Perl互換の正規表現について。正規表現機能は、BREGEXP.DLLを利用しています。</DIV>
+<DIV class="index"><A href="2-1-regexp.htm#head1">■正規表現</A><BR>
+　　<A href="2-1-regexp.htm#head2">┣基本的なマッチ</A><BR>
+　　<A href="2-1-regexp.htm#head3">┣カッコ（...）を使ったマッチ</A><BR>
+<A href="2-1-regexp.htm#head4">■正規表現のメタ文字</A><BR>
+　　<A href="2-1-regexp.htm#head5">┣パターン・メタ文字</A><BR>
+　　<A href="2-1-regexp.htm#head6">┣修飾子</A><BR>
+　　<A href="2-1-regexp.htm#head7">┣正規表現置換</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">正規表現</A></H2>
+
+<P></P>
+<P>正規表現についての詳しい解説は、WEBを参照してください。多くの優れた解説サイトがあります。</P>
+<H3><A name="head2">基本的なマッチ</A></H3>
+
+<P></P>
+<P>『正規表現マッチ』命令を使って正規表現によるマッチが行えます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「abc:def:ghi」</SPAN>を<SPAN class="code-string">「[a-z]+」</SPAN>で正規表現マッチ<BR>
+表示&nbsp;<SPAN class="code-comment">#&nbsp;abc</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「2005:10:15」</SPAN>を<SPAN class="code-string">「\d+:\d+:\d+」</SPAN>で正規表現マッチ<BR>
+表示&nbsp;<SPAN class="code-comment">#&nbsp;2005:10:15</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+<H3><A name="head3">カッコ（...）を使ったマッチ</A></H3>
+
+<P></P>
+<P>カッコ(...)を使うと、カッコの中を抽出して変数『抽出文字列』に代入できます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「abc:def:ghi」</SPAN>を<SPAN class="code-string">「(.+)\:(.+)\:(.+)」</SPAN>で正規表現マッチ<BR>
+表示。<SPAN class="code-comment">#abc:def:ghi</SPAN><BR>
+抽出文字列[0]を表示&nbsp;<SPAN class="code-comment">#&nbsp;abc</SPAN><BR>
+抽出文字列[1]を表示&nbsp;<SPAN class="code-comment">#&nbsp;def</SPAN><BR>
+抽出文字列[2]を表示&nbsp;<SPAN class="code-comment">#&nbsp;ghi</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+<H2><A name="head4">正規表現のメタ文字</A></H2>
+
+<P></P>
+<H3><A name="head5">パターン・メタ文字</A></H3>
+
+<P></P>
+<DIV class="code"><CODE>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;次のメタ文字をクォートする(取り消す)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;行の最初にマッチする<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(改行以外の)&nbsp;すべての文字にマッチする<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;行の終わりにマッチする<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;選択<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;()&nbsp;&nbsp;&nbsp;&nbsp;グループ化<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[]&nbsp;&nbsp;&nbsp;&nbsp;文字クラス<BR>
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\w&nbsp;&nbsp;　単語」の構成文字&nbsp;(英数字と&nbsp;&quot;_&quot;)&nbsp;にマッチ<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\W&nbsp;&nbsp;&nbsp;&nbsp;単語の構成文字以外にマッチ<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\s&nbsp;&nbsp;&nbsp;&nbsp;空白文字にマッチ<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\S&nbsp;&nbsp;&nbsp;&nbsp;空白文字以外にマッチ<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\d&nbsp;&nbsp;&nbsp;&nbsp;数字にマッチ<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\D&nbsp;&nbsp;&nbsp;&nbsp;数字以外にマッチ<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\b&nbsp;&nbsp;&nbsp;&nbsp;単語の境界にマッチ<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\B&nbsp;&nbsp;&nbsp;&nbsp;単語の境界以外にマッチ<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\A&nbsp;&nbsp;&nbsp;&nbsp;文字列の最初にのみマッチ<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\Z&nbsp;&nbsp;&nbsp;&nbsp;文字列の最後にのみマッチ<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\t&nbsp;&nbsp;&nbsp;&nbsp;タブ<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n&nbsp;&nbsp;&nbsp;&nbsp;改行<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\r&nbsp;&nbsp;&nbsp;&nbsp;復帰<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\f&nbsp;&nbsp;&nbsp;&nbsp;改ページ<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\a&nbsp;&nbsp;&nbsp;&nbsp;アラーム&nbsp;(ベル)<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\e&nbsp;&nbsp;&nbsp;&nbsp;エスケープ<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\033&nbsp;&nbsp;8&nbsp;進数で表した文字<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\x1b&nbsp;&nbsp;16&nbsp;進数で表した文字<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\c[&nbsp;&nbsp;&nbsp;コントロール文字<BR>
+直前の文字の数量子:<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;回以上にマッチ<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;回以上にマッチ<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;回または&nbsp;0&nbsp;回にマッチ<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{n}&nbsp;&nbsp;&nbsp;&nbsp;ちょうど&nbsp;n&nbsp;回にマッチ<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{n,}&nbsp;&nbsp;&nbsp;n&nbsp;回以上にマッチ<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{n,m}&nbsp;&nbsp;n&nbsp;回以上&nbsp;m&nbsp;回以下にマッチ<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H3><A name="head6">修飾子</A></H3>
+
+<P></P>
+<P>また、Perlを知っている方は以下のように修飾子をつけて記述することもできます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「abc:def:ghi」</SPAN>を<SPAN class="code-string">「m/[a-z]+/g」</SPAN>で正規表現マッチ<BR>
+表示&nbsp;<SPAN class="code-comment">#&nbsp;abc</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>修飾子は、つぎのようなものです。</P>
+<DIV class="code"><CODE>
+k&nbsp;&nbsp;&nbsp;文字を日本語（SJIS）として扱う（Perlにはこの修飾子はありません）<BR>
+m&nbsp;&nbsp;&nbsp;文字列を複数行として扱う（メタ文字$の処理結果に影響を及ぼします）<BR>
+g&nbsp;&nbsp;&nbsp;置換：グローバルな置換<BR>
+c&nbsp;&nbsp;&nbsp;変換：SEARCHLIST&nbsp;を補集合にする<BR>
+d&nbsp;&nbsp;&nbsp;変換：見つかったが置換されなかった文字を削除する<BR>
+s&nbsp;&nbsp;&nbsp;変換：置換された文字が重なったときに圧縮する<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H3><A name="head7">正規表現置換</A></H3>
+
+<P></P>
+<P>以下の書式で置換を指定します。</P>
+<P>『（対象文字列）の（パターン）を（置換後文字列）へ正規表現置換』</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「A-B--C---D」</SPAN>の<SPAN class="code-string">「\-+」</SPAN>を<SPAN class="code-string">「:」</SPAN>へ正規表現置換<BR>
+それを表示。<SPAN class="code-comment">#A:B:C:D</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「2005/11/03」</SPAN>の<SPAN class="code-string">「(\d+)/(\d+)/(\d+)」</SPAN>を<SPAN class="code-string">「$2月$3日」</SPAN>へ正規表現置換<BR>
+それを表示。<SPAN class="code-comment">#&nbsp;11月03日</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

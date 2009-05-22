@@ -1,0 +1,76 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>配列変数とハッシュ</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">配列変数とハッシュ</A></H1>
+<DIV class="lead">　配列変数は変数にインデックス番号を使ってアクセスできます。　ハッシュを使うと文字列を使って変数にアクセスできます。</DIV>
+<DIV class="index"><A href="1-4-array.htm#head1">■配列変数への利用</A><BR>
+<A href="1-4-array.htm#head2">■ハッシュの利用</A><BR>
+<A href="1-4-array.htm#head3">■多次元配列と多次元ハッシュ</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">配列変数への利用</A></H2>
+
+<P></P>
+<P>　配列変数は、『変数名￥インデックス』のように利用できます。</P>
+<DIV class="code"><CODE>
+変数￥0&nbsp;=&nbsp;100<BR>
+変数￥1&nbsp;=&nbsp;10<BR>
+変数￥2&nbsp;=&nbsp;2000<BR>
+変数￥2を表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>　また、別の書き方として、『変数名[インデックス]』のように書くこともできます。</P>
+<DIV class="code"><CODE>
+変数[0]=100<BR>
+変数[1]=200<BR>
+変数[0]を表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head2">ハッシュの利用</A></H2>
+
+<P></P>
+<P></P>
+<P>　なぜ「＠」なのかというと、ひらがなの「の」に似ているからです。</P>
+<DIV class="code"><CODE>
+磯野家＠<SPAN class="code-string">「かつお」</SPAN>は<SPAN class="code-string">「長男」</SPAN><BR>
+磯野家＠<SPAN class="code-string">「わかめ」</SPAN>は<SPAN class="code-string">「次女」</SPAN><BR>
+磯野家＠<SPAN class="code-string">「かつお」</SPAN>を言う。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head3">多次元配列と多次元ハッシュ</A></H2>
+
+<P></P>
+<P>配列変数を多次元に定義することができます。多次元に使う場合は、『変数名￥行,列』または『変数名[行,列]』と書くことができます。</P>
+<DIV class="code"><CODE>
+変数￥1,1＝<SPAN class="code-string">「あ」</SPAN><BR>
+変数[2,2]＝<SPAN class="code-string">「い」</SPAN><BR>
+変数\1,1を表示。<BR>
+変数[2,2]を表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>同様にハッシュも多次元を重ねて利用できます。</P>
+<DIV class="code"><CODE>
+磯野家＠<SPAN class="code-string">「かつお」</SPAN>＠<SPAN class="code-string">「父」</SPAN>＝<SPAN class="code-string">「なみへい」</SPAN><BR>
+磯野家＠<SPAN class="code-string">「かつお」</SPAN>＠<SPAN class="code-string">「父」</SPAN>を表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

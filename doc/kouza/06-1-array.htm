@@ -1,0 +1,349 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META name="keyword" content="プログラミング言語, なでしこ, 定型処理, バッチ処理, 教育">
+<META name="description" content="なでしこは日本語で簡単にプログラミングができる簡単ツールです。">
+<META name="GENERATOR" content="IBM WebSphere Homepage Builder V6.0.1 for Windows">
+<TITLE>プログラミング基礎編</TITLE>
+<LINK rel="stylesheet" href="../nako_man.css" type="text/css">
+</HEAD>
+<BODY text="#4d4d4d" link="#000099" vlink="#582c56" alink="#cc00cc">
+<CENTER>
+<TABLE border="0" width="780" cellpadding="0" cellspacing="0">
+  <TBODY>
+    <TR>
+      <TD align="right"><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="../index.htm"><IMG src="../logo_nadesiko_title.gif" width="293" height="76" border="0" alt="なでしこ"></A></TD>
+    </TR>
+    <TR>
+      <TD><IMG src="../line.gif" width="780" height="8" border="0"></TD>
+    </TR>
+    <TR>
+      <TD>
+      <TABLE border="0" width="780" cellpadding="4" cellspacing="0">
+        <TBODY>
+          <TR>
+            <TD width="142"><IMG src="../about/dmy.gif" width="8" height="8" border="0"></TD>
+            <TD width="142"></TD>
+            <TD width="322"></TD>
+            <TD width="142"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">プログラミング基礎編～配列変数</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" align="center"><IMG src="kiso-title.gif" width="300" height="200" border="0"></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">たくさんの変数を一度に使うときには「配列変数」が便利！</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>たくさんの値を扱いたいときは配列変数を使うと便利です。配列変数を使うとインデックス（要素番号）を使って変数にアクセスできます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">国語の成績を集計する</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>もし、配列変数を使わないで、国語のテストの成績の合計点を計算するプログラムを作るとこんな感じです。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code">相川は、３０<BR>
+            伊藤は、７０<BR>
+            加藤は、２５<BR>
+            佐藤は、５０<BR>
+            瀬川は、８０<BR>
+            外山は、３４<BR>
+            七瀬は、７３<BR>
+            <BR>
+            合計点は、相川＋伊藤＋加藤＋佐藤＋瀬川＋外山＋七瀬<BR>
+            合計点を表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="left" colspan="2">これを実行すると、３６２が表示されます。ただ、これだと、合計点を計算するのが大変です。配列変数を使うとこんな感じになります。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code">点数￥０は、３０<BR>
+点数￥１は、７０<BR>
+点数￥２は、２５<BR>
+点数￥３は、５０<BR>
+点数￥４は、８０<BR>
+点数￥５は、３４<BR>
+点数￥６は、７３<BR>
+<BR>
+            合計点は、点数の<B>配列合計</B>。<BR>
+合計点を表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>どうでしょうか。『変数名￥番号』で別々の変数にアクセスできるので、一度にたくさんのデータを扱うのが楽になります。また、配列変数を使うと、番号を指定して変数にアクセスしたり、合計や平均を計算することができます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">配列変数の合計を繰り返し</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>配列の合計を調べるのは、上のように『配列合計』という命令を使って調べる方法もあるのですが、『繰り返す』構文を使って調べることもできます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="left" colspan="2" class="code">点数￥０は、３０<BR>
+点数￥１は、７０<BR>
+点数￥２は、２５<BR>
+点数￥３は、５０<BR>
+点数￥４は、８０<BR>
+点数￥５は、３４<BR>
+点数￥６は、７３<BR>
+<BR>
+合計点は０<BR>
+            <B>番号</B>を０から６まで繰り返す<BR>
+            　　合計点は、合計点＋<B>点数￥番号</B><BR>
+合計点を表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="../pic/b012cut.gif" width="64" height="64" border="0"></TD>
+            <TD>これを実行すると、先ほどと同じように３６２が表示されます。『配列￥番号』の番号部分には変数を指定することもできるのです。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">繰り返しの様子をレポートして欲しい</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="seito.gif" width="90" height="82" border="0"></TD>
+            <TD>えぇぇ？！<BR>
+            ちょっと待ってください。上のプログラムがよく分からないんです。どうなっているんですか？</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>そうですね。それでは、それぞれがどうなっているのか確認しながら実行してみましょう。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">点数￥１は、７０<BR>
+点数￥２は、２５<BR>
+点数￥３は、５０<BR>
+点数￥４は、８０<BR>
+点数￥５は、３４<BR>
+点数￥６は、７３<BR>
+<BR>
+合計点は０<BR>
+番号を０から６まで繰り返す<BR>
+            　　<FONT color="#0000cc">「点数￥{番号} = ｛<B>点数￥番号</B>｝」</FONT>を表示。<BR>
+　　１秒待つ<BR>
+            　　合計点は合計点＋<B>点数￥番号</B><BR>
+            　　<FONT color="#0000cc">「合計点 = ｛合計点｝」</FONT>を表示。<BR>
+　　１秒待つ</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>上のプログラムは、実行の途中に、『１秒待つ』と、『表示』を追加しました。繰り返しの状態がどうなっているのかを分かりやすく表示しながら実行します。<BR>
+            <BR>
+            なでしこエディタのメニューの[実行-実行している行を追跡]のチェックを入れて実行するとさらに分かりやすく実行している行を示してくれます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>はじめは、何が起こっているのかわからないかもしれないけれど、何度も実行して何がどのように実行されているか見比べて理解してみてください。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>私も、はじめてプログラムを習ったときは、これがどうしてうまく動くのか分からなくてずいぶん悩みました。点数を一人分増やしてみたり、実行するときに表示されるものを変えてみたりしてじっくり研究してみてください。<BR>
+            </TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">リストに表示する</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>次に、配列変数の中身をリスト部品に表示してみましょう。リスト部品を作るには、『名前とはリスト』と書きます。するとリスト部品が作れらます。下のプログラムを実行してみてください。リストの中に配列変数の内容を表示します。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD>　</TD>
+            <TD class="code">点数￥０は、３０<BR>
+点数￥１は、７０<BR>
+点数￥２は、２５<BR>
+<BR>
+成績リストとはリスト。<BR>
+成績リストのアイテムは点数</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>これを実行すると、下のように表示されます。
+            <FORM><SELECT size=6> <OPTION selected>３０</OPTION> <OPTION>７０</OPTION> 
+<OPTION>２５</OPTION> <OPTION>　　　　　　　　</OPTION>
+            </SELECT></FORM>
+            </TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">なでしこ流、配列変数の一括セット</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"><IMG src="sensei.gif" width="90" height="88" border="0" align="middle"></TD>
+            <TD valign="middle">ところで、配列変数にデータをセットする場合、<BR>
+            配列￥０= 値0<BR>
+            配列￥１= 値１<BR>・・・<BR>のように書いていくのはとても面倒です。<BR>そんな時は、以下のように書いても同じように機能します。<BR>
+            </TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="../pic/c008cut.gif" width="64" height="64" border="0"></TD>
+            <TD class="code">点数は「30<BR>45<BR>22<BR>18<BR>36<BR>60<BR>72」<BR>
+            <BR>点数合計は、点数の配列合計<BR>「合計は、｛点数合計｝」と表示。<BR>
+            <BR>点数リストとはリスト。<BR>点数リストのアイテムは点数。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>これを実行すると、合計点数の283と点数の一覧がリストに表示されます。このように、文字列に一行ずつ値を書いていくと、それが配列変数の一要素となるのです。逆に配列変数を表示すると、文字列として表示されるのです。<BR>以下のプログラムを実行してみると良く分かります。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="seito.gif" width="90" height="82" border="0"></TD>
+            <TD class="code">点数￥０= 50<BR>
+            点数￥１= 30<BR>
+            点数￥２= 35<BR>
+            点数を表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>これを実行すると、<BR>50<BR>30<BR>35<BR>と表示されます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>なでしこでは、文字列→配列と、配列→文字列を自動的に変換してくれるという仕組みになっています。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">並び替える</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>なでしこには、配列変数を便利に扱うための命令がいくつか用意されています。ここでは、「配列数値ソート」という命令を取り上げようと思います。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>「配列数値ソート」を使うと、配列変数の中にある値を数値順に並び替えてくれるという機能を持っています。ちょっと使ってみましょう。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">点数￥０= 50<BR>
+            点数￥１= 30<BR>
+            点数￥２= 35<BR>
+            点数￥３= 80<BR>
+            点数￥４= 25<BR>
+            <BR>点数リストとはリスト<BR>点数リストのアイテムは、点数。<BR>
+            <BR>整列ボタンとはボタン<BR>整列ボタンをクリックした時は～<BR>　　点数を<B>配列数値ソート</B><BR>　　点数リストのアイテムは、点数。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>プログラムを実行すると、点数がリストに表示されます。そして、整列ボタンを押すと、点数を数字の小さい順に並び替えます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">配列変数に使う記号について</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>配列変数は『変数￥番号』というふうに使いますが、『変数[番号]』というように[
+            .. ]で番号を囲う書き方もできます。<BR>
+            C言語など、他のプログラム言語では配列変数を『変数[番号]』と書きますので、なでしこでも同じように書ける様になっています。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">
+            <HR>
+            次のページ<A href="07-1-csv.htm">→二次元配列変数</A><BR>
+            前のページ<A href="05-1-repeat.htm">←繰り返す</A>
+            <HR>
+            </TD>
+            <TD></TD>
+          </TR>
+        </TBODY>
+      </TABLE>
+      </TD>
+    </TR>
+    <TR>
+      <TD><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+  </TBODY>
+</TABLE>
+</CENTER>
+<CENTER></CENTER>
+<CENTER></CENTER>
+</BODY>
+</HTML>

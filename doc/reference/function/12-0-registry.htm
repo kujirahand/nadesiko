@@ -1,0 +1,75 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>レジストリ</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">レジストリ</A></H1>
+<DIV class="lead">Windowsのレジストリの読み書きができます。レジストリの操作を誤ると大変なことになるので慎重に行います。</DIV>
+<DIV class="index"><A href="12-0-registry.htm#head1">■レジストリの読み書き手順</A><BR>
+<A href="12-0-registry.htm#head2">■利用例～壁紙</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">レジストリの読み書き手順</A></H2>
+
+<P></P>
+<P>Windows95以降ではドライブにCDやDVDを入れると自動的に起動するオートラン機能が実装されています。これの設定を読み込む例です。</P>
+<DIV class="code"><CODE>
+KEY=<SPAN class="code-string">『HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Cdrom』</SPAN><BR>
+KEYのレジストリ開いてHに代入。<BR>
+Hで<SPAN class="code-string">「AutoRun」</SPAN>をレジストリ整数読む<BR>
+もし、それがオンならば<BR>
+　　<SPAN class="code-string">「自動起動がオンです」</SPAN>と表示<BR>
+違えば<BR>
+　　<SPAN class="code-string">「自動起動はオフです」</SPAN>と表示。<BR>
+Hのレジストリ閉じる<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>いきなりではよくわからないと思いますのでレジストリ操作の基本をみてみましょう。</P>
+<UL>
+  <LI>（１）『レジストリ開く』命令でキーを開いて、操作ハンドルを得る
+  <LI>（２）ハンドルを使ってデータを読み書きする
+  <LI>（３）『レジストリ閉じる』命令で操作ハンドルを閉じる
+</UL>
+
+<P></P>
+<P>と、この手順に従って操作します。</P>
+<P>では、今度はオートランをオフにする例です。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-comment">#&nbsp;オートランをオフにします</SPAN><BR>
+KEY=<SPAN class="code-string">『HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Cdrom』</SPAN><BR>
+KEYのレジストリ開いてHに代入<BR>
+Hで<SPAN class="code-string">「AutoRun」</SPAN>に0をレジストリ整数書く<BR>
+Hのレジストリ閉じる<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head2">利用例～壁紙</A></H2>
+
+<P></P>
+<P>次に壁紙の設定を読んでみます。</P>
+<DIV class="code"><CODE>
+KEY=<SPAN class="code-string">『HKEY_CURRENT_USER\Control&nbsp;Panel\Desktop』</SPAN><BR>
+KEYのレジストリ開いてHに代入<BR>
+Hで<SPAN class="code-string">「Wallpaper」</SPAN>をレジストリ読む<BR>
+それを表示。<BR>
+Hのレジストリ閉じる<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>上のプログラムは壁紙が設定されていれば、壁紙のファイル名を取得して表示するという例です。</P>
+<P>今回はレジストリの読み取りに『レジストリ読む』を使っています。レジストリには、文字列型や、整数型など型があります。</P>
+<P>整数型の場合は『レジストリ整数読む』『レジストリ整数書く』を使って読み書きします。</P>
+<P>今回のように文字列型の場合は『レジストリ書く』『レジストリ読む』を使います。</P>
+<P></P>
+<P></P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

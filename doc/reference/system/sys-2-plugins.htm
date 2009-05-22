@@ -1,0 +1,194 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>プラグインについて</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">プラグインについて</A></H1>
+<DIV class="lead">　なでしこ用のプラグインをplug-insフォルダに入れておくと、なでしこが起動時に自動的にプラグインを読み込み、なでしこに命令や変数・文字列などが追加されます。</DIV>
+<DIV class="index"><A href="sys-2-plugins.htm#head1">■プラグインは何をしている？</A><BR>
+<A href="sys-2-plugins.htm#head2">■プラグインの作り方</A><BR>
+　　<A href="sys-2-plugins.htm#head3">┣procedure&nbsp;ImportNakoFunction;&nbsp;stdcall;</A><BR>
+　　<A href="sys-2-plugins.htm#head4">┣function&nbsp;PluginInfo(str:&nbsp;PChar;&nbsp;len:&nbsp;Integer):&nbsp;Integer;&nbsp;stdcall;</A><BR>
+　　<A href="sys-2-plugins.htm#head5">┣function&nbsp;PluginVersion:&nbsp;DWORD;&nbsp;stdcall;</A><BR>
+　　<A href="sys-2-plugins.htm#head6">┣function&nbsp;PluginRequire:&nbsp;DWORD;&nbsp;stdcall;</A><BR>
+<A href="sys-2-plugins.htm#head7">■プラグイン作成のための補助ユニット</A><BR>
+　　<A href="sys-2-plugins.htm#head8">┣ヘルパーユニット</A><BR>
+<A href="sys-2-plugins.htm#head9">■プラグイン関数を作る方法</A><BR>
+　　<A href="sys-2-plugins.htm#head10">┣前準備</A><BR>
+　　<A href="sys-2-plugins.htm#head11">┣関数の定義</A><BR>
+　　<A href="sys-2-plugins.htm#head12">┣引数の取得</A><BR>
+　　<A href="sys-2-plugins.htm#head13">┣戻り値の処理</A><BR>
+　　<A href="sys-2-plugins.htm#head14">┣システムに関数を登録</A><BR>
+　　<A href="sys-2-plugins.htm#head15">┣コンパイル</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">プラグインは何をしている？</A></H2>
+
+<P></P>
+<P>なでしこは起動時に、実行ファイルと同じフォルダかplug-insフォルダにあるＤＬＬファイルを探します。そして、ＤＬＬファイルがプラグインだと認識したら、プラグイン用の関数をインポートします。</P>
+<H2><A name="head2">プラグインの作り方</A></H2>
+
+<P></P>
+<P>dnako.dllのエクスポート関数を使うことでプラグインが作れます。</P>
+<P>プラグインに必要なのは、以下の４つの関数です。♪ソース～＠＠//&nbsp;プラグイン実行用の関数procedure&nbsp;ImportNakoFunction;&nbsp;stdcall;//&nbsp;プラグインの情報function&nbsp;PluginInfo(str:&nbsp;PChar;&nbsp;len:&nbsp;Integer):&nbsp;Integer;&nbsp;stdcall;//&nbsp;プラグインのバージョンfunction&nbsp;PluginVersion:&nbsp;DWORD;&nbsp;stdcall;//&nbsp;なでしこプラグインバージョンfunction&nbsp;PluginRequire:&nbsp;DWORD;&nbsp;stdcall;＠＠</P>
+<H3><A name="head3">procedure&nbsp;ImportNakoFunction;&nbsp;stdcall;</A></H3>
+
+<P></P>
+<P>なでしこに関数や文字列を追加するための関数で、プラグイン取り込み時に必ず実行されます。この手続きの中でなでしこの命令を定義すると良いでしょう。命令の定義の仕方については後述します。</P>
+<H3><A name="head4">function&nbsp;PluginInfo(str:&nbsp;PChar;&nbsp;len:&nbsp;Integer):&nbsp;Integer;&nbsp;stdcall;</A></H3>
+
+<P></P>
+<P>プラグインの情報を返す関数です。作者情報やプラグインの名前を&nbsp;str&nbsp;へ最大&nbsp;len&nbsp;文字コピーしてください。</P>
+<P>引数の意味</P>
+<DIV class="code"><CODE>
+str&nbsp;　:&nbsp;情報文字列をコピーします。<BR>
+len&nbsp;　:&nbsp;情報文字列取得のために確保されたバッファ長<BR>
+戻り値：情報文字列の長さ<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H3><A name="head5">function&nbsp;PluginVersion:&nbsp;DWORD;&nbsp;stdcall;</A></H3>
+
+<P></P>
+<P>プラグインのバージョン情報を整数で返します。好きな数字を返しても大丈夫です。</P>
+<H3><A name="head6">function&nbsp;PluginRequire:&nbsp;DWORD;&nbsp;stdcall;</A></H3>
+
+<P></P>
+<P>なでしこプラグイン認識バージョンです。今のところ、バージョン1しか定義されていません。1以上の数値が返ってきたらバージョン違いのプラグインとして取り込みません。必ず1を返すように設計してください。</P>
+<H2><A name="head7">プラグイン作成のための補助ユニット</A></H2>
+
+<P></P>
+<P>Delphi用ですが、なでしこのプラグイン作成のためのＳＤＫが、以下のＵＲＬに用意されています。</P>
+<P>開発用プラグインの雛形↓</P>
+<A href="http://nadesi.com/plugin_sdk.zip">→→ＳＤＫのダウンロード</A>
+<P></P>
+<H3><A name="head8">ヘルパーユニット</A></H3>
+
+<P></P>
+<P>なでしこのシステムに関数を登録するには、dnako.dllの関数、nako_addFunction&nbsp;を使いますが、なでしこ本体と同じように命令を登録するユニットを用意しています。上のリンクのプラグインの雛形に含んでいます。</P>
+<TABLE border="1" cellpadding="4" cellspacing="1">
+<TR><TD>ユニット名</TD>
+<TD>&nbsp;役割</TD>
+</TR>
+<TR><TD>dnako_import</TD>
+<TD>&nbsp;dnakoがエクスポートする関数を定義</TD>
+</TR>
+<TR><TD>dnako_import_types.pas</TD>
+<TD>なでしこで利用する型を定義</TD>
+</TR>
+<TR><TD>dll_plugin_helper.pas</TD>
+<TD>&nbsp;プラグインを作るうえで便利な命令を定義</TD>
+</TR>
+</TABLE>
+
+<P></P>
+<P></P>
+<H2><A name="head9">プラグイン関数を作る方法</A></H2>
+
+<P></P>
+<P>ここでは、Delphi&nbsp;でなでしこのプラグインを作る方法を解説します。</P>
+<H3><A name="head10">前準備</A></H3>
+
+<P></P>
+<P>まず、上で入手した、plugin_testが雛形になるのでこれを開きます。そして、別の名前で保存します。</P>
+<H3><A name="head11">関数の定義</A></H3>
+
+<P></P>
+<P>プラグイン用の関数は、コールバック関数として登録しますのである一定の形式にしておかなくてはなりません。以下がその形ですが、この関数から、別の関数を呼べば良いだけのことなので、それほど気にしないでください。</P>
+<DIV class="code"><CODE>
+function&nbsp;TestFunc(HandleArg:&nbsp;DWORD):&nbsp;PHiValue;&nbsp;stdcall;<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>PHiValueというのは聞きなれない名前の型ですが、なでしこでは、この型を標準の型として表します。</P>
+<P>この型から整数を得る場合には、hi_int(PHiValue)とか、文字列の場合は、hi_str(PHiValue)とキャストのようにしてやることで任意の型に変換されたデータを得られます。</P>
+<H3><A name="head12">引数の取得</A></H3>
+
+<P></P>
+<P>なでしこのプログラムから与えられた引数を取得するには以下のようにします。</P>
+<DIV class="code"><CODE>
+function&nbsp;Test(HandleArg:&nbsp;DWORD):&nbsp;PHiValue;&nbsp;stdcall;<BR>
+var<BR>
+&nbsp;&nbsp;arg0,&nbsp;arg1:&nbsp;PHiValue;<BR>
+&nbsp;&nbsp;str:&nbsp;string;<BR>
+begin<BR>
+&nbsp;&nbsp;//&nbsp;引数の取得処理<BR>
+&nbsp;&nbsp;arg0&nbsp;:=&nbsp;nako_getFuncArg(HandleArg,&nbsp;0);&nbsp;//&nbsp;インデックス[0]番の引数を得る<BR>
+&nbsp;&nbsp;arg1&nbsp;:=&nbsp;nako_getFuncArg(HandleArg,&nbsp;1);&nbsp;//&nbsp;インデックス[1]番の引数を得る<BR>
+&nbsp;&nbsp;...<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>『nako_getFuncArg(HandleArg,&nbsp;Index)』と呼ぶことで、なでしこの引数を定義した順番に得ることができます。</P>
+<H3><A name="head13">戻り値の処理</A></H3>
+
+<P></P>
+<P>次に戻り値に関してですが、なでしこの関数は必ず、PHiValue型の戻り値を返すか、Rseult&nbsp;:=&nbsp;nil&nbsp;とヌルをセットします。</P>
+<P>値を返す場合ですが、PHiValue型はポインタ型なので、New(ポインタ型)で作ることもできるのですが、値をうまく初期化してくれないので、以下のように、hi_va_new&nbsp;という特殊な関数を使って生成します。</P>
+<DIV class="code"><CODE>
+Result&nbsp;:=&nbsp;hi_new_var;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;値の生成<BR>
+hi_setInt(Result,&nbsp;50);&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;50をセット<BR>
+hi_setStr(Result,&nbsp;<SPAN class="code-comment">'abc');&nbsp;//&nbsp;'abc'をセット</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>PHiValue型を生成したら、hi_setInt(Result,&nbsp;30)&nbsp;のように値を設定したら戻り値の設定が完了です。</P>
+<P></P>
+<DIV class="code"><CODE>
+//&nbsp;整数をセットする<BR>
+procedure&nbsp;hi_setInt&nbsp;&nbsp;(v:&nbsp;PHiValue;&nbsp;num:&nbsp;Integer);<BR>
+//&nbsp;実数をセットする<BR>
+procedure&nbsp;hi_setFloat(v:&nbsp;PHiValue;&nbsp;num:&nbsp;HFloat);<BR>
+//&nbsp;BOOL型をセットする<BR>
+procedure&nbsp;hi_setBool&nbsp;(v:&nbsp;PHiValue;&nbsp;b:&nbsp;Boolean);<BR>
+//&nbsp;文字列をセットする<BR>
+procedure&nbsp;hi_setStr&nbsp;&nbsp;(v:&nbsp;PHiValue;&nbsp;s:&nbsp;string);<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>配列やハッシュ、グループをセットする場合は、dnakoがエクスポートしている関数を使ってセットします。</P>
+<H3><A name="head14">システムに関数を登録</A></H3>
+
+<P></P>
+<P>さて、せっかく関数を作ってもシステムに登録しなくては意味がありません。</P>
+<P>システムへの登録は、あらかじめ、雛形に用意されているImportNakoFunction&nbsp;の中で行います。以下は、登録例です。</P>
+<DIV class="code"><CODE>
+procedure&nbsp;ImportNakoFunction;&nbsp;stdcall;<BR>
+begin<BR>
+&nbsp;&nbsp;//&nbsp;なでしこシステムに関数を追加<BR>
+&nbsp;&nbsp;AddFunc(<SPAN class="code-comment">'テスト',&nbsp;'Sの',&nbsp;0,&nbsp;TestFunc,&nbsp;'ただ引数を返すだけの簡単な関数',&nbsp;'てすと');</SPAN><BR>
+&nbsp;&nbsp;AddFunc(<SPAN class="code-comment">'テスト発言',&nbsp;'Sと|Sで|SのSを',&nbsp;0,&nbsp;TestSay,&nbsp;'ただ引数を表示する簡単な関数',&nbsp;'てすとはつげん');</SPAN><BR>
+&nbsp;&nbsp;//&nbsp;なでしこシステムに文字列を追加<BR>
+&nbsp;&nbsp;AddStrVar(<SPAN class="code-comment">'テスト文字列',&nbsp;'適当な値',&nbsp;0,&nbsp;'定義する文字列','てすともじれつ');</SPAN><BR>
+&nbsp;&nbsp;//&nbsp;なでしこシステムに整数を追加<BR>
+&nbsp;&nbsp;AddIntVar(<SPAN class="code-comment">'テスト整数',&nbsp;3,&nbsp;0,&nbsp;'定義する整数','てすとせいすう');</SPAN><BR>
+end;<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>AddFunc&nbsp;関数は以下の書式で指定します。</P>
+<DIV class="code"><CODE>
+AddFunc(&nbsp;なでしこ関数名,&nbsp;引数,&nbsp;IDタグ,&nbsp;Delphi関数名,&nbsp;<SPAN class="code-comment">'説明',&nbsp;'よみ')</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>これを正しく作っておくとなでしこのマニュアル自動生成スクリプトを使って、command.txtの形式に自動変換することが可能です。（ちょっと改良が必要ですが...このあたりは今後の課題です。)</P>
+<H3><A name="head15">コンパイル</A></H3>
+
+<P></P>
+<P>コンパイルすると、DLLが生成されますので、これをなでしこのplug-insフォルダに放り込んで完成です。</P>
+<P></P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

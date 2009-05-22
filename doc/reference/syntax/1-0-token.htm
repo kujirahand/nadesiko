@@ -1,0 +1,131 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>単語の切り分けと種類</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">単語の切り分けと種類</A></H1>
+<DIV class="lead">　なでしこは助詞によりプログラムの区切りを見つけます。ここでは単語の切り分け方の規則と種類について説明します。</DIV>
+<DIV class="index"><A href="1-0-token.htm#head1">■単語の切り分け</A><BR>
+<A href="1-0-token.htm#head2">■コメントの種類</A><BR>
+<A href="1-0-token.htm#head3">■文字列</A><BR>
+<A href="1-0-token.htm#head4">■ブロック</A><BR>
+　　<A href="1-0-token.htm#head5">┣ブロックの範囲</A><BR>
+<A href="1-0-token.htm#head6">■ライン（一行）</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">単語の切り分け</A></H2>
+
+<P></P>
+<P>なでしこでは、基本的にある特定の助詞を見つけたところで文を区切ります。例えば「リンゴの値段」とあれば、「リンゴの」と「値段」の２つの単語に切り分けます。</P>
+<P>なでしこに『トークン分割』という命令があるのですが、これを使うと、どのように単語を切り分けているのかを調べることができます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">『<SPAN class="code-string">「おはよう」</SPAN>と言って家を出た』</SPAN>をトークン分割して表示<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>これを実行すると、以下のようになります。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「おはよう」</SPAN>と<BR>
+言って<BR>
+家を<BR>
+出<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>単語を区切る助詞は27個あります。</P>
+<A href="9-1-josi.htm">→助詞の種類</A>
+<P></P>
+<P>最後の「出る」が「出」と省略されるのは、「出よう」と書いても、「出ろ」と書いても同じように実行されるようになっているからで、助詞以外の単語は、送り仮名が省略されます。</P>
+<P>そのため、動詞以外の語句「赤い」も「赤」として判別されます。</P>
+<P></P>
+<H2><A name="head2">コメントの種類</A></H2>
+
+<P></P>
+<P>コメントとはプログラム中で意味の無い注釈文のことです。</P>
+<TABLE border="1" cellpadding="4" cellspacing="1">
+<TR><TD>コメント記号</TD>
+<TD>&nbsp;意味</TD>
+<TD>&nbsp;例</TD>
+</TR>
+<TR><TD>＃</TD>
+<TD>一行コメント</TD>
+<TD>&nbsp;＃注釈文</TD>
+</TR>
+<TR><TD>//</TD>
+<TD>一行コメント</TD>
+<TD>//注釈文</TD>
+</TR>
+<TR><TD>/*&nbsp;...&nbsp;*/</TD>
+<TD>&nbsp;範囲つきコメント</TD>
+<TD>&nbsp;/*&nbsp;注釈文&nbsp;*/</TD>
+</TR>
+</TABLE>
+
+<P></P>
+<P></P>
+<H2><A name="head3">文字列</A></H2>
+
+<P></P>
+<P>文字列の表現は、カギ括弧で括る方法「...」や『...』と、&quot;...&quot;や`...`で括る方法があります。当たり前ですが、文字列の中は、助詞で区切られません！</P>
+<P></P>
+<H2><A name="head4">ブロック</A></H2>
+
+<P></P>
+<P>なでしこでは、構文をブロックの単位で処理します。ブロックはインデント（字下げ）して区別します。</P>
+<P>例えば、「もし～ならば～違えば～」という条件分岐構文では、以下のように、条件が真のときと偽のときに実行される部分をインデントして書きます。</P>
+<DIV class="code"><CODE>
+年齢は１６<BR>
+もし、年齢が２０未満ならば<BR>
+　　<SPAN class="code-comment">＃真のときのブロック</SPAN><BR>
+　　<SPAN class="code-string">「未成年です」</SPAN>と表示<BR>
+違えば<BR>
+　　<SPAN class="code-comment">＃偽のときのブロック</SPAN><BR>
+　　<SPAN class="code-string">「成人です」</SPAN>と表示<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>インデントに使える文字は、スペース「&nbsp;」か全角スペース「　」かタブです。スペースを１と数えると、全角スペースは２、タブは最大４と数えます。</P>
+<H3><A name="head5">ブロックの範囲</A></H3>
+
+<P></P>
+<P>正確なブロックの範囲に関してですが、以下のように構文と同じ行にある文とその続きのインデントされた部分を合わせて１つのブロックとして認識します。</P>
+<DIV class="code"><CODE>
+２回、ｘｘｘｘ<BR>
+　　ｘｘｘｘｘ<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>そのため以下のプログラムを実行すると、「あ」と「い」が２回表示されます。</P>
+<DIV class="code"><CODE>
+２回、<SPAN class="code-string">「あ」</SPAN>と表示。<BR>
+　　<SPAN class="code-string">「い」</SPAN>と表示。　<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>ただし、次の場合は次の行にインデントがないので「あ」だけが２回表示されます。</P>
+<DIV class="code"><CODE>
+２回、<SPAN class="code-string">「あ」</SPAN>と表示<BR>
+<SPAN class="code-string">「い」</SPAN>と表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+<H2><A name="head6">ライン（一行）</A></H2>
+
+<P></P>
+<P>基本的に命令は一行に１つ書きますが、複数の命令をつなげて書くこともできます。</P>
+<P>もし、一行が長くなりすぎたときは、行末に、読点「、」かカンマ「，」を打てば前の行の続きとみなします。</P>
+<P>また、行末に、演算子（＋－×÷＆など）を書いた場合も次の行を前の行の続きとみなします。</P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

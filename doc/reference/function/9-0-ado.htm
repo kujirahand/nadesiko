@@ -1,0 +1,66 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>データベースへの接続について</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">データベースへの接続について</A></H1>
+<DIV class="lead">　ＡＤＯ経由でのデータベースの接続が可能です。</DIV>
+<DIV class="index"><A href="9-0-ado.htm#head1">■一番簡単なＤＢアクセス</A><BR>
+<A href="9-0-ado.htm#head2">■ＤＢ利用の手順</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">一番簡単なＤＢアクセス</A></H2>
+
+<P></P>
+<P>以下はデータベースACCESSに接続して、「顧客」というテーブルを取得してグリッドに表示する例です。</P>
+<DIV class="code"><CODE>
+データグリッドとはグリッド。<BR>
+<BR>
+<SPAN class="code-comment">#&nbsp;データベースから<SPAN class="code-string">「顧客」</SPAN>テーブルを読む</SPAN><BR>
+母艦パス&amp;<SPAN class="code-string">「test.mdb」</SPAN>をACCESS開く。<BR>
+<SPAN class="code-string">「顧客」</SPAN>をDBテーブルCSV取得してデータに代入。<BR>
+ＤＢ閉じる。<BR>
+<BR>
+データグリッドのアイテムは、データ。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head2">ＤＢ利用の手順</A></H2>
+
+<P></P>
+<P>ＤＢの利用は以下の手順で行います。</P>
+<UL>
+  <LI>（１）ＤＢを開く
+  <LI>（２）クエリーの発行
+  <LI>（３）結果の取得
+  <LI>（４）ＤＢを閉じる
+</UL>
+
+<P></P>
+<P>一番初めのサンプルでは、『ＤＢテーブルＣＳＶ取得』という命令が２と３の手順を同時に行うため、プログラムが単順になっています。</P>
+<P>以下は『ＳＱＬ実行』命令でＳＱＬ文を実行して結果を取得してその結果を表示します。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-comment">#&nbsp;（１）データベースを開く</SPAN><BR>
+母艦パス&amp;<SPAN class="code-string">「test.mdb」</SPAN>をACCESS開く。<BR>
+<BR>
+<SPAN class="code-comment">#&nbsp;（２）<SPAN class="code-string">「顧客」</SPAN>テーブルで<SPAN class="code-string">「%くん」</SPAN>を含むものを検索</SPAN><BR>
+<SPAN class="code-string">「SELECT&nbsp;*&nbsp;FROM&nbsp;顧客&nbsp;WHERE&nbsp;名前&nbsp;LIKE&nbsp;&quot;%くん&quot;」</SPAN>をＳＱＬ実行<BR>
+<BR>
+<SPAN class="code-comment">#&nbsp;（３）検索結果を全部一度に取得</SPAN><BR>
+ＤＢ結果全部取得して表示<BR>
+<BR>
+<SPAN class="code-comment">#&nbsp;（４）閉じる</SPAN><BR>
+ＤＢ閉じる。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

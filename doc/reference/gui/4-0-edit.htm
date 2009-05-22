@@ -1,0 +1,65 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>エディタ</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">エディタ</A></H1>
+<DIV class="lead">　エディタには文字を入力することができます。エディタ系の部品には「エディタ」「メモ」「Tエディタ」「スピンエディタ」があります。</DIV>
+<DIV class="index"><A href="4-0-edit.htm#head1">■エディタの使い方</A><BR>
+<A href="4-0-edit.htm#head2">■エディタのイベント</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">エディタの使い方</A></H2>
+
+<P></P>
+<P>エディタを作るのもボタンなどと同じように「ｘｘとはエディタ」と宣言します。</P>
+<DIV class="code"><CODE>
+テストエディタとはエディタ。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>「エディタ」は一行入力専門のエディタです。「メモ」は複数行入力できる簡易エディタです。「Tエディタ」は本格的なテキストエディタです。「スピンエディタ」は数値入力に便利なエディタです。</P>
+<P>それぞれ、「エディタのテキスト」を利用することで値を設定取得することができます。</P>
+<DIV class="code"><CODE>
+テストエディタとはエディタ。<BR>
+テストエディタのテキストは<SPAN class="code-string">「あいうえお」</SPAN><BR>
+テストエディタのテキストを言う。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>テキストは省略可能な項目なので、名前だけ書くことでアクセスすることもできます。</P>
+<DIV class="code"><CODE>
+テストエディタとはエディタ。<BR>
+テストエディタは<SPAN class="code-string">「あいうえお」</SPAN><BR>
+テストエディタを言う。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head2">エディタのイベント</A></H2>
+
+<P></P>
+<P>エディタには「クリックした時」「ダブルクリックした時」「変更した時」のイベントがあります。</P>
+<P>特に「変更した時」は、エディタに何か文字を入力したときに発生するイベントなのでよく使います。</P>
+<P>以下はインチ→センチの変換を行うプログラムです。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「インチ」</SPAN>と表示<BR>
+インチとはスピンエディタ<BR>
+<SPAN class="code-string">「センチ」</SPAN>と表示<BR>
+センチとはスピンエディタ<BR>
+<BR>
+センチを変更した時は～インチはセンチ÷2.54<BR>
+インチを変更した時は～センチはインチ×2.54<BR>
+
+</CODE></DIV>
+
+<P></P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

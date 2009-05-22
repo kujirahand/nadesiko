@@ -1,0 +1,262 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META name="keyword" content="プログラミング言語, なでしこ, 定型処理, バッチ処理, 教育">
+<META name="description" content="なでしこは日本語で簡単にプログラミングができる簡単ツールです。">
+<META name="GENERATOR" content="IBM WebSphere Homepage Builder V6.0.1 for Windows">
+<TITLE>定型処理編</TITLE>
+<LINK rel="stylesheet" href="../nako_man.css" type="text/css">
+</HEAD>
+<BODY text="#4d4d4d" link="#000099" vlink="#582c56" alink="#cc00cc">
+<CENTER>
+<TABLE border="0" width="780" cellpadding="0" cellspacing="0">
+  <TBODY>
+    <TR>
+      <TD align="right"><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">定型処理編</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="../index.htm"><IMG src="../../logo_nadesiko_title.gif" width="293" height="76" border="0" alt="なでしこ"></A></TD>
+    </TR>
+    <TR>
+      <TD><IMG src="../../line.gif" width="780" height="8" border="0"></TD>
+    </TR>
+    <TR>
+      <TD>
+      <TABLE border="0" width="780" cellpadding="4" cellspacing="0">
+        <TBODY>
+          <TR>
+            <TD width="142"><IMG src="../../about/dmy.gif" width="8" height="8" border="0"></TD>
+            <TD width="142"></TD>
+            <TD width="322"></TD>
+            <TD width="142"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">定型処理編～文章整形の基本</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" align="center"><IMG src="teikei-title.gif" width="300" height="200" border="0"></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">文字列の置換から</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"><BR>
+            上司</TD>
+            <TD>　まず、文字列処理の基本の置換処理から見ていきましょう。まずは、文字列Sの内容を置換して画面に表示してみます。</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD class="code">Sは<FONT color="#663333">「猫がにゃ～にゃ～と鳴きました。」</FONT><BR>
+            Sの<FONT color="#663333">「にゃ～」</FONT>を<FONT color="#663333">「ごろごろ」</FONT>に<B>置換</B><BR>
+それを表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>『置換』命令というのは文字列整形で一番よく使う命令です。何を何に変えるのかを指定して置換します。置換した結果は特殊な変数『それ』に入ります。次に連続して２つの置換をやってみます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD class="code">それは<FONT color="#663333">「猫がにゃ～にゃ～と鳴きました。」</FONT><BR>
+            <FONT color="#663333">「猫」</FONT>を<FONT color="#663333">「犬」</FONT>に<B>置換</B><BR>
+            <FONT color="#663333">「にゃ～」</FONT>を<FONT color="#663333">「ワン」</FONT>に<B>置換</B><BR>
+            表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>どうでしょうか。今度は、『置換』命令の第一引数を省略して書いてみました。置換命令の説明を見ると以下のようになってます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD class="menuG">【命令】置換 <BR>
+            【引数】{文字列=?}SのAをBに|SでAからBへ<BR>
+            【解説】文字列SにあるAを全てBに置換して返す。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>引数に注目してみましょう。引数の定義は『{文字列=?}SのAをBに|SでAからBへ』です。このうち『<B>{=?}S</B>』というのがポイントです。{=?}というのは、その引数を省略しても良いということです。もし、省略をすると、変数『それ』の値が補完されます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">置換した文字をコピー</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"></TD>
+            <TD>さて、置換が終わったら置換後の文字列を、クリップボードにコピーしてみましょう。クリップボードにコピーしておけば、WordやExcelやメモ帳やメールソフトなどのメニューから[編集
+            - 貼り付ける]で貼り付けることができるのです。</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">それは<FONT color="#663333">「猫がにゃ～にゃ～と鳴きました。」</FONT><BR>
+            <FONT color="#663333">「猫」</FONT>を<FONT color="#663333">「犬」</FONT>に<B>置換</B><BR>
+            <FONT color="#663333">「にゃ～」</FONT>を<FONT color="#663333">「ワン」</FONT>に<B>置換</B><BR>
+            <FONT color="#663333">「鳴き」</FONT>を<FONT color="#663333">「歌い」</FONT>に<B>置換</B><BR>
+            それを<B>コピー</B>。<BR>
+            それを表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>これを実行すると、クリップボードに『犬がワンワンと歌いました。』という文字列がコピーされます。『コピー』というのがクリップボードへコピーする命令です。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">結果を確認してからコピーする方法</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center"><IMG src="buka.gif" width="90" height="90" border="0"></TD>
+            <TD>文字列を連続して置換できて便利なのは分かりました。結果を確認してからコピーする方法はありますか？</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center" valign="top"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>そうですね。<BR>
+            以下のプログラムを見てください。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD class="code">それは「猫がにゃ～にゃ～と鳴きました。」<BR>
+「猫」を「犬」に置換<BR>
+「にゃ～」を「ワン」に置換<BR>
+            それを<B>言う</B>。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="buka.gif" width="90" height="90" border="0"></TD>
+            <TD>これを実行するとダイアログに『犬がワンワンと鳴きました。』と表示されるだけです。どうやってコピーするんですか？</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>実は『言う』で表示した<B>ダイアログの文字の上で右クリック</B>してください。すると、メッセージをコピーするというメニューが出てきます。そこで結果を確認してコピーすることができるのです。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">ファイルから読んで置換してファイルへ保存する技</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>さて、今度はファイルを読んで置換して保存するというプログラムを作ってみます。以下のプログラムを実行すると、「test.txt」というファイルの内容を読んで文字列を置換して、置換した内容を「test.txt」へ保存します。例えばテキストに書かれているメールアドレスを変更してみます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD class="code">ファイル名は「test.txt」<BR>
+            ファイル名を<B>開く</B>。<BR>
+            「bb@nadesi.com」を「aa@nadesi.com」に<B>置換</B><BR>
+            ファイル名へ<B>保存</B>。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>上のプログラムと反復命令を組み合わせることで、フォルダ内のファイル全部を置換することができます。これには、『ファイル列挙』命令と組み合わせます。以下は拡張子が「.txt」のファイルを列挙してそれのメールアドレスを置換する例です。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD class="code">「*.txt」の<B>ファイル列挙</B><BR>
+            それを<B>反復</B><BR>
+            　　ファイル名はそれ。<BR>
+            　　ファイル名を<B>開く</B>。<BR>
+            　　「bb@nadesi.com」を「aa@nadesi.com」に<B>置換</B><BR>
+            　　ファイル名へ<B>保存</B>。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="buka.gif" width="90" height="90" border="0"></TD>
+            <TD>上のプログラムは便利だけどいきなり実行すると間違った置換して保存される心配がありそうだわ。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="jousi.gif" width="90" height="90" border="0"></TD>
+            <TD>そうだね。まずはいきなり保存せず以下のプログラムのように、まず、実行結果を『言う』で確認して問題がなかったら、『保存』に置き換えるといいですね。あと、『ファイル名はそれ』と書かなくても『対象』を使えばもっとプログラムが短くなりますよ。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">「*.txt」の<B>ファイル列挙</B><BR>
+            それを<B>反復</B><BR>
+            　　対象を<B>開く</B>。<BR>
+            　　「bb@nadesi.com」を「aa@nadesi.com」に<B>置換</B><BR>
+            　　<B>言う</B><FONT color="#006633">＃対象へ<B>保存</B>。</FONT></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>対象に関する説明は<A href="../start/09-1-each.htm">こちら</A></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD>＞</TD>
+            <TD></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">
+            <HR>
+            次のページ<A href="01-2-str_conv.htm">→文字列の整形</A><BR>
+            前のページ<A href="index.htm">←定型処理目次</A>
+            <HR>
+            </TD>
+            <TD></TD>
+          </TR>
+        </TBODY>
+      </TABLE>
+      </TD>
+    </TR>
+    <TR>
+      <TD><A href="http://nadesi.com/">なでしこWEB &gt; </A><A href="../index.htm">マニュアル</A><A href="http://nadesi.com/"> &gt; </A><A href="index.htm">定型処理編</A></TD>
+    </TR>
+  </TBODY>
+</TABLE>
+</CENTER>
+<CENTER></CENTER>
+<CENTER></CENTER>
+</BODY>
+</HTML>

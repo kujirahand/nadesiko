@@ -1,0 +1,87 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>INIファイルの読み書き</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">INIファイルの読み書き</A></H1>
+<DIV class="lead">INIファイルとはWINDOWS&nbsp;95/98/MEのころ、WINDOWSの設定やデータを保存しておくのに利用したファイル形式です。現在ではWINDWOSの設定はレジストリに保存されていますが、オンラインソフトなど小規模なソフトでは今でも、INIファイルへデータが保存されることが多いようです。</DIV>
+<DIV class="index"><A href="12-1-ini.htm#head1">■INIファイル読み書きの基本</A><BR>
+<A href="12-1-ini.htm#head2">■読み書き例</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">INIファイル読み書きの基本</A></H2>
+
+<P></P>
+<P>INIファイルは以下の手順で操作します。</P>
+<UL>
+  <LI>（１）「INI開く」命令でINIファイルを開いてハンドルを得る
+  <LI>（２）ハンドルを用いて読み書きする
+  <LI>（３）「INI閉じる」命令でINIファイルのハンドルを閉じる
+</UL>
+
+<P></P>
+<P>以下は、デスクトップにINIファイルを作って、テストというデータを保存しています。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「{デスクトップ}test.ini」</SPAN>のINI開いてHに代入。<BR>
+Hで<SPAN class="code-string">「セッション」</SPAN>の<SPAN class="code-string">「キー1」</SPAN>に<SPAN class="code-string">「テスト1」</SPAN>をINI書く<BR>
+Hで<SPAN class="code-string">「セッション」</SPAN>の<SPAN class="code-string">「キー2」</SPAN>に<SPAN class="code-string">「テスト2」</SPAN>をINI書く<BR>
+HのINI閉じる<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>これを実行するとINIファイルには以下のようにデータが書き込まれます。</P>
+<DIV class="code"><CODE>
+[セッション]<BR>
+キー1=テスト1<BR>
+キー2=テスト2<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>つまり、INIファイルは、大きくセッションに分かれていてセッションの中にキーがあり、そのキーに値を読み書きできるようになっているのです。</P>
+<DIV class="code"><CODE>
+[セッション1]<BR>
+キー1=xxx<BR>
+キー2=xxx<BR>
+<BR>
+[セッション2]<BR>
+キー1=xxx<BR>
+キー2=xxx<BR>
+<BR>
+[セッション3]<BR>
+キー1=xxx<BR>
+キー2=xxx<BR>
+...<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head2">読み書き例</A></H2>
+
+<P></P>
+<P>以下は前半でINIファイルへデータを書き込んで、後半でそのデータを読み込む例です。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-comment">#&nbsp;INIファイル保存例</SPAN><BR>
+<SPAN class="code-string">「{デスクトップ}test.ini」</SPAN>のINI開いてHに代入。<BR>
+Hで<SPAN class="code-string">「子供」</SPAN>の<SPAN class="code-string">「名前」</SPAN>に<SPAN class="code-string">「太郎」</SPAN>をINI書く<BR>
+Hで<SPAN class="code-string">「子供」</SPAN>の<SPAN class="code-string">「趣味」</SPAN>に<SPAN class="code-string">「読書」</SPAN>をINI書く<BR>
+HのINI閉じる<BR>
+<BR>
+<SPAN class="code-comment">#&nbsp;INIファイル読み込み例</SPAN><BR>
+<SPAN class="code-string">「{デスクトップ}test.ini」</SPAN>のINI開いてHに代入。<BR>
+Hで<SPAN class="code-string">「子供」</SPAN>の<SPAN class="code-string">「名前」</SPAN>をINI読んで表示。<BR>
+Hで<SPAN class="code-string">「子供」</SPAN>の<SPAN class="code-string">「趣味」</SPAN>をINI読んで表示。<BR>
+HのINI閉じる<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>画面に「太郎」と「読書」と表示されるはずです。</P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

@@ -1,0 +1,304 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META name="keyword" content="プログラミング言語, なでしこ, 定型処理, バッチ処理, 教育">
+<META name="description" content="なでしこは日本語で簡単にプログラミングができる簡単ツールです。">
+<META name="GENERATOR" content="IBM WebSphere Homepage Builder V6.0.1 for Windows">
+<TITLE>プログラミング基礎編</TITLE>
+<LINK rel="stylesheet" href="../nako_man.css" type="text/css">
+</HEAD>
+<BODY text="#4d4d4d" link="#000099" vlink="#582c56" alink="#cc00cc">
+<CENTER>
+<TABLE border="0" width="780" cellpadding="0" cellspacing="0">
+  <TBODY>
+    <TR>
+      <TD align="right"><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="../index.htm"><IMG src="../logo_nadesiko_title.gif" width="293" height="76" border="0" alt="なでしこ"></A></TD>
+    </TR>
+    <TR>
+      <TD><IMG src="../line.gif" width="780" height="8" border="0"></TD>
+    </TR>
+    <TR>
+      <TD>
+      <TABLE border="0" width="780" cellpadding="4" cellspacing="0">
+        <TBODY>
+          <TR>
+            <TD width="142"><IMG src="../about/dmy.gif" width="8" height="8" border="0"></TD>
+            <TD width="142"></TD>
+            <TD width="322"></TD>
+            <TD width="142"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">プログラミング基礎編～変数を使う</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" align="center"><IMG src="kiso-title.gif" width="300" height="200" border="0"></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">変数を使う</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>今度は『変数』というものを使います。変数というのは、数字や文章を一時的に記憶しておく箱のようなものです。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>変数を使うと、数字や文章を分かりやすく置き換えることができます。以下のプログラムは、『リンゴ』という変数に１００を記憶しています。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">リンゴは１００。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>一度変数に記憶した数値は表示したり計算したりするのに利用することができます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">リンゴは１００。<BR>
+            リンゴを表示。<BR>
+            リンゴ×２を表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>上のプログラムを実行すると、１００と２００が表示されます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">変数は計算を分かりやすく見せる</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>まだ、変数が一体ナンなのか分からないと思いますが、使っているうちに分かるものです。気にせず読み進めてくださいね。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>変数を使うと計算式がとても見やすくなるんです。以下の例を見てください。上が変数を使わない計算。下が変数を使った計算です。どちらが分かりやすいですか？</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code"><B>＃変数を使わない例</B><BR>
+（300×５＋２５０×４）×1.05を表示<BR>
+<BR>
+            <B>＃変数を使う例</B><BR>
+リンゴの値段は300円<BR>
+リンゴの個数は5個<BR>
+ミカンの値段は250円<BR>
+ミカンの個数は4個<BR>
+            消費税率は1.05<BR>
+            <BR>
+（リンゴの値段×リンゴの個数＋<BR>
+ミカンの値段×ミカンの個数）×消費税率を表示。<BR>
+            </TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="seito.gif" width="90" height="82" border="0"></TD>
+            <TD>計算式としてシンプルなのは上の方なんですが、変数を使うと、数字がいったい何を表しているのか分かりますね。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>そうなんです。<BR>
+            もし、上の計算式だけあって、『リンゴをもう一つ余分に欲しいわ』などとおばちゃんに言われても、どれがリンゴの個数なのか分からないんです。その点、変数を使った計算では、リンゴが１つ増えたり、ミカンの値段が値上がりしても、すぐに修正ができます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">変数を使うと毎回違う結果を表示できる！</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>次に変数を使わないと作れないプログラムを見ましょう。下のプログラムを実行すると「リンゴの個数はいくつですか？」と尋ねれられます。例えば５を入力すると、３００円のリンゴ５個分の値段を表示します。もし、３を入力すれば、９００が表示されます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">リンゴの値段は３００円。<BR>
+「リンゴの個数はいくつですか」と尋ねる。<BR>
+            それ×リンゴの値段を表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>『<B>「ｘｘｘ」と尋ねる</B>』と書くと、入力ダイアログが表示されて数値や文字を入力することができます。ユーザーが入力した値は、『それ』という特殊な変数に返されます。そこで、『それ』に値段をかけて表示すると正しく答えが表示されるのです。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">数字と文字を組み合わせて表示する方法</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>さて、上のプログラムでは、３を入力すると、900が、５を入力すると、1500が表示されましたが、数字の後に「円」をつけて、「1500円」と表示したい場合はどうしたら良いのでしょうか？</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>なでしこでは、文章の中に変数を埋め込んで表示するための仕組みが用意されています。下のプログラムを実行してみてください。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">値段は300<BR>
+            <B>「値段は{値段}円です。」</B>を表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>これを実行すると、「値段は３００円です。」と表示されます。これは、どういうことなのかと言えば、カッコ「...」の中で、波カッコで　{変数名}　と、書いてあれば、変数の内容をその部分に表示するという意味になるのです。これだけ分かれば、先のプログラムを改造することができますね。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">リンゴの値段は３００円。<BR>
+「リンゴの個数はいくつですか」と尋ねる。<BR>
+            支払額はリンゴの値段×それ<BR>
+            <B>「支払い金額は、｛支払額｝円です。」</B>を表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>これを実行して、５を入力すれば、『支払い金額は、1500円です』と表示されます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">肥満度チェックをしてみよう！</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>ここで、ちょっと応用問題をやってみましょう。<BR>
+            BMI法という肥満判定の公式があります。これは『標準体重＝２２×身長(m)×身長(m)』という式で、体重の目安を調べるものです。<BR>
+            身長を入力してもらい、標準体重がいくらなのかを表示するプログラムを作ってみましょう。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">「身長は何センチですか」と尋ねる。<BR>
+身長Mはそれ÷100<BR>
+標準体重は２２×身長M×身長M<BR>
+            <B>「標準体重は、｛標準体重｝kgです。」</B>と表示。<BR>
+</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>例えば、１７０を入力すると、「標準体重は、63.58ｋｇです。」と表示されます。・・・これは、まぁ、あくまでも、標準ということですので、その結果に一喜一憂しなくてもいいかと思いますが。。。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">歩いた歩数と消費カロリーをチェック</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>さて、肥満チェックをしたら、ついでに一日何歩歩いて、何カロリー消費したのかを確認してみましょう。昔から、一日一万歩歩くと、健康になると言われていますが、万歩計でも買わないと歩いている歩数なんか分かりません。そこで、体重60kgの人の場合、1分間100歩のペースで歩くと約3.3kcalを消費するというデータから、歩いた歩数と消費カロリーを算出してみましょう。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">「何分歩きましたか？」と尋ねる。<BR>
+歩いた分数はそれ。<BR>
+歩数は１００×歩いた分数。<BR>
+カロリーは、3.3×歩いた分数<BR>
+            <B>「｛歩数｝歩、歩きました。<BR>
+            消費カロリーは｛カロリー｝kcalです」</B>と表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">コメントについて</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>プログラムにちょっとした注釈や解説を書いておきたいことがあります。変数を使ったときに、この変数がどういう変数かメモしておきたい場合もあります。そんなときは以下のように『＃メモ内容』と書きます。すると『＃』以降の文字をコメントとして実行しないようになっています。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">＃このプログラムは<BR>
+            ＃全部コメントなので<BR>
+            ＃何もしません。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>上のプログラムは全部の行がコメントなので、実行しても、真っ白い画面が表示されるだけで何も実行されません！</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">
+            <HR>
+            次のページ<A href="04-1-if.htm">→条件分岐</A><BR>
+            前のページ<A href="02-1-calc.htm">←計算機の代わりに使う</A>
+            <HR>
+            </TD>
+            <TD></TD>
+          </TR>
+        </TBODY>
+      </TABLE>
+      </TD>
+    </TR>
+    <TR>
+      <TD><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+  </TBODY>
+</TABLE>
+</CENTER>
+<CENTER></CENTER>
+<CENTER></CENTER>
+</BODY>
+</HTML>

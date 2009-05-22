@@ -1,0 +1,180 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>文字列</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">文字列</A></H1>
+<DIV class="lead">　なでしこの文字列は展開ありと展開なしの２種類があり、展開ありの文字列では文字列の中に変数を埋め込むことができます。　また配列変数としてアクセスすることにより、文字列の特定の行を簡単に抜き出すことができます。</DIV>
+<DIV class="index"><A href="1-2-str.htm#head1">■文字列の指定</A><BR>
+<A href="1-2-str.htm#head2">■展開について</A><BR>
+<A href="1-2-str.htm#head3">■改行などの特殊記号は、以下のように表す&nbsp;</A><BR>
+<A href="1-2-str.htm#head4">■連続した特殊記号</A><BR>
+<A href="1-2-str.htm#head5">■アスキーコードの埋め込みについて</A><BR>
+<A href="1-2-str.htm#head6">■文字列中で「」や｛｝を表示する方法</A><BR>
+<A href="1-2-str.htm#head7">■配列としてアクセス</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">文字列の指定</A></H2>
+
+<P></P>
+<P>　文字列を表すには、以下の４つの記号が使えます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「あいうえおかきくけこ」</SPAN><SPAN class="code-comment">＃展開あり</SPAN><BR>
+<SPAN class="code-string">『あいうえおかきくけこ』</SPAN><SPAN class="code-comment">＃展開なし</SPAN><BR>
+&quot;あいうえおかきくけこ&quot;　<SPAN class="code-comment">＃展開あり</SPAN><BR>
+`あいうえおかきくけこ`　<SPAN class="code-comment">＃展開なし</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head2">展開について</A></H2>
+
+<P></P>
+<P>　文字列中で、「｛変数｝」のように、｛｝の中に式を書くと、｛｝の中が評価され展開されます。</P>
+<DIV class="code"><CODE>
+名前は<SPAN class="code-string">「くじら」</SPAN><BR>
+<SPAN class="code-string">「私は、｛名前｝です。」</SPAN>と言う。<BR>
+<SPAN class="code-comment">#&nbsp;↑<SPAN class="code-string">「私は、くじらです。」</SPAN>という結果を返す</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「さいころの目は...｛1+6の乱数｝です。」</SPAN>と言う。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>※ひまわり１では、『￥』の記号をシーケンスとして展開していましたが、パスの区切りなど面倒なことが多かったので、展開できるのは、｛｝だけとしました。</P>
+<P></P>
+<H2><A name="head3">改行などの特殊記号は、以下のように表す&nbsp;</A></H2>
+
+<P></P>
+<TABLE border="1" cellpadding="4" cellspacing="1">
+<TR><TD>記号</TD>
+<TD>意味&nbsp;</TD>
+</TR>
+<TR><TD>｛改行｝</TD>
+<TD>改行&nbsp;</TD>
+</TR>
+<TR><TD>｛タブ｝</TD>
+<TD>タブ&nbsp;</TD>
+</TR>
+<TR><TD>｛～｝&nbsp;</TD>
+<TD>改行&nbsp;</TD>
+</TR>
+<TR><TD>｛＞｝&nbsp;</TD>
+<TD>タブ&nbsp;</TD>
+</TR>
+<TR><TD>｛[｝</TD>
+<TD>&nbsp;「</TD>
+</TR>
+<TR><TD>｛]｝</TD>
+<TD>」&nbsp;</TD>
+</TR>
+<TR><TD>｛カッコ｝</TD>
+<TD>&nbsp;「</TD>
+</TR>
+<TR><TD>｛カッコ閉じ｝</TD>
+<TD>」&nbsp;</TD>
+</TR>
+<TR><TD>｛波カッコ｝</TD>
+<TD>｛</TD>
+</TR>
+<TR><TD>｛波カッコ閉じ｝</TD>
+<TD>｝</TD>
+</TR>
+<TR><TD>｛二重カッコ｝</TD>
+<TD>『</TD>
+</TR>
+<TR><TD>｛二重カッコ閉じ｝</TD>
+<TD>』</TD>
+</TR>
+<TR><TD>｛￥ｎ｝</TD>
+<TD>改行&nbsp;</TD>
+</TR>
+<TR><TD>｛￥ｔ｝</TD>
+<TD>タブ&nbsp;</TD>
+</TR>
+<TR><TD>｛￥ｓ｝</TD>
+<TD>スペース&nbsp;</TD>
+</TR>
+<TR><TD>｛￥０｝</TD>
+<TD>ヌル文字&nbsp;=&nbsp;chr(0)&nbsp;</TD>
+</TR>
+<TR><TD>｛￥(数値)&nbsp;&nbsp;(数値)&nbsp;&nbsp;(数値)&nbsp;...｝</TD>
+<TD>アスキーコードの直接埋め込み</TD>
+</TR>
+<TR><TD>｛￥(文字)｝</TD>
+<TD>(文字)&nbsp;文字の表示</TD>
+</TR>
+</TABLE>
+
+<P></P>
+<H2><A name="head4">連続した特殊記号</A></H2>
+
+<P></P>
+<P>特殊記号が連続する場合は、カンマやスペースで区切って、｛...｝と波カッコの中に特殊記号を複数記述することにより、連続した特殊記号を記述できます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「aa{\13,10}aa」</SPAN>と表示。<SPAN class="code-comment">#&nbsp;aa&nbsp;{改行}&nbsp;aa</SPAN><BR>
+<SPAN class="code-string">「aa{&gt;&gt;～}aa」</SPAN>と表示。<SPAN class="code-comment">#&nbsp;aa&nbsp;{タブ}{タブ}{改行}&nbsp;aa</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head5">アスキーコードの埋め込みについて</A></H2>
+
+<P></P>
+<P>　「あ｛改行｝｛タブ｝あ」は、「あ｛\13,10,9｝あ」や、「あ{\n\t}あ」や、「あ｛～＞｝あ」と書いても同じ意味です。&nbsp;</P>
+<P>　また、アスキーコードを１６進表記したい場合は、「あ｛\$D,$A｝あ」と、＄をつけます。&nbsp;</P>
+<P>　それから、漢字コードを直接指定することもできます。先ほどのコードも「あ｛\$0D0A｝あ」と書くこともできますが、MaxInt(2147483647)&nbsp;を超える数値を指定するとオーバーフローのエラーが起き失敗します。&nbsp;</P>
+<H2><A name="head6">文字列中で「」や｛｝を表示する方法</A></H2>
+
+<P></P>
+<P></P>
+<P>　その場合は、以下のように｛カッコ｝、｛カッコ閉じ｝と書くか、｛[｝、｛]｝と書きます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「子曰はく｛カッコ｝学びて時に之を習ふ…｛カッコ閉じ｝」</SPAN>と表示。<BR>
+<SPAN class="code-string">「子曰はく｛[｝学びて時に之を習ふ…｛]｝」</SPAN>と表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>　また、波カッコ｛...｝を表示したい時も、｛波カッコ｝、｛波カッコ閉じ｝と書きます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「{波カッコ}abcd{波カッコ閉じ}」</SPAN>と表示。<SPAN class="code-comment">＃&nbsp;表示結果→{abcd}</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>ほかに、波カッコは、｛￥（文字）｝の機能を使って以下のように書くこともできます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「{\{}abcd{\}}」</SPAN>と表示。<SPAN class="code-comment">＃&nbsp;表示結果→{abcd}</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+<H2><A name="head7">配列としてアクセス</A></H2>
+
+<P></P>
+<P>　文字列を配列としてアクセスすることにより、文字列の任意の行を抜き出すことができます。</P>
+<DIV class="code"><CODE>
+あは「あああああ<BR>
+いいいいい<BR>
+ううううう」<BR>
+<BR>
+あ[2]を言う。&nbsp;<SPAN class="code-comment">#&nbsp;<SPAN class="code-string">「ううううう」</SPAN>が表示される</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>　配列は０からはじまりますので、上のプログラムで、あ[2]と書くと文字列の３行目を取り出します。</P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

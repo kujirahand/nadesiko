@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META name="keyword" content="プログラミング言語, なでしこ, 定型処理, バッチ処理, 教育">
+<META name="description" content="なでしこは日本語で簡単にプログラミングができる簡単ツールです。">
+<META name="GENERATOR" content="IBM WebSphere Homepage Builder V6.0.1 for Windows">
+<TITLE>ゲーム製作編</TITLE>
+<LINK rel="stylesheet" href="../nako_man.css" type="text/css">
+</HEAD>
+<BODY text="#4d4d4d" link="#000099" vlink="#582c56" alink="#cc00cc">
+<CENTER>
+<TABLE border="0" width="780" cellpadding="0" cellspacing="0">
+  <TBODY>
+    <TR>
+      <TD align="right"><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">ゲーム製作編</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="../index.htm"><IMG src="../logo_nadesiko_title.gif" width="293" height="76" border="0" alt="なでしこ"></A></TD>
+    </TR>
+    <TR>
+      <TD><IMG src="../line.gif" width="780" height="8" border="0"></TD>
+    </TR>
+    <TR>
+      <TD>
+      <TABLE border="0" width="780" cellpadding="4" cellspacing="0">
+        <TBODY>
+          <TR>
+            <TD width="142"><IMG src="../about/dmy.gif" width="8" height="8" border="0"></TD>
+            <TD width="142"></TD>
+            <TD width="322"></TD>
+            <TD width="142"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">ゲーム製作編～クイズゲーム</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" align="center"><IMG src="game-title.gif" width="300" height="200" border="0"></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">クイズを作ろう！</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center"><IMG src="usagi.gif" width="100" height="100" border="0"></TD>
+            <TD>次は簡単なクイズゲームを作ろう！今回使う命令は、『ボタン選択』だ。これを使えば、選択肢のボタンを手軽に表示することができるからね！<BR>
+            さっそく作ってみるよ。</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code"><FONT color="#3366ff">「古典『源氏物語』の作者は誰？」</FONT>を、<BR>
+            <FONT color="#3366ff">「清少納言<BR>
+            平清盛<BR>
+            紫式部<BR>
+            夏目漱石」</FONT>の<B>ボタン選択</B>。<BR>
+            もし、<B>それ</B>が「紫式部」ならば<BR>
+　　「当たり！」と言う<BR>
+違えば<BR>
+　　「はずれ。紫式部でした」と言う<BR>
+ここまで<BR>
+</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" align="center">実行結果：<BR>
+            <IMG src="btn_sel.png" width="338" height="87" border="0"></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="ufo.gif" width="100" height="100" border="0"></TD>
+            <TD>なるほど。だいたい分かったよ。<BR>
+            ---<BR>
+            「メッセージ」を、<BR>
+            「選択肢１<BR>
+            選択肢２<BR>
+            選択肢３<BR>
+            ・・・」のボタン選択。<BR>
+            ---<BR>
+            って感じで使うんだね？</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="usagi.gif" width="100" height="100" border="0"></TD>
+            <TD>そうそう。<BR>
+            それで、ユーザーが選択したボタンのラベルが変数『それ』に戻ってくるんだ。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">クイズをデータとプログラムに分けよう！</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="usagi.gif" width="100" height="100" border="0"></TD>
+            <TD>上のプログラムをどんどんコピーしていけば、適当にクイズが作れるんだけど、それじゃ、いつも同じ順番にクイズが出題されるし、プログラムを書くのが面倒だ。そこで、クイズの出題プログラムと、データファイルの２つにプログラムを分離させよう。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="ufo.gif" width="100" height="100" border="0"></TD>
+            <TD>なるほど！そうすれば、いろんな種類のクイズデータを作って、クイズ・漫画編とか、クイズ・推理編とか、データファイルを入れ替えるだけで、違ったシリーズのクイズゲームになると。一石二鳥だね。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">データファイルの形式を考える</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="usagi.gif" width="100" height="100" border="0"></TD>
+            <TD>データファイルの形式は、ＣＳＶ形式にしよう。<BR>
+            なでしこはＣＳＶファイルの扱いが得意だからね。<BR>
+            じゃぁ、以下のクイズデータを、『クイズデータ.csv』という名前で保存しよう。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code">クイズデータ.csv<BR>
+            ---ここから---<BR>古典『源氏物語』の作者は？,光源氏,紫式部,清少納言,紫式部<BR>
+鎌倉幕府を開いたのは？,源頼朝,織田信長,弁慶,源頼朝<BR>
+平安京が作られたのは何年？,710年,794年,1192年,794年<BR>
+清少納言が書いたのはどれ？,枕草子,古事記,更級日記,枕草子<BR>
+            ---ここまで---</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="ufo.gif" width="100" height="100" border="0"></TD>
+            <TD>このＣＳＶデータは以下の順に並んでいるね。<BR>
+            『問題,選択肢１,選択肢2,選択肢3,答え』<BR>
+            これを問題のプログラムと同じフォルダに保存するよ。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">データを読んで出題するプログラム</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="usagi.gif" width="100" height="100" border="0"></TD>
+            <TD>次に、上のクイズデータを読み込んで出題するプログラムを作ろう。データを読むのは『ファイル名を開く』という命令だ。そして、読み込んだＣＳＶファイルの順番をでたらめにシャッフルするのが『配列シャッフル』だ。あとは『繰り返す』命令で繰り返し問題を出題するという仕組みだ。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code"><FONT color="#993333">＃クイズゲーム<BR>
+            ＃－－－－－－－－－－<BR>
+            </FONT>「クイズデータ.csv」を開く。<BR>
+            データはそれ。<BR>
+            <FONT color="#993333">＃問題の順番をシャッフルする<BR>
+            </FONT>データを配列シャッフル。<BR>
+            問題数はデータの要素数。<BR>
+            <FONT color="#993333">＃問題数だけ繰り返す<BR>
+            </FONT>番号を0から問題数-1まで繰り返す<BR>
+            　　<FONT color="#993333">＃問題を取り出す</FONT><BR>
+            　　問題はデータ￥番号,０<BR>
+            　　選択1はデータ￥番号,１<BR>
+            　　選択2はデータ￥番号,２<BR>
+            　　選択3はデータ￥番号,３<BR>
+            　　答えはデータ￥番号,４<BR>
+            　　<FONT color="#993333">＃出題</FONT><BR>
+            　　問題を<FONT color="#3366ff">「{選択1}{改行}{選択2}{改行}{選択3}」</FONT>でボタン選択。<BR>
+            　　もし、それが答えならば<BR>
+            　　　　<FONT color="#3366ff">「当たり」</FONT>と言う<BR>
+            　　違えば<BR>
+            　　　　<FONT color="#3366ff">「ハズレ。答えは{答え}」</FONT>と言う<BR>
+            　　ここまで</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>配列変数について自信がないという人は、<A href="../start/06-1-array.htm">基礎編の配列変数</A>と<A href="../start/07-1-csv.htm">二次元配列変数</A>に戻ってこれををマスターしよう。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">次のページ→アドベンチャーゲーム</TD>
+            <TD></TD>
+          </TR>
+        </TBODY>
+      </TABLE>
+      </TD>
+    </TR>
+    <TR>
+      <TD><A href="http://nadesi.com/">なでしこWEB &gt; </A><A href="../index.htm">マニュアル</A><A href="http://nadesi.com/"> &gt; </A><A href="index.htm">ゲーム製作編</A></TD>
+    </TR>
+  </TBODY>
+</TABLE>
+</CENTER>
+<CENTER></CENTER>
+<CENTER></CENTER>
+</BODY>
+</HTML>

@@ -1,0 +1,354 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>グループ分け（オブジェクト指向ライク）</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">グループ分け（オブジェクト指向ライク）</A></H1>
+<DIV class="lead">　クラスを定義して、そのクラスのインスタンスを生成するという従来のオブジェクト指向は、概念を覚えるまでに時間もかかり、なでしこの簡単、手軽と言う思想に反します。そこで、構造体をちょっとだけ拡張したものを『グループ』と呼ぶことにして、このグループをなでしこのオブジェクト指向としました。</DIV>
+<DIV class="index"><A href="1-5-group.htm#head1">■グループとは?</A><BR>
+<A href="1-5-group.htm#head2">■グループが提供する機能</A><BR>
+　　<A href="1-5-group.htm#head3">┣分類分け</A><BR>
+　　<A href="1-5-group.htm#head4">┣グループ項目のコピー</A><BR>
+　　<A href="1-5-group.htm#head5">┣グループ内関数</A><BR>
+　　<A href="1-5-group.htm#head6">┣グループ・ミックス</A><BR>
+　　<A href="1-5-group.htm#head7">┣セッター・ゲッター</A><BR>
+　　<A href="1-5-group.htm#head8">┣コンストラクター</A><BR>
+<A href="1-5-group.htm#head9">■グループの利用</A><BR>
+　　<A href="1-5-group.htm#head10">┣オブジェクト.メンバ変数</A><BR>
+　　<A href="1-5-group.htm#head11">┣グループ内関数</A><BR>
+　　<A href="1-5-group.htm#head12">┣グループイベント</A><BR>
+<A href="1-5-group.htm#head13">■グループの定義</A><BR>
+　　<A href="1-5-group.htm#head14">┣グループを利用する意義</A><BR>
+　　<A href="1-5-group.htm#head15">┣定義方法</A><BR>
+　　<A href="1-5-group.htm#head16">┣定義例</A><BR>
+<A href="1-5-group.htm#head17">■ゲッターとセッター</A><BR>
+<A href="1-5-group.htm#head18">■コンストラクター</A><BR>
+　　<A href="1-5-group.htm#head19">┣初期メンバ</A><BR>
+<A href="1-5-group.htm#head20">■デフォルトの設定</A><BR>
+<A href="1-5-group.htm#head21">■グループメンバと同名のシステム命令を呼ぶ方法</A><BR>
+<A href="1-5-group.htm#head22">■グループメンバーの動的決定</A><BR>
+　　<A href="1-5-group.htm#head23">┣関数内で動的に生成したグループについて</A><BR>
+<A href="1-5-group.htm#head24">■その他</A><BR>
+　　<A href="1-5-group.htm#head25">┣グループ内で自分自身を表す</A><BR>
+　　<A href="1-5-group.htm#head26">┣グループメンバにグループを指定する</A><BR>
+</DIV>
+<P></P>
+<P></P>
+<H2><A name="head1">グループとは?</A></H2>
+
+<P></P>
+<P>変数がたくさんに増えると変数の管理が大変になります。</P>
+<P>普段の書類整理を例にとってみても、書類がたくさん溜まってしまうと、管理が大変になるので、普通は分類をして分かりやすくグループに分けます。</P>
+<P>なでしこの『グループ』の機能もちょうどこの分類に当たります。</P>
+<P></P>
+<H2><A name="head2">グループが提供する機能</A></H2>
+
+<P></P>
+<P>『グループ』は以下の機能を持ちます。</P>
+<H3><A name="head3">分類分け</A></H3>
+
+<P>『（グループ名）の（変数名）』という感じで、変数名の前に修飾語のようにグループ名をつけて変数に対して読み書きをすることができます。&nbsp;</P>
+<P></P>
+<H3><A name="head4">グループ項目のコピー</A></H3>
+
+<P>『（グループ名）とは（グループ名）』とグループ名を宣言式として書くと、グループ内の変数を全部コピーすることができます。</P>
+<P></P>
+<H3><A name="head5">グループ内関数</A></H3>
+
+<P>『（グループ名）で（関数名）する』と書くと、グループ内で定義した関数を実行することができます。</P>
+<P></P>
+<H3><A name="head6">グループ・ミックス</A></H3>
+
+<P>グループを宣言するとき、他のグループをミックスすることができます。オブジェクト指向で言えば継承に当たりますが、それほど高度な機能ではなく、ただ単に、グループ内の項目をコピーしているだけです。グループ内に変数名の衝突があれば上書きしてしまいます。</P>
+<H3><A name="head7">セッター・ゲッター</A></H3>
+
+<P>グループ内の関数をあたかも変数かのように扱うことができます。グループの利用</P>
+<H3><A name="head8">コンストラクター</A></H3>
+
+<P>グループを生成（宣言）したときに、コンストラクターを実行させることができます。</P>
+<P></P>
+<H2><A name="head9">グループの利用</A></H2>
+
+<P></P>
+<H3><A name="head10">オブジェクト.メンバ変数</A></H3>
+
+<P></P>
+<P></P>
+<DIV class="code"><CODE>
+(グループ名)の(変数名)<BR>
+
+</CODE></DIV>
+
+<P>と、格助詞の「の」を使って指定する。&nbsp;</P>
+<DIV class="code"><CODE>
+りんごの値段&nbsp;//&nbsp;<SPAN class="code-string">「りんご」</SPAN>グループの変数<SPAN class="code-string">「値段」</SPAN>を表す<BR>
+携帯の着信音&nbsp;//&nbsp;<SPAN class="code-string">「携帯」</SPAN>グループの変数<SPAN class="code-string">「着信音」</SPAN>を表す<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>「の」を使ったメンバ変数へのアクセスではグループにメンバが属しているか厳しいチェックを行うが、以下の「→」を使ったアクセスでは、実際変数の値取得時にだけメンバをチェックする。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-comment">#&nbsp;[書式]&nbsp;(グループ名)→(変数名)</SPAN><BR>
+りんご→値段を表示<BR>
+ボタン→テキストを表示<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+<H3><A name="head11">グループ内関数</A></H3>
+
+<P></P>
+<P></P>
+<DIV class="code"><CODE>
+【１】(引数)(助詞)(引数)(助詞)...(オブジェクト名)(助詞)(関数名)<BR>
+【２】(グループ名)について(引数)(助詞)(引数)(助詞)...(関数名)<BR>
+
+</CODE></DIV>
+
+<P>のように記述します。</P>
+<DIV class="code"><CODE>
+ファイルAからファイルBへファイルをコピーする。<BR>
+配列Aについて３番目を削除する。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H3><A name="head12">グループイベント</A></H3>
+
+<P></P>
+<P>イベントは関数への参照として呼び出される。『（グループ名）の（イベント名）は～』と書くことで変数内部に直接イベントを記述することができます。</P>
+<P></P>
+<DIV class="code"><CODE>
+※-----------------------<BR>
+OKボタンとはボタン。<BR>
+OKボタンのイベントは～<BR>
+　　<SPAN class="code-string">「OK」</SPAN>と言う<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head13">グループの定義</A></H2>
+
+<P></P>
+<H3><A name="head14">グループを利用する意義</A></H3>
+
+<P></P>
+<P>コード補完機能から変数や関数を選べるようになります。コードのメンテナンス性を高めることができます。</P>
+<H3><A name="head15">定義方法</A></H3>
+
+<P></P>
+<DIV class="code"><CODE>
+<SPAN class="code-function">■グループ名とは　＋ミックス・グループ名＋ミックス・グループ名...</SPAN><BR>
+　・変数名<BR>
+　・変数名<BR>
+　・{変数|文字列|数値|整数}変数名<BR>
+　・関数名（引数）～定義内容...<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H3><A name="head16">定義例</A></H3>
+
+<P></P>
+<DIV class="code"><CODE>
+<SPAN class="code-comment">＃定義</SPAN><BR>
+<SPAN class="code-function">■人間とは</SPAN><BR>
+　・名前<BR>
+　・趣味<BR>
+　・挨拶する～<SPAN class="code-string">「こんにちは」</SPAN>と言う。<BR>
+　・自己紹介する～<SPAN class="code-string">「｛名前｝です。趣味は｛趣味｝です。」</SPAN>と表示。<BR>
+<BR>
+<SPAN class="code-function">■音楽家とは　＋人間</SPAN><BR>
+　・担当楽器<BR>
+　・挨拶する～<SPAN class="code-string">「どもども」</SPAN>と言う<BR>
+　・演奏する～<SPAN class="code-string">「ドミソー♪」</SPAN>と言う。<BR>
+　・自己紹介する～<BR>
+　　　<SPAN class="code-string">「｛名前｝です。担当は｛担当楽器｝です。」</SPAN>と表示。<BR>
+<BR>
+<SPAN class="code-comment">＃利用</SPAN><BR>
+トモコとは人間<BR>
+トモコの名前は<SPAN class="code-string">「友子」</SPAN><BR>
+トモコの趣味は<SPAN class="code-string">「読書」</SPAN><BR>
+トモコが自己紹介する<BR>
+<BR>
+アイコとは音楽家だ<BR>
+アイコの名前は<SPAN class="code-string">「aiko」</SPAN><BR>
+アイコが自己紹介する<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head17">ゲッターとセッター</A></H2>
+
+<P></P>
+<P>変数への代入により関数を呼び出す仕組み。JavaScript?,&nbsp;Delphi&nbsp;などの言語に実装されています。</P>
+<P>例えば、ボタンのＸという値を変更したら、ボタンのＸ座標を変更したい場合：&nbsp;</P>
+<DIV class="code"><CODE>
+<SPAN class="code-function">■ボタン</SPAN><BR>
+　・｛非公開｝ＦＸ<BR>
+　・Ｘ　←Ｘ設定、→Ｘ取得<BR>
+　・Ｘ設定（Ｖ）～ＦＸ＝Ｖ。座標変更処理。<BR>
+　・Ｘ取得～それはＦＸ<BR>
+<BR>
+ボタンのＸは、３０<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>Ｘを変更すると、Ｘ設定という関数が呼び出され、ボタンの座標が変更されるという仕組みを提供する。</P>
+<H2><A name="head18">コンストラクター</A></H2>
+
+<P>コンストラクターは「作る」というメソッドを定義します。</P>
+<P></P>
+<H3><A name="head19">初期メンバ</A></H3>
+
+<P></P>
+<P>グループを作成すると必ず、名前というメンバが自動的に生成されます。この名前にはグループにつけた名前が代入されています。</P>
+<P></P>
+<H2><A name="head20">デフォルトの設定</A></H2>
+
+<P></P>
+<P>各グループのメンバを省略したときに、グループの初期メンバを登録しておくことで、グループの扱いが楽になります。</P>
+<P>たとえば「母艦のテキストを表示」から「テキスト」を省略して「母艦を表示」と書いても、問題なく母艦のテキストが表示されます。</P>
+<P></P>
+<DIV class="code"><CODE>
+<SPAN class="code-function">■人間</SPAN><BR>
+　・Ｆ身長<BR>
+　・身長取得～それはＦ身長<BR>
+　・身長設定（Ｖ）～Ｆ身長＝Ｖ<BR>
+　・身長　←身長設定　→身長取得　デフォルト<BR>
+<BR>
+人間＝１６０<BR>
+人間を言う。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+<H2><A name="head21">グループメンバと同名のシステム命令を呼ぶ方法</A></H2>
+
+<P></P>
+<P>グループメンバと同名のシステム命令を呼ぶには、ネームスペースに「システム」を指定して呼ぶとシステム命令を呼ぶことができます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-function">■日付処理</SPAN><BR>
+　・今日～システム:今日<BR>
+　・今月～システム:今月<BR>
+<BR>
+日付処理の今日を表示<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head22">グループメンバーの動的決定</A></H2>
+
+<P></P>
+<P>　グループのメンバは、『グループのメンバ』と指定しますが、この方法だとプログラムの実行時に、静的な指定しかできません。グループのメンバを動的に決定するには、『グループ＠(変数名)』のように、＠を使うとメンバを変数や文字列で指定することができます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-function">■書籍</SPAN><BR>
+　・著者<BR>
+　・ジャンル<BR>
+<BR>
+ナデシコ入門とは書籍。<BR>
+ナデシコ入門の著者は<SPAN class="code-string">「クジラ飛行机」</SPAN><BR>
+<BR>
+メンバ名は<SPAN class="code-string">「著者」</SPAN><BR>
+ナデシコ入門＠メンバ名を表示。<BR>
+待機<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H3><A name="head23">関数内で動的に生成したグループについて</A></H3>
+
+<P></P>
+<P>　基本的にグループはグローバル変数として静的に利用します。</P>
+<P>　もし、関数内で動的に生成したい場合などは、『作成』命令を使います。そして、動的に生成したメンバにアクセスするには、『（変数名）→（メンバ名）』あるいは『（変数名）＠「（メンバ名）」』のように、変数にメンバが属することを明示する必要があります。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-function">●ボタン動的生成処理</SPAN><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;Ｉを０から３まで繰り返す<BR>
+　　　　A[I]をボタンとして作成。<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A[I]→テキストは<SPAN class="code-string">「={I+1}=」</SPAN><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A[I]→クリックした時は～<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;　　自身→テキストを言う<BR>
+<BR>
+ボタン動的生成処理。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head24">その他</A></H2>
+
+<P></P>
+<H3><A name="head25">グループ内で自分自身を表す</A></H3>
+
+<P></P>
+<P>グループ内で自分自身を指定したい場合があります。そのときは、『自身』変数を使います。『自身』は常にグループ内で自分自身のインスタンスへのエイリアス変数です。『自身』は動的に設定されていますので、自身のメンバへアクセスするときは、『自身→メンバ名』または『自身＠「メンバ名」』の形式で指定します。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-function">■テスト</SPAN><BR>
+　・担当<BR>
+&nbsp;&nbsp;・担当表示～<BR>
+&nbsp;&nbsp;　　自身→担当を表示<BR>
+<BR>
+テストの担当は<SPAN class="code-string">「大林」</SPAN><BR>
+テストの担当表示。<BR>
+待機。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P></P>
+<H3><A name="head26">グループメンバにグループを指定する</A></H3>
+
+<P></P>
+<P>　グループ内にグループのメンバを持つ場合は、グループ定義するときに、グループであることを明示しておきます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-function">■口グループ</SPAN><BR>
+　・歯{=&quot;とがってる&quot;}<BR>
+　・舌<BR>
+<BR>
+<SPAN class="code-function">■魚グループ</SPAN><BR>
+　・{口グループ}口<BR>
+　・ヒレ<BR>
+<BR>
+魚とは魚グループ<BR>
+<BR>
+魚の口の歯を表示<BR>
+魚＠&quot;口&quot;＠&quot;歯&quot;を表示。<BR>
+<BR>
+待機。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>　ただし、＠を使ったメンバの動的決定を使う場合は、明示する必要はありません。</P>
+<DIV class="code"><CODE>
+!変数宣言が必要<BR>
+<SPAN class="code-function">■口グループ</SPAN><BR>
+　・歯{=&quot;とがってる&quot;}<BR>
+　・舌<BR>
+<BR>
+<SPAN class="code-function">■魚グループ</SPAN><BR>
+　・口<BR>
+　・ヒレ<BR>
+<BR>
+魚とは魚グループ<BR>
+口とは口グループ<BR>
+<BR>
+魚の口は、口。<BR>
+<BR>
+魚の口＠&quot;歯&quot;を表示。<BR>
+<SPAN class="code-comment">#&nbsp;魚の口の歯を表示。#&nbsp;＠で動的決定しないと未定義のエラーになる。</SPAN><BR>
+<BR>
+待機。<BR>
+
+</CODE></DIV>
+
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

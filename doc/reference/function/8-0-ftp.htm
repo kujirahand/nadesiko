@@ -1,0 +1,54 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>FTPについて</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">FTPについて</A></H1>
+<DIV class="lead">　ＦＴＰではホームページの更新やＷＥＢスペースへのファイル転送を行うことができます。</DIV>
+<DIV class="index"><A href="8-0-ftp.htm#head1">■ＦＴＰでファイルをアップロード</A><BR>
+<A href="8-0-ftp.htm#head2">■必要なファイル</A><BR>
+<A href="8-0-ftp.htm#head3">■その他の命令</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">ＦＴＰでファイルをアップロード</A></H2>
+
+<P></P>
+<P>なでしこでＦＴＰへファイルをアップロードするには以下の手順を踏みます。</P>
+<UL>
+  <LI>（１）サーバーへ接続
+  <LI>（２）ファイルの転送など
+  <LI>（３）サーバーとの切断
+</UL>
+
+<P></P>
+<P>そこでプログラムは以下のようになります。</P>
+<DIV class="code"><CODE>
+！<SPAN class="code-string">「nakonet.nako」</SPAN>を取り込む<BR>
+ＦＴＰについて<BR>
+　　<SPAN class="code-comment">＃接続設定</SPAN><BR>
+　　サーバーは<SPAN class="code-string">「ftp.xxxx.jp」</SPAN><BR>
+&nbsp;&nbsp;　ＩＤは<SPAN class="code-string">「xxxxx」</SPAN><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;パスワードは<SPAN class="code-string">「xxxxx」</SPAN><BR>
+　　<SPAN class="code-comment">＃実際の処理</SPAN><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;接続<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;<SPAN class="code-string">「{母艦パス}index.html」</SPAN>を<SPAN class="code-string">「index.html」</SPAN>へアップロード<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;切断<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head2">必要なファイル</A></H2>
+
+<P></P>
+<P>ＦＴＰを使うには、plug-ins\nakonet.dll&nbsp;と&nbsp;lib\nakonet.nako&nbsp;の２つのファイルが必要になります。</P>
+<H2><A name="head3">その他の命令</A></H2>
+
+<P></P>
+<P>ＦＴＰでは、「ダウンロード」「属性変更」「転送モード」「ファイル列挙」「フォルダ列挙」という命令が用意されています。</P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

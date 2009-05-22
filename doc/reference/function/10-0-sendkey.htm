@@ -1,0 +1,115 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>キー送信</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">キー送信</A></H1>
+<DIV class="lead">キー送信命令を使うことでプログラムから任意のキーを入力しているようにエミュレートします。</DIV>
+<DIV class="index"><A href="10-0-sendkey.htm#head1">■普通にキー送信</A><BR>
+<A href="10-0-sendkey.htm#head2">■特殊キー</A><BR>
+<A href="10-0-sendkey.htm#head3">■利用例</A><BR>
+<A href="10-0-sendkey.htm#head4">■キーの組み合わせ例</A><BR>
+<A href="10-0-sendkey.htm#head5">■Windowsの特殊キー</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">普通にキー送信</A></H2>
+
+<P></P>
+<P>以下のプログラムはメモ帳を起動して、適当なキーを送信します。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「notepad.exe」</SPAN>を起動。<BR>
+1秒待つ<BR>
+<SPAN class="code-string">「abc」</SPAN>をキー送信<BR>
+0.5秒待つ<BR>
+<SPAN class="code-string">「ABC」</SPAN>をキー送信<BR>
+0.5秒待つ<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head2">特殊キー</A></H2>
+
+<P></P>
+<P>'+'、'^'、'%'、'~'、'('、')'、'{'、'}'、'&amp;'は特別な意味を持っています。これらの文字を渡すには、中かっこ'{}'で囲んで指定します。たとえば'+'は'{+}'のように指定します。</P>
+<P>以下は特殊キーの一覧です。</P>
+<DIV class="code"><CODE>
+&nbsp;&nbsp;BackSpace&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{BACKSPACE},{BS}または{BKSP}<BR>
+&nbsp;&nbsp;Tab&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{TAB}<BR>
+&nbsp;&nbsp;Ctrl+Break&nbsp;&nbsp;&nbsp;&nbsp;{BREAK}<BR>
+&nbsp;&nbsp;Enter	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ENTER}&nbsp;または&nbsp;~<BR>
+&nbsp;&nbsp;Home,End&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{HOME},{END}<BR>
+&nbsp;&nbsp;Esc,Help&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ESC},{HELP}<BR>
+&nbsp;&nbsp;Ins&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{INSERT}<BR>
+&nbsp;&nbsp;Del&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{DELETE}または{DEL}<BR>
+&nbsp;&nbsp;↑,↓,←,↑&nbsp;&nbsp;&nbsp;{UP},{DOWN},{LEFT},{RIGHT}<BR>
+&nbsp;&nbsp;PrintScreen	{PRTSC}<BR>
+&nbsp;&nbsp;PageDown	{PGDN}<BR>
+&nbsp;&nbsp;PageUp	{PGUP}<BR>
+&nbsp;&nbsp;CapsLock&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{CAPSLOCK}<BR>
+&nbsp;&nbsp;NumLock	{NUMLOCK}<BR>
+&nbsp;&nbsp;ScrollLock	{SCROLLLOCK}<BR>
+&nbsp;&nbsp;F1～F16	{F1}...{F16}<BR>
+&nbsp;&nbsp;ALT+全角/半角&nbsp;{IME}<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>Shiftキー、Ctrlキー、Altキーと他のキーとの組み合わせを指定する場合は、通常のキー表現の前に次のキー表現を単独、または組み合わせて記述します。</P>
+<DIV class="code"><CODE>
+&nbsp;&nbsp;キー&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;表現<BR>
+&nbsp;&nbsp;--------------------------------------------------------------------<BR>
+&nbsp;&nbsp;Shift&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+<BR>
+&nbsp;&nbsp;Ctrl&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^<BR>
+&nbsp;&nbsp;Alt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;%<BR>
+&nbsp;&nbsp;Win&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>&nbsp;&nbsp;Shiftキー、Ctrlキー、Altキーを押した状態で、他のキーを連続して押す操作を指定するには、連続するキー操作をかっこ()で囲みます。例えば、Altキーを押しながら'F'と'X'を押す操作の場合は'%(AF)'の様にします。</P>
+<P>&nbsp;&nbsp;同じキーストロークの繰り返しを指定するには'{Key&nbsp;Number}'という表現を使います。たとえば'{RIGHT&nbsp;10}'は'→'を10回、'{-&nbsp;40}'は'-'を40回押すことを意味します。</P>
+<P>（解説：七☆星さんのDelphiソースより抜粋させていただきました。）</P>
+<H2><A name="head3">利用例</A></H2>
+
+<P></P>
+<P>以下はメモ帳を起動しても文字を書き込んで自動でメモ帳を閉じるという連携技です。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-string">「notepad.exe」</SPAN>を、起動。<BR>
+0.5秒待つ。<BR>
+<BR>
+<SPAN class="code-comment">＃普通にキー送信</SPAN><BR>
+<SPAN class="code-string">「メモ帳の遠隔操作。そのまましばらく待って！」</SPAN>をキー送信。&nbsp;<BR>
+1秒待つ<BR>
+<SPAN class="code-string">「｛改行｝このように、外部アプリを遠隔操作できます。」</SPAN>をキー送信。&nbsp;<BR>
+1秒待つ<BR>
+&nbsp;<SPAN class="code-string">「｛改行｝びっくりした？」</SPAN>をキー送信。&nbsp;<BR>
+<BR>
+<SPAN class="code-comment">＃特殊キー　Alt&nbsp;+&nbsp;F,&nbsp;Xを送る</SPAN><BR>
+１秒待つ<BR>
+<SPAN class="code-string">「無題」</SPAN>に<SPAN class="code-string">「%FX」</SPAN>をキー送信。&nbsp;<BR>
+<BR>
+2秒待つ<BR>
+<SPAN class="code-string">「メモ帳」</SPAN>に<SPAN class="code-string">「N」</SPAN>をキー送信。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>　このサンプルのメモ帳程度だと、面白いだけで、それほど、ありがたみを感じませんが、エクセル・ワードを起動して、メニューより印刷をするように、ショートカットキーを送信したり、特定時刻に、バックアップソフトを起動して、自動的にバックアップのボタンを押させたり・・・アイデア次第で、いろいろなことが出来ます。</P>
+<H2><A name="head4">キーの組み合わせ例</A></H2>
+
+<P></P>
+<P>Shift&nbsp;+&nbsp;Ctrl&nbsp;+&nbsp;1&nbsp;を送りたい場合は『^+1』を。</P>
+<P>Ctrl&nbsp;+&nbsp;Alt&nbsp;+&nbsp;F1&nbsp;を送りたい場合は『^%{F1}』を。</P>
+<P>なでしこでは、「」の中の、｛｝は、変数の展開として認識してしまうので、カッコで括るのには『』を使う必要があります。</P>
+<H2><A name="head5">Windowsの特殊キー</A></H2>
+
+<P></P>
+<P>例えば、ウィンドウの最小化[Win]+[m]なら『&amp;m』と書きます。エクスプローラーの起動なら「&amp;e」です。</P>
+<P></P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

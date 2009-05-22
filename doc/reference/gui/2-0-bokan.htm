@@ -1,0 +1,113 @@
+<HTML lang="ja">
+<HEAD>
+  <TITLE>母艦について</TITLE>
+  <LINK rel="stylesheet" type="text/css" href="nako_doc.css">
+</HEAD>
+<BODY>
+<DIV align="right" class="head"><A href="http://nadesi.com/">日本語プログラミング言語「なでしこ」</A> &gt; <A href="index.htm">戻る</A></DIV>
+<H1><A name="top">母艦について</A></H1>
+<DIV class="lead">　なでしこで母艦とはメインフォームのことです。「表示」命令など多くの描画命令で母艦への出力を前提としているものが多くあります。</DIV>
+<DIV class="index"><A href="2-0-bokan.htm#head1">■母艦とは何？</A><BR>
+<A href="2-0-bokan.htm#head2">■母艦の大きさを変える</A><BR>
+<A href="2-0-bokan.htm#head3">■デスクトップマスコットにする場合</A><BR>
+<A href="2-0-bokan.htm#head4">■閉じるボタンで終わらせたくない場合</A><BR>
+<A href="2-0-bokan.htm#head5">■ゲームでキーの入力をチェックしたいとき</A><BR>
+</DIV>
+<P></P>
+<H2><A name="head1">母艦とは何？</A></H2>
+
+<P></P>
+<P>　母艦とはメインフォームです。実際、母艦はフォームとして生成されています。</P>
+<P>母艦のタイトルバーを変更したいときは『母艦は「ｘｘｘ」』または『母艦のテキストは「ｘｘｘ」』と書きます。（このとき描画処理反映も暗に呼ばれます。）</P>
+<DIV class="code"><CODE>
+母艦は<SPAN class="code-string">「ソフトのタイトル」</SPAN><BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>『線』や『四角』などの命令でも、どこへ描画するのかの引数を省略すると母艦に描画されます。</P>
+<DIV class="code"><CODE>
+0,0から100,100へ線<BR>
+100,100から200,200へ四角<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head2">母艦の大きさを変える</A></H2>
+
+<P></P>
+<P>母艦の大きさを変えるには、『母艦のW＝1024』や『母艦のH＝600』などとWやHの値を変えます。Wが横幅(Widthの略)で、Hが高さ(Heightの略)を表します。</P>
+<P>また、『母艦を最大化』と書くと画面いっぱいになります。元に戻すには『母艦を元通り』と書きます。</P>
+<P></P>
+<H2><A name="head3">デスクトップマスコットにする場合</A></H2>
+
+<P></P>
+<P>母艦に絵を描いて、母艦の形を絵の通りにする方法があります。</P>
+<DIV class="code"><CODE>
+母艦の画像は<SPAN class="code-string">「{ランタイムパス}lib\wani.gif」</SPAN><BR>
+母艦を画像通り変形<BR>
+母艦をダブルクリックした時は～終わる<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>上のプログラムを実行すると、母艦にワニの絵を描き母艦を画像通り変形させて、ワニのようにします。この場合ドラッグで母艦を移動できるようになりますが、終了するにはタスクバーから終了させる必要があるのでダブルクリックしたら終わりなどと終了条件を指定する必要があります。</P>
+<H2><A name="head4">閉じるボタンで終わらせたくない場合</A></H2>
+
+<P></P>
+<P>母艦の閉じるボタンを押すとプログラムが終了します。しかし、閉じるボタンを押したときに、終わりたくない場合があります。その場合、『母艦の終了可能はいいえ』と書いておくと終了しなくなります。</P>
+<DIV class="code"><CODE>
+母艦の終了可能はオフ。<BR>
+母艦をダブルクリックした時は～<BR>
+　　母艦の終了可能はオン<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;終わり<BR>
+
+</CODE></DIV>
+
+<P></P>
+<H2><A name="head5">ゲームでキーの入力をチェックしたいとき</A></H2>
+
+<P></P>
+<P>ゲームを作るときなど、どのカーソルキーが押されているのか調べたいときがあります。</P>
+<P>その場合は「(キーコード)のキー状態」という命令でそのキーが押されていればオン、離れていればオフと使えます。</P>
+<DIV class="code"><CODE>
+表示用とはラベル。<BR>
+<SPAN class="code-string">「ENTERで終了」</SPAN>と表示<BR>
+オンの間<BR>
+　　もし、37/*←*/のキー状態がオンならば表示用は<SPAN class="code-string">「←」</SPAN><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;もし、38/*↑*/のキー状態がオンならば表示用は<SPAN class="code-string">「↑」</SPAN><BR>
+　　もし、39/*→*/のキー状態がオンならば表示用は<SPAN class="code-string">「→」</SPAN><BR>
+　　もし、40/*↓*/のキー状態がオンならば表示用は<SPAN class="code-string">「↓」</SPAN><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;もし、13/*ENTER*/のキー状態がオンならば終わり。<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;0.01秒待つ<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>また、キー押された時に何か処理を行いたい場合は、「母艦のキー押したとき」イベントを設定します。そのとき、押されたキーのコードは「母艦の押された仮想キー」に代入されます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-comment">#&nbsp;カーソルの↑を押すとキーコードの38が表示される</SPAN><BR>
+母艦のキー押した時は～<BR>
+　　母艦の押された仮想キーを表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>キー関連のイベントには「キー押した時」「キー離した時」「キータイピング時」と３種類あります。</P>
+<P>「キータイピング時」には「母艦の押されたキー」に押されたキーの文字が代入されます。</P>
+<DIV class="code"><CODE>
+<SPAN class="code-comment">#&nbsp;a&nbsp;を押せば&nbsp;a&nbsp;が表示される</SPAN><BR>
+母艦のキータイピング時は～<BR>
+　　母艦の押されたキーを表示。<BR>
+
+</CODE></DIV>
+
+<P></P>
+<P>イベントの発生の順番は</P>
+<P>「キー押した時」→「キータイピング時」→「キー離した時」</P>
+<P>で発生します。</P>
+
+<BR><BR>
+<DIV align="left" class="head"><A href="#top">→トップへ</A>　<A href="index.htm">→目次へ</A></DIV>
+</BODY>
+</HTML>

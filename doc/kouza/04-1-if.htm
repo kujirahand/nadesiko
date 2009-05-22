@@ -1,0 +1,301 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META name="keyword" content="プログラミング言語, なでしこ, 定型処理, バッチ処理, 教育">
+<META name="description" content="なでしこは日本語で簡単にプログラミングができる簡単ツールです。">
+<META name="GENERATOR" content="IBM WebSphere Homepage Builder V6.0.1 for Windows">
+<TITLE>プログラミング基礎編</TITLE>
+<LINK rel="stylesheet" href="../nako_man.css" type="text/css">
+</HEAD>
+<BODY text="#4d4d4d" link="#000099" vlink="#582c56" alink="#cc00cc">
+<CENTER>
+<TABLE border="0" width="780" cellpadding="0" cellspacing="0">
+  <TBODY>
+    <TR>
+      <TD align="right"><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="../index.htm"><IMG src="../logo_nadesiko_title.gif" width="293" height="76" border="0" alt="なでしこ"></A></TD>
+    </TR>
+    <TR>
+      <TD><IMG src="../line.gif" width="780" height="8" border="0"></TD>
+    </TR>
+    <TR>
+      <TD>
+      <TABLE border="0" width="780" cellpadding="4" cellspacing="0">
+        <TBODY>
+          <TR>
+            <TD width="142"><IMG src="../about/dmy.gif" width="8" height="8" border="0"></TD>
+            <TD width="142"></TD>
+            <TD width="322"></TD>
+            <TD width="142"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">プログラミング基礎編～条件分岐</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" align="center"><IMG src="kiso-title.gif" width="300" height="200" border="0"></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">条件分岐</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>今度は、条件によって、実行するプログラムを変更するという構文を覚えましょう。これは、『もし、ｘｘがｘｘならば～違えば～』というものです。『もし～ならば～』は日常生活でも使うので分かりやすいと思います。例えば、『もし、天気がよければ洗濯物を干す』などのように使うのです。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">天気の話</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>それでは、実際にプログラムを動かして、『もし～ならば～』の構文の使い方を覚えましょう！以下は簡単ななでしこのプログラムです。説明しなくてもどのように動くか分かるのではないでしょうか。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">天気は「晴れ」<BR>
+            <B>もし</B>、天気<B>が</B>「晴れ」<B>ならば</B><BR>
+            　　　「洗濯物を干す」と表示。<BR>
+            <B>違えば</B><BR>
+            　　　「洗濯物は干さない」と表示。</TD>
+            <TD class="menuG">(<B>注意</B>)なでしこでは文のインデント（字下げ）によってプログラムの構造を判断していますので、「もし・・・ならば」と「違えば」の次の行は必ず同じようにインデントするようにしてください。</TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>一応結果を書いておくと、一行目で『天気は「晴れ」と書いているので、「洗濯物を干す」と表示されます。次に、これはどうでしょうか？</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">天気は「雨」<BR>
+            <B>もし</B>、天気<B>が</B>「晴れ」<B>ならば</B><BR>
+            　　「洗濯物を干す」と表示。<BR>
+            <B>違えば</B><BR>
+            　　「洗濯物は干さない」と表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD>さっきと一行目が違うだけです。ですが、表示結果は「洗濯物は干さない」となります。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">年齢の話</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>次に年齢について考えてみます。日本では法律で年齢が２０歳未満だと「未成年」とみなされます。それで、未成年の喫煙や飲酒も禁止されていますね。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="../pic/b013cut.gif" width="64" height="64" border="0"></TD>
+            <TD>ここでは、コンビニの店員ロボットを作ったとしましょう。若者がビールを買おうとしたら年齢を尋ねて２０歳未満なら「売りません！」と表示するプログラムです。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="seito.gif" width="90" height="82" border="0"></TD>
+            <TD class="code"><FONT color="#3300cc">「年齢は？」</FONT>と尋ねる。<BR>
+年齢はそれ。<BR>
+            <B>もし、</B>年齢<B>が</B>２０未満<B>ならば</B><BR>
+            　<FONT color="#3300cc">　「ビールは売りません！」</FONT>と言う。<BR>
+            <B>違えば</B><BR>
+            　　<FONT color="#3300cc">「お買い上げありがとうございます。」</FONT>と言う。<BR>
+</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD>上のプログラム実行して１８を入力すると「ビールは売りません！」と表示されれば実験成功です。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">比較に使える演算子</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>条件に数値を指定した場合をみましたので、ここで条件として指定できる式や演算子についてまとめておきます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">以上、以下、超、未満
+            <TABLE border="1">
+              <TBODY>
+                <TR>
+                  <TD bgcolor="#ffffcc" align="center">条件</TD>
+                  <TD bgcolor="#ffffcc" align="center">意味</TD>
+                  <TD bgcolor="#ffffcc" align="center">利用例</TD>
+                </TR>
+                <TR>
+                  <TD>AがB以上</TD>
+                  <TD>A≧B</TD>
+                  <TD>もし、年齢が２０以上ならば</TD>
+                </TR>
+                <TR>
+                  <TD>AがB以下</TD>
+                  <TD>A≦B</TD>
+                  <TD>もし、人数が３０以下ならば</TD>
+                </TR>
+                <TR>
+                  <TD>AがB超</TD>
+                  <TD>A＞B</TD>
+                  <TD>もし、人数が２００超ならば</TD>
+                </TR>
+                <TR>
+                  <TD>AがB未満</TD>
+                  <TD>A&lt;B</TD>
+                  <TD>もし、年齢が２０未満ならば</TD>
+                </TR>
+              </TBODY>
+            </TABLE>
+            <BR>
+            その他に計算に使う不等号も利用できます。<BR>
+            <TABLE border="1">
+              <TBODY>
+                <TR>
+                  <TD bgcolor="#ffffcc" align="center">条件</TD>
+                  <TD bgcolor="#ffffcc" align="center">利用例</TD>
+                </TR>
+                <TR>
+                  <TD>A&gt;B</TD>
+                  <TD>もし、年齢＞２０ならば</TD>
+                </TR>
+                <TR>
+                  <TD>A&lt;B</TD>
+                  <TD>もし、年齢＜２０ならば</TD>
+                </TR>
+                <TR>
+                  <TD>A≧B　または　A &gt;= B</TD>
+                  <TD>もし、年齢≧２０ならば</TD>
+                </TR>
+                <TR>
+                  <TD>A≦B　または　A&lt;=B</TD>
+                  <TD>もし、年齢≦２０ならば</TD>
+                </TR>
+              </TBODY>
+            </TABLE>
+            </TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD>　</TD>
+            <TD></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">もっと条件が複雑な場合</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"><IMG src="sensei.gif" width="90" height="88" border="0" align="middle"><BR>
+            <BR>
+            <BR>
+            <IMG src="../pic/b012cut.gif" width="64" height="64" border="0"></TD>
+            <TD valign="middle">さて、今度はもっと条件が複雑な場合のプログラムをつくっていきます。例えば閏年（うるうどし）の判定をする場合を考えてみます。例えば、４年に一度しか誕生日が来ない『２月２９日』生まれの人がいます。<BR>
+            <BR>
+            この、２月２９日のある年を閏（うるう）年というのですが、閏年の判定は、完全に４年に一度という単純なものではないのです。<BR>
+            <BR>
+            基本的には、西暦で表した年が4で割り切れれば閏年なのですが、例外があります。西暦で表した年が100で割り切れれば閏年でないというものです。<BR>
+            しかし、これにも例外があって、西暦で表した年が400で割り切れれば閏年なのです。<BR>
+            </TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>非常に複雑ですね。<BR>もうちょっと分かりやすく書いてみましょう。<BR>
+            <BR>（１）年が４で割り切れれば閏年の可能性がある<BR>（２）年が４で割り切れても、100で割り切れれば閏年ではない。<BR>
+            （３）年が4で割り切れて、100で割り切れても400で割り切れれば閏年である。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>こんな複雑なプログラムを作る場合は、以下の図のように、『もし～ならば～違えば～』を入れ子状にしてプログラムをつくります。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" align="center"><IMG src="mosi.gif" width="351" height="222" border="0"></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">以下が閏年の判定をプログラムにしたものです。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code">年は2000<BR>
+            <FONT 
+color=#009999>＃（１）４で割れたら閏年の可能性<BR>
+            </FONT><B>もし</B>（年％４）＝０ならば<BR>　　<FONT 
+color=#009999>#（２）１００で割れたら閏年でない可能性</FONT><BR>　　<B><FONT 
+color=#ff0000>もし</FONT></B>（年％１００）＝０ならば<BR>　　　　<FONT 
+color=#009999>＃（３）４００で割れたら閏年</FONT><BR>　　　　<B><FONT 
+color=#0000ff>もし</FONT></B>（年％４００）＝０ならば<BR>　　　　　　「閏年である」と表示。<BR>　　　　<FONT 
+color=#0000ff><B>違えば</B></FONT><BR>　　　　　　「閏年ではない」と表示。<BR>　　<B><FONT 
+color=#ff0000>違えば</FONT></B><BR>　　　　「閏年である」と表示。<BR>
+            <B>違えば</B><BR>　　「閏年ではない」と表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>割り切れるかどうかというのは、余りを調べて余りが０ならば割り切れるということになります。割り算の余りを求めるには、『Ａ％Ｂ』のように書きます。<BR>
+            <BR>色で区別しましたが、入れ子になっている部分の対応が分かるでしょうか？</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">
+            <HR>
+            次のページ<A href="05-1-repeat.htm">→繰り返す</A><BR>
+            前のページ<A href="03-1-variable.htm">←変数を使う</A>
+            <HR>
+            </TD>
+            <TD></TD>
+          </TR>
+        </TBODY>
+      </TABLE>
+      </TD>
+    </TR>
+    <TR>
+      <TD><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+  </TBODY>
+</TABLE>
+</CENTER>
+<CENTER></CENTER>
+<CENTER></CENTER>
+</BODY>
+</HTML>

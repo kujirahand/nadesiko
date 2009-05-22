@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META name="keyword" content="プログラミング言語, なでしこ, 定型処理, バッチ処理, 教育">
+<META name="description" content="なでしこは日本語で簡単にプログラミングができる簡単ツールです。">
+<META name="GENERATOR" content="IBM WebSphere Homepage Builder V6.0.1 for Windows">
+<TITLE>プログラミング基礎編</TITLE>
+<LINK rel="stylesheet" href="../nako_man.css" type="text/css">
+</HEAD>
+<BODY text="#4d4d4d" link="#000099" vlink="#582c56" alink="#cc00cc">
+<CENTER>
+<TABLE border="0" width="780" cellpadding="0" cellspacing="0">
+  <TBODY>
+    <TR>
+      <TD align="right"><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="../index.htm"><IMG src="../logo_nadesiko_title.gif" width="293" height="76" border="0" alt="なでしこ"></A></TD>
+    </TR>
+    <TR>
+      <TD><IMG src="../line.gif" width="780" height="8" border="0"></TD>
+    </TR>
+    <TR>
+      <TD>
+      <TABLE border="0" width="780" cellpadding="4" cellspacing="0">
+        <TBODY>
+          <TR>
+            <TD width="142"><IMG src="../about/dmy.gif" width="8" height="8" border="0"></TD>
+            <TD width="142"></TD>
+            <TD width="322"></TD>
+            <TD width="142"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">プログラミング基礎編</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD class="menuG" rowspan="3" valign="top">【目次】<BR>
+            <BR>
+            <A href="01-1-hello.htm">→はじめてのプログラム</A><BR>
+            <A href="02-1-calc.htm">→計算機として使う<BR>
+            </A><A href="03-1-variable.htm">→変数を使う</A><A href="04-1-if.htm"><BR>
+            →条件で分ける</A><BR>
+            <A href="05-1-repeat.htm">→繰り返し実行</A><A href="06-1-array.htm"><BR>
+            →配列</A><A href="07-1-csv.htm"><BR>
+            →二次列配列</A><BR>
+            <A href="08-1-hash.htm">→ハッシュ</A><A href="09-1-each.htm"><BR>
+            →反復</A><BR>
+            <A href="09-2-each_hash.htm">→反復＋ハッシュ</A><BR>
+            <BR>
+            <HR>
+            【その次のステップ】<BR>
+            <BR>
+            <A href="stereotype/index.htm">→定型処理編</A><BR>
+            <A href="game/index.htm">→ゲーム編</A><BR>
+            <A href="gui/index.htm">→ツール製作編</A><BR>
+            <BR>
+            <HR>
+            </TD>
+            <TD colspan="2" align="center"><IMG src="kiso-title.gif" width="300" height="200" border="0"></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD colspan="2" class="newsTitle">それでは基礎編をはじめます！</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>　なでしこは『プログラミング』を学ぶのにとても適した言語です。文法も単純ですし、なにより日本語の文章を書くようにプログラムを作ることができるので、とても楽しくプログラミングを覚えることができます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">プログラムとは？</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"><IMG src="../pic/c008cut.gif" width="64" height="64" border="0"></TD>
+            <TD>　一般的に『プログラム』と言えば、運動会や演劇の進行手順を書いたものです。コンピューターの世界でも、コンピューターに命令するための進行手順を書いたものです。映画やアニメのＳＦに出てくる『プログラム』は、でたらめな意味の無い記号の羅列であることが多い(*1)ので、得体のしれないものという印象がありますが、実際には、できるだけ分かりやすく書くものです。プログラミング自体の進歩の歴史をみても、いかに人間に読みやすく、メンテナンスを楽にするのかという点で進化してきています。</TD>
+            <TD class="menuG">(*1)稀に物語のためだけに意味のあるプログラムを作ることもあるようです。以前私がみた某アニメではBASIC言語で書かれたプログラムが表示されてました。</TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">コンピューターに命令するには</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center"><IMG src="../pic/b015cut.gif" width="64" height="64" border="0"></TD>
+            <TD>
+            <P>　コンピューターに命令するのは、家族や友人に頼みごとをするのとは違って、骨の折れる作業です。コンピューターが分かるように、ある一定の規則に従ってプログラムを書く必要があります。(*2)<BR>
+            　これは、実際に何かプログラムを作ってみるとわかります。プログラミングは、『習うより慣れろ！』の世界です。なるべく実際に動かして自分で結果を確認しましょう。</P>
+            </TD>
+            <TD class="menuG" valign="top">(*2)これには、筋道を立てて物事を解決していく必要があるので、論理的な思考能力を養うことができます。そのため、一つのプログラミング言語をマスターしてしまえば、他の言語の習得が楽になるのです！</TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">『なでしこエディタ』を起動しよう！</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>　そんなわけで早速なでしこを起動して何か動かしてみましょう。もうなでしこはパソコンにダウンロードしてありますか？してなければ以下のサイトよりダウンロードしてください。</TD>
+            <TD valign="top"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="right"><A href="http://nadesi.com/download.htm"><IMG src="../pic/nako_icon.gif" width="32" height="32" border="0"></A></TD>
+            <TD class="menuG"><A href="http://nadesi.com/download.htm">→なでしこのダウンロード（ＷＥＢ）<BR>
+            http://nadesi.com/download.htm</A></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>なでしこでプログラムを作るには、なでしこに付属している『なでしこエディタ』を使います。ダウンロードしたファイルを解凍すると、その中に『nakopad.exe』というファイルがあるのでダブルクリックして起動してみましょう！（下図参照）</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD><IMG src="nadesiko-dir.gif" width="223" height="154" border="0"><BR>
+            まずは、nakopad.exeをダブルクリック！</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">毎回、探すのが面倒なのですけど・・・</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>毎回、なでしこのフォルダを探すのが面倒だという人は、nakopad.exeと同じフォルダに『インストール.bat』というファイルがありますのでこれを実行してみてください。ショートカットの自動作成と、なでしこの関連付けを行うことができます。<BR>
+            <BR>
+            また、全部自動で設定したい人は、梱包されているインストーラー『setup.exe』を実行してください。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">
+            <HR>
+            次のページ<A href="01-1-hello.htm">→はじめてのプログラム</A>
+            <HR>
+            </TD>
+            <TD></TD>
+          </TR>
+        </TBODY>
+      </TABLE>
+      </TD>
+    </TR>
+    <TR>
+      <TD><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+  </TBODY>
+</TABLE>
+</CENTER>
+<CENTER></CENTER>
+<CENTER></CENTER>
+</BODY>
+</HTML>

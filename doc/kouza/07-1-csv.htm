@@ -1,0 +1,196 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META name="keyword" content="プログラミング言語, なでしこ, 定型処理, バッチ処理, 教育">
+<META name="description" content="なでしこは日本語で簡単にプログラミングができる簡単ツールです。">
+<META name="GENERATOR" content="IBM WebSphere Homepage Builder V6.0.1 for Windows">
+<TITLE>プログラミング基礎編</TITLE>
+<LINK rel="stylesheet" href="../nako_man.css" type="text/css">
+</HEAD>
+<BODY text="#4d4d4d" link="#000099" vlink="#582c56" alink="#cc00cc">
+<CENTER>
+<TABLE border="0" width="780" cellpadding="0" cellspacing="0">
+  <TBODY>
+    <TR>
+      <TD align="right"><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="../index.htm"><IMG src="../logo_nadesiko_title.gif" width="293" height="76" border="0" alt="なでしこ"></A></TD>
+    </TR>
+    <TR>
+      <TD><IMG src="../line.gif" width="780" height="8" border="0"></TD>
+    </TR>
+    <TR>
+      <TD>
+      <TABLE border="0" width="780" cellpadding="4" cellspacing="0">
+        <TBODY>
+          <TR>
+            <TD width="142"><IMG src="../about/dmy.gif" width="8" height="8" border="0"></TD>
+            <TD width="142"></TD>
+            <TD width="322"></TD>
+            <TD width="142"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">プログラミング基礎編～二次元配列変数</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" align="center"><IMG src="kiso-title.gif" width="300" height="200" border="0"></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">二次元の配列変数</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>「二次元配列変数」なんていうと、ちょっと難しく感じるかもしれませんが、ようは、Microsoft Excelのような、表計算ソフトを思い浮かべてもらえれば分かりやすいと思います。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">カレー屋のメニュー</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>以下のようなカレー屋のメニューをデータとして扱うときに・・・この二次元配列変数を使うのです。<BR>
+            <TABLE border=1>
+<TBODY>
+<TR>
+<TD align=middle bgColor=#ffcccc>名前</TD>
+<TD bgColor=#ffcccc>値段</TD>
+                </TR>
+<TR>
+<TD bgColor=#ffffcc>ポークカレー</TD>
+<TD bgColor=#ffffcc>６２０</TD>
+                </TR>
+<TR>
+<TD bgColor=#ffffcc>インドカレー（ナン付）</TD>
+<TD bgColor=#ffffcc>９２０</TD>
+                </TR>
+<TR>
+<TD bgColor=#ffffcc>野菜カレー</TD>
+<TD bgColor=#ffffcc>６９０</TD>
+                </TR>
+<TR>
+<TD bgColor=#ffffcc>肉いっぱい激辛カレー</TD>
+<TD bgColor=#ffffcc>９５０</TD>
+                </TR>
+              </TBODY>
+            </TABLE>
+            <BR>
+            以下のプログラムは、カレー屋のメニューをグリッドに表示します。配列をリストに表示するのと同じように、二次元配列を表示するのには、グリッドを使います。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="code">カレー料理￥0, 0 = 「名前」 <BR>
+カレー料理￥0, 1 = 「値段」 <BR>
+カレー料理￥1, 0 = 「ポークカレー」 <BR>
+カレー料理￥1, 1 = 620 <BR>
+カレー料理￥2, 0 = 「インドカレー」 <BR>
+カレー料理￥2, 1 = 920 <BR>
+カレー料理￥3, 0 = 「野菜カレー」 <BR>
+カレー料理￥3, 1 = 690 <BR>
+カレー料理￥4, 0 = 「肉いっぱい激辛カレー」 <BR>
+カレー料理￥4, 1 = 950 <BR>
+<BR>
+カレー料理グリッドとはグリッド <BR>
+カレー料理グリッドのアイテムは、カレー料理。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="left" colspan="2">これを実行すると、以下のようなグリッドが表示されます。<BR>
+            <IMG src="grid.gif" width="332" height="135" border="0"></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>配列変数が、<BR>
+            <BR>
+            <B>　　変数名￥インデックス<BR>
+            </B><BR>と書くのと同様に、二次元配列変数は<BR>
+            <BR>
+            <B>　　変数名￥行,列<BR>
+            </B><BR>のように書くことができます。<BR>
+            ただ、一括で値を設定するのが若干面倒なので、こちらもリストのときと同じように文字列で一括設定することができます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">カレー料理は、「名前, 値段<BR>ポークカレー, 620<BR>インドカレー, 920<BR>野菜カレー, 690<BR>肉いっぱい激辛カレー, 
+950」<BR>
+            <BR>カレー料理グリッドとはグリッド<BR>カレー料理グリッドのアイテムは、カレー料理。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>上のプログラムを実行しても先ほどと同じ結果が表示されます。さっきの配列変数と違うのは、一行に、「(名前),
+            (値段)」とカンマで区切った値を書いていくところです。<BR>
+            <BR>
+            このカンマで区切ったデータのことを、ＣＳＶ（カンマ区切りデータ）と呼び、表計算ソフトの共通フォーマットとしても使われます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">好きなデータだけをピックアップ</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="middle"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>『表ピックアップ』命令を使うと二次元配列から任意のデータだけをピックアップすることができます。<BR>以下のプログラムを見てください。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="left" colspan="2" class="code">カレー料理は、「名前, 値段<BR>ポークカレー, 620<BR>インドカレー, 920<BR>野菜カレー, 690<BR>肉いっぱい激辛カレー, 
+950」<BR>
+            <BR>野菜カレーは、カレー料理の０から「野菜」を表ピックアップ。<BR>野菜カレーを表示。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD align="center"><IMG src="../pic/c008cut.gif" width="64" height="64" border="0"></TD>
+            <TD>これは『表ピックアップ』命令を使ってカレー料理の中から「野菜」という文字を含む行をピックアップして表示するというプログラムです。<BR>
+            <BR>
+            実行すると、「野菜カレー, 
+690」が表示されます。</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">
+            <HR>
+            次のページ<A href="08-1-hash.htm">→ハッシュ</A><BR>
+            前のページ<A href="06-1-array.htm">←配列変数</A>
+            <HR>
+            </TD>
+            <TD></TD>
+          </TR>
+        </TBODY>
+      </TABLE>
+      </TD>
+    </TR>
+    <TR>
+      <TD><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+  </TBODY>
+</TABLE>
+</CENTER>
+<CENTER></CENTER>
+<CENTER></CENTER>
+</BODY>
+</HTML>
