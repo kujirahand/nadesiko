@@ -1,0 +1,48 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{9FACEB98-6454-4065-B131-1589F16E55F3}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="SetupNako.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\delphi2009\packfile2\Installer\unpack.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="SetupNako">
+			<MSBuild Projects="SetupNako.dproj"/>
+		</Target>
+		<Target Name="SetupNako:Clean">
+			<MSBuild Targets="Clean" Projects="SetupNako.dproj"/>
+		</Target>
+		<Target Name="SetupNako:Make">
+			<MSBuild Targets="Make" Projects="SetupNako.dproj"/>
+		</Target>
+		<Target Name="unpack">
+			<MSBuild Projects="..\..\delphi2009\packfile2\Installer\unpack.dproj"/>
+		</Target>
+		<Target Name="unpack:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\delphi2009\packfile2\Installer\unpack.dproj"/>
+		</Target>
+		<Target Name="unpack:Make">
+			<MSBuild Targets="Make" Projects="..\..\delphi2009\packfile2\Installer\unpack.dproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="SetupNako;unpack"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="SetupNako:Clean;unpack:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="SetupNako:Make;unpack:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>
