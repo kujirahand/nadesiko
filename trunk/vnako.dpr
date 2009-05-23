@@ -1,6 +1,7 @@
 program vnako;
 
 {%File 'component\hedit251\heverdef.inc'}
+{%File 'vnako.bdsproj'}
 
 uses
   SysUtils,
@@ -107,6 +108,8 @@ uses
   VistaAltFixUnit in 'component\VistaAltFixUnit.pas',
   GraphicEx in 'component\GraphicEx\GraphicEx.pas',
   vnako_message in 'vnako_unit\vnako_message.pas';
+
+{$R *.TLB}
 
 {$R *.res}
 
