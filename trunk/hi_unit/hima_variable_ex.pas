@@ -1365,7 +1365,11 @@ var
         SetPointerIndex(Index, (value^.ptr));
       end;
       REC_DTYPE_4FLOAT:   begin
-        if (value^.VType = varStr) and (value^.Size > 4) then
+        if (Value^.VType = varNil) or (value^.Size = 0) then
+        begin
+          fptr := nil;
+        end
+        else if (value^.VType = varStr) and (value^.Size > 4) then
         begin
           fptr := Pointer(value^.ptr_s);
         end
@@ -1378,7 +1382,11 @@ var
         SetPointerIndex(Index, fptr);
       end;
       REC_DTYPE_8REAL:    begin
-        if (value^.VType = varStr) and (value^.Size > 8) then
+        if (Value^.VType = varNil) or (value^.Size = 0) then
+        begin
+          dptr := nil;
+        end
+        else if (value^.VType = varStr) and (value^.Size > 8) then
         begin
           dptr := Pointer(value^.ptr_s);
         end
@@ -1393,7 +1401,11 @@ var
       REC_DTYPE_8INT64,
       REC_DTYPE_8QWORD:
       begin
-        if (value^.VType = varStr) and (value^.Size > 8) then
+        if (Value^.VType = varNil) or (value^.Size = 0) then
+        begin
+          iptr := nil;
+        end
+        else if (value^.VType = varStr) and (value^.Size > 8) then
         begin
           iptr := Pointer(value^.ptr_s);
         end
