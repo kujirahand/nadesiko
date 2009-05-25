@@ -195,6 +195,8 @@ var
   sh: SHFILEOPSTRUCT;
   ret: Integer;
 begin
+  PathFrom  := PathFrom + #0;
+  PathTo    := PathTo   + #0;
   ZeroMemory(@sh, SizeOf(SHFILEOPSTRUCT));
   sh.wFunc := FO_COPY;
   sh.fFlags := FOF_SIMPLEPROGRESS or FOF_NOCONFIRMATION;
@@ -281,7 +283,7 @@ end;
 
 function TKPathUtils.MyDocument: string;
 begin
-  Result := GetSpecialDir(CSIDL_MYDOCUMENTS);
+  Result := GetSpecialDir(CSIDL_PERSONAL);
 end;
 
 
