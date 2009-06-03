@@ -19,10 +19,6 @@ type
   lua_State = record end;
   Plua_State = ^lua_State;
 
-const
-  LuaDLL = 'lua.dll'; // 10/02/2006 Jean-Francois Goulet - Changed the dll name
-                      // for backward compatibility with LuaEdit
-
 (*****************************************************************************)
 (*                               luaconfig.h                                 *)
 (*****************************************************************************)

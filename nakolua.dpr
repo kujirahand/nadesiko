@@ -7,10 +7,10 @@ uses
   dnako_import in 'hi_unit\dnako_import.pas',
   dnako_import_types in 'hi_unit\dnako_import_types.pas',
   kuLuaUtils in 'component\luautils\kuLuaUtils.pas',
-  LauxLib in 'component\luautils\LauxLib.pas',
   Lua in 'component\luautils\Lua.pas',
   LuaLib in 'component\luautils\LuaLib.pas',
-  LuaUtils in 'component\luautils\LuaUtils.pas';
+  LuaUtils in 'component\luautils\LuaUtils.pas',
+  LauxLib in 'component\luautils\LauxLib.pas';
 
 //------------------------------------------------------------------------------
 // Lua側に登録する関数
@@ -162,8 +162,8 @@ begin
   //<命令>
   //+Lua拡張(nakolua)
   //-Lua操作
-  AddFunc('LUAする','{=?}Sを',7200,procExecLua,'Luaのプログラムを実行する','LUAする','lua.dll');
-  AddFunc('LUA値','{=?}Vの',7201,procGetLuaValue,'Luaの変数Vの値を得て返す','LUAあたい','lua.dll');
+  AddFunc('LUAする','{=?}Sを',7200,procExecLua,'Luaのプログラムを実行する','LUAする','lua5.1.dll');
+  AddFunc('LUA値','{=?}Vの',7201,procGetLuaValue,'Luaの変数Vの値を得て返す','LUAあたい','lua5.1.dll');
   //</命令>
 end;
 

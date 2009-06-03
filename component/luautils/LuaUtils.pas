@@ -33,7 +33,7 @@ unit LuaUtils;
 interface
 
 uses
-  SysUtils, Classes, ComCtrls, lua, lualib, lauxlib, Variants;
+  SysUtils, Classes, ComCtrls, lua, lauxlib, Variants;
 
 const
      ERR_Script ='Script Error : ';  
