@@ -2,13 +2,15 @@ unit kuLuaUtils;
 
 interface
 uses
-  SysUtils, Classes, Lua, LuaLib, LuaUtils, LauxLib;
+  SysUtils, Classes, Lua, LuaUtils;
 
 type
   TKuLua = class
   protected
     FHandle: PLua_state;
   public
+    ErrorString: string;
+    //
     constructor Create;
     destructor Destroy; override;
     procedure Open;
@@ -36,11 +38,25 @@ implementation
 
 var _kulua: TKuLua = nil;
 
+
+procedure KLuaOnLuaStdoutEx(F, S: PAnsiChar; L, N: Integer);
+begin
+  if L > 0 then
+  begin
+    KLua.ErrorString := KLua.ErrorString + string(AnsiString(F)) + #13#10;
+  end;
+  if N > 0 then
+  begin
+    KLua.ErrorString := KLua.ErrorString + string(AnsiString(S)) + #13#10;
+  end;
+end;
+
 function KLua: TKuLua;
 begin
   if _kulua = nil then
   begin
     _kulua := TKuLua.Create;
+    LuaUtils.OnLuaStdoutEx := KLuaOnLuaStdoutEx;
   end;
   Result := _kulua;
 end;
@@ -51,6 +67,9 @@ var
 begin
   p := lua_tostring(L, -1);
   Result := AnsiString(p);
+  //lua_printex(L);
+  Result := Result + KLua.ErrorString;
+  KLua.ErrorString := '';
 end;
 
 function KLuaLoadFile(L: Plua_State; Filename: string): Integer;
