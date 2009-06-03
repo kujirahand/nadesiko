@@ -1203,7 +1203,14 @@ begin
   i := MsgYesNoCancel('ï∂èëÇÕïœçXÇ≥ÇÍÇƒÇ¢Ç‹Ç∑ÅB'#13#10'ï€ë∂ÇµÇ‹Ç∑Ç©ÅH',
        Application.Title);
   case i of
-    IDYES   : mnuSaveClick(nil);
+    IDYES   :
+      begin
+        mnuSaveClick(nil);
+        if FModified = True then
+        begin
+          Result := True; Exit;
+        end;
+      end;
     IDNO    : ;
     IDCANCEL: begin Result := True; end;
   end;

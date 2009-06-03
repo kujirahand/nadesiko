@@ -1,8 +1,8 @@
 object frmNako: TfrmNako
   Left = 192
   Top = 130
-  Width = 598
-  Height = 398
+  Width = 606
+  Height = 407
   AutoScroll = True
   Caption = #12394#12391#12375#12371
   Color = clBtnFace
