@@ -2,7 +2,7 @@ unit kuLuaUtils;
 
 interface
 uses
-  SysUtils, Classes, Lua, LuaUtils;
+  SysUtils, Classes, Lua;
 
 type
   TKuLua = class
@@ -39,6 +39,16 @@ implementation
 var _kulua: TKuLua = nil;
 
 
+function LuaToAnsiString(L: PLua_State; Index: Integer): AnsiString;
+var
+  Size: Integer;
+begin
+  Size := lua_strlen(L, Index);
+  SetLength(Result, Size);
+  if (Size > 0) then
+    Move(lua_tostring(L, Index)^, Result[1], Size);
+end;
+
 procedure KLuaOnLuaStdoutEx(F, S: PAnsiChar; L, N: Integer);
 begin
   if L > 0 then
@@ -56,7 +66,7 @@ begin
   if _kulua = nil then
   begin
     _kulua := TKuLua.Create;
-    LuaUtils.OnLuaStdoutEx := KLuaOnLuaStdoutEx;
+    //LuaUtils.OnLuaStdoutEx := KLuaOnLuaStdoutEx;
   end;
   Result := _kulua;
 end;

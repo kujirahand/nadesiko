@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<PersonalityInfo>
+		<Option>
+			<Option Name="Personality">Default.Personality</Option>
+			<Option Name="ProjectType"></Option>
+			<Option Name="Version">1.0</Option>
+			<Option Name="GUID">{F3824A37-36A1-43FE-A9CA-EAC50374DEC7}</Option>
+		</Option>
+	</PersonalityInfo>
+	<Default.Personality>  <Projects>
+      <Projects Name="dnako.dll">dnako.bdsproj</Projects>
+      <Projects Name="vnako.exe">vnako.bdsproj</Projects>
+      <Projects Name="gnako.exe">gnako.bdsproj</Projects>
+      <Projects Name="cnako.exe">cnako.bdsproj</Projects>
+      <Projects Name="nakofile.dll">nakofile.bdsproj</Projects>
+      <Projects Name="nakolua.dll">nakolua.bdsproj</Projects>
+      <Projects Name="nakostr.dll">nakostr.bdsproj</Projects>
+      <Projects Name="nakooffice.dll">nakooffice.bdsproj</Projects>
+      <Projects Name="Targets">dnako.dll vnako.exe gnako.exe cnako.exe nakofile.dll nakolua.dll nakostr.dll nakooffice.dll</Projects>
+    </Projects>
+    <Dependencies/>
+  </Default.Personality>
+</BorlandProject>
