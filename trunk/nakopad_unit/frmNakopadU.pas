@@ -1020,7 +1020,7 @@ begin
     edtB.Fountain := edtA.Fountain;
   end;
   changeBlankMark(ini.ReadBool('Edit','ShowBlank', False));
-  mnuInsDebug.Checked := ini.ReadBool('Edit','mnuInsDebug', True);
+  mnuInsDebug.Checked := ini.ReadBool('Edit','mnuInsDebug', False);
 
   // ƒ^ƒu
   sheetAction.TabVisible  := ini.ReadBool('tab', 'sheetAction.visible', sheetAction.TabVisible);
