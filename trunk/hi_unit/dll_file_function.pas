@@ -2158,14 +2158,17 @@ var
   ph, pcnt: PHiValue;
   s: string;
   h: TFileStream;
+  read_sz, required_sz: Integer;
 begin
   ph   := nako_getFuncArg(args, 0);
   pcnt := nako_getFuncArg(args, 1);
+  required_sz := hi_int(pcnt);
 
   h := TFileStream( hi_int(ph) );
-  SetLength(s, hi_int(pcnt));
+  SetLength(s, required_sz);
 
-  h.Read(s[1], hi_int(pcnt));
+  read_sz := h.Read(s[1], required_sz);
+  if read_sz < required_sz then SetLength(s, read_sz);
 
   Result := hi_newStr(s);
 end;
@@ -2285,6 +2288,7 @@ begin
     begin
       // ƒXƒgƒŠ[ƒ€‚ÌÅŒã‚Ü‚Å“Ç‚ñ‚Å‚µ‚Ü‚Á‚½ê‡
       flagEnd := True;
+      SetLength(buf,sz);
     end;
     j := 0;
     for i := 1 to sz do
