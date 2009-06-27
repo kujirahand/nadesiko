@@ -1,0 +1,65 @@
+
+# ファイル
+！CNAKO_EXEとは文字列　　 =ランタイムパス&`cnako.exe`
+！NAKOPADとは文字列　　　 =ランタイムパス&`nakopad.exe`
+！設定ファイルとは文字列　=母艦パス&`探査艦設定.ini`
+！履歴ファイルとは文字列　=母艦パス&`検索履歴.txt`
+！タグDBファイルとは文字列=母艦パス&`sampleTags.db`
+！命令DBファイルとは文字列=母艦パス&`simpleCommands.db`
+！使用命令データとは文字列=母艦パス&`usedCommands.dat`
+！ユーザタグとは文字列　　=母艦パス&`userTags.dat`
+
+# コマンド
+！タグDB初期化とは文字列　=「"{CNAKO_EXE}" "{母艦パス}initSampleTags.nako"」
+！命令DB初期化とは文字列　=「"{CNAKO_EXE}" "{母艦パス}initSimpleCommands.nako"」
+！使用命令初期化とは文字列=「"{CNAKO_EXE}" "{母艦パス}initUsedCommands.nako"」
+
+# kona2html.nako連携
+！KONA_INPUTとは文字列　=母艦パス&`konawiki.input.txt`
+！KONA_OUTPUTとは文字列 =母艦パス&`konawiki.output.html`
+
+# フォルダ
+！ツールズフォルダとは文字列　=ランタイムパス&`tools\`
+！マニュアルフォルダとは文字列=ランタイムパス&`doc\`
+！サンプルフォルダとは文字列　=ランタイムパス&`sample\`
+
+# BBS_URL
+！質問URL　　　=`http://www.himanavi.net/cgi/nade-bbs2/srch.cgi?mode=srch&no=0&word=%`
+！初心者URL　　=`http://www.himanavi.net/cgi/nade-1st/srch.cgi?no=0&word=%`
+！プログラムURL=`http://www.himanavi.net/cgi/nade-bbs/srch.cgi?mode=srch&no=0&word=%`
+！WikiURL　　　=`http://nadesi.com/man/page/?cx=partner-pub-3816223231062294%3A6jl3ku-nk7a&cof=FORID%3A10&ie=UTF-8&q=%`
+
+# プログラム定数
+！ナコとは文字列　　=`.nako`
+！見つかったとは整数=1
+！ENTERとは整数　　 =13
+！カンマとは文字列　=`,`
+！スペースとは文字列=` `
+
+# タブ定数
+！Browserとは整数 =0
+！Manualとは整数　=1
+！Editorとは整数　=2
+！Sampleとは整数　=3
+
+# 検索種類・モード定数
+！OFFLINEとは整数 = $01
+！ONLINEとは整数  = $02
+！MANUALとは整数  = $04
+！WIKIとは整数    = $08
+！BBSとは整数     = $10
+！FILEとは整数    = $20
+！DATABASEとは整数= $40
+！URLとは整数     = $80
+！NORMALとは整数  = $FF
+
+# DBヘッダ
+！ヘッダ=`ID,type,name,path,tag`をカンマで区切る
+！MYID  = 0 #`ID`
+！TYPE  = 1 #`type`
+！NAME  = 2 #`name`
+！PATH  = 3 #`path`
+！TAG   = 4 #`tag`
+
+# ウェイト
+！ウェイトとは数値=0.01
