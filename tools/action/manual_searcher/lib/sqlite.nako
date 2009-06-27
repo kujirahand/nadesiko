@@ -1,0 +1,59 @@
+# 取り込み用ライブラリ：「SQLITE」
+
+■SQLITE
+　・{非公開　文字列}FILE
+　・{文字列}ファイル　←FILE設定　→FILE取得
+　・{非公開}FILE設定(V)～
+　　もしFH>0ならばFHのSQLITE閉じる
+　　FILE=V
+　　FH=FILEをSQLITE開く
+　・{非公開}FILE取得～_=FILE
+　・{非公開　整数}FH
+　・{整数}ハンドル　←FH設定　→FH取得
+　・{非公開}FH設定(V)～FH=V
+　・{非公開}FH取得～_=FH
+　・{文字列}テーブル
+　・{文字列}フィールド
+　・テーブル一括追加({=?}TABLEにARRを)～
+　　もしTABLEが空ならばTABLE=テーブル
+　　HEADとは配列=ARR[0]
+　　DATAとはハッシュ。Iとは整数
+　　Iを1からARRの配列要素数-1まで繰り返す
+　　　HEADを反復、DATA@対象=ARR[I][回数-1]
+　　　FHのTABLEにDATAをSQLITEデータ挿入
+　・テーブル作成({=?}TABLEをDEFで)～
+　　もしTABLEが空ならばTABLE=テーブル
+　　#「CREATE TABLE {TABLE}」を実行
+　　FHのTABLEをDEFでSQLITEテーブル作成
+　・テーブル削除({=?}TABLEを|TABLEの)～
+　　もしTABLEが空ならばTABLE=テーブル
+　　#「DROP TABLE {TABLE}」を実行
+　　FHのTABLEをSQLITEテーブル削除
+　・データ挿入({=?}TABLEの{=?}FIELDへVALUESを)～
+　　もしTABLEが空ならばTABLE=テーブル
+　　もしFIELDが空ならばFIELD=フィールド
+　　「INSERT INTO {TABLE} ({FIELD}) VALUES ({VALUES})」を実行
+　・データ削除({=?}TABLEでWHEREを)～
+　　もしTABLEが空ならばTABLE=テーブル
+　　FHのTABLEでWHEREをSQLITEデータ削除
+　・レコード挿入({=?}TABLEにDATAを|TABLEへ)～
+　　もしTABLEが空ならばTABLE=テーブル
+　　FHのTABLEにDATAをSQLITEデータ挿入
+　・フィールド列挙({=?}TABLEで{=?}FIELDの)～
+　　もしTABLEが空ならばTABLE=テーブル
+　　もしFIELDが空ならばFIELD=フィールド
+　　「SELECT {FIELD} FROM {TABLE}」を実行
+　・実行(Sを)～FHでSをSQLITE実行
+　・検索({=?}TABLEで{=?}FIELDから{文字列}Sを)～
+　　返り値とは配列
+　　もしTABLEが空ならばTABLE=テーブル
+　　もしFIELDが空ならばFIELD=フィールド
+　　返り値=FHのTABLEでFIELDからSをSQLITE検索をCSV取得
+　　返り値の0を配列削除。_=返り値
+　・曖昧検索({=?}TABLEで{=?}FIELDから{文字列}Sを)～
+　　返り値とは配列
+　　もしTABLEが空ならばTABLE=テーブル
+　　もしFIELDが空ならばFIELD=フィールド
+　　返り値=FHのTABLEでFIELDからSをSQLITE曖昧検索をCSV取得
+　　返り値の0を配列削除。_=返り値
+

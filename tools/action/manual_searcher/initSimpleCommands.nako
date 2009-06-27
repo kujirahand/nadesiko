@@ -1,0 +1,48 @@
+※【なでしこ実行モード】cnako
+CNAKOモードは『CON』
+
+！`constants.nako`を取り込む
+！`lib\wiki_db.nako`を取り込む
+！`lib\removeJoshi.nako`を取り込む
+
+！対象ファイル名とは文字列=命令DBファイルからファイル名抽出
+
+"
+# initSimpleCommands.nako ----------------
+# 補助データベース構築開始
+# > {対象ファイル名}
+"と表示
+
+もし命令DBファイルが存在するならば
+　命令DBファイルをファイル削除
+
+コマンドとはSQLITE
+これについて
+　ファイルは命令DBファイル
+　テーブルは`command`
+　フィールドは`simplename`
+　`command`を`id,simplename`でテーブル作成
+　#`relfile`を`n,fileid,simplename`でテーブル作成
+
+DB初期化処理
+
+"
+# > {対象ファイル名} ({命令DBファイルのファイルサイズ}KB)
+# ... 構築完了"と表示
+
+終わる
+
+●DB初期化処理
+　命令セットとはハッシュ。STRとは文字列。ARRとは配列
+　wikiDBのCOMMANDの`command`で`id,name`のフィールド列挙
+　ARR=それをCSV取得
+　ARRの0を配列削除
+　ARRを反復
+　　命令セット@`id`=対象[0] # ID
+　　対象[1]をトークン分割 # 平仮名除去命令名
+　　STR=_[0]。STRから助詞除去
+　　命令セット@`simplename`=STR
+　　もしSTRが空でなければ
+　　　STRを表示
+　　　コマンドに命令セットをレコード挿入
+

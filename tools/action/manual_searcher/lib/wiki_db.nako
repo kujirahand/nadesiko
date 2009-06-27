@@ -1,0 +1,114 @@
+
+！`sqlite.nako`を取り込む
+！`kona2html.nako`を取り込む
+
+wikiDBを作る。# シングルトン
+
+# Test # 
+/*
+
+wikiDBのINPUT=`input.txt.temp`
+wikiDBで`output.html`へ`LUAする`の命令情報HTML出力
+終わる
+
+DBとはwikiDB
+DBについて
+　`キー送信`の命令検索
+　STR=それをリスト絞り込み選択
+　もしSTRが空でなければ
+　　STRの`,`までを切り取る
+　　STRを言う
+　　STRの命令情報取得
+　　それを言う
+
+# */
+
+■wikiDB
+　・{SQLITE}COMMAND
+　・{SQLITE}WIKI
+　・命令検索({文字列}WORDの|{文字列}WORDを)～
+　　返り値とは配列。SQL文とは文字列
+　　LENとは整数=WORDの文字数
+　　WORD=WORDをSJIS_UTF8N変換
+　　SQL文=「SELECT name,kana FROM command WHERE name = '{WORD}';」
+　　COMMANDでSQL文を実行して反復
+　　　もし回数が1ならば続ける
+　　　もしABS(対象[0]の文字数-LEN)≦3ならば
+　　　　返り値に対象を配列追加
+　　返り値を戻す
+　・命令曖昧検索({文字列}WORDの|{文字列}WORDを)～
+　　返り値とは配列
+　　WORD=WORDをSJIS_UTF8N変換
+　　返り値=WIKIで「SELECT id,name FROM logs WHERE name LIKE '%{WORD}%';」を実行
+　　返り値の0を配列削除
+　　返り値を戻す
+　・WIKIリファレンス取得({文字列}NAMEの)～
+　　ARRとは配列#=WIKIの`logs`で`id`からIDを検索
+　　ARR=WIKIで「SELECT body FROM logs WHERE name = '{NAMEをSJIS_UTF8N変換}';」を実行。
+　　ARR[1]を戻す
+　・命令情報取得({文字列}NAMEの|NAMEを)～
+　　ARRとは配列。
+　　ARR=COMMANDで「SELECT name,args,desc,kana,ctype,h1,h2 FROM command WHERE name = '{NAME}'」を実行。
+　　ARR[1]を戻す
+　・{文字列}INPUT
+　・命令情報HTML出力({文字列}OUTPUTへ{文字列}NAMEの)～
+　　TEMPとは文字列=INPUT
+　　NAMEのWIKIリファレンス取得
+　　それをTEMPに保存
+　　KONA2HTMLのヘッダ迄=「<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta http-equiv="content-style-type" content="text/css" />
+  <link rel="stylesheet" type="text/css" href="konawiki_light.css" />
+  <title>{NAME} - なでしこリファレンス</title>
+</head>
+」
+　　KONA2HTMLのボディ迄=「<body>
+<div id="wikibody">
+<div class="contents">
+
+<h4>{NAME}</h4>
+{NAMEの命令情報テーブルHTML取得}
+」
+　　KONA2HTMLでTEMPからOUTPUTへ変換
+　　TEMPをファイル削除
+　・命令情報テーブルHTML取得({文字列}NAMEの)～
+　　ARRとは配列=NAMEの命令情報取得
+　　「<table caption="{NAME}命令の名前、引数、簡単な説明の表です。">
+<caption style="display:none;">"{NAME}"命令に関する情報</caption>
+<tbody>
+  <tr>
+    <th>分類</th>
+    <td>{ARR[5]} / {ARR[6]}</td>
+  </tr>
+  <tr>
+    <th>種類</th>
+    <td>{ARR[4]}</td>
+  </tr>
+  <tr>
+    <th>名前</th>
+    <td><ruby>
+      <rb>{ARR[0]}</rb>
+      <rp>(</rp>
+      <rt>{ARR[3]}</rt>
+      <rp>)</rp>
+    </ruby></td>
+  </tr>
+  <tr>
+    <th>引数</th>
+    <td>{ARR[1]}</td>
+  </tr>
+  <tr>
+    <th>説明</th>
+    <td>{ARR[2]}</td>
+  </tr>
+</tbody>
+</table>」を戻す
+　・作る～
+　　COMMANDのファイル = ランタイムパス&`tools\command.db`
+　　WIKIのファイル　　= ランタイムパス&`tools\wiki.db`
+　　# INPUT="..." ※INPUTファイルの指定が必要
+　　`SJIS`にSQLITE出力コード設定。
+
