@@ -1014,10 +1014,17 @@ begin
   mnuColorBlack.Checked := ini.ReadBool('Edit', 'mnuColorBlack', False);
   if mnuColorBlack.Checked then
   begin
-    edtA.Color := clBlack; edtB.Color := edtA.Color;
-    edtA.Font.Color := clWhite; edtB.Font.Color := edtA.Font.Color;
+    edtA.Color := clBlack;
+    edtA.Font.Color := clWhite;
     edtA.Fountain := NadesikoFountainBlack;
+    //
+    edtB.Color := edtA.Color;
+    edtB.Font.Color := edtA.Font.Color;
     edtB.Fountain := edtA.Fountain;
+    //
+    edtC.Color := edtA.Color;
+    edtC.Font.Color := edtA.Font.Color;
+    edtC.Fountain := edtA.Fountain;
   end;
   changeBlankMark(ini.ReadBool('Edit','ShowBlank', False));
   mnuInsDebug.Checked := ini.ReadBool('Edit','mnuInsDebug', False);
@@ -1220,6 +1227,10 @@ procedure TfrmNakopad.mnuSaveClick(Sender: TObject);
 var
   s: string;
 begin
+  if edtActive = edtC then
+  begin
+    edtActive := edtB;
+  end;
   // •Û‘¶
   if pageMain.ActivePage = tabDesign then
   begin
@@ -1260,6 +1271,10 @@ var
   i: Integer;
 begin
   // –¼‘O‚ð‚Â‚¯‚Ä•Û‘¶
+  if edtActive = edtC then
+  begin
+    edtActive := edtB;
+  end;
   if pageMain.ActivePage = tabDesign then
   begin
     design2source;
@@ -4259,6 +4274,10 @@ begin
   edtB.Font.Color := edtA.Font.Color;
   edtB.Fountain   := edtA.Fountain;
   FColorModes[0].fountain := edtA.Fountain;
+  //
+  edtC.Color      := edtA.Color;
+  edtC.Font.Color := edtA.Font.Color;
+  edtC.Fountain   := edtA.Fountain;
 end;
 
 procedure TfrmNakopad.lstMemberKeyDown(Sender: TObject; var Key: Word;
@@ -5883,6 +5902,7 @@ procedure TfrmNakopad.edtCDrawLine(Sender: TObject; LineStr: String; X, Y,
   Index: Integer; ARect: TRect; Selected: Boolean);
 var
   flagDiff: Boolean;
+  c: TColor;
 begin
   //
   flagDiff := False;
@@ -5903,8 +5923,10 @@ begin
   begin
     if flagDiff then
     begin
+      c := RGB(255,200,200);
+      if mnuColorBlack.Checked then c := c xor $FFFFFF;
       edtC.Canvas.Brush.Style := bsSolid;
-      edtC.Canvas.Brush.Color := RGB(255,200,200);
+      edtC.Canvas.Brush.Color := c;
       edtC.Canvas.Pen.Style   := psClear;
       edtC.Canvas.Rectangle(ARect);
       edtC.Canvas.TextRect(ARect, X, Y, LineStr);
