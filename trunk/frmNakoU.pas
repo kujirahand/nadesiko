@@ -1444,34 +1444,30 @@ begin
     Brush.Color := Self.Color;
     Brush.Style := bsSolid;
     Pen.Color   := Self.Color;
-    Pen.Style   := psClear;
+    Pen.Style   := psSolid;
     Rectangle(0,0,tmp.Width,tmp.Height);
   end;
-
-  //
   tmp.Canvas.Draw(0, 0, backBmp);
 
   //
   if backBmp = nil then
   begin
     backBmp := TBitmap.Create;
+    with backBmp do begin
+      Tag := Self.Tag;
+      OnClick     := self.eventClick;
+      OnDblClick  := self.eventDblClick;
+      OnMouseDown := self.eventMouseDown;
+      OnMouseMove := self.eventMouseMove;
+      OnMouseUp   := self.eventMouseUp;
+      OnMouseEnter:= self.eventMouseEnter;
+      OnMouseLeave:= self.eventMouseLeave;
+      OnMouseWheel:= self.eventMouseWheel;
+    end;
+    Self.DoubleBuffered := True;
   end;
   backBmp.Assign(tmp);
   FreeAndNil(tmp);
-  //
-  with backBmp do begin
-    Tag := Self.Tag;
-    OnClick     := self.eventClick;
-    OnDblClick  := self.eventDblClick;
-    OnMouseDown := self.eventMouseDown;
-    OnMouseMove := self.eventMouseMove;
-    OnMouseUp   := self.eventMouseUp;
-    OnMouseEnter:= self.eventMouseEnter;
-    OnMouseLeave:= self.eventMouseLeave;
-    OnMouseWheel:= self.eventMouseWheel;
-  end;
-
-  Self.DoubleBuffered := True;
 end;
 
 
