@@ -4462,6 +4462,14 @@ begin
   end else
   begin
     parentObj := getGui(defp) as TComponent;
+    // BUG (@303) 親部品にタブページが指定された時の対処
+    if parentObj.ClassNameIs('TPageControl') then
+    begin
+      if TPageControl(parentObj).PageCount > 0 then
+      begin
+        parentObj := TPageControl(parentObj).ActivePage;
+      end;
+    end;
   end;
   Result := nil;
 end;
