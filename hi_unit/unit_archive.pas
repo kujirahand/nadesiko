@@ -838,8 +838,8 @@ begin
       pass := ' -p' + ArchivePassword + ' ';
     end;
     //cmd := a -a1 -r2 -x1 -jp1 "書庫名" "基準ディレクトリ" "パス名"
-    //
-    cmd := 'a -tzip '+pass+'-r "'+desFile+'" "'+basePath+'" '+fs;
+    // BUG(@175) -r0 ワイルドカード名に付いては再帰的ディレクトリ検索を有効にする
+    cmd := 'a -tzip '+pass+'-r0 "'+desFile+'" "'+basePath+'" '+fs;
     SevenZipCommand(cmd);
   finally
     srcFiles.Free;
@@ -901,7 +901,8 @@ begin
     end;
 
     //cmd := a -a1 -r2 -x1 -jp1 "書庫名" "基準ディレクトリ" "パス名"
-    cmd := '-c '+pass+'-r -y1 "'+desFile+'" "'+basePath+'" '+fs;
+    // BUG(@175) -r0 ワイルドカード名に付いては再帰的ディレクトリ検索を有効にする
+    cmd := '-c '+pass+'-r0 -y1 "'+desFile+'" "'+basePath+'" '+fs;
     Yz1Command(cmd);
   finally
     srcFiles.Free;

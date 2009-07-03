@@ -4,10 +4,10 @@ interface
 uses
   windows, dnako_import, dnako_import_types, dll_plugin_helper,
   unit_pack_files, SysUtils, Classes, shellapi, registry, inifiles,
-  shlobj, Variants, ActiveX, hima_types, messages;
+  shlobj, Variants, ActiveX, hima_types, messages, nadesiko_version;
 
 const
-  NAKOFILE_DLL_VERSION = '1.5041';
+  NAKOFILE_DLL_VERSION = NADESIKO_VER;
 
 type
   THiSystemDummy = class
