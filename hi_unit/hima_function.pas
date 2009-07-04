@@ -6002,7 +6002,6 @@ var
   e: TFileMixReader;
   s: THStringList;
 begin
-  Result := nil;
   a := nako_getFuncArg(args, 0);; // pack
   e := TFileMixReader.Create(hi_str(a));
   try
@@ -6291,14 +6290,14 @@ begin
       //
       name := HimaGetWord(p, josi);
       arg.Name := HiSystem.TangoList.GetID(name);
-      arg.JosiList.AddNum(HiSystem.JosiList.GetID(josi));
+      arg.JosiList.AddNum(DWORD(HiSystem.JosiList.GetID(josi)));
       Self.Add_JosiCheck(arg);
     end else
     begin
       name := HimaGetWord(p, josi);
       arg := THimaArg.Create;
       arg.Name := HiSystem.TangoList.GetID(name);
-      arg.JosiList.AddNum(HiSystem.JosiList.GetID(josi));
+      arg.JosiList.AddNum(DWORD(HiSystem.JosiList.GetID(josi)));
       Self.Add_JosiCheck(arg);
     end;
     if p^ = '|' then Inc(p);

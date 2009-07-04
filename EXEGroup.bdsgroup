@@ -8,7 +8,13 @@
 			<Option Name="GUID">{F3824A37-36A1-43FE-A9CA-EAC50374DEC7}</Option>
 		</Option>
 	</PersonalityInfo>
-	<Default.Personality>  <Projects>
+	<Default.Personality>  
+    
+    
+    
+    
+    
+    <Projects>
       <Projects Name="dnako.dll">dnako.bdsproj</Projects>
       <Projects Name="vnako.exe">vnako.bdsproj</Projects>
       <Projects Name="gnako.exe">gnako.bdsproj</Projects>
@@ -17,7 +23,10 @@
       <Projects Name="nakolua.dll">nakolua.bdsproj</Projects>
       <Projects Name="nakostr.dll">nakostr.bdsproj</Projects>
       <Projects Name="nakooffice.dll">nakooffice.bdsproj</Projects>
-      <Projects Name="Targets">dnako.dll vnako.exe gnako.exe cnako.exe nakofile.dll nakolua.dll nakostr.dll nakooffice.dll</Projects>
+      <Projects Name="nakonet.dll">nakonet.bdsproj</Projects>
+      <Projects Name="nakoctrl.dll">nakoctrl.bdsproj</Projects>
+      <Projects Name="nako_testunit.dll">nako_testunit.bdsproj</Projects>
+      <Projects Name="Targets">dnako.dll vnako.exe gnako.exe cnako.exe nakofile.dll nakolua.dll nakostr.dll nakooffice.dll nakonet.dll nakoctrl.dll nako_testunit.dll</Projects>
     </Projects>
     <Dependencies/>
   </Default.Personality>

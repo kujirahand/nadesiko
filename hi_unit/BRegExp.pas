@@ -193,8 +193,6 @@ var
   re: TBRegExp;
   i: Integer;
 begin
-  Result := False;
-
   re := TBRegExp.Create;
   // ƒŒƒ|[ƒg‚É’Ç‰Á
   // load check
