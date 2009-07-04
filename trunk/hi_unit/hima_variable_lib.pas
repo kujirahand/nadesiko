@@ -19,7 +19,6 @@ uses hima_string, unit_string;
 function hi_split(str, splitter: PHiValue): PHiValue;
 var
   s,  kugiri, res: AnsiString;
-  sp: PAnsiChar;
   p: PHiValue;
 begin
   s := hi_str(str);

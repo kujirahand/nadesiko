@@ -230,7 +230,7 @@ function hi_tango2id(tango: AnsiString): DWORD;
 function hi_id2fileno(id: DWORD): Integer;
 
 procedure _initTag;
-procedure _checkTag(tag, name: DWORD);
+procedure _checkTag(tag:Integer; name: DWORD);
 
 const
   BREAK_OFF = MaxInt;
@@ -289,11 +289,11 @@ begin
   //for i := low(ctag) to high(ctag) do ctag[i] := 0;
 end;
 
-procedure _checkTag(tag, name: DWORD);
+procedure _checkTag(tag:Integer; name: DWORD);
 var
   i: Integer;
 
-  function blank(tag: Integer; check: Boolean = False): Boolean;
+  function __blank(tag: Integer; check: Boolean = False): Boolean;
   var idx, bit: Integer; msk: Byte;
   begin
     Result := True;
@@ -315,14 +315,14 @@ var
 
 begin
   // 0 なら調べない
-  if (tag = 0) then Exit;
+  if (tag <= 0) then Exit;
 
   // レポート
-  if not blank(tag) then
+  if not __blank(tag) then
   begin
     // 何番ならあいているのか調べる
     i := tag - 1;
-    while not blank(i) do Dec(i);
+    while not __blank(i) do Dec(i);
     // レポートの表示
     debugs('[命令タグ重複] tag='+IntToStr(tag)+' name='+hi_id2tango(name) + #13#10 +
        'それ以前の空白番号=' + IntToStr(i));
@@ -330,7 +330,7 @@ begin
   end;
 
   // ビットをセットする
-  blank(tag, True);
+  __blank(tag, True);
 end;
 
 
@@ -1708,7 +1708,8 @@ begin
         begin
           PluginInit(HInstance);
         end;
-      end;      proc   := GetProcAddress(h, 'ImportNakoFunction');
+      end;
+      proc   := GetProcAddress(h, 'ImportNakoFunction');
       if Assigned(proc) then
       begin
         proc;

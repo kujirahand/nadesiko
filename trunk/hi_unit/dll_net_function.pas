@@ -1252,18 +1252,21 @@ begin
           msgid := msgidsNow.Strings[i];
           getToken_s(msgid, ' ');
           msgid := Popd3CheckMessageIdAsFileName(msgid);
-          if msgids.IndexOf(msgid) >= 0 then Continue; // 受信済み
           raw := TStringList.Create;
           try
-            if pop3.RetrieveRaw(i + 1, raw) then
-            begin
-              // save to .eml
-              Sender.critical.Enter;
-              try
-                raw.SaveToFile(tmpDir + msgid + '.eml');
-                msgids.Add(msgid);
-              finally
-                Sender.critical.Release;
+            // 受信済みか確認する
+            if msgids.IndexOf(msgid) < 0 then
+            begin // 未受信なので受信する
+              if pop3.RetrieveRaw(i + 1, raw) then
+              begin
+                // save to .eml
+                Sender.critical.Enter;
+                try
+                  raw.SaveToFile(tmpDir + msgid + '.eml');
+                  msgids.Add(msgid);
+                finally
+                  Sender.critical.Release;
+                end;
               end;
             end;
             // remove

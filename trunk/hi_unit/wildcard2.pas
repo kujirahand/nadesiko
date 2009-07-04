@@ -893,13 +893,12 @@ end;
 
 function TKWPattern.SubMatch(Src: AnsiString): AnsiString;
 var
-  p, pTemp, pTop: PAnsiChar;
+  p, pTemp: PAnsiChar;
   c: AnsiString;
   len: Integer;
 begin
   Result := '';
   p := PAnsiChar(Src);
-  pTop  := p;
   pTemp := p;
   while p^ <> #0 do
   begin
@@ -924,12 +923,11 @@ end;
 
 function TKWPattern.getToken(var Src: AnsiString): AnsiString;
 var
-  p, pTemp, pTop: PAnsiChar;
+  p, pTemp: PAnsiChar;
   c: AnsiString;
 begin
   Result := '';
   p := PAnsiChar(Src);
-  pTop  := p;
   pTemp := p;
   while p^ <> #0 do
   begin

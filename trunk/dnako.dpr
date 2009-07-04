@@ -487,7 +487,7 @@ begin
   hi_ary(ary).Add(val);
 end;
 
-procedure nako_check_tag(tag, name: DWORD); stdcall; // 命令タグが重複してないかチェック
+procedure nako_check_tag(tag:Integer; name: DWORD); stdcall; // 命令タグが重複してないかチェック
 begin
   _checkTag(tag, name);
 end;
