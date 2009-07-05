@@ -815,6 +815,28 @@ begin
   Result := hi_newInt(g.dwMemoryLoad);
 end;
 
+function cmd_memory_status(h: DWORD): PHiValue; stdcall;
+var
+  g:TMemoryStatus;
+  os:_OSVERSIONINFOA;
+begin
+  ZeroMemory(@os, SizeOf(os));
+  os.dwOSVersionInfoSize := SizeOf(os);
+  GetVersionEx(os);
+  // --- Windows 2000 以降
+  if (os.dwPlatformId = VER_PLATFORM_WIN32_NT)and
+    (os.dwMajorVersion >= 5) then
+  begin
+    //TODO: 将来的に対応する
+    //GlobalMemoryStatusEx <-- 4G超えるメモリサイズを取得可能
+    GlobalMemoryStatus(g);
+    Result := hi_newInt(g.dwTotalPhys);
+  end else begin
+    GlobalMemoryStatus(g);
+    Result := hi_newInt(g.dwTotalPhys);
+  end;
+end;
+
 {
 AddFunc('プロセス列挙','',4256, cmd_enumProcess, '起動しているプロセスを列挙して返す',  'ぷろせすれっきょ');
 AddFunc('プロセス強制終了','Sの',4257, cmd_killProcess, '起動しているプロセス(EXE名で指定)を強制終了させる',  'ぷろせすきょうせいしゅうりょう');
@@ -1071,6 +1093,7 @@ begin
 
   //-メモリ
   AddFunc('メモリ使用率取得','',4262, cmd_memoryusage,  'メモリの使用率を取得して返す',  'めもりしようりつしゅとく');
+  AddFunc('メモリトータルサイズ取得','',4249, cmd_memory_status,  '現在利用可能な物理メモリと仮想メモリの両方に関する情報を取得して返す',  'めもりとーたるさいずしゅとく');
 
   //-プロセス関連
   AddFunc('プロセス列挙','',4256, cmd_enumProcess, '起動しているプロセスを列挙して返す',  'ぷろせすれっきょ');
