@@ -3140,7 +3140,7 @@ begin
       if Copy(s,1,1) = '+' then
         x := 0
       else
-        x := 24;
+        x := 16;
     end else
     begin
       if Copy(s,1,1)='+' then
@@ -3152,7 +3152,7 @@ begin
           Brush.Color := RGB(230,230,230)
         else
           Brush.Color := clWhite;
-        x := 24;
+        x := 16;
       end;
       Font.Color := clBlack;
     end;
