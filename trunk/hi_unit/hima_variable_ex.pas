@@ -244,7 +244,7 @@ type
     function EnumKeys: AnsiString;
     function EnumKeyAndVlues: AnsiString;
     property RefCount: Integer read FRefCount write FRefCount;
-    property InstanceVar: PHiValue read FInstanceVar; // À‘Ì‚ği‚é•Ï”
+    property InstanceVar: PHiValue read FInstanceVar write FInstanceVar; // À‘Ì‚ği‚é•Ï”
   end;
 
 procedure hi_group_create(var v: PHiValue);

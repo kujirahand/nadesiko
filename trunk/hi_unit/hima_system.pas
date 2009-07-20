@@ -184,6 +184,7 @@ type
     function Eval(Source: AnsiString): PHiValue;      // ソース文字列を指定するとすぐ実行する
     procedure Eval2(Source: AnsiString);              // ソース文字列を指定するとすぐ実行する(値を返さない)
     function GetVariable(VarID: DWORD): PHiValue; // 変数の取得
+    function GetVariableRaw(VarID: DWORD): PHiValue; // 変数の取得
     function GetVariableNoGroupScope(VarID: DWORD): PHiValue; // 変数の取得
     function GetVariableS(vname: AnsiString): PHiValue; // 変数の取得
     function ExpandStr(s: AnsiString): AnsiString;       // 文字列の展開
@@ -409,7 +410,6 @@ begin
   id := TangoList.GetID(DeleteGobi(name), tag);
   _checkTag(tag, id);
   item := CreateHiValue(id);
-  item.VType := varStr;
   item.VarID := id;
   item.Designer := 1; // 1:SYSTEM
   hi_setStr(item, value);
@@ -1465,7 +1465,27 @@ begin
   Result := f.GetAsText;
 end;
 
+function THiSystem.GetVariableNoGroupScope(VarID: DWORD): PHiValue;
+begin
+  // ローカルをチェック
+  Result := Local.GetVar(VarID);
+  if Result <> nil then Exit;
+
+  // グローバルをチェック
+  Result := Namespace.GetVar(VarID);
+end;
+
 function THiSystem.GetVariable(VarID: DWORD): PHiValue;
+begin
+  Result := GetVariableRaw(VarID);
+  //
+  if (Result <> nil)and(Result.VType = varLink) then
+  begin
+    Result := hi_getLink(Result);
+  end;
+end;
+
+function THiSystem.GetVariableRaw(VarID: DWORD): PHiValue;
 begin
   // ローカルをチェック
   Result := Local.GetVar(VarID);
@@ -1473,16 +1493,6 @@ begin
 
   // グループスコープをチェック
   Result := GroupScope.FindMember(VarID);
-  if Result <> nil then Exit;
-
-  // グローバルをチェック
-  Result := Namespace.GetVar(VarID);
-end;
-
-function THiSystem.GetVariableNoGroupScope(VarID: DWORD): PHiValue;
-begin
-  // ローカルをチェック
-  Result := Local.GetVar(VarID);
   if Result <> nil then Exit;
 
   // グローバルをチェック
@@ -2336,13 +2346,17 @@ end;
 
 
 procedure THiGroupScope.PushGroupScope(FScope: THiGroup);
+var
+  instance: PHiValue;
 begin
   // グループ『自身』をコピーする
   if jisin = nil then jisin := HiSystem.GetVariable(token_jisin);
 
   // 新しい自身をコピーする
   //hi_var_copyGensi(FScope.InstanceVar, jisin);
-  hi_setLink(jisin, FScope.InstanceVar);
+  instance := FScope.InstanceVar;
+  hi_setLink(jisin, instance);
+  FScope.InstanceVar := instance;
 
   Self.Push(FScope);
 end;
@@ -2528,6 +2542,7 @@ begin
     Result := s.GetVar(id);
     if Result <> nil then Break;
   end;
+
 end;
 
 function THiNamespace.GetVarNamespace(NamespaceID: Integer;

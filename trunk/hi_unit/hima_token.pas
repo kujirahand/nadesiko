@@ -355,6 +355,9 @@ begin
   // bokan\lib
   path := path + 'lib\';
   if check(path) then Exit;
+  // Plug-ins dir
+  if check(HiSystem.PluginsDir) then Exit;
+  
   // other
   path := FindDLLFile(fname);
   if FileExists(path) then

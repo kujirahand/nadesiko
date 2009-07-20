@@ -3,6 +3,7 @@ program cnako;
 {$APPTYPE CONSOLE}
 
 uses
+  SysUtils,
   dnako_import in 'hi_unit\dnako_import.pas',
   dnako_import_types in 'hi_unit\dnako_import_types.pas',
   cnako_function in 'hi_unit\cnako_function.pas',
@@ -213,16 +214,18 @@ end;
 //------------------------------------------------------------------------------
 // ƒƒCƒ“ƒvƒƒOƒ‰ƒ€
 begin
-
+  ReportMemoryLeaksOnShutdown := True;
+  _nako_loader := nil;
   try
-    _nako_loader := nil;
-    main;
-    if _nako_loader <> nil then
-    begin
-      nako_free;
-      _nako_loader.Free;
+    try
+      main;
+      if _nako_loader <> nil then
+      begin
+        nako_free;
+      end;
+    except
     end;
-  except
+  finally
+    FreeAndNil(_nako_loader);
   end;
-
 end.

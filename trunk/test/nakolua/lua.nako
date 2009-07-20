@@ -18,7 +18,6 @@ nako_set("A",a)v‚ğLUA‚·‚é
 -- Get Desktop Sample
 require 'luacom'
 sh = luacom.CreateObject("WScript.Shell")
-print(type(sh))
 path = sh.SpecialFolders("Desktop")
 nako_set("PATH", path.."\\")
 v‚ğLUA‚·‚é

@@ -858,7 +858,10 @@ var
     if token = nil then Exit;
 
     // 修飾があるか(2/2)...修飾は分かりやすいように前でも後ろでもOK
-    if token.TokenID = token_nami_kakko_begin then getArgType(token, m, b, refVar);
+    if token.TokenID = token_nami_kakko_begin then
+    begin
+      getArgType(token, m, b, refVar);
+    end;
     if token = nil then Exit;
 
     // ゲッターとセッター(ここでは飛ばす)
@@ -1091,6 +1094,7 @@ var
       token := token.NextToken; // SKIP '+'
       // 継承元グループの取得
       super := HiSystem.Namespace.GetVar(token.TokenID);
+      super := hi_getLink(super);
       if (super = nil)or(super.VType <> varGroup) then raise Exception.CreateFmt(ERR_S_UNDEF_GROUP,[hi_id2tango(token.TokenID)]);
       token := token.NextToken; // skip 'グループ名'
       hi_group(group).AddMembers(hi_group(super));
@@ -3042,6 +3046,7 @@ begin
       end;
     end else begin
       pv := HiSystem.Namespace.GetVar(token.TokenID);
+      pv := hi_getLink(pv);
     end;
     if pv <> nil then linkType := svLinkGlobal;
   end;
@@ -3670,6 +3675,7 @@ begin
         begin
           // グループか？
           g := HiSystem.Namespace.GetVar(token.TokenID);
+          g := hi_getLink(g);
           if (g = nil) or (g.VType <> varGroup) then raise Exception.CreateFmt(ERR_S_UNDEFINED,[hi_id2tango(token.TokenID)]);
           hi_group_create(v);
           hi_group(v).Assign(hi_group(g));
@@ -3830,6 +3836,7 @@ begin
       begin
         // グループか既存の変数か何か
         g := HiSystem.Namespace.GetVar(token.TokenID);
+        g := hi_getLink(g);
         if g = nil then raise Exception.CreateFmt(ERR_S_UNDEFINED,[ hi_id2tango(token.tokenID) ]);
 
         if g.VType = varGroup then
