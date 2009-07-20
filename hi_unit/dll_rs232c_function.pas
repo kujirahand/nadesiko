@@ -53,7 +53,7 @@ begin
     p := nako_group_findMember(g, 'オブジェクト');
     if p = nil then raise Exception.Create('オブジェクトが特定できません。');
     //
-    Frs232c := Trs232cN.create(nil);
+    Frs232c := Trs232cN.Create(nil);
     Frs232c.group := g;
     hi_setInt(p, Integer(Frs232c));
     //

@@ -55,6 +55,7 @@ type
     procedure QuickSort(comp: THListSortCompare);
     procedure MergeSort(comp: THListSortCompare);
     procedure Assign(a: THList);
+    function IndexOf(p: Pointer): Integer;
   end;
 
   // リスト開放時に自動的に追加したクラスを解放するリスト
@@ -318,6 +319,22 @@ begin
   end;
 end;
 
+
+function THList.IndexOf(p: Pointer): Integer;
+var
+  i: Integer;
+  t: Pointer;
+begin
+  Result := -1;
+  for i := (Self.Count - 1) downto 0 do
+  begin
+    t := GetItem(i);
+    if t = p then
+    begin
+      Result := i; Break;
+    end;
+  end;
+end;
 
 procedure THList.Insert(Index: Integer; Item: Pointer);
 var

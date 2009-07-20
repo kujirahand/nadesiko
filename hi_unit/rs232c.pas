@@ -156,8 +156,8 @@ type
 		charbuff:array[0..1] of char;
 	public
 		{ Public 宣言 }
-		constructor create(aowner:tcomponent); override;
-		destructor destroy; override;
+		constructor Create(AOwner:TComponent); override;
+		destructor Destroy; override;
 
 		function rsopen:boolean;
 		function rsclose:boolean;
@@ -235,7 +235,7 @@ begin
 	RegisterComponents('MyVCL', [TRS232C]);
 end;
 
-constructor Trs232c.create(aowner:tcomponent);
+constructor Trs232c.Create(AOwner:TComponent);
 begin
 	inherited create(aowner); {親のコンストラクタを呼ぶ}
 
@@ -270,7 +270,7 @@ begin
 		OnCreate(self);
 end;
 
-destructor Trs232c.destroy;
+destructor Trs232c.Destroy;
 begin
 	rsclose();
 
