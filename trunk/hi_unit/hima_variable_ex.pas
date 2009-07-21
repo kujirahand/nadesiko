@@ -508,21 +508,34 @@ end;
 
 function hi_var_calc_plus_str(a, b: PHiValue): PHiValue;
 var
-  sa, sb, res: string;
+  sa, sb, res: AnsiString;
+  rv: PHiValue;
 begin
-  Result := hi_var_new;
+  rv := hi_var_new;
   try
     sa := hi_str(a);
     sb := hi_str(b);
-    res := sa + sb;
   except
-    raise;
+    on e:Exception do begin
+      raise Exception.Create('文字列の足し算(二つの文字列を取得)。' + e.Message);
+    end;
   end;
   try
-    hi_setStr(Result, res);
+    // 希に以下でエラーが起きる(!) なぜ?!
+    res := sa + sb;
   except
-    raise;
+    on e:Exception do begin
+      raise Exception.Create('文字列の足し算(加算処理)。' + e.Message);
+    end;
   end;
+  try
+    hi_setStr(rv, res);
+  except
+    on e:Exception do begin
+      raise Exception.Create('文字列の足し算(結果の設定)。' + e.Message);
+    end;
+  end;
+  Result := rv;
 end;
 
 function hi_var_calc_Eq    (a, b: PHiValue): PHiValue;

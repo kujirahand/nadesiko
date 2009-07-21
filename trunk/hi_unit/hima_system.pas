@@ -1154,9 +1154,10 @@ begin
     f := GetProcAddress(g.Handle, 'PluginFin');
     if @f <> nil then
     begin
+      //debugs('FIN:'+g.FullPath);
       f();
     end;
-    // debugs(g.FullPath);
+    //debugs('FREE:'+g.FullPath);
     FreeAndNil(g);
     plugins.Items[i] := nil;
   end;
