@@ -1137,46 +1137,41 @@ end;
 
 procedure TfrmNako.doEvent(group: PGuiInfo; eventName: string);
 var
-  p, res: PHiValue;
+  p: PHiValue;
   n: string;
 begin
   if FFlagFree then Exit;
   if not _dnako_success then Exit;
   if group.pgroup = nil then Exit; // 無効
   eventName := DeleteGobi(eventName);
+  // グループにメンバが存在するか？
   try
     p := nako_group_findMember(group.pgroup, PChar(eventName));
+    if p = nil then Exit;
   except
     Exit;
   end;
-  if (p<>nil)and(p.ptr <> nil) then
-  begin
-    if EventObject = nil then EventObject := nako_getVariable('イベント部品');
-    nako_varCopyGensi(group.pgroup, EventObject);
-    try
-      nako_continue;
-      if _flag_vnako_exe = False then // libvnako.dll の場合：なぜか group 実行するとエラーがでるので。
-      begin
-        n := group.name + 'の' + eventName;
-        nako_eval_str2(n);
-      end else
-      begin
-        res := nako_group_exec(group.pgroup, PChar(eventName));
-        if res <> nil then nako_var_free(res);
-      end;
-    except
-      on e: Exception do
-      begin
-        // --- デバッグダイアログの起動
-        frmError.edtMain.Lines.Text := '' +
-          '[' + group.name + 'の' + eventName + 'を実行中のエラー]'#13#10 +
-          nako_getErrorStr;
-          ;
-        ShowModalCheck(frmError, Bokan);
-      end;
+  // イベント部品にコピー
+  if EventObject = nil then EventObject := nako_getVariable('イベント部品');
+  nako_varCopyGensi(group.pgroup, EventObject);
+  try
+    nako_continue;
+    // イベントを eval する
+    // if _flag_vnako_exe = False then // libvnako.dll の場合：なぜか group 実行するとエラーがでる
+    n := group.name + 'の' + eventName;
+    nako_eval_str2(n);
+  except
+    on e: Exception do
+    begin
+      // --- デバッグダイアログの起動
+      frmError.edtMain.Lines.Text := '' +
+        '[' + group.name + 'の' + eventName + 'を実行中のエラー]'#13#10 +
+        nako_getErrorStr;
+        ;
+      ShowModalCheck(frmError, Bokan);
     end;
-    UpdateAfterEvent(group.obj);
   end;
+  UpdateAfterEvent(group.obj);
 end;
 
 procedure TfrmNako.eventBrowserNavigate(Sender: TObject;

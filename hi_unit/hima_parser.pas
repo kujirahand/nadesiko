@@ -205,6 +205,7 @@ type
     destructor Destroy; override;
     function DebugStr: AnsiString; override;
     function getValue: PHiValue; override;
+    function getValueRaw: PHiValue;
     function outNadesikoProgram: AnsiString; override;
     function outLuaProgram: AnsiString; override;
   end;
@@ -484,10 +485,29 @@ var
   LastUserFuncID: DWORD = 0;
 
 function SyntaxTab(Level: Integer): AnsiString;
+function SyntaxClassToFuncName(name: string): AnsiString;
 
 implementation
 
 uses hima_string, hima_system, unit_string, Math, unit_text_file;
+
+function SyntaxClassToFuncName(name: string): AnsiString;
+begin
+  if name = 'TSyntaxCalc' then Result := '演算' else
+  if name = 'TSyntaxValue' then Result := '値' else
+  if name = 'TSyntaxDefFunction' then Result := '関数定義' else
+  if name = 'TSyntaxFunction' then Result := '関数' else
+  if name = 'TSyntaxTryExcept' then Result := '例外処理' else
+  if name = 'TSyntaxLet' then Result := '代入' else
+  if name = 'TSyntaxWhile' then Result := '間' else
+  if name = 'TSyntaxLoop' then Result := '回' else
+  if name = 'TSyntaxFor' then Result := '繰り返す' else
+  if name = 'TSyntaxEach' then Result := '反復' else
+  if name = 'TSyntaxIf' then Result := 'もし' else
+  if name = 'TSyntaxSwitch' then Result := '条件分岐' else
+  Result := name;
+  ;
+end;
 
 function SyntaxTab(Level: Integer): AnsiString;
 var i: Integer;p:PAnsiChar;
@@ -2496,11 +2516,11 @@ end;
 procedure THiParser.ReadPreprocess(token: THimaToken; var node: TSyntaxNode);
 var
   temp, topToken: THimaToken;
-  strict: Boolean;
+  FStrict: Boolean;
 begin
   //todo 1: Preprocess
 
-  strict := HiSystem.FlagStrict;
+  FStrict := HiSystem.FlagStrict;
   temp := token;
   try
     topToken := token;
@@ -2552,7 +2572,7 @@ begin
     raise EHimaSyntax.Create(temp.DebugInfo, e.Message, []);
   end;
 
-  HiSystem.FlagStrict := strict;
+  HiSystem.FlagStrict := FStrict;
 end;
 {
 function THiParser.ReadSentence(var token: THimaToken; var cnode: TSyntaxNode): Boolean;
@@ -3709,6 +3729,7 @@ procedure THiParser.getDefArgs(var token: THimaToken; args: THimaArgs);
   var
     arg: THimaArg;
   begin
+    //-------------------------------------
     // *関数名({修飾}引数名＋助詞,引数名＋助詞...)
     //-------------------------------------
     arg := THimaArg.Create;
@@ -3718,12 +3739,19 @@ procedure THiParser.getDefArgs(var token: THimaToken; args: THimaArgs);
     if token.TokenID = token_nami_kakko_begin then // '{'
     begin
       // 装飾
-      getArgType(token, arg.Value, arg.Needed, arg.ByRef);
-      arg.VType := arg.Value.VType;
+      try
+        getArgType(token, arg.Value, arg.Needed, arg.ByRef);
+        arg.VType := arg.Value.VType;
+      except
+        on e:Exception do
+        begin
+          raise Exception.Create('関数の引数の装飾定義でエラー:'+e.Message);
+        end;
+      end;
     end;
     // 変数名
     arg.Name := token.TokenID;
-    arg.JosiList.AddNum(token.JosiID);
+    arg.JosiList.AddNum( token.JosiID );
     token := token.NextToken;
     Args.Add_JosiCheck(arg);
     // ','
@@ -3731,17 +3759,27 @@ procedure THiParser.getDefArgs(var token: THimaToken; args: THimaArgs);
   end;
 
   procedure _def_args;
+  var
+    tmp: string;
   begin
     FPrevToken := token;
     token := token.NextToken; // SKIP '('
+    // トークンを１つずつ調べていく
     while token <> nil do
     begin
       if token.TokenID = token_vLine then // '|'
       begin
         token := token.NextToken;
       end else
-      if token.TokenID = token_kakko_end then Break;
-      _read_arg;
+      begin
+        if token.TokenID = token_kakko_end then Break;
+        tmp := token.Token;
+        try
+          _read_arg;
+        except
+          raise Exception.CreateFmt('関数の引数「%s」にエラーがあります。', [tmp]);
+        end;
+      end;
     end;
     if token.TokenID <> token_kakko_end then raise Exception.Create(ERR_NOPAIR_KAKKO);
 
@@ -3751,7 +3789,13 @@ procedure THiParser.getDefArgs(var token: THimaToken; args: THimaArgs);
 
 begin
   if token.TokenID <> token_kakko_begin then Exit;
-  _def_args;
+  try
+    _def_args;
+  except on e:Exception do
+    begin
+      raise Exception.Create('関数の引数定義にエラーがあります。' + e.Message);
+    end;
+  end;
 end;
 
 procedure THiParser.RegistVar(var token: THimaToken; IsPreprocess: Boolean; ReadOnly: Boolean);
@@ -5105,27 +5149,45 @@ begin
       vb := stack[sp-1]; Dec(sp); if vb = nil then vb := hi_var_new;
       va := stack[sp-1]; Dec(sp); if va = nil then va := hi_var_new;
       //todo 4: 計算式
-      case TSyntaxEnzansi(node).ID of
-        token_plus      : vc := hi_var_calc_plus      (va, vb);
-        token_minus     : vc := hi_var_calc_minus     (va, vb);
-        token_mul       : vc := hi_var_calc_mul       (va, vb);
-        token_div       : vc := hi_var_calc_div       (va, vb);
-        token_mod       : vc := hi_var_calc_mod       (va, vb);
-        token_Eq        : vc := hi_var_calc_Eq        (va, vb);
-        token_NotEq     : vc := hi_var_calc_NotEq     (va, vb);
-        token_Gt        : vc := hi_var_calc_Gt        (va, vb);
-        token_GtEq      : vc := hi_var_calc_GtEq      (va, vb);
-        token_Lt        : vc := hi_var_calc_Lt        (va, vb);
-        token_LtEq      : vc := hi_var_calc_LtEq      (va, vb);
-        token_ShiftL    : vc := hi_var_calc_ShiftL    (va, vb);
-        token_ShiftR    : vc := hi_var_calc_ShiftR    (va, vb);
-        token_power     : vc := hi_var_calc_power     (va, vb);
-        token_plus_str  : vc := hi_var_calc_plus_str  (va, vb);
-        token_or        : vc := hi_var_calc_or        (va, vb);
-        token_and       : vc := hi_var_calc_and       (va, vb);
-        else              vc := hi_var_new;
+      try
+        case TSyntaxEnzansi(node).ID of
+          token_plus      : vc := hi_var_calc_plus      (va, vb);
+          token_minus     : vc := hi_var_calc_minus     (va, vb);
+          token_mul       : vc := hi_var_calc_mul       (va, vb);
+          token_div       : vc := hi_var_calc_div       (va, vb);
+          token_mod       : vc := hi_var_calc_mod       (va, vb);
+          token_Eq        : vc := hi_var_calc_Eq        (va, vb);
+          token_NotEq     : vc := hi_var_calc_NotEq     (va, vb);
+          token_Gt        : vc := hi_var_calc_Gt        (va, vb);
+          token_GtEq      : vc := hi_var_calc_GtEq      (va, vb);
+          token_Lt        : vc := hi_var_calc_Lt        (va, vb);
+          token_LtEq      : vc := hi_var_calc_LtEq      (va, vb);
+          token_ShiftL    : vc := hi_var_calc_ShiftL    (va, vb);
+          token_ShiftR    : vc := hi_var_calc_ShiftR    (va, vb);
+          token_power     : vc := hi_var_calc_power     (va, vb);
+          token_plus_str  : vc := hi_var_calc_plus_str  (va, vb);
+          token_or        : vc := hi_var_calc_or        (va, vb);
+          token_and       : vc := hi_var_calc_and       (va, vb);
+          else              vc := hi_var_new;
+        end;
+      except
+        on e:Exception do
+        begin
+          raise Exception.CreateFmt('計算の失敗(%s)『%s』(%s)',
+            [
+              Copy(hi_str(va),1,10),
+              hi_id2tango(TSyntaxEnzansi(node).ID),
+              Copy(hi_str(vb),1,10)
+            ]);
+        end;
       end;
-      stack[sp] := vc; Inc(sp);
+      stack[sp] := vc;
+      // スタックの桁あふれをチェック
+      Inc(sp);
+      if Length(stack) <= sp then
+      begin
+        raise Exception.Create('計算が複雑すぎます。式を分割してください。');
+      end;
       if va.Registered = 0 then hi_var_free(va);
       if vb.Registered = 0 then hi_var_free(vb);
     end else
@@ -5894,7 +5956,7 @@ begin
   inherited;
 end;
 
-function TSyntaxLet.getValue: PHiValue;
+function TSyntaxLet.getValueRaw: PHiValue;
 var
   pName, pValue, tmp: PHiValue;
 
@@ -6106,6 +6168,11 @@ begin
     end;
   end;
 
+end;
+
+function TSyntaxLet.getValue: PHiValue;
+begin
+  Result := getValueRaw;
 end;
 
 function TSyntaxLet.outLuaProgram: AnsiString;
@@ -6465,9 +6532,14 @@ begin
   for i := 1 to hi_int(v) do
   begin
     hi_setInt(HiSystem.kaisu, i);
-
-    HiSystem.RunNode(Children);
-
+    try
+      HiSystem.RunNode(Children);
+    except
+      on e:Exception do
+      begin
+        raise Exception.CreateFmt('%d回目の実行中',[i]);
+      end;  
+    end;
     if HiSystem.BreakType = btContinue then
     begin
       if HiSystem.BreakLevel <= SyntaxLevel then

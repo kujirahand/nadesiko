@@ -52,7 +52,7 @@ procedure hi_setIntOrFloat(v: PHiValue; f: HFloat);
 
 // 変数へのリンクというか参照
 function hi_getLink(v: PHiValue): PHiValue;
-procedure hi_setLink(v:PHiValue; var Src: PHiValue);     // RefCount+1
+procedure hi_setLink(v:PHiValue; var Src: PHiValue; NotUsePool: Boolean = True);     // RefCount+1
 
 // 変数の処理
 function hi_var_new: PHiValue;                  // 新規値の生成(内部で利用)
@@ -107,7 +107,7 @@ begin
   Result.VarID := 0;
 end;
 
-procedure hi_setLink(v:PHiValue; var Src: PHiValue);
+procedure hi_setLink(v:PHiValue; var Src: PHiValue; NotUsePool: Boolean);
 var
   p: PHiValue;
 begin
@@ -115,22 +115,24 @@ begin
   hi_var_clear(v);
   Src := hi_getLink(Src);
 
-  if (var_pool_list = nil) or (var_pool_list.IndexOf(Src) < 0) then
+  if NotUsePool then
   begin
-    // 複数からリンクされるオブジェクトは
-    // 一括管理のリストに代入される
-    // TODO: 変数のエイリアス(varType)の作成(非効率なので改良する)
-    p := hi_var_new;
-    hi_var_copyGensi(Src, p);
-    Src.VType := varLink;
-    Src.ptr   := p;
-    Src.Size  := SizeOf(PHiValue);
-    add_var_pool(p);
-    Inc(p.RefCount);
-    //
-    Src := p;
+    if (var_pool_list = nil) or (var_pool_list.IndexOf(Src) < 0) then
+    begin
+      // 複数からリンクされるオブジェクトは
+      // 一括管理のリストに代入される
+      // TODO: 変数のエイリアス(varType)の作成(非効率なので改良する)
+      p := hi_var_new;
+      hi_var_copyGensi(Src, p);
+      Src.VType := varLink;
+      Src.ptr   := p;
+      Src.Size  := SizeOf(PHiValue);
+      add_var_pool(p);
+      Inc(p.RefCount);
+      //
+      Src := p;
+    end;
   end;
-
   // リンク作成
   v^.VType := varLink;
   v^.ptr   := Src;
@@ -563,7 +565,7 @@ procedure hi_var_clear(var v: PHiValue);
         i := var_pool_list.IndexOf(v2);
         if i > 0 then
         begin
-          var_pool_list.Delete(i);
+          var_pool_list.Items[i] := nil;
         end;
         hi_var_free(v2);
       end;
@@ -620,7 +622,7 @@ begin
         i := var_pool_list.IndexOf(v);
         if i >= 0 then
         begin
-          var_pool_list.Delete(i);
+          var_pool_list.Items[i] := nil;
         end;
       end;
       Dispose(v);
@@ -678,8 +680,6 @@ begin
 end;
 
 procedure hi_setStr(v: PHiValue; const s: AnsiString);
-var
-  pp: PAnsiChar;
 begin
   hi_var_clear(v);
   v.VType := varStr;
@@ -695,14 +695,10 @@ begin
 
   // 領域を確保
   GetMem(v.ptr, v.Size);
+  ZeroMemory(v.ptr, v.Size); // 末尾まで全部"0"
 
   // Chr(0) もコピーできるようにメモリをそのままコピー
-  Move(s[1], v^.ptr^, v^.Size - 1);
-
-  // NULL終端を追加
-  pp := v^.ptr_s;      // pp を暫定のポインタとする
-  Inc(pp, v.Size - 1); // pp の終端へ移動
-  pp^ := #0;           // ヌルをセット
+  Move(s[1], v.ptr^, v.Size - 1);
 end;
 
 procedure hi_setBool (v: PHiValue; const b: Boolean);

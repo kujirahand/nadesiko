@@ -1156,6 +1156,9 @@ begin
     begin
       f();
     end;
+    // debugs(g.FullPath);
+    FreeAndNil(g);
+    plugins.Items[i] := nil;
   end;
   FreeAndNil(Plugins);
   //-----------------------------------------
@@ -1478,7 +1481,6 @@ end;
 function THiSystem.GetVariable(VarID: DWORD): PHiValue;
 begin
   Result := GetVariableRaw(VarID);
-  //
   if (Result <> nil)and(Result.VType = varLink) then
   begin
     Result := hi_getLink(Result);
@@ -1981,6 +1983,7 @@ function THiSystem.RunNode(node: TSyntaxNode; IsNoGetter: Boolean): PHiValue;
 var
   res: PHiValue;
   bError: Boolean;
+  err: string;
 label
   lblTop, lblGoto;
 begin
@@ -2042,15 +2045,25 @@ lblTop:
           end;
         end;
       end;
-
+      // --------------------------------
       // ノードを実行
-      if IsNoGetter then
-      begin
-        if node.Next = nil then res := node.GetValueNoGetter(False)
-                           else res := node.GetValue;
-      end else begin
-        res := node.getValue;
+      // --------------------------------
+      try
+        if IsNoGetter then
+        begin
+          if node.Next = nil then res := node.GetValueNoGetter(False)
+                             else res := node.GetValue;
+        end else begin
+          res := node.getValue;
+        end;
+      except
+        on e:Exception do begin
+          err := JReplace(SyntaxClassToFuncName(node.ClassName), 'TSyntax', '');
+          raise Exception.CreateFmt('%s(%s)',
+                [e.Message, err]);
+        end;
       end;
+      // --------------------------------
       node := node.Next; // 次のノードを取得
 
       // 値がnilでなければ結果を返す
@@ -2353,10 +2366,9 @@ begin
   if jisin = nil then jisin := HiSystem.GetVariable(token_jisin);
 
   // 新しい自身をコピーする
-  //hi_var_copyGensi(FScope.InstanceVar, jisin);
+  // hi_var_copyGensi(FScope.InstanceVar, jisin); // かつて
   instance := FScope.InstanceVar;
-  hi_setLink(jisin, instance);
-  FScope.InstanceVar := instance;
+  hi_setLink(jisin, instance, True);
 
   Self.Push(FScope);
 end;

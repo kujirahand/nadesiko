@@ -53,6 +53,7 @@ begin
   scriptObj.Language := 'VBScript';
   vres := scriptObj.Eval(src);
   res := vres;
+  vres := Unassigned;
 
   // (3) –ß‚è’l‚Ìİ’è
   Result := hi_newStr(res); // ®”Œ^‚Ì–ß‚è’l‚ğw’è‚·‚é
@@ -118,9 +119,14 @@ begin
   dnako_import_initFunctions(Handle);
   scriptObj := Null;
 end;
+
 function PluginFin: DWORD; stdcall;
 begin
   Result := 0;
+  if VarIsNull(scriptObj) then
+  begin
+    scriptObj := Unassigned;
+  end;
 end;
 
 //------------------------------------------------------------------------------
