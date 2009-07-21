@@ -244,7 +244,7 @@ type
     function EnumKeys: AnsiString;
     function EnumKeyAndVlues: AnsiString;
     property RefCount: Integer read FRefCount write FRefCount;
-    property InstanceVar: PHiValue read FInstanceVar write FInstanceVar; // À‘Ì‚ği‚é•Ï”
+    property InstanceVar: PHiValue read FInstanceVar; // À‘Ì‚ği‚é•Ï”
   end;
 
 procedure hi_group_create(var v: PHiValue);
@@ -507,9 +507,22 @@ end;
 //------------------------------------------------------------------------------
 
 function hi_var_calc_plus_str(a, b: PHiValue): PHiValue;
+var
+  sa, sb, res: string;
 begin
   Result := hi_var_new;
-  hi_setStr(Result, hi_str(a) + hi_str(b));
+  try
+    sa := hi_str(a);
+    sb := hi_str(b);
+    res := sa + sb;
+  except
+    raise;
+  end;
+  try
+    hi_setStr(Result, res);
+  except
+    raise;
+  end;
 end;
 
 function hi_var_calc_Eq    (a, b: PHiValue): PHiValue;

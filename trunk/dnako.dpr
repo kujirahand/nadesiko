@@ -407,14 +407,18 @@ end;
 function nako_getGroupMember(groupName, memberName: PAnsiChar): PHiValue; stdcall; // グループのメンバを取得する。メンバが存在しなければnilが返る。
 var
   g: PHiValue;
+  grp: THiGroup;
+  m_id: DWORD;
 begin
   Result := nil;
-
+  // グループを得る
   g := HiSystem.GetVariable(hi_tango2id(DeleteGobi(groupName)));
   if g=nil then Exit;
-
   if g.VType <> varGroup then Exit;
-  Result := hi_group(g).FindMember(hi_tango2id(DeleteGobi(memberName)));
+  grp := hi_group(g);
+  m_id := hi_tango2id(DeleteGobi(memberName));
+  // グループのメンバを探す
+  Result := grp.FindMember(m_id);
 end;
 
 function nako_hasEvent(groupName, memberName: PAnsiChar): PHiValue; stdcall; // グループのメンバを取得する。メンバが存在しなければnilが返る。

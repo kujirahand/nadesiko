@@ -41,7 +41,8 @@ type
     procedure Clear; override;
     procedure Grow(size: Integer); // ˆê‹C‚ÉƒŠƒXƒg‚ğL‚Î‚·
     function Add(Item: Pointer): Integer;
-    function AddNum(Item: DWORD): Integer;
+    function AddNum(Item: DWORD): Integer; overload;
+    function AddNum(Item: Integer): Integer; overload;
     procedure Delete(Index: Integer); override;
     property Items[Index: Integer]:Pointer read GetItem write SetItem;
     function GetAsNum(Index: Integer): DWORD;
@@ -193,6 +194,11 @@ begin
 end;
 
 function THList.AddNum(Item: DWORD): Integer;
+begin
+  Result := Add( Pointer(Item) );
+end;
+
+function THList.AddNum(Item: Integer): Integer;
 begin
   Result := Add( Pointer(Item) );
 end;
