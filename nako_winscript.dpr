@@ -4,6 +4,7 @@ uses
   Windows,
   SysUtils,
   ComObj,
+  ActiveX,
   Variants,
   dll_plugin_helper in 'hi_unit\dll_plugin_helper.pas',
   dnako_import in 'hi_unit\dnako_import.pas',
@@ -27,6 +28,7 @@ end;
 function procExecJScript(h: DWORD): PHiValue; stdcall;
 var
   src, res: string;
+  res_v: Variant;
 begin
   // (1) ˆø”‚Ìæ“¾
   src := getArgStr(h, 0, True);
@@ -34,7 +36,9 @@ begin
   // (2) ˆ—
   init_my_script;
   scriptObj.Language := 'JScript';
-  res := scriptObj.Eval(src);
+  res_v := scriptObj.Eval(src);
+  res := VarToStr(res_v);
+  res_v := Unassigned;
 
   // (3) –ß‚è’l‚Ìİ’è
   Result := hi_newStr(res); // ®”Œ^‚Ì–ß‚è’l‚ğw’è‚·‚é
@@ -116,6 +120,7 @@ begin
 end;
 procedure PluginInit(Handle: DWORD); stdcall;
 begin
+  OleInitialize(nil);
   dnako_import_initFunctions(Handle);
   scriptObj := Null;
 end;
@@ -127,6 +132,7 @@ begin
   begin
     scriptObj := Unassigned;
   end;
+  OleUninitialize;
 end;
 
 //------------------------------------------------------------------------------
@@ -138,6 +144,13 @@ exports
   PluginRequire,
   PluginInit,
   PluginFin;
+
+{
+initialization
+  OleInitialize(nil);
+finalization
+  OleUninitialize;
+}
 
 begin
 end.

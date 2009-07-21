@@ -3101,15 +3101,18 @@ end;
 
 
 initialization
-  HiSystem := THiSystemDummy.Create;
-  outfile := nil;
-  OleInitialize(nil);
+  begin
+    OleInitialize(nil);
+    outfile := nil;
+    HiSystem := THiSystemDummy.Create;
+  end;
 
 finalization
-  FreeAndNil(outfile);
-  HiSystem.Free;
-  OleUninitialize;
-
+  begin
+    OleUninitialize;
+    FreeAndNil(outfile);
+    FreeAndNil(HiSystem);
+  end;
 
 
   

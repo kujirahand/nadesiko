@@ -115,7 +115,7 @@ begin
   hi_var_clear(v);
   Src := hi_getLink(Src);
 
-  if NotUsePool then
+  if NotUsePool = False then
   begin
     if (var_pool_list = nil) or (var_pool_list.IndexOf(Src) < 0) then
     begin
@@ -442,45 +442,41 @@ end;
 function hi_str(v: PHiValue): AnsiString;
 begin
   if v = nil then begin Result := ''; Exit; end;
-
-  // 変数の型によって変換を行う
-  case v^.VType of
-    varInt:   Result := IntToStr(hi_int(v));
-    varFloat: Result := FloatToStr(hi_float(v));
-    varStr:
-      begin
-        // 文字列データとしてそのまま値を返す(#0も含めることができる)
-        if v^.Size > 0 then
+  try
+    // 変数の型によって変換を行う
+    case v.VType of
+      varInt    : Result := IntToStr(hi_int(v));
+      varFloat  : Result := FloatToStr(hi_float(v));
+      varLink   : Result := hi_str(hi_getLink(v));
+      varArray  : Result := THiArray(v.ptr).AsString;
+      varHash   : Result := THiHash(v.ptr).AsString;
+      varStr    :
         begin
-          SetLength(Result, v^.Size);        // 領域の確保
-          Move(v^.ptr^, Result[1], v^.Size); // 結果をコピー
-
-          // 最後の一文字がヌルなら削る(null文字列対策)
-          if Result[v^.Size] = #0 then
+          // 文字列データとしてそのまま値を返す(#0も含めることができる)
+          if v.Size > 0 then
           begin
-            System.Delete(Result, v^.Size, 1);
-          end;
+            SetLength(Result, v.Size);        // 領域の確保
+            Move(v.ptr^, Result[1], v.Size);   // 結果をコピー
 
-        end else
+            // 最後の一文字がヌルなら削る(null文字列対策)
+            if Result[v.Size] = #0 then
+            begin
+              System.Delete(Result, v.Size, 1);
+            end;
+
+          end else
+          begin
+            Result := '';
+          end;
+        end;
+      else
         begin
           Result := '';
         end;
-      end;
-    varLink: Result := hi_str(hi_getLink(v));
-    varArray:
-      begin
-        Result := THiArray(v.ptr).AsString;
-      end;
-    varHash:
-      begin
-        Result := THiHash(v.ptr).AsString;
-      end;
-    else
-      begin
-        Result := '';
-      end;
-  end;//of case
-
+    end;//of case
+  except
+    raise;
+  end;
 end;
 
 function hi_bin   (v: PHiValue): AnsiString;
