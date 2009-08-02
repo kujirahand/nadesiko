@@ -7746,6 +7746,10 @@ begin
       mnu := TMenuItem(hi_int(pm));
       mnu.Caption := cap;
       mnu.OnClick := Bokan.eventClick;
+      with GuiInfos[mnu.Tag] do begin
+        name     := vname;
+      end;
+
       if scut <> '' then mnu.ShortCut := TextToShortCut(scut);
       // option
       if opt = 'チェック' then TMenuItem(mnu).Checked := True;
@@ -7818,8 +7822,11 @@ begin
 end;
 
 procedure sub_treenode_add(pobj, ps: PHiValue; FlagClear: Boolean);
+var
+  o: TObject;
 begin
-  CsvToTree(getGui(pobj) as THiTreeView, hi_str(ps), FlagClear);
+  o := getGui(pobj);
+  CsvToTree(o as THiTreeView, hi_str(ps), FlagClear);
 end;
 
 function vcl_treenode(h: DWORD): PHiValue; stdcall;

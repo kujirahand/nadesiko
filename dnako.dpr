@@ -465,6 +465,7 @@ begin
   s := memberName;
   s := DeleteGobi(s);
   vid := hi_tango2id(s);
+  group := hi_getLink(group);
   Result := hi_group(group).FindMember(vid);
 end;
 

@@ -488,7 +488,7 @@ begin
   AddStrVar('ナデシコ最終更新日',    {'(バージョン毎に違う)'}NADESIKO_DATE, 101, 'バージョンの更新日','なでしこさいしゅうこうしんび');
   AddStrVar('ナデシコランタイム',    {'(起動時に決定)'}getRuntime,    102, 'なでしこエンジンをロードした実行ファイルの名前(大文字)','なでしこらんたいむ');
   AddStrVar('ナデシコランタイムパス',{'(起動時に決定)'}ParamStr(0),   103, 'なでしこエンジンをロードした実行ファイルのフルパス','なでしこらんたいむぱす');
-  AddStrVar('OS',                    {'(起動時に決定)'}getWinVersion, 104, 'OSの種類を保持する。Windows Vista/Windows Server 2003/Windows XP/Windows 2000/Windows Me/Windows 98/Windows NT 4.0/Windows NT 3.51/Windows 95','OS');
+  AddStrVar('OS',                    {'(起動時に決定)'}getWinVersion, 104, 'OSの種類を保持する。Windows 7/Windows Vista/Windows Server 2003/Windows XP/Windows 2000/Windows Me/Windows 98/Windows NT 4.0/Windows NT 3.51/Windows 95','OS');
   AddStrVar('OSバージョン',          {'(起動時に決定)'}getWinVersionN,105, 'OSのバージョン番号を返す。','OSばーじょん');
 
   //-基本変数
@@ -2367,9 +2367,9 @@ begin
   if jisin = nil then jisin := HiSystem.GetVariable(token_jisin);
 
   // 新しい自身をコピーする
-  // hi_var_copyGensi(FScope.InstanceVar, jisin); // かつて
-  instance := FScope.InstanceVar;
-  hi_setLink(jisin, instance, True);
+  hi_var_copyGensi(FScope.InstanceVar, jisin); // かつて
+  //instance := FScope.InstanceVar;
+  //hi_setLink(jisin, instance);
 
   Self.Push(FScope);
 end;

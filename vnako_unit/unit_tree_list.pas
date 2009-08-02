@@ -113,7 +113,8 @@ begin
   csv := TCsvSheet.Create;
   csv.AsText := csvText;
   for i := 0 to High(oldParent) do oldParent[i] := '';
-
+  if tree = nil then raise Exception.Create('ƒcƒŠ[‚ª“Á’è‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ');
+  
   tree.Items.BeginUpdate;
   try
     if ClearMode then
