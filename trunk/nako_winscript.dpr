@@ -97,7 +97,7 @@ begin
   // 関数を追加する例
   //<命令>
   //+ScriptControl拡張(nakowinscript)
-  //-Lua操作
+  //-VBSCRIPT/JSCRIPT操作
   AddFunc('JSCRIPTする','{=?}Sを',7300,procExecJScript,'JScriptのプログラムを実行する','JSCRIPTする');
   AddFunc('VBSCRIPTする','{=?}Sを',7310,procExecVBScript,'VBScriptのプログラム(式)を実行する','VBSCRIPTする');
   AddFunc('VBSCRIPTコード追加','{=?}Sを',7311,procExecVBScriptAddCode,'VBScriptのプログラムを定義する','VBSCRIPTこーどついか');
@@ -128,7 +128,7 @@ end;
 function PluginFin: DWORD; stdcall;
 begin
   Result := 0;
-  if VarIsNull(scriptObj) then
+  if not VarIsNull(scriptObj) then
   begin
     scriptObj := Unassigned;
   end;

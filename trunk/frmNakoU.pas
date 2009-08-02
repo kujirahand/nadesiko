@@ -1171,7 +1171,8 @@ begin
       ShowModalCheck(frmError, Bokan);
     end;
   end;
-  UpdateAfterEvent(group.obj);
+  // ‚¿‚ç‚Â‚«–hŽ~‚Ì‚½‚ß
+  //UpdateAfterEvent(group.obj);
 end;
 
 procedure TfrmNako.eventBrowserNavigate(Sender: TObject;

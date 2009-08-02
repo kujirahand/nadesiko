@@ -505,6 +505,8 @@ begin
   if name = 'TSyntaxEach' then Result := '”½•œ' else
   if name = 'TSyntaxIf' then Result := '‚à‚µ' else
   if name = 'TSyntaxSwitch' then Result := 'ğŒ•ªŠò' else
+  if name = 'TSyntaxWith' then Result := '‚É‚Â‚¢‚Ä' else
+  if name = 'TSyntaxSentence' then Result := '•¶' else
   Result := name;
   ;
 end;

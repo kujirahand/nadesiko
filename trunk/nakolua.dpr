@@ -187,7 +187,6 @@ begin
 end;
 function PluginFin: DWORD; stdcall;
 begin
-  KLua.Close;
   Result := 0;
 end;
 
