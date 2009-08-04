@@ -130,7 +130,7 @@
 			<Directories Name="UsePackages">False</Directories>
 		</Directories>
 		<Parameters>
-			<Parameters Name="RunParams">test\test-all.nako</Parameters>
+			<Parameters Name="RunParams">"C:\svn\nadesiko\tools\action\manual_searcher\manual_searcher.nako"</Parameters>
 			<Parameters Name="HostApplication">C:\svn\nadesiko\vnako.exe</Parameters>
 			<Parameters Name="Launcher"></Parameters>
 			<Parameters Name="UseLauncher">False</Parameters>

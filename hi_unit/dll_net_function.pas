@@ -1642,6 +1642,7 @@ var
 const
   FILE_MSGIDS = 'msgids.___';
 begin
+  Result := nil;
   //===================
   // ˆø”‚Ìæ“¾
   dir := hi_str(nako_getFuncArg(args, 0));
@@ -2399,6 +2400,7 @@ var
   sl: TStringList;
   i: Integer;
 begin
+  Result := nil;
   url  := getArgStr(args, 0, True);
   hash := nako_getFuncArg(args, 1);
   nako_hash_create(hash);
