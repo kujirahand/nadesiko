@@ -1763,22 +1763,22 @@ function sys_ping(args: DWORD): PHiValue; stdcall;
 var
   p: TICMP;
   i: Integer;
+  res: Boolean;
 begin
+  res := False;
   p := TICMP.Create;
   try
-    try
-      p.Address := getArgStr(args, 0, True);
-      i := p.Ping;
-      if i >= 1 then
-      begin
-        Result := hi_newBool(p.Reply.Status = IP_SUCCESS);
-      end;
-    except
-      Result := hi_newBool(False);
+    p.Address := getArgStr(args, 0, True);
+    i := p.Ping;
+    if i >= 1 then
+    begin
+      res := (p.Reply.Status = IP_SUCCESS);
+      //Result := hi_newBool(p.Reply.Status = IP_SUCCESS);
     end;
   finally
     p.Free;
   end;
+  Result := hi_newBool(res);
 end;
 
 procedure _sys_ping_async(Sender: TNetThread; ptr: Pointer);
@@ -1795,7 +1795,7 @@ begin
   bRes := True;
   //
   p := TICMP(ptr);
-  event := PString(Sender.arg1)^;
+  event := string(PChar(Sender.arg1));
   //
   try
     i := p.Ping;
@@ -1830,7 +1830,7 @@ begin
   th := TNetThread.Create(True);
   th.method := _sys_ping_async;
   th.arg0 := p;
-  th.arg1 := PString(@event);
+  th.arg1 := PChar(event);
   th.Resume;
 end;
 
@@ -2650,7 +2650,7 @@ begin
 
   //-PING
   AddFunc  ('PING','{=?}HOSTへ|HOSTに|HOSTを', 4072, sys_ping, 'HOSTへPINGが通るか確認する。通らなければ0を返す', 'PING');
-  AddFunc  ('非同期PING','{=?}EVENTでHOSTに', 4077, sys_ping_async, 'HOSTへPINGが通るか非同期で確認する。結果は第一引数に返す。', 'ひどうきPING');
+  AddFunc  ('非同期PING','{=?}EVENTでHOSTに', 4077, sys_ping_async, 'HOSTへPINGが通るか非同期で確認する。結果は第一引数で指定した関数の引数として返す。', 'ひどうきPING');
   //-オプション
   AddIntVar('経過ダイアログ',1, 4090, 'FTP/HTTPで経過ダイアログを表示するかどうか。', 'けいかだいあろぐ');
 
