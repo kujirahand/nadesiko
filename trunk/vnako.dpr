@@ -107,7 +107,8 @@ uses
   hOledd in 'component\hedit251\hOledd.pas',
   VistaAltFixUnit in 'component\VistaAltFixUnit.pas',
   GraphicEx in 'component\GraphicEx\GraphicEx.pas',
-  vnako_message in 'vnako_unit\vnako_message.pas';
+  vnako_message in 'vnako_unit\vnako_message.pas',
+  frmCalendarU in 'vnako_unit\frmCalendarU.pas' {frmCalendar};
 
 {$R *.res}
 
