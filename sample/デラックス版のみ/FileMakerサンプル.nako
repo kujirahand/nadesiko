@@ -1,0 +1,6 @@
+「{母艦パス}testfm.fp7」を「Admin」と「」でFILEMAKER開く
+「*testfm*」を窓アクティブ
+「sayHello」をFILEMAKERスクリプト実行
+FILEMAKERファイル閉じる
+FILEMAKER終了
+終わる。
