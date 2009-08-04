@@ -96,7 +96,7 @@ procedure ImportNakoFunction; stdcall;
 begin
   // 関数を追加する例
   //<命令>
-  //+ScriptControl拡張(nakowinscript)
+  //+ScriptControl拡張(nako_winscript)
   //-VBSCRIPT/JSCRIPT操作
   AddFunc('JSCRIPTする','{=?}Sを',7300,procExecJScript,'JScriptのプログラムを実行する','JSCRIPTする');
   AddFunc('VBSCRIPTする','{=?}Sを',7310,procExecVBScript,'VBScriptのプログラム(式)を実行する','VBSCRIPTする');

@@ -24,7 +24,8 @@
       <Projects Name="nakors232c.dll">nakors232c.bdsproj</Projects>
       <Projects Name="cnakoex.exe">cnakoex.bdsproj</Projects>
       <Projects Name="nako_qrcode.dll">nako_qrcode.bdsproj</Projects>
-      <Projects Name="Targets">dnako.dll vnako.exe gnako.exe cnako.exe nakofile.dll nakolua.dll nakostr.dll nakooffice.dll nakonet.dll nakoctrl.dll nako_testunit.dll nako_winscript.dll nakors232c.dll cnakoex.exe nako_qrcode.dll</Projects>
+      <Projects Name="nako_filemaker.dll">nako_filemaker.bdsproj</Projects>
+      <Projects Name="Targets">dnako.dll vnako.exe gnako.exe cnako.exe nakofile.dll nakolua.dll nakostr.dll nakooffice.dll nakonet.dll nakoctrl.dll nako_testunit.dll nako_winscript.dll nakors232c.dll cnakoex.exe nako_qrcode.dll nako_filemaker.dll</Projects>
     </Projects>
     <Dependencies/>
   </Default.Personality>
