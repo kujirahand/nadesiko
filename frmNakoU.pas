@@ -1146,8 +1146,18 @@ begin
   eventName := DeleteGobi(eventName);
   // グループにメンバが存在するか？
   try
+    // Check Group
     p := nako_group_findMember(group.pgroup, PChar(eventName));
-    if p = nil then Exit;
+    if p = nil then
+    begin
+      if group.name_id = 0 then
+      begin
+        group.name_id := nako_tango2id(PAnsiChar(group.name));
+      end;
+      group.pgroup := nako_getVariableFromId(group.name_id);
+      p := nako_group_findMember(group.pgroup, PChar(eventName));
+      if p = nil then Exit;
+    end;
   except
     Exit;
   end;

@@ -134,6 +134,7 @@ type
     obj     : TComponent;
     obj_type: Integer;
     name    : string;
+    name_id : DWORD;
     fileDrop: TFileDrop;
   end;
 
@@ -639,7 +640,8 @@ uses
   unit_pack_files, hima_stream, frmInputListU, frmPasswordU,
   frmSelectButtonU, dll_plugin_helper, unit_tree_list, frmSayU,
   frmInputNumU, frmHukidasiU, jvIcon, clipbrd, memoXP, SPILib,
-  MedianCut, unit_vista, frmListU, unit_nakopanel, HEdtProp, GraphicEx;
+  MedianCut, unit_vista, frmListU, unit_nakopanel, HEdtProp, GraphicEx,
+  frmCalendarU;
 
 type
   TRingBufferString = class
@@ -2893,6 +2895,36 @@ begin
     if IsNumber(res) then hi_setFloat(Result, StrToFloat(res))
                      else hi_setStr(Result, res);
 
+  finally
+    f.Free;
+  end;
+end;
+
+function cmd_dlgInputDate(h: DWORD): PHiValue; stdcall;
+var
+  f: TfrmCalendar;
+  title, init, cancel, ime, res: string;
+begin
+  // (1) 引数の取得
+  // なし
+
+  // (2) 処理
+  f := TfrmCalendar.Create(bokan);
+  try
+
+    GetDialogSetting(title, init, cancel, ime);
+    //setDialogIME(f.edtMain.Handle);
+    if init <> '' then
+    begin
+      f.setInitValue(init);
+    end;
+    f.Caption := title;
+    ShowModalCheck(f, bokan);
+
+    if f.Res then res := f.ResultStr
+             else res := cancel;
+
+    Result := hi_newStr(res);
   finally
     f.Free;
   end;
@@ -5354,6 +5386,7 @@ begin
     obj      := o;
     obj_type := oType;
     name     := oName;
+    name_id  := nako_tango2id(PAnsiChar(name));
     fileDrop := nil;
     pgroup   := g;
   end;
@@ -8513,6 +8546,7 @@ begin
   AddFunc('吹き出し表示',    'X,Yへ{=?}Sと|Sを|Sの|Sで',  2411,cmd_dlgHukidasi, 'X,YへメッセージSを吹き出しにして表示する。', 'ふきだしひょうじ');
   AddFunc('二択',            'Sで|Sを|Sの',               2412,cmd_nitaku,      'メッセージSを表示し、はいかいいえで尋ねるダイアログを表示し、結果をはい(=1)いいえ(=0)で返す。', 'にたく');
   AddFunc('リスト絞込み選択','{=?}Sで|Sと|Sを|Sの|Sから',     2421,cmd_dlgList,  'メッセージSを表示し、はいかいいえで尋ねるダイアログを表示し、結果をはい(=1)いいえ(=0)で返す。', 'にたく');
+  AddFunc('日付選択',        '', 2416,cmd_dlgInputDate,  'カレンダーを表示して日付選択ダイアログを表示し日付を返す。', 'ひづけせんたく');
   //-Vistaダイアログ
   AddFunc('二択ダイアログ表示','{=?}QでSの|QとSを',  2413,cmd_nitaku_vista, 'Vista以降の標準二択ダイアログに質問Qと説明Sを表示する。', 'にたくだいあろぐひょうじ');
   AddFunc('警告ダイアログ表示','{=?}QでSの|QとSを',  2414,cmd_warning_vista, 'Vista以降の標準二択ダイアログにタイトルQと説明Sを表示する。', 'にたくだいあろぐひょうじ');

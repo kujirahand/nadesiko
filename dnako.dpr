@@ -151,6 +151,11 @@ begin
   Result := HiSystem.GetVariable(id);
 end;
 
+function nako_getVariableFromId(vname_id: DWORD): PHiValue; stdcall;// ID番号からなでしこに登録されている変数のポインタを取得する
+begin
+  Result := HiSystem.GetVariable(vname_id);
+end;
+
 procedure nako_setVariable(vname: PAnsiChar; value: PHiValue); stdcall; // なでしこに変数を登録する(グローバルとして)
 begin
   value.VarID := hi_tango2id(DeleteGobi(vname));
@@ -507,7 +512,7 @@ begin
   HiSystem.LoadPlugins;
 end;
 
-function nako_openPackfile(fname: PAnsiString): Integer; stdcall; // 実行ファイル fname のパックファイルを開く。失敗なら、0を返す。
+function nako_openPackfile(fname: PAnsiChar): Integer; stdcall; // 実行ファイル fname のパックファイルを開く。失敗なら、0を返す。
 begin
   errLog('nako_openPackfile:' + AnsiString(fname));
   if OpenPackFile(AnsiString(fname)) then
@@ -546,7 +551,7 @@ begin
   Result := nako_OK;
 end;
 
-function nako_openPackfileBin(packname: PAnsiString): Integer; stdcall; // packname のパックファイルを開く。失敗なら、0を返す。
+function nako_openPackfileBin(packname: PAnsiChar): Integer; stdcall; // packname のパックファイルを開く。失敗なら、0を返す。
 begin
   errLog('nako_openPackfileBin:' + AnsiString(packname));
 
@@ -598,7 +603,7 @@ begin
   HiSystem.plugins.addDll(fname);
 end;
 
-function nako_hasPlugins(dllName: PAnsiString): BOOL; stdcall; // 指定したプラグインが使われているか？
+function nako_hasPlugins(dllName: PAnsiChar): BOOL; stdcall; // 指定したプラグインが使われているか？
 var
   i: Integer;
   f: AnsiString;
@@ -883,6 +888,7 @@ exports
   nako_getLastUserFuncID,
   nako_checkLicense,
   nako_registerLicense,
+  nako_getVariableFromId,
   test;
   
 begin
