@@ -1,13 +1,24 @@
 
-# ファイル
+# ファイル/フォルダ定数
 ！CNAKO_EXEとは文字列　　 =ランタイムパス&`cnako.exe`
 ！NAKOPADとは文字列　　　 =ランタイムパス&`nakopad.exe`
-！設定ファイルとは文字列　=母艦パス&`探査艦設定.ini`
-！履歴ファイルとは文字列　=母艦パス&`検索履歴.txt`
-！タグDBファイルとは文字列=母艦パス&`sampleTags.db`
-！命令DBファイルとは文字列=母艦パス&`simpleCommands.db`
-！使用命令データとは文字列=母艦パス&`usedCommands.dat`
-！ユーザタグとは文字列　　=母艦パス&`userTags.dat`
+！ツール設定とは文字列　　=アプリ設定フォルダ&`nadesiko_lang\tools\manual_searcher\`
+！設定ファイルとは文字列　=ツール設定&`探査艦設定.ini` ※
+！履歴ファイルとは文字列　=ツール設定&`検索履歴.txt` ※
+！タグDBファイルとは文字列=ツール設定&`sampleTags.db` ※
+！命令DBファイルとは文字列=ツール設定&`simpleCommands.db` ※
+！使用命令データとは文字列=ツール設定&`usedCommands.dat` ※
+！ユーザタグとは文字列　　=母艦パス&`userTags.dat` # このファイルはこの位置に固定
+※ Ver.0.98以降で使用する定数
+
+# Ver.0.97以前で用いていた定数
+！旧設定ファイルとは文字列　=母艦パス&`探査艦設定.ini`
+/*
+！旧履歴ファイルとは文字列　=母艦パス&`検索履歴.txt`
+！旧タグDBファイルとは文字列=母艦パス&`sampleTags.db`
+！旧命令DBファイルとは文字列=母艦パス&`simpleCommands.db`
+！旧使用命令データとは文字列=母艦パス&`usedCommands.dat`
+*/
 
 # コマンド
 ！タグDB初期化とは文字列　=「"{CNAKO_EXE}" "{母艦パス}initSampleTags.nako"」
@@ -15,8 +26,8 @@
 ！使用命令初期化とは文字列=「"{CNAKO_EXE}" "{母艦パス}initUsedCommands.nako"」
 
 # kona2html.nako連携
-！KONA_INPUTとは文字列　=母艦パス&`konawiki.input.txt`
-！KONA_OUTPUTとは文字列 =母艦パス&`konawiki.output.html`
+！KONA_INPUTとは文字列　=テンポラリフォルダ&`konawiki.input.txt`
+！KONA_OUTPUTとは文字列 =テンポラリフォルダ&`konawiki.output.html`
 
 # フォルダ
 ！ツールズフォルダとは文字列　=ランタイムパス&`tools\`
