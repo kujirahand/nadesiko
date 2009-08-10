@@ -2609,6 +2609,7 @@ end;
 procedure TfrmNakopad.lstCmdDblClick(Sender: TObject);
 var
   s, mae, cmd, arg, line: string;
+  cur: Integer;
 
   function _chk(s:string): string;
   begin
@@ -2661,8 +2662,10 @@ begin
     cmd := Trim(getToken_s(s, 'Åy'));
     line := cmd;
   end;
+  cur := edtActive.SelStart;
   edtActive.SelText := line + #13#10;
   edtActive.SetFocus;
+  edtActive.SelStart := cur;
 end;
 
 procedure TfrmNakopad.cmbGroupKeyPress(Sender: TObject; var Key: Char);
