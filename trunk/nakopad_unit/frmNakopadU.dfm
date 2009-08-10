@@ -29,7 +29,7 @@ object frmNakopad: TfrmNakopad
     Top = 29
     Width = 217
     Height = 480
-    ActivePage = sheetAction
+    ActivePage = sheetTree
     Align = alLeft
     MultiLine = True
     TabOrder = 0
@@ -111,7 +111,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 12
+            ItemHeight = 0
             PopupMenu = popFind
             TabOrder = 0
             OnEnter = cmbFindEnter

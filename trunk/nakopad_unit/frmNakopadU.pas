@@ -2662,6 +2662,7 @@ begin
     line := cmd;
   end;
   edtActive.SelText := line + #13#10;
+  edtActive.SetFocus;
 end;
 
 procedure TfrmNakopad.cmbGroupKeyPress(Sender: TObject; var Key: Char);
