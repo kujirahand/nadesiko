@@ -7703,6 +7703,44 @@ begin
   fl   := getArgInt(h, 3);
   PostMessage(fh, fmsg, fw, fl);
 end;
+function browser_setFormValue(h: DWORD): PHiValue; stdcall;
+var
+  obj: TObject;
+  no: Integer;
+  idname, value, names: string;
+  web: TUIWebBrowser;
+  doc, list, inp: Variant;
+begin
+  Result := nil;
+  obj     := getGui(getArg(h, 0));
+  idname  := getArgStr(h, 1);
+  value   := getArgStr(h, 2);
+  //
+  web := TUIWebBrowser(obj);
+  try
+    doc := web.Document;
+    // IDを指定する
+    if Pos('\', idname) = 0 then
+    begin
+      inp := doc.getElementById(idname);
+    end else begin
+      names := getToken_s(idname, '\');
+      no    := StrToIntDef(Trim(idname), 1);
+      list := doc.getElementsByName(names);
+      inp := list.item(no);
+    end;
+    if (VarIsEmpty(inp) or VarIsNull(inp)) then
+    begin
+      Exit;
+    end;
+    inp.value := value;
+  finally
+    list := Unassigned;
+    inp := Unassigned;
+    doc := Unassigned;
+  end;
+end;
+
 
 function sys_toHurigana(h: DWORD): PHiValue; stdcall;
 begin
@@ -8519,7 +8557,9 @@ begin
   AddFunc('SetFocus',   'H',         2319, _SetFocus, '','SetFocus');
   AddFunc('SendMessage','H,MSG,W,L', 2328, _SendMessage, '','SendMessage');
   AddFunc('PostMessage','H,MSG,W,L', 2329, _PostMessage, '','PostMessage');
-
+  //-ブラウザ支援
+  AddFunc('ブラウザINPUT値設定','{グループ}OBJのIDにSを', 2399, browser_setFormValue, 'ブラウザ部品OBJで表示中のページにあるINPUTタグ(id属性を指定するか「name属性\出現番号」)のvalueに値を設定する','ぶらうざINPUTあたいせってい');
+  
   //-色定数
   AddIntVar('白色', $FFFFFF, 2330, '白色','しろいろ');
   AddIntVar('黒色', $000000, 2331, '黒色','くろいろ');
