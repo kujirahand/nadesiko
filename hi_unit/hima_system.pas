@@ -411,6 +411,7 @@ begin
   _checkTag(tag, id);
   item := CreateHiValue(id);
   item.VarID := id;
+  item.VType := varStr; // なぜか削られてしまったので再度追加
   item.Designer := 1; // 1:SYSTEM
   hi_setStr(item, value);
 end;
@@ -2364,10 +2365,12 @@ var
   instance: PHiValue;
 begin
   // グループ『自身』をコピーする
-  if jisin = nil then jisin := HiSystem.GetVariable(token_jisin);
-
+  if jisin = nil then
+  begin
+    jisin := HiSystem.GetVariable(token_jisin);
+  end;
   // 新しい自身をコピーする
-  hi_var_copyGensi(FScope.InstanceVar, jisin); // かつて
+  hi_var_copyGensi(FScope.InstanceVar, jisin);
   //instance := FScope.InstanceVar;
   //hi_setLink(jisin, instance);
 

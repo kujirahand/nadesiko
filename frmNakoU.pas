@@ -1137,7 +1137,7 @@ end;
 
 procedure TfrmNako.doEvent(group: PGuiInfo; eventName: string);
 var
-  p: PHiValue;
+  p, p2: PHiValue;
   n: string;
 begin
   if FFlagFree then Exit;
@@ -1156,20 +1156,29 @@ begin
       end;
       group.pgroup := nako_getVariableFromId(group.name_id);
       p := nako_group_findMember(group.pgroup, PChar(eventName));
-      if p = nil then Exit;
     end;
   except
     Exit;
   end;
+  if p = nil then Exit;
+  if p.VType <> varFunc then Exit;
+
   // イベント部品にコピー
   if EventObject = nil then EventObject := nako_getVariable('イベント部品');
   nako_varCopyGensi(group.pgroup, EventObject);
   try
     nako_continue;
     // イベントを eval する
-    // if _flag_vnako_exe = False then // libvnako.dll の場合：なぜか group 実行するとエラーがでる
-    n := group.name + 'の' + eventName;
-    nako_eval_str2(n);
+    if _flag_vnako_exe = False then // libvnako.dll の場合：なぜか group 実行するとエラーがでる
+    begin
+      n := group.name + 'の' + eventName;
+      nako_eval_str2(n);
+    end else
+    begin
+      p2 := nako_group_exec(group.pgroup, PChar(eventName));
+      nako_var_free(p2);
+    end;
+    UpdateAfterEvent(group.obj);
   except
     on e: Exception do
     begin
@@ -1181,8 +1190,6 @@ begin
       ShowModalCheck(frmError, Bokan);
     end;
   end;
-  // ちらつき防止のため
-  //UpdateAfterEvent(group.obj);
 end;
 
 procedure TfrmNako.eventBrowserNavigate(Sender: TObject;

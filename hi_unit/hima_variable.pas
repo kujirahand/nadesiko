@@ -52,7 +52,7 @@ procedure hi_setIntOrFloat(v: PHiValue; f: HFloat);
 
 // 変数へのリンクというか参照
 function hi_getLink(v: PHiValue): PHiValue;
-procedure hi_setLink(v:PHiValue; var Src: PHiValue; NotUsePool: Boolean = True);     // RefCount+1
+procedure hi_setLink(v, Src: PHiValue);
 
 // 変数の処理
 function hi_var_new: PHiValue;                  // 新規値の生成(内部で利用)
@@ -107,14 +107,14 @@ begin
   Result.VarID := 0;
 end;
 
-procedure hi_setLink(v:PHiValue; var Src: PHiValue; NotUsePool: Boolean);
-var
-  p: PHiValue;
+procedure hi_setLink(v, Src: PHiValue);
 begin
   // リンク作成対象をクリア
   hi_var_clear(v);
   Src := hi_getLink(Src);
 
+  (*
+  // これが原因でエンバグしているので一時戻す
   if NotUsePool = False then
   begin
     if (var_pool_list = nil) or (var_pool_list.IndexOf(Src) < 0) then
@@ -133,6 +133,7 @@ begin
       Src := p;
     end;
   end;
+  *)
   // リンク作成
   v^.VType := varLink;
   v^.ptr   := Src;

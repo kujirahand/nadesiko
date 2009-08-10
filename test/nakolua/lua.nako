@@ -21,5 +21,6 @@ sh = luacom.CreateObject("WScript.Shell")
 path = sh.SpecialFolders("Desktop")
 nako_set("PATH", path.."\\")
 」をLUAする
+　　PATH=PATHをSJIS変換
 　　PATHとデスクトップでテスト実行
 #-----------------------------------------------------------------------
