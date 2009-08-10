@@ -186,7 +186,7 @@ function getCanvasFromObj(obj: TObject): TCanvas; // オブジェクトを取得
 function getCanvas(o: PHiValue): TCanvas; // オブジェクトを取得
 function getBmp(o: PHiValue): TBitmap; // オブジェクトを取得
 function getImage(o: PHiValue): TImage; // オブジェクトを取得
-
+function getGroupName(group: PHiValue): string; // グループ名を取得する
 
 function IsDialogConvNum: Boolean;
 
@@ -1894,6 +1894,15 @@ begin
   begin
     Result := TObject(hi_int(p));
   end;
+end;
+
+function getGroupName(group: PHiValue): string; // グループ名を取得する
+var
+  buf: string;
+begin
+  SetLength(buf, 1024);
+  nako_id2tango(group.VarID, PChar(buf), 1023);
+  Result := string(PChar(buf));
 end;
 
 function getGuiName(g: PHiValue): string; // オブジェクトの名前を取得
@@ -7705,7 +7714,7 @@ end;
 
 procedure sub_menus(ps: PHiValue; menu: TMenu);
 var
-  pm, po, pmenu: PHiValue;
+  pm, pm_obj, po, pmenu: PHiValue;
   opo: TComponent;
   csv: TCsvSheet;
   i,cnt: Integer;
@@ -7772,15 +7781,16 @@ begin
       nako_varCopyData(pmenu, pm);
       nako_group_exec(pm, '作');
 
-      pm := nako_getGroupMember(PChar(vname), 'オブジェクト');
-      if pm = nil then raise Exception.Create('システムエラー.メニュー"'+vname+'"のポインタが取得できません。');
-      if not (TComponent(hi_int(pm)) is TMenuItem) then raise Exception.Create('システムエラー.メニュー"'+vname+'"のポインタが取得できません。');
+      pm_obj := nako_getGroupMember(PChar(vname), 'オブジェクト');
+      if pm_obj = nil then raise Exception.Create('システムエラー.メニュー"'+vname+'"のポインタが取得できません。');
+      if not (TComponent(hi_int(pm_obj)) is TMenuItem) then raise Exception.Create('システムエラー.メニュー"'+vname+'"のポインタが取得できません。');
 
-      mnu := TMenuItem(hi_int(pm));
+      mnu := TMenuItem(hi_int(pm_obj));
       mnu.Caption := cap;
       mnu.OnClick := Bokan.eventClick;
       with GuiInfos[mnu.Tag] do begin
         name     := vname;
+        pgroup   := pm;
       end;
 
       if scut <> '' then mnu.ShortCut := TextToShortCut(scut);
