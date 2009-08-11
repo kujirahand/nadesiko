@@ -7703,22 +7703,17 @@ begin
   fl   := getArgInt(h, 3);
   PostMessage(fh, fmsg, fw, fl);
 end;
-function browser_setFormValue(h: DWORD): PHiValue; stdcall;
+
+function browser_getId(web:TUIWebBrowser; idname: string): Variant;
 var
-  obj: TObject;
+  doc, items, inp: Variant;
+  names: string;
   no: Integer;
-  idname, value, names: string;
-  web: TUIWebBrowser;
-  doc, list, inp: Variant;
 begin
-  Result := nil;
-  obj     := getGui(getArg(h, 0));
-  idname  := getArgStr(h, 1);
-  value   := getArgStr(h, 2);
-  //
-  web := TUIWebBrowser(obj);
   try
     doc := web.Document;
+    if VarIsClear(doc) then Exit;
+
     // IDを指定する
     if Pos('\', idname) = 0 then
     begin
@@ -7726,21 +7721,127 @@ begin
     end else begin
       names := getToken_s(idname, '\');
       no    := StrToIntDef(Trim(idname), 1);
-      list := doc.getElementsByName(names);
-      inp := list.item(no);
+      items  := doc.getElementsByName(names);
+      if VarIsClear(items) or (items.Length = 0) then
+      begin
+        items := Unassigned;
+        items := doc.getElementsByTagName(names);
+      end;
+      if VarIsClear(items)  or (items.Length = 0) then
+      begin
+        Exit;
+      end;
+      if items.Length >= no then
+      begin
+        inp := items.item(no);
+      end else
+      begin
+        Exit;
+      end;
     end;
+    if (VarIsClear(inp) or VarIsEmpty(inp)) then
+    begin
+      Exit;
+    end;
+    Result := inp;
+  finally
+    items := Unassigned;
+    inp := Unassigned;
+    doc := Unassigned;
+  end;
+
+end;
+
+function browser_getFormValue(h: DWORD): PHiValue; stdcall;
+var
+  obj: TObject;
+  idname: string;
+  inp: Variant;
+begin
+  Result := nil;
+  obj     := getGui(getArg(h, 0));
+  idname  := getArgStr(h, 1);
+  //
+  try
+    inp := browser_getId(obj as TUIWebBrowser, idname);
+    if (VarIsEmpty(inp) or VarIsNull(inp)) then
+    begin
+      Exit;
+    end;
+    Result := hi_newStr(inp.value);
+  finally
+    inp := Unassigned;
+  end;
+end;
+
+function browser_setFormValue(h: DWORD): PHiValue; stdcall;
+var
+  obj: TObject;
+  idname, value: string;
+  inp: Variant;
+begin
+  Result := nil;
+  obj     := getGui(getArg(h, 0));
+  idname  := getArgStr(h, 1);
+  value   := getArgStr(h, 2);
+  //
+  try
+    inp := browser_getId(obj as TUIWebBrowser, idname);
     if (VarIsEmpty(inp) or VarIsNull(inp)) then
     begin
       Exit;
     end;
     inp.value := value;
   finally
-    list := Unassigned;
     inp := Unassigned;
-    doc := Unassigned;
   end;
 end;
 
+function browser_submit(h: DWORD): PHiValue; stdcall;
+var
+  obj: TObject;
+  idname: string;
+  inp: Variant;
+begin
+  Result := nil;
+  obj     := getGui(getArg(h, 0));
+  idname  := getArgStr(h, 1);
+  //
+  try
+    inp := browser_getId(obj as TUIWebBrowser, idname);
+    if (VarIsEmpty(inp) or VarIsNull(inp)) then
+    begin
+      Exit;
+    end;
+    inp.submit;
+  finally
+    inp := Unassigned;
+  end;
+end;
+
+
+function browser_setHTML(h: DWORD): PHiValue; stdcall;
+var
+  obj: TObject;
+  idname, html: string;
+  inp: Variant;
+begin
+  Result := nil;
+  obj     := getGui(getArg(h, 0));
+  idname  := getArgStr(h, 1);
+  html    := getArgStr(h, 2);
+  //
+  try
+    inp := browser_getId(obj as TUIWebBrowser, idname);
+    if (VarIsEmpty(inp) or VarIsNull(inp)) then
+    begin
+      Exit;
+    end;
+    inp.innerHTML := html;
+  finally
+    inp := Unassigned;
+  end;
+end;
 
 function sys_toHurigana(h: DWORD): PHiValue; stdcall;
 begin
@@ -8558,8 +8659,11 @@ begin
   AddFunc('SendMessage','H,MSG,W,L', 2328, _SendMessage, '','SendMessage');
   AddFunc('PostMessage','H,MSG,W,L', 2329, _PostMessage, '','PostMessage');
   //-ブラウザ支援
-  AddFunc('ブラウザINPUT値設定','{グループ}OBJのIDにSを', 2399, browser_setFormValue, 'ブラウザ部品OBJで表示中のページにあるINPUTタグ(id属性を指定するか「name属性\出現番号」)のvalueに値を設定する','ぶらうざINPUTあたいせってい');
-  
+  AddFunc('ブラウザINPUT値設定','{グループ}OBJのIDにSを', 2399, browser_setFormValue, 'ブラウザ部品OBJで表示中のページにあるINPUTタグ(IDにはid属性か「name属性かタグ名\出現番号(0起点)」)のvalueに値を設定する','ぶらうざINPUTあたいせってい');
+  AddFunc('ブラウザINPUT値取得','{グループ}OBJのIDを', 2398, browser_getFormValue, 'ブラウザ部品OBJで表示中のページにあるINPUTタグの値を取得する','ぶらうざINPUTあたいしゅとく');
+  AddFunc('ブラウザFORM送信','{グループ}OBJのIDを', 2397, browser_submit, 'ブラウザ部品OBJで表示中のページにあるFORMタグを送信する(IDにはid属性か「name属性かタグ名\出現番号(0起点)」)を送信する','ぶらうざFORMそうしん');
+  AddFunc('ブラウザHTML書換','{グループ}OBJのIDをSに|Sへ', 2396, browser_setHTML, 'ブラウザ部品OBJで表示中のIDのHTMLを書き換える(IDにはid属性か「name属性かタグ名\出現番号(0起点)」)','ぶらうざHTMLかきかえ');
+
   //-色定数
   AddIntVar('白色', $FFFFFF, 2330, '白色','しろいろ');
   AddIntVar('黒色', $000000, 2331, '黒色','くろいろ');

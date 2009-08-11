@@ -899,10 +899,6 @@ begin
   if (os.dwPlatformId = VER_PLATFORM_WIN32_NT)and
     (os.dwMajorVersion >= 5) then
   begin
-    //TODO: 将来的に対応する
-    //GlobalMemoryStatusEx <-- 4G超えるメモリサイズを取得可能
-    //GlobalMemoryStatus(g);
-    //Result := hi_newInt(g.dwTotalPhys);
     ZeroMemory(@Status, SizeOf(TMemoryStatusEx));
     Status.dwLength := SizeOf(TMemoryStatusEx);
     GlobalMemoryStatusEx(Status);
