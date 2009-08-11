@@ -13,6 +13,7 @@ nako_set("A",a)」をLUAする
 ●テスト_nakolua_lua_2_luacom
 　　###CHECK(@297)
 　　### luacom use WSH
+　　もし、OSバージョン<５ならば、戻る
 　　Aとは変数
 　　「
 -- Get Desktop Sample
