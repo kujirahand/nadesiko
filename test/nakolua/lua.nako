@@ -4,8 +4,8 @@
 ●テスト_nakolua_lua_1
 　　### 基本
 　　Aとは変数
-　　「a=123456
-nako_set("A",a)」をLUAする
+　　『a=123456
+nako_set("A",a)』をLUAする
 　　Aと123456でテスト実行
 #-----------------------------------------------------------------------
 # luacom のテスト
@@ -14,14 +14,31 @@ nako_set("A",a)」をLUAする
 　　###CHECK(@297)
 　　### luacom use WSH
 　　もし、OSバージョン<５ならば、戻る
-　　Aとは変数
-　　「
+　　Aとは変数。PATHとは変数。
+　　『
 -- Get Desktop Sample
 require 'luacom'
 sh = luacom.CreateObject("WScript.Shell")
 path = sh.SpecialFolders("Desktop")
 nako_set("PATH", path.."\\")
-」をLUAする
-　　PATH=PATHをSJIS変換
+』をLUAする
+　　PATH=PATHをUTF8N_SJIS変換
 　　PATHとデスクトップでテスト実行
 #-----------------------------------------------------------------------
+# Windows API の呼び出し
+#-----------------------------------------------------------------------
+●テスト_nakolua_lua_2_alien
+　　PROFILEとは変数。
+　　PROFILE2とは変数。
+　　『
+require( "alien" )
+local eev = alien.Kernel32.ExpandEnvironmentStringsA
+eev:types{ ret = "long", abi = 'stdcall', "string", "pointer", "long" }
+local buffer = alien.buffer(1024)
+eev("%USERPROFILE%", buffer, 1024)
+nako_set("PROFILE", tostring(buffer))
+』をＬＵＡする
+　　PROFILE2=「%USERPROFILE%」の環境変数展開
+　　PROFILEとPROFILE2でテスト実行
+#-----------------------------------------------------------------------
+
