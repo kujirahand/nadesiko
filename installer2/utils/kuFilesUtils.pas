@@ -11,6 +11,11 @@ interface
 uses
   Windows, SysUtils, Classes, ShlObj, ShellApi, masks;
 
+{$IF RTLVersion < 20}
+type RawByteString = AnsiString;
+type TEncoding = string;
+{$IFEND}
+
 type
   TFileGlobOption = (fgAll, fgDir, fgFile);
   TFildEnumOnProgress = procedure (Dir: string; Level: Integer; var FlagHalt:Boolean);
@@ -350,7 +355,11 @@ var
 begin
   s := TStringList.Create;
   try
+    {$IF RTLVersion < 20}
+    s.LoadFromFile(filename);
+    {$ELSE}
     s.LoadFromFile(filename, Enc);
+    {$IFEND}
     Result := s.Text;
   finally
     s.Free;
@@ -374,7 +383,11 @@ end;
 
 procedure TKFile.OpenApp(fname, cmd: string; ShowWindow: Word);
 begin
+  {$IF RTLVersion < 20}
+  ShellExecute(0, 'open', PChar(fname), PChar(cmd), nil, ShowWindow);
+  {$ELSE}
   ShellExecute(0, 'open', PWideChar(fname), PWideChar(cmd), nil, ShowWindow);
+  {$IFEND}
 end;
 
 procedure TKFile.RunAndWait(cmd: string; ShowWindow: Word);
@@ -388,8 +401,13 @@ begin
   si.wShowWindow := ShowWindow;
   si.dwFlags := STARTF_USESHOWWINDOW;
   UniqueString(cmd);
+  {$IF RTLVersion < 20}
+  ret := CreateProcess(nil, PChar(cmd), nil, nil, False,
+    CREATE_DEFAULT_ERROR_MODE, nil, nil, si, pi);
+  {$ELSE}
   ret := CreateProcess(nil, PWideChar(cmd), nil, nil, False,
     CREATE_DEFAULT_ERROR_MODE, nil, nil, si, pi);
+  {$IFEND}
   if not ret then begin
     raise Exception.Create('Could not run: ' + cmd + ':' + GetLastErrorStr(GetLastError));
   end;
@@ -423,9 +441,17 @@ begin
     sei.lpVerb := 'open';
   //
   if fname = '' then  sei.lpFile := nil
+                {$IF RTLVersion < 20}
+                else  sei.lpFile := PChar(fname);
+                {$ELSE}
                 else  sei.lpFile := PWideChar(fname);
-  if cmd = '' then sei.lpParameters := nil
-              else sei.lpParameters := PWideChar(cmd);
+                {$IFEND}
+  if cmd = ''   then sei.lpParameters := nil
+                {$IF RTLVersion < 20}
+                else sei.lpParameters := PChar(cmd);
+                {$ELSE}
+                else sei.lpParameters := PWideChar(cmd);
+                {$IFEND}
   sei.nShow := SW_SHOWNORMAL;
   if IsWait then
   begin
@@ -448,7 +474,11 @@ begin
   s := TStringList.Create;
   try
     s.Text := txt;
+    {$IF RTLVersion < 20}
+    s.SaveToFile(filename);
+    {$ELSE}
     s.SaveToFile(filename, Enc);
+    {$IFEND}
   finally
     s.Free;
   end;

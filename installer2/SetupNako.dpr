@@ -1,7 +1,7 @@
 program SetupNako;
 
 {$IF RTLVersion < 20}
-  Delphi 2009 Only
+//  Delphi 2009 Only
 {$IFEND}
 
 uses
@@ -211,7 +211,11 @@ procedure doUinstallExec;
 var
   reg: TRegistry;
   path: string;
+  {$IF RTLVersion < 20}
+  w: AnsiString;
+  {$ELSE}
   w: WideString;
+  {$IFEND}
 begin
   // delete Directory
   _target := '';
@@ -271,7 +275,11 @@ begin
       w := 'ファイルの削除に失敗しました。'#13#10+
         'アプリケーションを終了させてから再度実行してください。'#13#10+
         e.Message;
+      {$IF RTLVersion < 20}
+      MessageBox(0, PChar(w), APP_TITLE, MB_OK);
+      {$ELSE}
       MessageBox(0, PWideChar(w), APP_TITLE, MB_OK);
+      {$IFEND}
     end;
   end;
   Halt;
