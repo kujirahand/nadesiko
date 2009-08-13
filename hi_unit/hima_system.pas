@@ -1470,6 +1470,21 @@ begin
   Result := f.GetAsText;
 end;
 
+
+function THiSystem.GetVariable(VarID: DWORD): PHiValue;
+begin
+  // ローカルをチェック
+  Result := Local.GetVar(VarID);
+  if Result <> nil then Exit;
+
+  // グループスコープをチェック
+  Result := GroupScope.FindMember(VarID);
+  if Result <> nil then Exit;
+
+  // グローバルをチェック
+  Result := Namespace.GetVar(VarID);
+end;
+
 function THiSystem.GetVariableNoGroupScope(VarID: DWORD): PHiValue;
 begin
   // ローカルをチェック
@@ -1478,15 +1493,6 @@ begin
 
   // グローバルをチェック
   Result := Namespace.GetVar(VarID);
-end;
-
-function THiSystem.GetVariable(VarID: DWORD): PHiValue;
-begin
-  Result := GetVariableRaw(VarID);
-  if (Result <> nil)and(Result.VType = varLink) then
-  begin
-    Result := hi_getLink(Result);
-  end;
 end;
 
 function THiSystem.GetVariableRaw(VarID: DWORD): PHiValue;
@@ -2361,8 +2367,8 @@ end;
 
 
 procedure THiGroupScope.PushGroupScope(FScope: THiGroup);
-var
-  instance: PHiValue;
+//var
+//  instance: PHiValue;
 begin
   // グループ『自身』をコピーする
   if jisin = nil then
