@@ -6,6 +6,7 @@
 最新版チェック,check-new.nako
 +便利ツール
 マニュアル探査艦,manual_searcher\manual_searcher.nako
+対話型実行ツール,対話実行ツール.nako
 メニューエディタ,menu.nako
 ファイル名の挿入,selectfile.nako
 フォルダ名の挿入,selectdir.nako
