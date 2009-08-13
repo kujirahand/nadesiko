@@ -5,6 +5,10 @@ interface
 uses
   Windows, SysUtils, Classes;
 
+{$IF RTLVersion < 20}
+type RawByteString = AnsiString;
+{$IFEND}
+
 function JoinStr(list:TStringList; delimiter: string): string;
 function DumpStr(raw: RawByteString): string;
 function GetLastErrorStr(ErrorCode: Integer): String;
@@ -17,7 +21,11 @@ var
   i: Integer;
 begin
   if Title = '' then Title := '‚¨‘I‚Ñ‚­‚¾‚³‚¢';
+  {$IF RTLVersion < 20}
+  i := MessageBox(Handle, PChar(Question), PChar(Title), MB_YESNO or MB_ICONQUESTION);
+  {$ELSE}
   i := MessageBox(Handle, PWideChar(Question), PWideChar(Title), MB_YESNO or MB_ICONQUESTION);
+  {$IFEND}
   Result := (i = ID_YES);
 end;
 
@@ -30,7 +38,8 @@ begin
   Buf := AllocMem(MAX_MES);
   try
     FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, nil, ErrorCode,
-                  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                  (((Word(SUBLANG_DEFAULT)) shl 10) or Word(LANG_NEUTRAL)),
+                  //MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                   Buf, MAX_MES, nil);
   finally
     Result := Buf;
