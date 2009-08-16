@@ -32,8 +32,8 @@
 			<Compiler Name="N">1</Compiler>
 			<Compiler Name="O">0</Compiler>
 			<Compiler Name="P">1</Compiler>
-			<Compiler Name="Q">1</Compiler>
-			<Compiler Name="R">1</Compiler>
+			<Compiler Name="Q">0</Compiler>
+			<Compiler Name="R">0</Compiler>
 			<Compiler Name="S">0</Compiler>
 			<Compiler Name="T">0</Compiler>
 			<Compiler Name="U">0</Compiler>
@@ -171,6 +171,7 @@
 			<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 			<VersionInfoKeys Name="Comments"></VersionInfoKeys>
 		</VersionInfoKeys>  
+    
     
     <Excluded_Packages>
       <Excluded_Packages Name="c:\program files\borland\bds\4.0\Bin\dclib100.bpl">Borland InterBase Express Components</Excluded_Packages>
