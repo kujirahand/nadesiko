@@ -855,7 +855,8 @@ type
     ullTotalPageFile: DWORDLONG; 
     ullAvailPageFile: DWORDLONG; 
     ullTotalVirtual : DWORDLONG; 
-    ullAvailVirtual : DWORDLONG; 
+    ullAvailVirtual : DWORDLONG;
+    ullAvailExtendedVirtual: DWORDLONG;
   end; 
   {$EXTERNALSYM _MEMORYSTATUSEX} 
   TMemoryStatusEx = _MEMORYSTATUSEX; 
@@ -891,6 +892,13 @@ var
   g:TMemoryStatus;
   os:_OSVERSIONINFOA;
   Status: TMemoryStatusEx;
+
+  procedure _old;
+  begin
+    GlobalMemoryStatus(g);
+    Result := hi_newInt(g.dwTotalPhys);
+  end;
+
 begin
   ZeroMemory(@os, SizeOf(os));
   os.dwOSVersionInfoSize := SizeOf(os);
@@ -901,11 +909,13 @@ begin
   begin
     ZeroMemory(@Status, SizeOf(TMemoryStatusEx));
     Status.dwLength := SizeOf(TMemoryStatusEx);
-    GlobalMemoryStatusEx(Status);
+    if not GlobalMemoryStatusEx(Status) then
+    begin
+      _old; Exit;
+    end;
     Result := hi_newFloat(Status.ullTotalPhys);
   end else begin
-    GlobalMemoryStatus(g);
-    Result := hi_newInt(g.dwTotalPhys);
+    _old;
   end;
 end;
 
