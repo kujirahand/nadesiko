@@ -5175,11 +5175,12 @@ begin
       except
         on e:Exception do
         begin
-          raise Exception.CreateFmt('åvéZÇÃé∏îs(%s)Åw%sÅx(%s)',
+          raise Exception.CreateFmt('åvéZÇÃé∏îs(%s)Åw%sÅx(%s):%s',
             [
               Copy(hi_str(va),1,10),
               hi_id2tango(TSyntaxEnzansi(node).ID),
-              Copy(hi_str(vb),1,10)
+              Copy(hi_str(vb),1,10),
+              e.Message
             ]);
         end;
       end;

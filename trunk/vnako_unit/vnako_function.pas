@@ -8112,7 +8112,7 @@ end;
 
 function vcl_toolbutton(h: DWORD): PHiValue; stdcall;
 var
-  p, pobj,ps, pm, ptoolbtn: PHiValue;
+  p, pobj,ps, pm, btn_group, ptoolbtn: PHiValue;
 
   csv: TCsvSheet;
   i: Integer;
@@ -8148,13 +8148,13 @@ begin
 
       // 生成
       // nako_eval_str('!' + vname + 'とはツールボタン。'#13#10+vname+'を作る。');
-      pm := nako_getVariable(PChar(vname));
-      if pm = nil then pm := nako_var_new(PChar(vname));
+      btn_group := nako_getVariable(PChar(vname));
+      if btn_group = nil then btn_group := nako_var_new(PChar(vname));
       //
       ptoolbtn := nako_getVariable('ツールボタン');
-      nako_varCopyData(ptoolbtn, pm);
-      nako_group_exec(pm, '作');
-      pm := nako_group_findMember(pm, 'オブジェクト');
+      nako_varCopyData(ptoolbtn, btn_group);
+      nako_group_exec(btn_group, '作');
+      pm := nako_group_findMember(btn_group, 'オブジェクト');
 
       if pm = nil then raise Exception.Create('システムエラー.ツールボタン'+vname+'のポインタが取得できません。');
 
@@ -8166,6 +8166,11 @@ begin
       end;
       btn.Left := i * toolbar.ButtonWidth;
       btn.OnClick := bokan.eventClick;
+      with GuiInfos[btn.Tag] do begin
+        name := vname;
+        pgroup := btn_group;
+        name_id := nako_tango2id(PChar(vname));
+      end;
 
       if (itype = '')or(itype='ボタン') then
       begin

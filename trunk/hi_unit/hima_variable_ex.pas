@@ -509,9 +509,7 @@ end;
 function hi_var_calc_plus_str(a, b: PHiValue): PHiValue;
 var
   sa, sb, res: AnsiString;
-  rv: PHiValue;
 begin
-  rv := hi_var_new;
   try
     sa := hi_str(a);
     sb := hi_str(b);
@@ -529,13 +527,12 @@ begin
     end;
   end;
   try
-    hi_setStr(rv, res);
+    Result := hi_newStr(res);
   except
     on e:Exception do begin
       raise Exception.Create('•¶š—ñ‚Ì‘«‚µZ(Œ‹‰Ê‚Ìİ’è)B' + e.Message);
     end;
   end;
-  Result := rv;
 end;
 
 function hi_var_calc_Eq    (a, b: PHiValue): PHiValue;
