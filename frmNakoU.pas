@@ -1161,7 +1161,7 @@ begin
     Exit;
   end;
   if p = nil then Exit;
-  if p.VType <> varFunc then Exit;
+  if (p.VType <> varFunc) then Exit;
 
   // イベント部品にコピー
   if EventObject = nil then EventObject := nako_getVariable('イベント部品');
@@ -1169,7 +1169,7 @@ begin
   try
     nako_continue;
     // イベントを eval する
-    if _flag_vnako_exe = False then // libvnako.dll の場合：なぜか group 実行するとエラーがでる
+    if (_flag_vnako_exe = False) then // libvnako.dll の場合：なぜか group 実行するとエラーがでる
     begin
       n := group.name + 'の' + eventName;
       nako_eval_str2(n);
