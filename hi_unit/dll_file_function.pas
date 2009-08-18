@@ -144,7 +144,7 @@ function sys_loadEveryLine(args: DWORD): PHiValue; stdcall;
 var
   v, f: PHiValue;
   fname, s: string;
-  h: TKTextFileStream;
+  // h: TKTextFileStream;
 begin
   // (1) 引数の取得
   v := nako_getFuncArg(args, 0); // ハンドル
@@ -157,10 +157,10 @@ begin
   if not CheckFileExists(fname) then raise Exception.Create('ファイルが見つかりません。"'+fname+'"');
 
   // (3) 戻り値を設定 // Create したハンドルは 『反復』構文の中で自動的に閉じる
-  h := TKTextFileStream.Create(fname, fmOpenRead or fmShareDenyWrite);
+  // h := TKTextFileStream.Create(fname, fmOpenRead or fmShareDenyWrite);
+  //s := 'TKTextFileStream::' + IntToStr(Integer(h));
 
-  s := 'TKTextFileStream::' + IntToStr(Integer(h));
-
+  s := '@@@毎行読::' + fname;
   Result := hi_newStr(s);
 
   // v に格納
