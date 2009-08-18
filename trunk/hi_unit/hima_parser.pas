@@ -7002,7 +7002,7 @@ var
   str, s: AnsiString;
   mode: Integer;
   ary: THiArray;
-  tkFile: TKTextFileStream;
+  tkFile: TKTextFileE;
   tmpKaisu: Integer;
   ptmpTaisyou, ptaisyou: PHiValue;
 
@@ -7164,12 +7164,12 @@ begin
       begin
         str := hi_str(v);
         mode := 0;
-        if Copy(str,1,18) = 'TKTextFileStream::' then // 例外的なファイルストリーム
+        //if Copy(str,1,18) = 'TKTextFileStream::' then // 例外的なファイルストリーム
+        if Copy(str,1,11) = '@@@毎行読::' then // 例外的なファイルストリーム
         begin
           getToken_s(str, '::');
-          tkFile := TKTextFileStream(StrToIntDef(Trim(str), 0));
-          //if not(tkFile is TKTextFileStream) then raise Exception.Create('テキストファイルの毎行読み取りに失敗しました。');
-          if not(tkFile is TKTextFileStream) then str := '';
+          tkFile := TKTextFileE.Create(Trim(str), fmOpenRead);
+          if not(tkFile is TKTextFileE) then str := '';
           mode := 2;
         end;
       end;

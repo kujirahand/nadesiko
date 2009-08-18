@@ -178,7 +178,7 @@ end;
 
 function TKTextFileE.GetEOF: Boolean;
 begin
-  Result := Eoln(fh);
+  Result := System.Eof(fh);
 end;
 
 function TKTextFileE.ReadLn: AnsiString;
