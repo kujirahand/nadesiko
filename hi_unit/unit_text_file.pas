@@ -21,6 +21,18 @@ type
     property EOF: Boolean read FEOF;
   end;
 
+  TKTextFileE = class
+  private
+    fh: TextFile;
+    function GetEOF: Boolean;
+  published
+  public
+    constructor Create(const FileName: AnsiString; Mode: Word);
+    destructor Destroy; override;
+    function ReadLn: AnsiString;
+    property EOF: Boolean read GetEOF;
+  end;
+
 implementation
 
 { TKTextFileStream }
@@ -142,6 +154,36 @@ begin
   begin
     FEOF := True;
   end;
+end;
+
+{ TKTextFileE }
+
+constructor TKTextFileE.Create(const FileName: AnsiString; Mode: Word);
+begin
+  Assign(fh, FileName);
+  if (Mode = fmCreate)or(Mode = fmOpenWrite) then
+  begin
+    Rewrite(fh);
+  end else
+  begin
+    Reset(fh);
+  end;
+end;
+
+destructor TKTextFileE.Destroy;
+begin
+  Close(fh);
+  inherited;
+end;
+
+function TKTextFileE.GetEOF: Boolean;
+begin
+  Result := Eoln(fh);
+end;
+
+function TKTextFileE.ReadLn: AnsiString;
+begin
+  System.Readln(fh, Result);
 end;
 
 end.
