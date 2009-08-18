@@ -1148,7 +1148,7 @@ begin
   try
     // Check Group
     p := nako_group_findMember(group.pgroup, PChar(eventName));
-    if p = nil then
+    if (p = nil)or(p.VType = varNil) then
     begin
       if group.name_id = 0 then
       begin
