@@ -72,9 +72,6 @@ function hi_newBool(i: Boolean): PHiValue;       // 新規変数を生成して数値をセッ
 // その他
 function hi_vtype2str(p: PHiValue): AnsiString;
 
-// メモリ一時追加用
-procedure add_var_pool(p: PHiValue);
-
 implementation
 
 uses hima_string, hima_variable_ex, hima_function, hima_system, hima_token;
@@ -113,27 +110,6 @@ begin
   hi_var_clear(v);
   Src := hi_getLink(Src);
 
-  (*
-  // これが原因でエンバグしているので一時戻す
-  if NotUsePool = False then
-  begin
-    if (var_pool_list = nil) or (var_pool_list.IndexOf(Src) < 0) then
-    begin
-      // 複数からリンクされるオブジェクトは
-      // 一括管理のリストに代入される
-      // TODO: 変数のエイリアス(varType)の作成(非効率なので改良する)
-      p := hi_var_new;
-      hi_var_copyGensi(Src, p);
-      Src.VType := varLink;
-      Src.ptr   := p;
-      Src.Size  := SizeOf(PHiValue);
-      add_var_pool(p);
-      Inc(p.RefCount);
-      //
-      Src := p;
-    end;
-  end;
-  *)
   // リンク作成
   v^.VType := varLink;
   v^.ptr   := Src;
@@ -149,7 +125,7 @@ end;
 function hi_getLink(v: PHiValue): PHiValue;
 begin
   Result := nil; if v = nil then Exit;
-  
+
   if v.VType = varLink then
   begin
     Result := hi_getLink(v.ptr); // linik->link にも対応
@@ -549,7 +525,7 @@ procedure hi_var_clear(var v: PHiValue);
   end;
 
   procedure _freeLink; // for varLink
-  var v2: PHiValue; i: Integer;
+  var v2: PHiValue;
   begin
     // 参照先の RefCount を減らす
     v2 := hi_getLink(v);
@@ -559,11 +535,6 @@ procedure hi_var_clear(var v: PHiValue);
 
       if v2.RefCount < 0 then
       begin
-        i := var_pool_list.IndexOf(v2);
-        if i > 0 then
-        begin
-          var_pool_list.Items[i] := nil;
-        end;
         hi_var_free(v2);
       end;
 
@@ -572,11 +543,6 @@ procedure hi_var_clear(var v: PHiValue);
 
 begin
   if v = nil then begin v := hi_var_new; Exit; end;
-  {
-  if v.VarID = 617 then begin
-    messagebox(0,'617','err',MB_OK);
-  end;
-  }
   if v.Size > 0 then
   begin
     // データメモリの解放
@@ -604,7 +570,6 @@ end;
 procedure hi_var_free(var v: PHiValue);  // 値を完全に削除する
 var
   id: DWORD;
-  i: Integer;
 begin
   if v = nil then Exit;
 
@@ -614,14 +579,6 @@ begin
     hi_var_clear(v);
     if v.RefCount <= 0 then
     begin
-      if var_pool_list <> nil then
-      begin
-        i := var_pool_list.IndexOf(v);
-        if i >= 0 then
-        begin
-          var_pool_list.Items[i] := nil;
-        end;
-      end;
       Dispose(v);
     end;
   except
@@ -705,34 +662,5 @@ begin
 
   if b then v^.int := 1 else v^.int := 0;
 end;
-
-procedure add_var_pool(p: PHiValue);
-begin
-  if p = nil then Exit;
-  if var_pool_list = nil then var_pool_list := THList.Create;
-  var_pool_list.Add(p);
-end;
-
-procedure free_var_pool;
-var i: Integer; p: PHiValue;
-begin
-  // Free
-  if var_pool_list <> nil then
-  begin
-    for i := 0 to var_pool_list.Count - 1 do
-    begin
-      p := var_pool_list.Items[i];
-      hi_var_free(p);
-    end;
-    FreeAndNil(var_pool_list);
-  end;
-end;
-
-initialization
-
-finalization
-  begin
-    free_var_pool;
-  end;
 
 end.

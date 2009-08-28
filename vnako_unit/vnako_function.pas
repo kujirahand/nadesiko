@@ -4480,16 +4480,24 @@ begin
   v := nako_group_findMember(g, 'オブジェクト');
   obj := TObject(Integer(hi_int(v)));
   if obj = nil then Exit;
-  nako_var_free(g);
-  if obj is TTimer then
-  begin
-    TTimer(obj).Enabled := False;
-  end else
-  if obj is TControl then
-  begin
-    TControl(obj).Visible := False; // 後でこっそり解放する
+  try
+    nako_var_free(g);
+    if obj is TTimer then
+    begin
+      TTimer(obj).Enabled := False;
+    end else
+    if obj is TControl then
+    begin
+      try
+        TControl(obj).Visible := False; // 後でこっそり解放する
+      except
+        obj := nil;
+      end;
+    end;
+  except
+    raise;
   end;
-  bokan.freeObjList.Add(obj);
+  if obj <> nil then bokan.freeObjList.Add(obj);
 end;
 
 function vcl_setDefaultParentObj(h: DWORD): PHiValue; stdcall;
