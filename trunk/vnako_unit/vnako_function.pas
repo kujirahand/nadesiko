@@ -136,6 +136,7 @@ type
     name    : string;
     name_id : DWORD;
     fileDrop: TFileDrop;
+    freetag: Integer; // 自由に使えるタグ
   end;
 
 var
@@ -6615,7 +6616,11 @@ var
   begin
     e := TUIWebBrowser(obj);
     try
-      if cmd = 'SETURL'    then e.Navigate(hi_str(v)) else
+      if cmd = 'SETURL'    then
+      begin
+        e.Navigate(hi_str(v));
+        GuiInfos[ e.Tag ].freetag := 1;
+      end else
       if cmd = 'GETURL'    then Result := hi_newStr( e.LocationURL ) else
       if cmd = '戻る'   then e.GoBack else
       if cmd = '進む'   then e.GoForward else
@@ -7821,6 +7826,7 @@ begin
     begin
       Exit;
     end;
+    GuiInfos[TUIWebBrowser(obj).Tag].freetag := 1;
     inp.submit;
   finally
     inp := Unassigned;
@@ -7850,6 +7856,45 @@ begin
     inp := Unassigned;
   end;
 end;
+
+function browser_getHTML(h: DWORD): PHiValue; stdcall;
+var
+  obj: TObject;
+  idname: string;
+  inp: Variant;
+begin
+  Result := nil;
+  obj     := getGui(getArg(h, 0));
+  idname  := getArgStr(h, 1);
+  //
+  try
+    inp := browser_getId(obj as TUIWebBrowser, idname);
+    if (VarIsEmpty(inp) or VarIsNull(inp)) then
+    begin
+      Exit;
+    end;
+    Result := hi_newStr(inp.innerHTML);
+  finally
+    inp := Unassigned;
+  end;
+end;
+
+function browser_waitToComplete(h: DWORD): PHiValue; stdcall;
+var
+  Sender: TObject;
+begin
+  Result := nil;
+  Sender := getGui(getArg(h, 0));
+  try
+    while (GuiInfos[ TControl(Sender).Tag ].freetag = 1) do
+    begin
+      Application.ProcessMessages;
+      Sleep(100);
+    end;
+  finally
+  end;
+end;
+
 
 function sys_toHurigana(h: DWORD): PHiValue; stdcall;
 begin
@@ -8676,6 +8721,8 @@ begin
   AddFunc('ブラウザINPUT値取得','{グループ}OBJのIDを', 2398, browser_getFormValue, 'ブラウザ部品OBJで表示中のページにあるINPUTタグの値を取得する','ぶらうざINPUTあたいしゅとく');
   AddFunc('ブラウザFORM送信','{グループ}OBJのIDを', 2397, browser_submit, 'ブラウザ部品OBJで表示中のページにあるFORMタグを送信する(IDにはid属性か「name属性かタグ名\出現番号(0起点)」)を送信する','ぶらうざFORMそうしん');
   AddFunc('ブラウザHTML書換','{グループ}OBJのIDをSに|Sへ', 2396, browser_setHTML, 'ブラウザ部品OBJで表示中のIDのHTMLを書き換える(IDにはid属性か「name属性かタグ名\出現番号(0起点)」)','ぶらうざHTMLかきかえ');
+  AddFunc('ブラウザHTML取得','{グループ}OBJのIDを', 2395, browser_getHTML, 'ブラウザ部品OBJで表示中のIDのHTMLを取得する(IDにはid属性か「name属性かタグ名\出現番号(0起点)」)','ぶらうざHTMLしゅとく');
+  AddFunc('ブラウザ読込待機','{グループ}OBJの', 2394, browser_waitToComplete, 'ブラウザ部品OBJで表示中のIDのHTMLを取得する','ぶらうざHTMLよみこみたいき');
 
   //-色定数
   AddIntVar('白色', $FFFFFF, 2330, '白色','しろいろ');
