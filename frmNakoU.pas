@@ -889,55 +889,55 @@ end;
 
 procedure TfrmNako.eventClick(Sender: TObject);
 var
-  ginfo: TGuiInfo;
+   ginfo: PGuiInfo;
 begin
-  ginfo := GuiInfos[ TControl(Sender).Tag ];
-  doEvent(@ginfo, EVENT_CLICK);
+  ginfo := @GuiInfos[ TControl(Sender).Tag ];
+  doEvent(ginfo, EVENT_CLICK);
 end;
 
 procedure TfrmNako.eventChange(Sender: TObject);
 var
-  ginfo: TGuiInfo;
+   ginfo: PGuiInfo;
 begin
-  ginfo := GuiInfos[ TControl(Sender).Tag ];
-  doEvent(@ginfo, EVENT_CHANGE);
+  ginfo := @GuiInfos[ TControl(Sender).Tag ];
+  doEvent(ginfo, EVENT_CHANGE);
 end;
 
 procedure TfrmNako.eventDblClick(Sender: TObject);
 var
-  ginfo: TGuiInfo;
+   ginfo: PGuiInfo;
 begin
-  ginfo := GuiInfos[ TControl(Sender).Tag ];
-  doEvent(@ginfo, EVENT_DBLCLICK);
+  ginfo := @GuiInfos[ TControl(Sender).Tag ];
+  doEvent(ginfo, EVENT_DBLCLICK);
 end;
 
 procedure TfrmNako.eventChangeTrackBox(Sender: Tobject; SZf: Boolean);
 var
-  ginfo: TGuiInfo;
+   ginfo: PGuiInfo;
 begin
-  ginfo := GuiInfos[ TControl(Sender).Tag ];
-  doEvent(@ginfo, EVENT_SIZE_CHANGE);
+  ginfo := @GuiInfos[ TControl(Sender).Tag ];
+  doEvent(ginfo, EVENT_SIZE_CHANGE);
 end;
 
 procedure TfrmNako.eventSizeChange(Sender: TObject);
 var
-  ginfo: TGuiInfo;
+   ginfo: PGuiInfo;
 begin
-  ginfo := GuiInfos[ TControl(Sender).Tag ];
-  doEvent(@ginfo, EVENT_SIZE_CHANGE);
+  ginfo := @GuiInfos[ TControl(Sender).Tag ];
+  doEvent(ginfo, EVENT_SIZE_CHANGE);
 end;
 
 procedure TfrmNako.eventShow(Sender: TObject);
 var
-  ginfo: TGuiInfo;
+   ginfo: PGuiInfo;
 begin
-  ginfo := GuiInfos[ TControl(Sender).Tag ];
-  doEvent(@ginfo, EVENT_SHOW);
+  ginfo := @GuiInfos[ TControl(Sender).Tag ];
+  doEvent(ginfo, EVENT_SHOW);
 end;
 
 procedure TfrmNako.eventClose(Sender: TObject; var CanClose: Boolean);
 var
-  ginfo: TGuiInfo;
+   ginfo: PGuiInfo;
   p: PHiValue;
 begin
   flagClose := True;
@@ -950,14 +950,14 @@ begin
 
   if not _dnako_success then Exit;
   if FFlagFree then Exit;
-  
+
   flagNowClose := True;
   try
 
-    ginfo := GuiInfos[ TControl(Sender).Tag ];
+    ginfo := @GuiInfos[ TControl(Sender).Tag ];
 
     nako_continue;
-    doEvent(@ginfo, EVENT_CLOSE);
+    doEvent(ginfo, EVENT_CLOSE);
 
     p := nako_getGroupMember(PChar(ginfo.name), '終了可能');
     if (p<>nil)and(hi_int(p) = 0) then
@@ -981,18 +981,18 @@ end;
 
 procedure TfrmNako.eventTreeViewChange(Sender: TObject; Node: TTreeNode);
 var
-  ginfo: TGuiInfo;
+   ginfo: PGuiInfo;
 begin
-  ginfo := GuiInfos[ TControl(Sender).Tag ];
-  doEvent(@ginfo, EVENT_CHANGE);
+  ginfo := @GuiInfos[ TControl(Sender).Tag ];
+  doEvent(ginfo, EVENT_CHANGE);
 end;
 
 procedure TfrmNako.eventPaint(Sender: TObject);
 var
-  ginfo: TGuiInfo;
+   ginfo: PGuiInfo;
 begin
-  ginfo := GuiInfos[ TControl(Sender).Tag ];
-  doEvent(@ginfo, EVENT_PAINT);
+  ginfo := @GuiInfos[ TControl(Sender).Tag ];
+  doEvent(ginfo, EVENT_PAINT);
 end;
 
 procedure TfrmNako.Redraw;
@@ -1638,39 +1638,42 @@ end;
 procedure TfrmNako.eventNavigateComplete(Sender: TObject;
   const pDisp: IDispatch; var URL: OleVariant);
 var
-  ginfo: TGuiInfo;
+  ginfo: PGuiInfo;
 begin
-  ginfo := GuiInfos[ TControl(Sender).Tag ];
-  doEvent(@ginfo, '完了した時');
+  ginfo := @(GuiInfos[ TControl(Sender).Tag ]);
+  ginfo.freetag := 0;
+  doEvent(ginfo, '完了した時');
 end;
 
 procedure TfrmNako.eventBrowserDocumentComplete(Sender: TObject;
   const pDisp: IDispatch; var URL: OleVariant);
 var
-  ginfo: TGuiInfo;
+  ginfo: PGuiInfo;
 begin
-  ginfo := GuiInfos[ TControl(Sender).Tag ];
-  doEvent(@ginfo, '文書完了した時');
+  ginfo := @(GuiInfos[ TControl(Sender).Tag ]);
+  ginfo.freetag := 0;
+  doEvent(ginfo, '文書完了した時');
 end;
 
 procedure TfrmNako.eventBrowserDownloadComplete(Sender: TObject);
 var
-  ginfo: TGuiInfo;
+  ginfo: PGuiInfo;
 begin
-  ginfo := GuiInfos[ TControl(Sender).Tag ];
-  doEvent(@ginfo, 'ダウンロード完了した時');
+  ginfo := @GuiInfos[ TControl(Sender).Tag ];
+  ginfo.freetag := 0;
+  doEvent(ginfo, 'ダウンロード完了した時');
 end;
 
 
 procedure TfrmNako.eventBrowserNewWindow2(Sender: TObject;
   var ppDisp: IDispatch; var Cancel: WordBool);
 var
-  ginfo: TGuiInfo;
+  ginfo: PGuiInfo;
   p: PHiValue;
   w: TUIWebBrowser;
 begin
-  ginfo := GuiInfos[ TControl(Sender).Tag ];
-  doEvent(@ginfo, '新窓開いた時');
+  ginfo := @GuiInfos[ TControl(Sender).Tag ];
+  doEvent(ginfo, '新窓開いた時');
 
   // 禁止？
   p := nako_group_findMember(ginfo.pgroup, '新窓禁止');
@@ -1697,11 +1700,11 @@ end;
 procedure TfrmNako.eventTEditorDropFile(Sender: TObject; Drop,
   KeyState: Integer; Point: TPoint);
 var
-  ginfo: TGuiInfo;
+  ginfo: PGuiInfo;
   p: PHiValue;
   s: string;
 begin
-  ginfo := GuiInfos[ TEditorEx(Sender).Tag ];
+  ginfo := @GuiInfos[ TEditorEx(Sender).Tag ];
 
   p := nako_getGroupMember(PChar(ginfo.name), EVENT_FILEDROP);
   if (p=nil)or(p.ptr=nil) then Exit; // イベントはなし
@@ -1712,7 +1715,7 @@ begin
   if (p<>nil) then hi_setStr(p, Trim(s));
 
   // イベント
-  doEvent(@ginfo, EVENT_FILEDROP);
+  doEvent(ginfo, EVENT_FILEDROP);
 end;
 
 function FirstDriveFromMask (unitmask: DWORD): Char;
