@@ -912,18 +912,22 @@ end;
 
 function TKExcel.PhoneticAll(s:string):string;
 var
-  r: string;
+  kanji: Variant;
+  r: Variant;
 begin
-  Result := E_Application.GetPhonetic(s);
+  kanji := s;
+  Result := E_Application.GetPhonetic(kanji);
   r := Result;
   while r <> '' do
   begin
-    r := E_Application.GetPhonetic();
+    r := E_Application.GetPhonetic;
     if r <> '' then
     begin
-      Result := Result + r + #13#10;
+      Result := Result + #13#10 + r;
     end;
   end;
+  r := Unassigned;
+  kanji := Unassigned;
 end;
 
 

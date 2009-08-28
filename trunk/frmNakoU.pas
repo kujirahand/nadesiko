@@ -1895,8 +1895,12 @@ begin
   begin
     for i := 0 to freeObjList.Count - 1 do
     begin
-      p := freeObjList.Items[i];
-      FreeAndNil(p);
+      try
+        p := freeObjList.Items[i];
+        FreeAndNil(p);
+      except
+        // ‰ó‚ê‚Ä‚¢‚­‚à‚Ì‚È‚Ì‚ÅƒGƒ‰[‚ğ–³‹B
+      end;
     end;
     freeObjList.Clear;
   end;

@@ -2367,8 +2367,6 @@ end;
 
 
 procedure THiGroupScope.PushGroupScope(FScope: THiGroup);
-//var
-//  instance: PHiValue;
 begin
   // グループ『自身』をコピーする
   if jisin = nil then
@@ -2377,8 +2375,7 @@ begin
   end;
   // 新しい自身をコピーする
   hi_var_copyGensi(FScope.InstanceVar, jisin);
-  //instance := FScope.InstanceVar;
-  //hi_setLink(jisin, instance);
+  //hi_setLink(jisin, FScope.InstanceVar);
 
   Self.Push(FScope);
 end;
