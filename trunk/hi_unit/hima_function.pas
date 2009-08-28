@@ -6246,7 +6246,6 @@ begin
       // Œ^‚ğİ’è‚·‚é
       while kata <> '' do
       begin
-        ss := getToken_s(kata, ' ');
              if ss = '•¶š—ñ'   then arg.VType  := varStr
         else if ss = '®”'     then arg.VType  := varInt
         else if ss = '”’l'     then arg.VType  := varFloat
@@ -6256,6 +6255,7 @@ begin
         else if ss = '’l“n‚µ'   then arg.ByRef  := False
         else if ss = 'QÆ“n‚µ' then arg.ByRef  := True
         ;
+        ss := getToken_s(kata, ' ');
       end;
       // ‰Šú’l‚Ìİ’è
       if (value = '')or(value = '?')or(value = '''' + '''') then
