@@ -11,5 +11,26 @@
 　　R=『(function(){ return 123; }())』をJSCRIPTする
 　　Rと123でテスト実行
 
+●テスト_nako_winscript_jscript_2
+　　もし、OSバージョン＜５ならば、戻る
+　　### クラスプロパティのテスト
+　　『
+function MyTest() {
+  this.prop = "test";
+  return this;
+}
 
+var nakotest_a = new MyTest();
+nakotest_a.prop = 321;
+』をJSCRIPT
+　　### Prototype メソッドのテスト
+　　『nakotest_a.prop;』をJSCRIPTする。
+　　それと321でテスト実行
+　　『
+MyTest.prototype.method = function() {
+  return this.prop;
+};
+』をJSCRIPTする。
+　　『(new MyTest()).method();』をJSCRIPTする
+　　それと『test』でテスト実行
 
