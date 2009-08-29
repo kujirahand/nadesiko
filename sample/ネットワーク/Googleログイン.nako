@@ -1,0 +1,8 @@
+//Googleアカウントログインページでパスワードを入力する例
+WEB閲覧とはブラウザ
+そのレイアウトは『全体』
+そのURLは『https://www.google.com/accounts/Login』
+WEB閲覧のブラウザ読み込み待機。
+WEB閲覧の『Email』に『hoge.fuga@gmail.com』をブラウザINPUT値設定
+WEB閲覧の『Passwd』に『abcd』をブラウザINPUT値設定
+# WEB閲覧の『gaia_loginform』をブラウザFORM送信
