@@ -717,7 +717,7 @@ begin
   AddFunc  ('ラジアン変換', '{=?}Aを',  5056, sys_DEG2RAD,  '度Aをラジアンをに変換して返す','らじあんへんかん');
 
   //-論理演算
-  AddFunc  ('NOT',    'A',     291, sys_not,     'A=0のとき1を違えば0を返す','NOT');
+  AddFunc  ('NOT',    '{整数}A',     291, sys_not,     'A=0のとき1を違えば0を返す','NOT');
   AddFunc  ('OR',     'A,B',   292, sys_or,      'AとBの論理和を返す。日本語の「AまたはB」に相当する','OR');
   AddFunc  ('AND',    'A,B',   293, sys_and,     'AとBの論理積を返す。日本語の「AかつB」に相当する','AND');
   AddFunc  ('XOR',    'A,B',   294, sys_xor,     'AとBの排他的論理和を返す。','XOR');

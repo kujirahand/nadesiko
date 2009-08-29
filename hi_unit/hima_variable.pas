@@ -278,7 +278,10 @@ begin
   // 型チェック
   case vType of
     varNil      : ; // 何も変換しない
-    varInt      : tmp^.int := hi_int(tmp);
+    varInt      : begin
+      tmp^.int := hi_int(tmp);
+      tmp^.VType := varInt;
+    end;
     varFloat    : hi_setFloat(tmp, hi_float(tmp));
     varStr      : hi_setStr(tmp, hi_str(tmp));
     varPointer  : tmp^.ptr := Pointer(hi_int(tmp));

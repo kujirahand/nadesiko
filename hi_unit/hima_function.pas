@@ -6245,7 +6245,7 @@ begin
       end;
       // Œ^‚ğİ’è‚·‚é
       while kata <> '' do
-      begin       
+      begin
         ss := getToken_s(kata, ' ');
              if ss = '•¶š—ñ'   then arg.VType  := varStr
         else if ss = '®”'     then arg.VType  := varInt
