@@ -2051,8 +2051,13 @@ begin
   if p = nil then p := nako_getSore;
   sp := hi_str(p);
 
-  GetDiskFreeSpaceEx(PChar(sp), iFree, iTotal, nil);
-
+  if DirectoryExists(sp) then
+  begin
+    GetDiskFreeSpaceEx(PChar(sp), iFree, iTotal, nil);
+  end else
+  begin
+    iTotal := -1;
+  end;
   Result := hi_newFloat(iTotal);
 end;
 function sys_getDiskFreeSize(args: DWORD): PHiValue; stdcall;
@@ -2064,7 +2069,13 @@ begin
   if p = nil then p := nako_getSore;
   sp := hi_str(p);
 
-  GetDiskFreeSpaceEx(PChar(sp), iFree, iTotal, nil);
+  if DirectoryExists(sp) then
+  begin
+    GetDiskFreeSpaceEx(PChar(sp), iFree, iTotal, nil);
+  end else
+  begin
+    iFree := -1;
+  end;
   Result := hi_newFloat(iFree);
 end;
 function sys_getVolumeName(args: DWORD): PHiValue; stdcall;
