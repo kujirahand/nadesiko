@@ -38,7 +38,7 @@ type
     FileName : Array [0..255] of Char;
     FilePos  : DWORD;
     FileLen  : DWORD;
-    Comp     : Byte;    // 0=”ñˆ³k 1=XOR‚ÅˆÃ†‰» 2=ˆÃ†‰»
+    Comp     : Byte;    // 0=”ñˆ³k 1=XOR‚ÅˆÃ†‰» 2=ˆÃ†‰» 3=‹­—ÍˆÃ†‰»
   end;
 
   TFileMixWriter = class
@@ -594,7 +594,7 @@ function TFileMixReader.ReadAndSaveToFile(const ReadName,
 var
   ms: THMemoryStream;
 begin
-  Result := ReadFile(ReadName, ms);
+  Result := ReadFile(ReadName, ms, IsUser);
   if Result = True then
   begin
     ms.SaveToFile(SaveName);
