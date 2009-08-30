@@ -41,7 +41,7 @@ type
     Comp     : Byte;    // 0=非圧縮 1=XORで暗号化 2=暗号化 3=強力暗号化 4=強力暗号化2
   end;
 
-  TFileMixWriter = class // Ver2 の形式で書き込む
+  TFileMixWriter = class
   public
     FileList: THStringList;
   public
@@ -398,7 +398,7 @@ begin
   // 簡易暗号化のためのキー
   for i := 0 to ms.Size - 1 do
   begin
-    xorb := pat[i mod Length(pat)];
+    xorb := pat[i mod 73];
     p^ := (p^ xor xorb) xor rand;
     Inc(p);
   end;
@@ -474,7 +474,7 @@ begin
     with mixHeader do
     begin
         HeaderID := 'fMix';
-        FormatVersion := 2; // VERSION 2
+        FormatVersion := 1;
         FileCount := FileList.Count ;
         FileSize := 0; //後で書き換え
     end;
@@ -658,7 +658,7 @@ begin
     ms.Seek(0, soBeginning);
     ms.CopyFrom(fs, pf.FileLen);
     if pf.Comp = 1 then DoXor(ms) else
-    if (pf.Comp = 2)or(pf.Comp = 3) then
+    if (pf.Comp = 2)or(pf.Comp = 3)or(pf.Comp = 4) then
     begin
       if IsUser then
       begin
@@ -672,6 +672,9 @@ begin
         ;
       end;
     end else
+    begin
+      raise Exception.Create('未対応のパックファイル形式です');
+    end;
     ;
     Result := True;
   finally
