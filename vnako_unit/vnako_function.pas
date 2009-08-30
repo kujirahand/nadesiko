@@ -3467,31 +3467,22 @@ end;
 
 function cmd_reflesh(h: DWORD): PHiValue; stdcall;
 var
-  p:PHiValue;
-  a:HWND;
+  con: TObject;
 begin
   // (1) 引数の取得
-  p := nako_getFuncArg(h, 0);
-  if p = nil then a := Bokan.Handle else
-  a:=TWinControl(hi_int(nako_group_findMember(p,'オブジェクト'))).Handle;
-  // (2) 処理
-
-  InvalidateRect( a, nil, False );
+  con := getGui(nako_getFuncArg(h, 0));
+  if con <> nil then
+  begin
+    TControl(con).Invalidate;
+  end;
   Application.ProcessMessages;
-
   // (3) 結果の代入
   Result := nil; // 何も返さない場合は nil
 end;
 
 function cmd_redraw(h: DWORD): PHiValue; stdcall;
 begin
-  // (1) 引数の取得
-  // (2) 処理
-
   Bokan.Redraw;
-  //InvalidateRect( Bokan.Handle, nil, False );
-
-  // (3) 結果の代入
   Result := nil; // 何も返さない場合は nil
 end;
 
@@ -5426,10 +5417,8 @@ begin
     end;
   end;
 
-
   // (3) 結果の代入
-  Result := nako_var_new(nil);
-  nako_int2var(Integer(o), Result);
+  Result := hi_newInt(Integer(o));
 end;
 
 
@@ -8801,7 +8790,9 @@ begin
 end;
 
 initialization
+begin
   printLogBuf := TRingBufferString.Create(PRINT_LOG_SIZE);
+end;
 
 finalization
   printLogBuf.Free;

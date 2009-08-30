@@ -2389,6 +2389,7 @@ begin
 
   // 自身にコピーする
   g := Self.TopItem;
+  
   if g <> nil then begin
     hi_var_copyGensi(g.InstanceVar, jisin);
   end else begin

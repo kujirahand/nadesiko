@@ -393,7 +393,7 @@ begin
   //created                          //T12:00:00+09:00ÅÅ
   created := FormatDateTime('yyyy-mm-dd', Now) + 'T' + FormatDateTime('hh:nn:ss+09:00',Now);
   //nonce
-  nonce := SHA1StringHex(created + IntToHex(Random($FFFFFFFF), 8));
+  nonce := SHA1StringHex(created + IntToHex(Random(MaxInt), 8));
   //passwordDigest
   passwordDigest := SHA1StringBin(nonce + created + password);
   //wsse
