@@ -131,7 +131,6 @@ var
 
 procedure FaultGetNkfVersion(version : pchar); stdcall;
 begin
-  version := '';
   ShowError('GetNkfVersion');
 end;
 
@@ -150,7 +149,6 @@ function  FaultNkfConvertSafe(outs:PChar;outbuflen:Dword;bytesret:pdword;const i
 begin
   Result := false;
   bytesret^:=0;
-  outs:='';
   ShowError('NkfConvertSafe');
 end;
 
