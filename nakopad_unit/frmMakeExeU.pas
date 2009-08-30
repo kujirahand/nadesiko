@@ -87,7 +87,7 @@ var
   f,s: string;
   p: TFileMixWriter;
   i: Integer;
-  tempExe, temporaryExe: string;
+  tempExe, temporaryExe, mainfile, packfile: string;
 
   procedure _rewriteicon(exefile: string);
   var
@@ -166,8 +166,9 @@ begin
 
   // 梱包ファイルを作る
   p := TFileMixWriter.Create;
-  frmNakopad.edtActive.Lines.SaveToFile(AppPath+'packfile.nako');
-  p.FileList.Add(AppPath+'packfile.nako=nadesiko.nako='+_angouka);
+  mainfile := getOriginalFileName(TempDir, 'main.nako');
+  frmNakopad.edtActive.Lines.SaveToFile(mainfile);
+  p.FileList.Add(mainfile+'=nadesiko.nako='+_angouka);
   case frmNakopad.FNakoIndex of
     NAKO_VNAKO:
       begin
@@ -187,7 +188,8 @@ begin
     s:=lstFiles.Items.Strings[i];
     p.FileList.Add(s+'='+ExtractFileName(s)+'='+_angouka);
   end;
-  p.SaveToFile(AppPath+'packfile.bin');
+  packfile := getOriginalFileName(TempDir, 'nakpac.bin');
+  p.SaveToFile(packfile);
   p.Free;
 
   // 保存
@@ -209,8 +211,13 @@ begin
   temporaryExe := TempDir + 'nako' + FormatDateTime('yymmddhhnnsszzz', Now) + '.exe';
   CopyFile(PChar(tempExe),PChar(temporaryExe), False);
   _rewriteIcon(temporaryExe);
-  WritePackExeFile(f, temporaryExe, AppPath+'packfile.bin');
+  WritePackExeFile(f, temporaryExe, packfile);
 
+  // 後始末
+  DeleteFile(temporaryExe);
+  DeleteFile(mainfile);
+  DeleteFile(packfile);
+  
   //=========================
   // 依存ファイルのコピー
   _copyPlugins;
