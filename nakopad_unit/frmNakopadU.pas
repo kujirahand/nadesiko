@@ -716,6 +716,7 @@ type
     FFindKey      : string;
     isDelux       : Boolean;
     procedure TangoSelect;
+    procedure RunProgram(FlagWait: Boolean);
     property StatusInfo: string read FPanel0 write setPanel0;
     property StatusMemo: string read FPanel1 write setPanel1;
     property StatusMsg : string read FPanel2 write setPanel2;
@@ -1613,76 +1614,15 @@ begin
 end;
 
 procedure TfrmNakopad.mnuRunClick(Sender: TObject);
-var
-  s, exe, txt, param: string;
 begin
-  // 実行
+  // Check Page
   if pageMain.ActivePage = tabDesign then
   begin
     design2source;
     pageMain.ActivePage := tabSource;
   end;
-
-  RuntimeLineno := edtActive.Row;
-
-  // 仮ファイルを作成
-  if (FFileName = '') then
-  begin
-    if FTempFile = '' then
-      FTempFile := getOriginalFileName(TempDir, 'com.nadesi.exe.nakopad.temp.nako.bak');
-  end else
-  begin
-    FTempFile := ChangeFileExt(FFileName, '.nako.bak');
-  end;
-  //
-  txt := edtActive.Lines.Text;
-  if FSpeed > 0 then
-  begin
-    txt := IntToStr(FSpeed)+'に実行速度設定'#13#10+txt;
-  end;
-  if mnuTestMode.Checked then
-  begin
-    txt :=  '!テスト対象ファイル＝『'+FTempFile+'』'#13#10+
-            '!"'+AppPath+'lib\testlib.nako"を取り込む;'#13#10+
-            'テストメイン処理。終わる。'#13#10+
-            txt;
-  end;
-  if not WriteTextFile(FTempFile, txt) then
-  begin
-    MessageBox(Self.Handle,'一時ファイルの作成に失敗しました。'#13#10+
-    '手動で削除してください。','エラー',MB_OK or MB_ICONSTOP);
-    Exit;
-  end;
-
-  // 実行
-  case FNakoIndex of
-  NAKO_VNAKO:
-    begin
-      exe := '"' + AppPath + 'vnako.exe" "' + FTempFile + '" -debug::' + IntToStr(Self.Handle);
-      if mnuDebugLineNo.Checked then exe := exe + ' -lineno';
-    end;
-  NAKO_GNAKO:
-    begin
-      exe := '"' + AppPath + 'gnako.exe" "' + FTempFile + '" -debug::' + IntToStr(Self.Handle);
-      if mnuDebugLineNo.Checked then exe := exe + ' -lineno';
-    end;
-  NAKO_CNAKO:
-    begin
-      exe := '"' + AppPath + 'cnako.exe" /w "' + FTempFile + '" -debug::' + IntToStr(Self.Handle);
-    end;
-  end;
-
-  if mnuRunAs.Checked then
-  begin
-    s := exe;
-    System.Delete(s,1,1);
-    exe := GetToken('"', s);
-    param := Trim(s);
-    RunAsAdmin(Self.Handle, exe, param);
-  end else
-  begin
-    RunApp(exe);
-  end;
+  // Run
+  RunProgram(False);
 end;
 
 procedure mnuClearCheck(e: TfrmNakopad);
@@ -3106,17 +3046,20 @@ end;
 
 procedure TfrmNakopad.mnuMakeExeClick(Sender: TObject);
 begin
-  if FModified or (not FileExists(ReportFile)) then
+  if FModified then
+  begin
+    ShowWarn('実行ファイルを作る前に念のため保存してください。');
+    Exit;
+  end;
+  //
+  if (not FileExists(ReportFile)) then
   begin
     if FileExists(ReportFile) then DeleteFile(ReportFile);
-    ShowWarn(
-      '一度実行した後でないと依存関係を調べることができません。'#13#10+
-      '以下の手順に従ってください。'#13#10+
-      '手順:'#13#10+
-      '(1) プログラムを保存'#13#10+
-      '(2) プログラムを一度実行'#13#10+
-      '(3) 再度このメニューをクリック', '実行ファイル作成時の注意');
-    Exit;
+    // --- 自動実行する ---
+    edtActive.Lines.Insert(0, '終わる');
+    RunProgram(True);
+    edtActive.Lines.Delete(0);
+    edtActive.Modified := False;
   end;
   if frmMakeExe.dlgSave.FileName = '' then
   begin
@@ -6021,6 +5964,80 @@ procedure TfrmNakopad.mnuInsDebugClick(Sender: TObject);
 begin
   mnuInsDebug.Checked := not mnuInsDebug.Checked;
   ini.WriteBool('Edit', 'mnuInsDebug', mnuInsDebug.Checked);
+end;
+
+procedure TfrmNakopad.RunProgram(FlagWait: Boolean);
+var
+  s, exe, txt, param: string;
+begin
+  // 実行
+  RuntimeLineno := edtActive.Row;
+
+  // 仮ファイルを作成
+  if (FFileName = '') then
+  begin
+    if FTempFile = '' then
+      FTempFile := getOriginalFileName(TempDir, 'com.nadesi.exe.nakopad.temp.nako.bak');
+  end else
+  begin
+    FTempFile := ChangeFileExt(FFileName, '.nako.bak');
+  end;
+
+  // プログラムを得る
+  txt := edtActive.Lines.Text;
+  if FSpeed > 0 then
+  begin
+    txt := IntToStr(FSpeed)+'に実行速度設定'#13#10+txt;
+  end;
+  if mnuTestMode.Checked then
+  begin
+    txt :=  '!テスト対象ファイル＝『'+FTempFile+'』'#13#10+
+            '!"'+AppPath+'lib\testlib.nako"を取り込む;'#13#10+
+            'テストメイン処理。終わる。'#13#10+
+            txt;
+  end;
+  if not WriteTextFile(FTempFile, txt) then
+  begin
+    MessageBox(Self.Handle,'一時ファイルの作成に失敗しました。'#13#10+
+    '手動で削除してください。','エラー',MB_OK or MB_ICONSTOP);
+    Exit;
+  end;
+
+  // 実行
+  case FNakoIndex of
+  NAKO_VNAKO:
+    begin
+      exe := '"' + AppPath + 'vnako.exe" "' + FTempFile + '" -debug::' + IntToStr(Self.Handle);
+      if mnuDebugLineNo.Checked then exe := exe + ' -lineno';
+    end;
+  NAKO_GNAKO:
+    begin
+      exe := '"' + AppPath + 'gnako.exe" "' + FTempFile + '" -debug::' + IntToStr(Self.Handle);
+      if mnuDebugLineNo.Checked then exe := exe + ' -lineno';
+    end;
+  NAKO_CNAKO:
+    begin
+      exe := '"' + AppPath + 'cnako.exe" /w "' + FTempFile + '" -debug::' + IntToStr(Self.Handle);
+    end;
+  end;
+
+  if mnuRunAs.Checked then
+  begin
+    s := exe;
+    System.Delete(s,1,1);
+    exe := GetToken('"', s);
+    param := Trim(s);
+    RunAsAdmin(Self.Handle, exe, param);
+  end else
+  begin
+    if not FlagWait then
+    begin
+      RunApp(exe);
+    end else
+    begin
+      RunAppAndWait(exe);
+    end;
+  end;
 end;
 
 end.

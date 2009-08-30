@@ -141,7 +141,7 @@ var
   begin
     if chkAngou3.Checked then
     begin
-      Result := '3';
+      Result := '4'; // <--- 暗号化 新バージョン
     end else
     if chkAngou.Checked then
     begin

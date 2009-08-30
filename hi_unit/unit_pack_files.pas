@@ -38,10 +38,10 @@ type
     FileName : Array [0..255] of Char;
     FilePos  : DWORD;
     FileLen  : DWORD;
-    Comp     : Byte;    // 0=非圧縮 1=XORで暗号化 2=暗号化 3=強力暗号化
+    Comp     : Byte;    // 0=非圧縮 1=XORで暗号化 2=暗号化 3=強力暗号化 4=強力暗号化2
   end;
 
-  TFileMixWriter = class
+  TFileMixWriter = class // Ver2 の形式で書き込む
   public
     FileList: THStringList;
   public
@@ -83,6 +83,7 @@ var FileMixReaderSelfCreate: Boolean = False;
 procedure DoXor(var ms: THMemoryStream);
 procedure DoAngou(var ms: THMemoryStream);
 procedure DoAngou3(var ms: THMemoryStream; enc:Boolean);
+procedure DoAngou4(var ms: THMemoryStream; enc:Boolean);
 
 {実行ファイルへリソースの埋め込み／読み込み}
 function WritePackExeFile(outFileName, exeFileName, packFileName: AnsiString): Boolean;
@@ -367,6 +368,42 @@ begin
   end;
 end;
 
+// 簡易暗号化その4（実行時のみ展開が許される／ユーザーからの展開は失敗する）
+procedure DoAngou4(var ms: THMemoryStream; enc:Boolean);
+var
+  p: PByte;
+  i: Integer;
+  xorb: Byte;
+
+const
+  pat: array [0..72] of Byte = (
+    $54,$65,$9A,$E5,$C8,$01,$02,$55,$B9,$FC,$9C,$E0,$23,$6D,$A4,$26,$C0,$CE,$C7,
+    $03,$27,$A6,$C2,$17,$9B,$87,$C2,$3F,$CB,$B7,$C5,$0E,$B5,$B9,$74,$37,$83,$85,
+    $ED,$DD,$AF,$F7,$E2,$16,$15,$70,$EE,$2E,$C8,$10,$0D,$30,$76,$66,$AD,$17,$8F,
+    $F7,$C0,$78,$F6,$4F,$C2,$CE,$D3,$CB,$EF,$AB,$E2,$BA,$AA,$69,$B9
+  );
+
+  function rand:Byte;
+  var i: Integer;
+  begin
+    i := Random(256);
+    Result := i and $FF;
+  end;
+
+begin
+  // 先頭メモリを取得
+  p := ms.Memory;
+  RandSeed := ms.Size;
+
+  // 簡易暗号化のためのキー
+  for i := 0 to ms.Size - 1 do
+  begin
+    xorb := pat[i mod Length(pat)];
+    p^ := (p^ xor xorb) xor rand;
+    Inc(p);
+  end;
+end;
+
 function JPosEx(const sub, str: AnsiString; idx:Integer): Integer;
 var
     p, sub_p, temp: PAnsiChar; len: Integer;
@@ -437,7 +474,7 @@ begin
     with mixHeader do
     begin
         HeaderID := 'fMix';
-        FormatVersion := 1;
+        FormatVersion := 2; // VERSION 2
         FileCount := FileList.Count ;
         FileSize := 0; //後で書き換え
     end;
@@ -467,6 +504,7 @@ begin
                     if comp=1 then DoXor(ms) else
                     if comp=2 then DoAngou(ms) else
                     if comp=3 then DoAngou3(ms, True) else
+                    if comp=4 then DoAngou4(ms, True) else
                     ;
                     FileLen  := ms.Size;
                     FilePos  := fs.Position ;
@@ -558,6 +596,7 @@ begin
     if info.Comp = 1 then DoXor(ms) else
     if info.Comp = 2 then DoAngou(ms) else
     if info.Comp = 3 then DoAngou3(ms, False) else
+    if info.Comp = 4 then DoAngou4(ms, False) else
     ;
   except
   end;
@@ -629,6 +668,7 @@ begin
       begin
         if pf.Comp = 2 then DoAngou(ms) else
         if pf.Comp = 3 then DoAngou3(ms, False) else
+        if pf.Comp = 4 then DoAngou4(ms, False) else
         ;
       end;
     end else
