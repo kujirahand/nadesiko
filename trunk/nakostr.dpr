@@ -28,7 +28,8 @@ uses
   crypt in 'hi_unit\crypt.pas',
   mini_file_utils in 'hi_unit\mini_file_utils.pas',
   aeslib in 'component\aeslib\aeslib.pas',
-  EftGlobal in 'component\aeslib\EftGlobal.pas';
+  EftGlobal in 'component\aeslib\EftGlobal.pas',
+  unit_sha256 in 'hi_unit\unit_sha256.pas';
 
 //------------------------------------------------------------------------------
 // Plug-in import function
