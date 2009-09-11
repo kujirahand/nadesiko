@@ -324,6 +324,7 @@ function sys_ary_varSplit(args: THiArray): PHiValue; stdcall;
 function sys_ary_trim(args: THiArray): PHiValue; stdcall;
 function sys_ary_cut(args: THiArray): PHiValue; stdcall;
 function sys_ary_exchange(args: THiArray): PHiValue; stdcall;
+function sys_ary_slice(args: THiArray): PHiValue; stdcall;
 
 function sys_ary_sum(args: THiArray): PHiValue; stdcall;
 function sys_ary_mean(args: THiArray): PHiValue; stdcall;
@@ -2110,6 +2111,26 @@ begin
 
   Result := hi_var_new;
   hi_var_copyData(a, Result);
+end;
+
+function sys_ary_slice(args: THiArray): PHiValue; stdcall;
+var
+  a: PHiValue;
+  v1,v2: Integer;
+  a_src, a_des: THiArray;
+begin
+  a  := args.Items[0]; if a=nil then a := HiSystem.Sore;
+  v1  := hi_int( args.Items[1] );
+  v2  := hi_int( args.Items[2] );
+
+  hi_ary_create(a);
+  a_src := hi_ary(a);
+  a_des := a_src.CutRow(v1, v2);
+
+  Result := hi_var_new;
+  Result.VType := varArray;
+  Result.Size  := sizeof(a_des);
+  Result.ptr   := a_des;
 end;
 
 function sys_ary_sum(args: THiArray): PHiValue; stdcall;
