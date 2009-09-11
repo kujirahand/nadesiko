@@ -657,7 +657,9 @@ begin
     fs.Seek(pf.FilePos, soBeginning);
     ms.Seek(0, soBeginning);
     ms.CopyFrom(fs, pf.FileLen);
-    if pf.Comp = 1 then DoXor(ms) else
+    if pf.Comp = 0 then begin
+      // nothing to do
+    end else if pf.Comp = 1 then DoXor(ms) else
     if (pf.Comp = 2)or(pf.Comp = 3)or(pf.Comp = 4) then
     begin
       if IsUser then
