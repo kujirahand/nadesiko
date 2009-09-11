@@ -11,7 +11,7 @@ implementation
 
 uses jconvert, jconvertex, StrUnit, hima_types, unit_string, wildcard, md5,
   CrcUtils, unit_string2, SysUtils, Classes, wildcard2,
-  nkf, unit_blowfish, SHA1, crypt, mini_file_utils;
+  nkf, unit_blowfish, SHA1, crypt, mini_file_utils, aeslib, EftGlobal;
 
 function NkfConvertStr(ins, option: string; IsUTF16:Boolean) : string;
 begin
@@ -1146,6 +1146,75 @@ begin
   Result := hi_newStr(s);
 end;
 
+
+function AES_EncryptStr(InputStr, MyPassword: string): string;
+var
+  sSource,sDest : TStringStream;
+begin
+  Result := '';
+  sSource := TStringStream.Create(InputStr);
+  sDest   := TStringStream.Create('');
+  try
+    with TEncryption.Create(MyPassword, defCryptBufSize) do
+    begin
+      if EncryptStream(sSource, sDest) then begin
+        Result := sDest.DataString;
+      end else
+      begin
+        raise Exception.Create('AES Encrypt Error!');
+      end;
+    end;
+  finally
+    FreeAndNil(sSource);
+    FreeAndNil(sDest);
+  end;
+end;
+
+function AES_DecryptStr(InputStr, MyPassword: string): string;
+var
+  sSource: TStringStream;
+  sDest  : TStringStream;
+begin
+  Result := '';
+  sSource := TStringStream.Create(InputStr);
+  sDest   := TStringStream.Create('');
+  try
+    with TEncryption.Create(MyPassword, defCryptBufSize) do
+    begin
+      if DecryptStream(sSource, sDest, sSource.Size) then begin
+        //
+        Result := sDest.DataString;
+      end else
+      begin
+        raise Exception.Create('Decrypt Error!');
+      end;
+    end;
+  finally
+    FreeAndNil(sSource);
+    FreeAndNil(sDest);
+  end;
+end;
+
+
+function sys_aes_crypt(args: DWORD): PHiValue; stdcall;
+var
+  res, s, key: string;
+begin
+  s   := getArgStr(args, 0, True);
+  key := getArgStr(args, 1);
+  res := AES_EncryptStr(s, key);
+  Result := hi_newStr(res);
+end;
+function sys_aes_decrypt(args: DWORD): PHiValue; stdcall;
+var
+  res, s, key: string;
+begin
+  s   := getArgStr(args, 0, True);
+  key := getArgStr(args, 1);
+  res := AES_DecryptStr(s, key);
+  Result := hi_newStr(res);
+end;
+
 procedure RegistFunction;
 begin
   //todo: 関数の登録
@@ -1214,6 +1283,8 @@ begin
   AddFunc  ('BLOWFISH暗号化', 'SをKEYで', 720, sys_blowfish_enc,'文字列SへKEYでBLOWSH暗号をかけて返す。','BLOWFISHあんごうか');
   AddFunc  ('BLOWFISH復号化', 'SをKEYで', 721, sys_blowfish_dec,'文字列SへKEYでBLOWSH暗号を解除して返す。','BLOWFISHふくごうか');
   AddFunc  ('CRYPT暗号化',    'SをSALTで',   788, sys_crypt,'文字列Sへ種SALTでUnix互換のCRYPT(DES)暗号をかけて返す。','CRYPTあんごうか');
+  AddFunc  ('AES暗号化',      'SをKEYで',   789, sys_aes_crypt,'文字列SへKEYでAES暗号をかけて返す。','AESあんごうか');
+  AddFunc  ('AES復号化',      'SをKEYで',   790, sys_aes_decrypt,'文字列SへKEYでAESの暗号を復号して返す。','AESふくごうか');
 
   //-チェックサム
   AddFunc  ('MD5取得',  '{=?}Sから|Sで|Sの',  783, sys_md5,     'バイナリSから改ざんの等の確認に使えるMD5文字列(HEX形式)を返す。','MD5しゅとく');
