@@ -44,6 +44,7 @@ type
     procedure SortCsvNum(Index: Integer);
     procedure InsertArray(Index: Integer; a: THiArray);
     procedure Delete(Index: Integer); override;
+    function DeleteAndPop(Index: Integer): PHiValue;
     function ToFloatArray: TDoubleArray;
     function sum: HFloat;
     function mean: HFloat;
@@ -60,6 +61,7 @@ type
     function CsvFind(Col: Integer; key: AnsiString; fromRow: Integer=0): Integer;
     function CsvVagueFind(Col: Integer; key: AnsiString; fromRow: Integer=0): Integer;
     function GetColCount: Integer;
+    function CutRow(vFrom, Count: Integer): THiArray;
     procedure RowColReverse;
     procedure Rotate;
     procedure CsvUniqCol(Col: Integer);
@@ -1996,6 +1998,24 @@ begin
   hi_var_copy(tmpb,b);
 end;
 
+function THiArray.CutRow(vFrom, Count: Integer): THiArray;
+var
+  i, c: Integer;
+  p: PHiValue;
+begin
+  c := Count;
+  i := vFrom;
+  Result := THiArray.Create;
+  while c > 0 do
+  begin
+    if Self.Count = 0 then Break;
+    if i >= Self.Count then Break;
+    p := Self.DeleteAndPop(i);
+    Result.Add(p);
+    Dec(c);
+  end;
+end;
+
 function THiArray.GetAsTsv: AnsiString;
 var
   i: Integer;
@@ -2549,6 +2569,15 @@ begin
   inherited Delete(Index);
 end;
 
+
+
+function THiArray.DeleteAndPop(Index: Integer): PHiValue;
+begin
+  Result := nil;
+  if Self.Count <= Index then Exit;
+  Result := Items[Index];
+  inherited Delete(Index);
+end;
 
 function THiArray.sum: HFloat;
 var
