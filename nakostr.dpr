@@ -8,7 +8,7 @@ uses
   dll_plugin_helper in 'hi_unit\dll_plugin_helper.pas',
   dnako_import in 'hi_unit\dnako_import.pas',
   dnako_import_types in 'hi_unit\dnako_import_types.pas',
-  StrUnit in 'hi_unit\strunit.pas',
+  strunit in 'hi_unit\strunit.pas',
   jconvert in 'hi_unit\jconvert.pas',
   jconvertex in 'hi_unit\jconvertex.pas',
   hima_types in 'hi_unit\hima_types.pas',
@@ -22,11 +22,13 @@ uses
   wildcard2 in 'hi_unit\wildcard2.pas',
   BlowFish in 'hi_unit\BlowFish.pas',
   CryptUtils in 'hi_unit\CryptUtils.pas',
-  nkf in 'hi_unit\NKF.PAS',
+  NKF in 'hi_unit\NKF.PAS',
   unit_blowfish in 'hi_unit\unit_blowfish.pas',
-  SHA1 in 'hi_unit\Sha1.pas',
+  Sha1 in 'hi_unit\Sha1.pas',
   crypt in 'hi_unit\crypt.pas',
-  mini_file_utils in 'hi_unit\mini_file_utils.pas';
+  mini_file_utils in 'hi_unit\mini_file_utils.pas',
+  aeslib in 'component\aeslib\aeslib.pas',
+  EftGlobal in 'component\aeslib\EftGlobal.pas';
 
 //------------------------------------------------------------------------------
 // Plug-in import function
