@@ -11,7 +11,8 @@ implementation
 
 uses jconvert, jconvertex, StrUnit, hima_types, unit_string, wildcard, md5,
   CrcUtils, unit_string2, SysUtils, Classes, wildcard2,
-  nkf, unit_blowfish, SHA1, crypt, mini_file_utils, aeslib, EftGlobal;
+  nkf, unit_blowfish, SHA1, crypt, mini_file_utils, aeslib, EftGlobal,
+  unit_sha256;
 
 function NkfConvertStr(ins, option: string; IsUTF16:Boolean) : string;
 begin
@@ -881,6 +882,12 @@ begin
     SHA1StringHex( getArgStr(args, 0, True))
   );
 end;
+function sys_sha256(args: DWORD): PHiValue; stdcall;
+begin
+  Result := hi_newStr(
+    LowerCase(_GetSHA256( getArgStr(args, 0, True)))
+  );
+end;
 
 function sys_md5file(args: DWORD): PHiValue; stdcall;
 var
@@ -1292,6 +1299,7 @@ begin
   AddFunc  ('CRC16取得','{=?}Sから|Sで|Sの',  785, sys_crc16a,  'バイナリSからCRC16(ASCII)文字列を返す。','CRC16しゅとく');
   AddFunc  ('CRC16I取得','{=?}Sから|Sで|Sの', 786, sys_crc16i,  'バイナリSからCRC16(ITU_T)文字列を返す。','CRC16Iしゅとく');
   AddFunc  ('SHA1取得',  '{=?}Sから|Sで|Sの', 787, sys_sha1,    'バイナリSから改ざんの等の確認に使えるSHA-1文字列(HEX形式)を返す。','SHA1しゅとく');
+  AddFunc  ('SHA256取得','{=?}Sから|Sで|Sの', 779, sys_sha256,  'バイナリSから改ざんの等の確認に使えるSHA-256文字列(HEX形式)を返す。','SHA256しゅとく');
   AddFunc  ('MD5ファイル取得',  '{=?}FILEから|FILEの', 801, sys_md5file,  'FILEから改ざんの等の確認に使えるMD5文字列(HEX形式)を返す。','MD5ふぁいるしゅとく');
   AddFunc  ('SHA1ファイル取得', '{=?}FILEから|FILEの', 802, sys_sha1file, 'FILEから改ざんの等の確認に使えるSHA-1文字列(HEX形式)を返す。','SHA1ふぁいるしゅとく');
   //-整形支援
