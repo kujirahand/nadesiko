@@ -5397,7 +5397,8 @@ begin
     name     := oName;
     name_id  := nako_tango2id(PAnsiChar(name));
     fileDrop := nil;
-    pgroup   := g;
+    // pgroup   := g;
+    pgroup   := nako_getVariableFromId(name_id);
   end;
 
   if (o is TControl)and(not(o is TfrmNako)) then
