@@ -102,8 +102,8 @@ begin
   //<命令>
   //+MIDI(nakomidi.dll)
   //-サクラMML
-  AddFunc('MML演奏', '{=?}MMLを|MMLで|MMLの',  7000, cmd_playmml, 'ドレミのテキスト(MML)を演奏する。','MMLえんそう', 'dSakura.dll');
-  AddFunc('MML変換', '{=?}MMLからMIDIへ',  7001, cmd_mml2midi, 'ドレミのテキスト(MML)をMIDIファイルとして保存する。','MMLへんかん', 'dSakura.dll');
+  AddFunc('MML演奏', '{=?}MMLを|MMLで|MMLの',  7000, cmd_playmml, 'ドレミのテキスト(MML)を演奏する。','MMLえんそう', 'nakomidi.dll,dSakura.dll');
+  AddFunc('MML変換', '{=?}MMLからMIDIへ',  7001, cmd_mml2midi, 'ドレミのテキスト(MML)をMIDIファイルとして保存する。','MMLへんかん', 'nakomidi.dll,dSakura.dll');
   //</命令>
 end;
 

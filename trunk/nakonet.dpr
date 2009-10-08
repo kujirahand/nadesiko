@@ -24,7 +24,7 @@ uses
   jconvertex in 'hi_unit\jconvertex.pas',
   jconvert in 'hi_unit\jconvert.pas',
   md5 in 'hi_unit\md5.pas',
-  KTcp in 'hi_unit\ktcp.pas',
+  ktcp in 'hi_unit\ktcp.pas',
   KTCPW in 'hi_unit\KTCPW.pas',
   Icmp in 'hi_unit\Icmp.pas',
   KHttp in 'hi_unit\KHttp.pas',
