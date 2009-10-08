@@ -7,7 +7,7 @@ unit dnako_import;
 interface
 
 uses
-  Windows, SysUtils, dnako_import_types;
+  Windows, SysUtils, dnako_import_types, ShlObj;
 
 /// DLLの取り込み
 function dnako_import_init(dllfile: string): THandle;
@@ -201,12 +201,35 @@ var // インポート関数の名前を宣言
 
 implementation
 
+const CSIDL_COMMON_APPDATA = $0023;
+
+function GetSpecialFolder(const loc:Word): string;
+var
+   PathID: PItemIDList;
+   Path : array[0..MAX_PATH] of char;
+begin
+   SHGetSpecialFolderLocation(0, loc, PathID);
+   SHGetPathFromIDList(PathID, Path);
+   Result := string(Path);
+   if Copy(Result, Length(Result),1)<>'\' then
+    Result := Result + '\';
+end;
+
+
+function CommonAppData:string;
+begin
+  Result := GetSpecialFolder(CSIDL_COMMON_APPDATA);
+end;
+
+
 // dnako.dll のメインハンドル
 var
   dnako_import_handle: THandle = 0;
 
 /// DLLの取り込み
 function dnako_import_init(dllfile: string): THandle;
+var
+  path: string;
 begin
   if dnako_import_handle <> 0 then
   begin
@@ -222,6 +245,11 @@ begin
     if dnako_import_handle = 0 then // ダメ元で読んでみる
     begin
       dnako_import_handle := LoadLibrary('plug-ins\dnako.dll');
+      if dnako_import_handle = 0 then // ダメ元で読んでみる
+      begin
+        path := CommonAppData + 'com.nadesi\plug-ins\dnako.dll';
+        dnako_import_handle := LoadLibrary(PChar(path));
+      end;
     end;
   end;
   if dnako_import_handle = 0 then

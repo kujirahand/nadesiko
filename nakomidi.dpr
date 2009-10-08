@@ -45,6 +45,7 @@ end;
 procedure PluginInit(Handle: DWORD); stdcall;
 begin
   dnako_import_initFunctions(Handle);
+  mini_file_utils.DIR_PLUGINS := nako_getPluginsDir();
 end;
 function PluginFin: DWORD; stdcall;
 begin

@@ -45,6 +45,7 @@ function MyPictureDir:string;
 function FontsDir: string;
 function AppData:string;
 function LocalAppData:string;
+function CommonAppData:string;
 
 
 {オリジナル一時ファイル名の取得(dirnameを省略で、TempDirを参照)}
@@ -305,6 +306,10 @@ begin
     Result := (Major = 5) and (Minor = 1);
 end;
 
+function CommonAppData:string;
+begin
+  Result := GetSpecialFolder(CSIDL_COMMON_APPDATA);
+end;
 
 
 
