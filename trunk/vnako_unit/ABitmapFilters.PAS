@@ -84,7 +84,7 @@ type
     procedure Vivid(BMP:TBitmap;iPower:Byte);
 
     //変形
-    procedure Rotate(SRCBMP:TBitmap; degree:Integer);
+    procedure Rotate(srcBmp:TBitmap; degree:Integer);
     procedure ChangeTopBottom(BMP:TBitmap);
     procedure Spin(Rad:Integer;BMP:TBitmap);
     procedure Mirror(BMP:TBitmap);
@@ -3142,80 +3142,83 @@ end;
 }
 
 {$R-}
-procedure Rotate(SRCBMP:TBitmap; degree:Integer);
+procedure Rotate(srcBmp:TBitmap; degree:Integer);
+const
+   sOrd:Integer=10;//シフトの桁
 var
-   x,y:Integer;
-   dg,dg90:real;
-   dstBmp:TBitmap;
-   pBit,pBit2:pByteArray;
-   tx,ty:Integer;
-   sx,sy:Int64;
-   tp,k,l :Integer;
-   sdg,cdg:Integer;
-   a,tw,th,xx,yy:Integer;
-   SrcLine,DestLine:array of Pointer;
-   dx,dy:Integer;
-   x1, y1: Integer;
-   x2, y2:Integer;
-   cx, cy: Integer;
+   x,y:Integer;//ループカウンタ
+   dg:real;//角度[rad]
+   dstBmp:TBitmap;//変換後の画像
+   sdg,cdg:Int64;//sin,cosを1024倍した整数値
+   srcX,srcY,dstCX,dstCY:Integer;//それぞれsrcBmp,dstBmpの点と、
+   dstX,dstY,srcCX,srcCY:Int64;  //画像の中心座標を表す変数
+   SrcLine,DstLine:array of Pointer;//色データへのポインタ配列
+   pBit,pBit2:pByteArray;//色データ
+   k,l :Integer;//pBit,pBit2用のカウンタ
 begin
-   //コサインサインを求める
-   dg:= (360-degree) * PI / 180;
-   sdg:=Round(sin(dg) * 1024);
-   cdg:=Round(cos(dg) * 1024);
-
-   //増加分を計算する
+   //画像初期化
    dstBmp:=TBitmap.Create;
-   //bmp.Width :=BMP2.Width;
-   //bmp.Height:=BMP2.Height;
+   dstBmp.PixelFormat := pf32bit;
+   srcBmp.PixelFormat := pf32bit;
 
-   a := degree;
-   {
-  if ((0 <= a)and(a <= 90))or((270 <= a)and(a <= 360)) then
-  begin
-    bmp.Width   := Round(Abs(cos(DegToRad(a))) * BMP2.Width + Abs(sin(DegToRad(a))) * BMP2.Height);
-    bmp.Height  := Round(Abs(sin(DegToRad(a))) * BMP2.Width + Abs(cos(DegToRad(a))) * BMP2.Height);
-  end else
-  begin
-    bmp.Height  := Round(Abs(cos(DegToRad(a)))*BMP2.Width+Abs(sin(DegToRad(a)))*BMP2.Height);
-    bmp.Width   := Round(Abs(sin(DegToRad(a)))*BMP2.Width+Abs(cos(DegToRad(a)))*BMP2.Height);
-  end;
-  }
+   //コサインサインを求める(計算高速化のため整数に)
+   dg  := DegToRad(-degree);//逆回転で白点を作らないようにする
+   sdg := Round(sin(dg) * (1 shl sOrd));//実計算値はshrで戻すこと。
+   cdg := Round(cos(dg) * (1 shl sOrd));
 
-  try
-  dstbmp.Width := Round(abs( srcBmp.Width * cos(DegToRad(a)))  + abs( srcBmp.Height * sin(DegToRad(a))));
-  dstbmp.Height := Round(abs( srcBmp.Width * sin(DegToRad(a)) ) + abs( srcBmp.Height * cos(DegToRad(a)) ));
-  except
-    ShowMessage(IntToStr(dstbmp.Height));
-  end;
+   //回転後画像の幅・高さを計算する
+   dstBmp.Width  := (Abs(srcBmp.Width*cdg) + Abs(srcBmp.Height*sdg)) shr sOrd;
+   dstBmp.Height := (Abs(srcBmp.Width*sdg) + Abs(srcBmp.Height*cdg)) shr sOrd;
 
-      //bmp.Width := Trunc((x-cx) * cos(DegToRad(a)) - (y-cy) * sin(DegToRad(a)) + cx);
-      //bmp.Height := Trunc((x-cx) * sin(DegToRad(a)) + (y-cy) * cos(DegToRad(a)) + cy);
+   //画像の中央
+   dstCX:=dstBmp.Width  div 2;
+   dstCY:=dstBmp.Height div 2;
+   srcCX:=srcBmp.Width  div 2;
+   srcCY:=srcBmp.Height div 2;
 
-  {
-  x1 = (x2-cx) * cos(A) - (y2-cy) * sin(A) + cx
-  y1 = (x2-cx) * sin(A) + (y2-cy) * cos(A) + cy
-  ----
-  x2 = (x1-cx) * cos(-A) - (y1-cy) * sin(-A) + cx
-  y2 = (x1-cx) * sin(-A) + (y1-cy) * cos(-A) + cy
-  }
-  dstBmp.PixelFormat:=pf32bit;
-  srcBmp.PixelFormat:=pf32bit;
+   //ラインの初期化
+   SetLength(SrcLine, srcBmp.Height);
+   SetLength(DstLine, dstBmp.Height);
+   for y:=0 to srcBmp.Height-1 do begin
+       SrcLine[y] := srcBmp.ScanLine[y];
+   end;
+   for y:=0 to dstBmp.Height-1 do begin
+       DstLine[y] := dstBmp.ScanLine[y];
+   end;
 
-  cx:=srcBmp.Width div 2;
-  cy:=srcBmp.Height div 2;
+   dstY:=-dstCY; // -dstCY+1～だいたいdstCYまで
+   for y:=0 to dstBmp.Height-1 do begin
+     pBit :=DstLine[y];
+     k:=0;
+     inc(dstY);
+     dstX:=-dstCX; // -dstCX+1～だいたいdstCYまで
+     for x:=0 to dstBmp.Width-1 do begin
+       inc(dstX);
 
-  for y2 := 0 to srcBmp.Height - 1 do
-  begin
-    for x2 := 0 to srcBmp.Width - 1 do
-    begin
-      x1 := Trunc((x2-cx) * cos(DegToRad(a)) - (y2-cy) * sin(DegToRad(a)) + dstBmp.Width div 2);
-      y1 := Trunc((x2-cx) * sin(DegToRad(a)) + (y2-cy) * cos(DegToRad(a)) + dstBmp.Height div 2);
-      dstBmp.Canvas.Pixels[x1,y1] := srcBmp.Canvas.Pixels[x2, y2];
-    end;
-  end;
-  srcBmp.Assign(dstBmp);
-  dstBmp.Free;
+       // 平行移動*(縮小*)回転
+       srcX := ((dstX*cdg - dstY*sdg) shr sOrd) + srcCX; // [cos -sin   [x    [cx
+       srcY := ((dstX*sdg + dstY*cdg) shr sOrd) + srcCY; // sin  cos] *  y] +  cy]
+
+       // 点(srcX,srcY)が元の画像のサイズに収まるならば
+       If (srcX<srcBmp.Width) and (srcY<srcBmp.Height) and (srcX>=0) and (srcY>=0) then begin
+          pBit2:=SrcLine[srcY];
+          l:=srcX shl 2;//4倍
+
+          // 点(srcX,srcY)の色を(dstX,dstY)へコピー
+          pBit[k]:=pBit2[l];//B?
+          inc(k);
+          inc(l);
+          pBit[k]:=pBit2[l];//G
+          inc(k);
+          inc(l);
+          pBit[k]:=pBit2[l];//R?
+          inc(k,2);
+       end else inc(k,4);
+     end;
+   end;
+   //コピーして開放
+   srcBmp.Assign(dstBmp);
+   dstBmp.Free;
 end;
 
 
