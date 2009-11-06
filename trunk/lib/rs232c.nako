@@ -5,9 +5,10 @@
 # ----
 # デバッグ＆プログラム修正の michio さんに感謝します。
 # ----
+__OID = 0 # RS232Cクライアントの数
 
 ■RS232C
-　・{非公開}オブジェクト
+　・{非公開}OID
 　#設定項目
   ・BPS{=9600}
   ・CHARBIT{=8}
@@ -39,10 +40,12 @@
   ・{イベント}イベント文字受信した時
   ・受信データ # データを受信した時に設定される
   #接続などメソッド
-  ・作る～RS232C_COMMAND(自身,"create","");
-  ・開く～RS232C_COMMAND(自身,"open","");
-  ・閉じる～RS232C_COMMAND(自身,"close","");
-  ・送信(MSGを|MSGで)～RS232C_COMMAND(自身,"send", MSG);
+  ・作る～
+  　　　OID=__OID; __OID=__OID+1;
+  　　　RS232C_COMMAND(OID,"create",名前);
+  ・開く～RS232C_COMMAND(OID,"open",0);
+  ・閉じる～RS232C_COMMAND(OID,"close",0);
+  ・送信(MSGを|MSGで)～RS232C_COMMAND(OID,"send", MSG);
 
 /*
 #-----------------------------------------------------------------------
