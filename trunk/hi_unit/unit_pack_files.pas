@@ -84,6 +84,7 @@ procedure DoXor(var ms: THMemoryStream);
 procedure DoAngou(var ms: THMemoryStream);
 procedure DoAngou3(var ms: THMemoryStream; enc:Boolean);
 procedure DoAngou4(var ms: THMemoryStream; enc:Boolean);
+procedure DoAngou5(var ms: THMemoryStream; enc:Boolean);
 
 {実行ファイルへリソースの埋め込み／読み込み}
 function WritePackExeFile(outFileName, exeFileName, packFileName: AnsiString): Boolean;
@@ -404,6 +405,35 @@ begin
   end;
 end;
 
+// 簡易暗号化その5（実行時のみ展開が許される／ユーザーからの展開は失敗する）
+procedure DoAngou5(var ms: THMemoryStream; enc:Boolean);
+var
+  p: PByte;
+  i, len: Integer;
+  xorb: Byte;
+const
+  pat:string = 'eoNOM5hjGrbZCYVCaGq1';
+  function rand:Byte;
+  var i: Integer;
+  begin
+    i := Random(256);
+    Result := i;
+  end;
+begin
+  p := ms.Memory;
+  RandSeed := ms.Size;
+  len := Length(pat);
+  
+  // 簡易暗号化のためのキー
+  for i := 0 to ms.Size - 1 do
+  begin
+    xorb := Ord(pat[i mod len]);
+    p^ := (p^ xor xorb) xor rand;
+    Inc(p);
+  end;
+end;
+
+
 function JPosEx(const sub, str: AnsiString; idx:Integer): Integer;
 var
     p, sub_p, temp: PAnsiChar; len: Integer;
@@ -505,6 +535,8 @@ begin
                     if comp=2 then DoAngou(ms) else
                     if comp=3 then DoAngou3(ms, True) else
                     if comp=4 then DoAngou4(ms, True) else
+                    if comp=5 then DoAngou5(ms, True) else
+
                     ;
                     FileLen  := ms.Size;
                     FilePos  := fs.Position ;
@@ -597,6 +629,7 @@ begin
     if info.Comp = 2 then DoAngou(ms) else
     if info.Comp = 3 then DoAngou3(ms, False) else
     if info.Comp = 4 then DoAngou4(ms, False) else
+    if info.Comp = 5 then DoAngou5(ms, False) else
     ;
   except
   end;
@@ -660,7 +693,7 @@ begin
     if pf.Comp = 0 then begin
       // nothing to do
     end else if pf.Comp = 1 then DoXor(ms) else
-    if (pf.Comp = 2)or(pf.Comp = 3)or(pf.Comp = 4) then
+    if (pf.Comp >= 2) then
     begin
       if IsUser then
       begin
@@ -671,6 +704,7 @@ begin
         if pf.Comp = 2 then DoAngou(ms) else
         if pf.Comp = 3 then DoAngou3(ms, False) else
         if pf.Comp = 4 then DoAngou4(ms, False) else
+        if pf.Comp = 5 then DoAngou5(ms, False) else
         ;
       end;
     end else

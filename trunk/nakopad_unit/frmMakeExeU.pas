@@ -145,7 +145,7 @@ var
     end else
     if chkAngou.Checked then
     begin
-      Result := '2';
+      Result := '5'; // <--- ŠÉ‚¢ˆÃ†‰»
     end else
     begin
       Result := '0';
