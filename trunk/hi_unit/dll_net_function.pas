@@ -1835,39 +1835,42 @@ begin
   th.Resume;
 end;
 
+var tcp_clients: Array of TNakoTcpClient;
 function sys_tcp_command(args: DWORD): PHiValue; stdcall;
 var
-  obj, group, command, value: PHiValue;
-  cmd, s: string; i: Integer;
+  tcpid: Integer;
+  cmd, value, s: string;
+  i: Integer;
   p: TNakoTcpClient;
 begin
   Result := nil;
+  
+  if tcp_clients = nil then
+  begin
+    SetLength(tcp_clients, 255);
+  end;
 
-  group     := nako_getFuncArg(args, 0);
-  command   := nako_getFuncArg(args, 1);
-  value     := nako_getFuncArg(args, 2);
+  // 引数の取得
+  tcpid  := getArgInt(args, 0, True);
+  cmd    := getArgStr(args, 1);
+  value  := getArgStr(args, 2);
 
-  cmd := LowerCase(hi_str(command));
   if cmd = 'create' then
   begin
     p := TNakoTcpClient.Create(nil);
-    p.InstanceVar := group;
-    Result := hi_newInt(Integer(p));
+    p.InstanceName := value; // set name
+    p.tcpid:= tcpid;
+    tcp_clients[tcpid] := p;
   end else
   begin
-    // オブジェクトを検索
-    obj := nako_group_findMember(group, 'オブジェクト');
-    if obj = nil then raise Exception.Create('オブジェクトが特定できません。');
-    i   := hi_int(obj);
-    p := TNakoTcpClient(Integer(i));
-
+    p := tcp_clients[tcpid];
     if cmd = 'connect' then
     begin
-      s := hi_str(value);
+      s := value;
       try
         p.ServerAddr := PInAddr(GetHostEnt(getToken_s(s, ':')).h_addr_list^)^;
       except on e: Exception do
-        raise Exception.Create('ホスト名が解決できません。');
+        raise Exception.Create('ホスト名が解決できません。' + e.Message);
       end;
       //---
       p.Port := StrToIntDef(s, 80);
@@ -1880,7 +1883,7 @@ begin
     if cmd = 'disconnect' then p.Close else
     if cmd = 'send' then
     begin
-      s := hi_str(value);
+      s := value;
       try
         p.SendString(s);
       except
@@ -1893,41 +1896,44 @@ begin
     end else
     if cmd = 'recvbyte' then
     begin
+      i := StrToIntDef(value, 0);
       Result := hi_newStr(p.RecvStrByte(i));
     end else
     ;
   end;
 end;
 
+var udp_clients: Array of TNakoUdp;
+
 function sys_udp_command(args: DWORD): PHiValue; stdcall;
 var
-  obj, group, command, value: PHiValue;
-  cmd, s: string; i: Integer;
+  udpid: Integer;
+  cmd: string;
+  value, s: string;
   p: TNakoUdp;
 begin
   Result := nil;
+  if udp_clients = nil then SetLength(udp_clients, 255);
 
-  group     := nako_getFuncArg(args, 0);
-  command   := nako_getFuncArg(args, 1);
-  value     := nako_getFuncArg(args, 2);
+  udpid := getArgInt(args, 0, True);
+  cmd   := getArgStr(args, 1);
+  value := getArgStr(args, 2);
 
-  cmd := LowerCase(hi_str(command));
+  cmd := LowerCase(cmd);
   if cmd = 'create' then
   begin
     p := TNakoUdp.Create(nil);
-    p.InstanceVar := group;
-    Result := hi_newInt(Integer(p));
+    p.InstanceName := value;
+    p.udpid := udpid;
+    udp_clients[ udpid ] := p;
   end else
   begin
     // オブジェクトを検索
-    obj := nako_group_findMember(group, 'オブジェクト');
-    if obj = nil then raise Exception.Create('オブジェクトが特定できません。');
-    i   := hi_int(obj);
-    p := TNakoUdp(Integer(i));
+    p := udp_clients[ udpid ];
 
     if cmd = 'connect' then
     begin
-      s := hi_str(value);
+      s := (value);
       try
         p.Host := getToken_s(s, ':');
       except on e: Exception do
@@ -1943,7 +1949,7 @@ begin
     end else
     if cmd = 'send' then
     begin
-      s := hi_str(value);
+      s := (value);
       try
         if s <> '' then p.Send(s[1], Length(s));
       except
@@ -1966,44 +1972,49 @@ begin
   Result := hi_newStr( GetHostNameByAddr( getArgStr(args,0,True) ) );
 end;
 
+var tcp_servers: Array of TNakoTcpServer;
 function sys_tcp_svr_command(args: DWORD): PHiValue; stdcall;
 var
-  obj, group, command, value: PHiValue;
-  cmd, cmd2: string; i: Integer;
+  tcpid: Integer;
+  cmd, cmd2: string;
+  value: string;
+  i: Integer;
   p: TNakoTcpServer;
 begin
   Result := nil;
 
-  group     := nako_getFuncArg(args, 0);
-  command   := nako_getFuncArg(args, 1);
-  value     := nako_getFuncArg(args, 2);
+  if tcp_servers = nil then
+  begin
+    SetLength(tcp_servers, 255);
+  end;
 
-  cmd := LowerCase(hi_str(command));
+  tcpid := getArgInt(args, 0, True);
+  cmd   := getArgStr(args, 1);
+  value := getArgStr(args, 2);
+
+  cmd := LowerCase(cmd);
   if cmd = 'create' then
   begin
     p := TNakoTcpServer.Create(nil);
-    p.InstanceVar := group;
-    Result := hi_newInt(Integer(p));
+    p.InstanceName := value;
+    tcp_servers[tcpid] := p;
   end else
   begin
     // コマンドを解析
     cmd2 := cmd;
     cmd := getToken_s(cmd2, ' ');
     // オブジェクトを検索
-    obj := nako_group_findMember(group, 'オブジェクト');
-    if obj = nil then raise Exception.Create('オブジェクトが特定できません。');
-    i   := hi_int(obj);
-    p := TNakoTcpServer(Integer(i));
+    p := tcp_servers[tcpid];
     //---
     if cmd = 'active' then
     begin
-      i := hi_int(value);
+      i := StrToIntDef(value, 0);
       p.Port := StrToIntDef(cmd2, 10001);
       p.Active := (i <> 0);
     end
     else if cmd = 'close' then
     begin
-      p.CloseFromIp(hi_str(value));
+      p.CloseFromIp(value);
     end
     else if cmd = 'list' then
     begin
@@ -2011,7 +2022,7 @@ begin
     end
     else if cmd = 'send' then
     begin
-      p.SendToData(cmd2, hi_str(value))
+      p.SendToData(cmd2, value);
     end
     else
     ;
@@ -2643,7 +2654,7 @@ begin
   //-TCP/IP
   AddFunc  ('IPアドレス取得','{=?}Sの|Sで|Sから', 4073, sys_get_ip, 'ドメインSのIPアドレスを取得する', 'IPあどれすしゅとく');
   AddFunc  ('ホスト名取得','{=?}Sの|Sで|Sから', 4074, sys_get_host, 'IPアドレスSからホスト名を取得する', 'ほすとめいしゅとく');
-  AddFunc  ('TCP_COMMAND','{グループ}S,A,B', 4070, sys_tcp_command, 'lib\nakonet.nakoのTCPクライアントで使う', 'TCP_COMMAND');
+  AddFunc  ('TCP_COMMAND','TCPID,A,B', 4070, sys_tcp_command, 'lib\nakonet.nakoのTCPクライアントで使う', 'TCP_COMMAND');
   AddFunc  ('TCP_SVR_COMMAND','{グループ}S,A,B', 4071, sys_tcp_svr_command, 'lib\nakonet.nakoのTCPサーバーで使う', 'TCP_SVR_COMMAND');
   AddFunc  ('UDP_COMMAND','{グループ}S,A,B', 4075, sys_udp_command, 'lib\nakonet.nakoのUDPで使う', 'UDP_COMMAND');
 
@@ -2858,6 +2869,30 @@ begin
   method(Self, arg0);
 end;
 
+procedure FreeTCP;
+var
+  i: Integer;
+  svr: TNakoTcpServer;
+  cli: TNakoTcpClient;
+begin
+  if tcp_servers <> nil then
+  begin
+    for i := 0 to High(tcp_servers) do
+    begin
+      svr := tcp_servers[i];
+      FreeAndNil(svr);
+    end;
+  end;
+  if tcp_clients <> nil then
+  begin
+    for i := 0 to High(tcp_clients) do
+    begin
+      cli := tcp_clients[i];
+      FreeAndNil(cli);
+    end;
+  end;
+end;
+
 initialization
   //
 
@@ -2865,6 +2900,7 @@ finalization
 begin
   if _idftp <> nil then sys_ftp_disconnect(0);
   FreeAndNil(FNetDialog);
+  FreeTCP;
 end;
 
 end.

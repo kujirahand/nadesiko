@@ -4117,7 +4117,7 @@ begin
   // (2) ˆ—
   str := hi_str(s);
   cap := GetMainWindowCaption;
-  ret := MessageBoxA(hima_function.MainWindowHandle, PAnsiChar(str), PAnsiChar(cap), MB_YESNO);
+  ret := MessageBoxA(MainWindowHandle, PAnsiChar(str), PAnsiChar(cap), MB_YESNO);
 
   // (3) Œ‹‰Ê‚Ì‘ã“ü
   Result := hi_var_new;
