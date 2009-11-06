@@ -17,6 +17,8 @@ type
     procedure DoEvent(EventName: string);
   public
     InstanceVar: PHiValue;
+    InstanceName: string;
+    tcpid: Integer;
     constructor Create(AOwner: TComponent); override;
   end;
 
@@ -31,6 +33,8 @@ type
     procedure TcpSendEmpty(Sender: TObject; Target:TKTcpChildSock);
   public
     InstanceVar: PHiValue;
+    InstanceName: string;
+    tcpid: Integer;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function  handle2ip(handle: THandle): string;
@@ -46,6 +50,8 @@ type
     procedure SendReady(Sender: TObject);
   public
     InstanceVar: PHiValue;
+    InstanceName: string;
+    udpid: Integer;
     procedure setEvent;
     constructor Create(AOwner: TComponent); override;
     procedure DoEvent(EventName: string);
@@ -79,18 +85,24 @@ end;
 procedure TNakoTcpClient.DoEvent(EventName: string);
 var
   p: PHiValue;
+  s: string;
 begin
   // イベントの実行
+  {
   p := nako_group_findMember(InstanceVar, PChar(EventName));
   if p = nil then Exit;
   if p.VType = varNil then Exit;
   nako_group_exec(InstanceVar, PChar(EventName));
+  }
+  
+  s := Self.InstanceName + 'の' + EventName + ';';
+  p := nako_eval(PChar(s));
+  if p <> nil then nako_var_free(p);
 end;
 
 procedure TNakoTcpClient.TcpDoRcvReady(Sender: TObject);
 begin
   //
-
   DoEvent('受信した時');
 end;
 
@@ -132,11 +144,12 @@ end;
 procedure TNakoTcpServer.DoEvent(EventName: string);
 var
   p: PHiValue;
+  s: string;
 begin
   // イベントの実行
-  p := nako_group_findMember(InstanceVar, PChar(EventName));
-  if p = nil then Exit;
-  nako_group_exec(InstanceVar, PChar(EventName));
+  s := Self.InstanceName + 'の' + EventName + ';';
+  nako_evalEx(PChar(s), p);
+  if p <> nil then nako_var_free(p);
 end;
 
 function TNakoTcpServer.getChildFromIP(ip: string): TKTcpChildSock;
@@ -278,11 +291,11 @@ end;
 procedure TNakoUdp.DoEvent(EventName: string);
 var
   p: PHiValue;
+  s: string;
 begin
-  // イベントの実行
-  p := nako_group_findMember(InstanceVar, PChar(EventName));
-  if p = nil then Exit;
-  nako_group_exec(InstanceVar, PChar(EventName));
+  s := Self.InstanceName + 'の' + EventName + ';';
+  nako_evalEx(PChar(s), p);
+  if p <> nil then nako_var_free(p);
 end;
 
 procedure TNakoUdp.RecvData(Sender: TObject; pData: PChar; len: Integer);

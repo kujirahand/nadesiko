@@ -28,7 +28,7 @@ function SHFileRename(const Source, Dest: AnsiString): Boolean;
 
 //EnumFile
 function EnumFiles(path: AnsiString): THStringList;
-function EnumAllFiles(path: AnsiString; out basePath: string): THStringList; overload;
+function EnumAllFiles(path: AnsiString; out basePath: AnsiString): THStringList; overload;
 function EnumAllFiles(path: AnsiString): THStringList; overload;
 function EnumAllDirs(path: AnsiString): THStringList;
 function EnumDirs(const path: AnsiString): THStringList;
@@ -448,7 +448,7 @@ begin
 end;
 
 /// 全ファイル列挙、引数 path には、基本となるパスを返す
-function EnumAllFiles(path: AnsiString; out basePath: string): THStringList; overload;
+function EnumAllFiles(path: AnsiString; out basePath: AnsiString): THStringList; overload;
 var
   s: AnsiString;
   hmain: THandle;

@@ -3,26 +3,32 @@
 #-----------------------------------------------------------------------
 # 利用には、plug-ins\nakonet.dll が必要
 
+__TCPID=0 # TCPクライアントの数
+__SVRID=0 # TCPサーバーの数
+
 ■TCPクライアント
 　・{イベント}接続した時
 　・{イベント}切断した時
 　・{イベント}エラー時
 　・{イベント}受信した時
+　・{非公開}TCPID{=0}
 　・ポート{=80}
 　・ホスト
 　・受信データ       # 受信したメッセージ
 　・エラーメッセージ # エラーの起きたときにセットされる
 　・{非公開}オブジェクト
 　・作る～
-　　　オブジェクトは、TCP_COMMAND(自身,"create",0)
+　　　TCPID=__TCPID
+　　　__TCPID = __TCPID + 1
+　　　TCP_COMMAND(TCPID,"create",自身→名前)
 　・接続～
-　　　TCP_COMMAND(自身,"connect","{ホスト}:{ポート}")
+　　　TCP_COMMAND(自身→TCPID,"connect","{ホスト}:{ポート}")
 　・切断～
-　　　TCP_COMMAND(自身,"disconnect",0)
+　　　TCP_COMMAND(自身→TCPID,"disconnect",0)
 　・送信(Sを)～
-　　　TCP_COMMAND(自身, "send", S)
+　　　TCP_COMMAND(自身→TCPID, "send", S)
 　・受信～
-　　　それは、TCP_COMMAND(自身,"recv",0)
+　　　それは、TCP_COMMAND(自身→TCPID,"recv",0)
 
 ■TCPサーバー
 　・{イベント}接続した時
@@ -30,45 +36,51 @@
 　・{イベント}エラー時
 　・{イベント}受信した時
 　・{イベント}送信完了した時
+　・{非公開}TCPID{=0}
 　・ポート{=10001}   # 適当なポート
 　・エラーメッセージ # エラーの起きたときにセットされる
 　・相手ＩＰ         # 接続・受信・切断した時の相手
 　・受信データ       # 受信したメッセージ
 　・{非公開}オブジェクト
 　・作る～
-　　　オブジェクトは、TCP_SVR_COMMAND(自身,"create",0)
+　　　TCPID = __SVRID; __SVRID = __SVRID + 1
+　　　TCP_SVR_COMMAND(TCPID,"create",自身→名前)
 　・開始～ # クライアントの待ち受けを開始
-　　　TCP_SVR_COMMAND(自身,"active {ポート}",1)
+　　　TCP_SVR_COMMAND(TCPID,"active {ポート}",1)
 　・終了～ # クライアントの待ち受けを終了
-　　　TCP_SVR_COMMAND(自身,"active",0)
+　　　TCP_SVR_COMMAND(TCPID,"active",0)
 　・送信(IPへSを)～ # 相手IPへデータSを送信する
-　　　TCP_SVR_COMMAND(自身,"send {IP}", S)
+　　　TCP_SVR_COMMAND(TCPID,"send {IP}", S)
 　・全送信(Sを)～ # 全てのクライアントへＳを送信する
-　　　TCP_SVR_COMMAND(自身,"send all", S)
+　　　TCP_SVR_COMMAND(TCPID,"send all", S)
 　・切断(IPを)～
-　　　TCP_SVR_COMMAND(自身,"close", IP)
+　　　TCP_SVR_COMMAND(TCPID,"close", IP)
 　・クライアント一覧取得～
-　　　TCP_SVR_COMMAND(自身,"list", 0)
+　　　TCP_SVR_COMMAND(TCPID,"list", 0)
+
+__UDPID=0
 
 ■UDP
 　・{イベント}接続した時
 　・{イベント}受信した時
 　・{イベント}エラー時
+　・{非公開}UDPID{=0}
 　・ポート{=60001}
 　・ホスト{=『225.0.0.0』}
 　・受信データ       # 受信したメッセージ
-  ・エラーメッセージ # エラーの起きたときにセットされる
+　・エラーメッセージ # エラーの起きたときにセットされる
 　・{非公開}オブジェクト
-  ・作る～
-  　　オブジェクトは、UDP_COMMAND(自身,"create",0)
-  ・接続～
-  　　UDP_COMMAND(自身,"connect","{ホスト}:{ポート}")
-  ・切断～
-  　　UDP_COMMAND(自身,"disconnect",0)
-  ・送信(Sを)～
-  　　UDP_COMMAND(自身, "send", S)
-  ・マルチキャスト参加
-  　　UDP_COMMAND(自身, "multicast", 0)
+　・作る～
+　　　UDPID = __UDPID; __UDPID = __UDPID + 1
+　　　UDP_COMMAND(UDPID,"create",自身→名前)
+　・接続～
+　　　UDP_COMMAND(UDPID,"connect","{ホスト}:{ポート}")
+　・切断～
+　　　UDP_COMMAND(UDPID,"disconnect",0)
+　・送信(Sを)～
+　　　UDP_COMMAND(UDPID, "send", S)
+　・マルチキャスト参加
+　　　UDP_COMMAND(UDPID, "multicast", 0)
 
 ■HTTP
 　・URL

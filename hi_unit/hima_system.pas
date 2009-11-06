@@ -2390,11 +2390,13 @@ begin
 
   // 自身にコピーする
   g := Self.TopItem;
-  
+
   if g <> nil then begin
     hi_var_copyGensi(g.InstanceVar, jisin);
+    //hi_setLink(g.InstanceVar, jisin);
   end else begin
     hi_var_copyGensi(HiSystem.FDummyGroup, jisin);
+    //hi_setLink(FHiSystem.FDummyGroup, jisin);
   end;
 end;
 
