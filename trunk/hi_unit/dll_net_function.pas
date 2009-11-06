@@ -1210,11 +1210,15 @@ var
   tmpDir, msgid, fmt: string;
   i: Integer;
   bRemove: Boolean;
+  iFrom: Integer;
+  iTo: Integer;
 begin
   pop3   := TIdPOP3(ptr);
   tmpDir := PString(Sender.arg1)^;
   msgids := TStringList(Sender.arg2);
   bRemove:= hi_bool(nako_getVariable('メール受信時削除'));
+  iFrom := Integer(Sender.arg3);
+  iTo   := Integer(Sender.arg4);
 
   if Sender.Terminated then Exit;
 
@@ -1243,7 +1247,13 @@ begin
         finally
           Sender.critical.Release;
         end;
-        for i := 0 to msgidsNow.Count - 1 do
+        // 数値指定の時
+        if (iTo < 0)  then
+        begin
+          iTo := msgidsNow.Count - 1;
+        end;
+        // 受信処理
+        for i := iFrom to iTo do
         begin
           fmt := Format('メール受信中(%3d/%3d)',
             [(i+1),msgidsNow.Count]);
@@ -1260,13 +1270,8 @@ begin
               if pop3.RetrieveRaw(i + 1, raw) then
               begin
                 // save to .eml
-                Sender.critical.Enter;
-                try
-                  raw.SaveToFile(tmpDir + msgid + '.eml');
-                  msgids.Add(msgid);
-                finally
-                  Sender.critical.Release;
-                end;
+                raw.SaveToFile(tmpDir + msgid + '.eml');
+                msgids.Add(msgid);
               end;
             end;
             // remove
@@ -1292,7 +1297,7 @@ begin
   end;
 end;
 
-function __sys_pop3_recv_indy10(recv_dir: string): PHiValue; stdcall;
+function __sys_pop3_recv_indy10(recv_dir: string; iFrom:Integer = 0; iTo:Integer = -1): PHiValue; stdcall;
 var
   tmpDir, fname, txtFile: string;
   from, replyto: string;
@@ -1319,6 +1324,8 @@ const
     th.arg0 := pop3;
     th.arg1 := @tmpDir;
     th.arg2 := msgids;
+    th.arg3 := Pointer(iFrom);
+    th.arg4 := Pointer(iTo);
     th.method := __sys_pop3_recv_indy;
     th.Resume;
     //
@@ -1338,6 +1345,8 @@ const
       msgid := ChangeFileExt(fs.Strings[i], '');
       fname := tmpDir + fs.Strings[i];
       txtFile := ChangeFileExt(fname, '.txt');
+      if FileExists(txtFile) then Continue;
+      
       try
         txt := '';
         eml := TEml.Create(nil);
@@ -1428,6 +1437,18 @@ begin
   Result := __sys_pop3_recv_indy10(dir);
 end;
 
+function sys_pop3_recv_indy10split(args: DWORD): PHiValue; stdcall;
+var
+  dir: string;
+  iFrom, iTo: Integer;
+begin
+  iFrom := getArgInt(args, 0);
+  iTo   := getArgInt(args, 1);
+  dir   := getArgStr(args, 2);
+  Result := __sys_pop3_recv_indy10(dir,iFrom,iTo);
+end;
+
+
 function sys_gmail_recv(args: DWORD): PHiValue; stdcall;
 var
   account, password, dir: string;
@@ -1452,6 +1473,36 @@ begin
   // recv
   Result := __sys_pop3_recv_indy10(dir);
 end;
+
+function sys_gmail_recv_split(args: DWORD): PHiValue; stdcall;
+var
+  iFrom, iTo: Integer;
+  account, password, dir: string;
+  p_id, p_pass, p_opt, p_port, p_host: PHiValue;
+begin
+  // get Args
+  account  := getArgStr(args, 0);
+  password := getArgStr(args, 1);
+  dir      := getArgStr(args, 2);
+  iFrom    := getArgInt(args, 3);
+  iTo      := getArgInt(args, 4);
+  // rewrite
+  p_id   := nako_getVariable('メールID');
+  p_pass := nako_getVariable('メールパスワード');
+  p_opt  := nako_getVariable('メールオプション');
+  p_port := nako_getVariable('メールポート');
+  p_host := nako_getVariable('メールホスト');
+
+  hi_setStr(p_id,   account);
+  hi_setStr(p_pass, password);
+  hi_setStr(p_host, 'pop.gmail.com');
+  hi_setStr(p_opt,  'SSL');
+  hi_setInt(p_port, 995);
+  // recv
+  Result := __sys_pop3_recv_indy10(dir, iFrom, iTo);
+end;
+
+
 
 
 function __yahoo_recv(args: DWORD; IsBB: Boolean): PHiValue; stdcall;
@@ -2642,6 +2693,8 @@ begin
   AddFunc  ('YAHOOメール送信','ACCOUNTのPASSWORDで',4134, sys_yahoo_send, 'ACCOUNTとPASSWORDを利用してYahoo!メールを送信する。', 'YAHOOめーるじゅしん');
   AddFunc  ('YAHOOBBメール受信','ACCOUNTのPASSWORDでDIRへ|DIRに',4135, sys_yahoobb_recv, 'ACCOUNTとPASSWORDを利用してYahoo!BBメールを受信する。', 'YAHOOBBめーるじゅしん');
   AddFunc  ('YAHOOBBメール送信','ACCOUNTのPASSWORDで',4136, sys_yahoobb_send, 'ACCOUNTとPASSWORDを利用してYahoo!BBメールを送信する。', 'YAHOOBBめーるじゅしん');
+  AddFunc  ('メール分割受信',    'DIRへFROMからTOまで|DIRに',  4137, sys_pop3_recv_indy10split, 'FROM(0起点)からTOまでの件数を指定してPOP3でフォルダDIRへメールを受信する。', 'めーるぶんかつじゅしん');
+  AddFunc  ('GMAIL分割受信','ACCOUNTのPASSWORDでDIRへFROMからTOまで|DIRに',4138, sys_gmail_recv_split, 'FROM(0起点)からTOまで件数を指定しつつACCOUNTとPASSWORDを利用してGMailを受信する。', 'GMAILぶんかつじゅしん');
   //-EML
   AddFunc  ('EMLファイル開く', 'Fの',4080, sys_eml_load , 'EMLファイルを開く', 'EMLふぁいるひらく');
   AddFunc  ('EMLパート数取得','',4081, sys_eml_part_count, 'EMLファイルにいくつパートがあるかを取得して返す。', 'EMLぱーとすうしゅとく');
