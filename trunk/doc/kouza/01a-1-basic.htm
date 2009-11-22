@@ -1,0 +1,569 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
+<META http-equiv="Content-Style-Type" content="text/css">
+<META name="keyword" content="プログラミング言語, なでしこ, 定型処理, バッチ処理, 教育">
+<META name="description" content="なでしこは日本語で簡単にプログラミングができる簡単ツールです。">
+<META name="GENERATOR" content="IBM WebSphere Homepage Builder V6.0.1 for Windows">
+<TITLE>プログラミング基礎編</TITLE>
+<LINK rel="stylesheet" href="../nako_man.css" type="text/css">
+</HEAD>
+<BODY text="#4d4d4d" link="#000099" vlink="#582c56" alink="#cc00cc">
+<CENTER>
+<TABLE border="0" width="780" cellpadding="0" cellspacing="0">
+  <TBODY>
+    <TR>
+      <TD align="right" class="head"><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+    <TR>
+      <TD><A href="../index.htm"><IMG src="../logo_nadesiko_title.gif" width="293" height="76" border="0" alt="なでしこ"></A></TD>
+    </TR>
+    <TR>
+      <TD><IMG src="../line.gif" width="780" height="8" border="0"></TD>
+    </TR>
+    <TR>
+      <TD>
+      <TABLE border="0" width="780" cellpadding="4" cellspacing="0">
+        <TBODY>
+          <TR>
+            <TD width="142"><IMG src="../about/dmy.gif" width="8" height="8" border="0"></TD>
+            <TD width="142"></TD>
+            <TD width="322"></TD>
+            <TD width="142"></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" class="newsTitle">プログラミング基礎編～2つの基本ルールを知る</TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2" align="center"><IMG src="kiso-title.gif" width="300" height="200" border="0"></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+          <!-- *************************************************** -->
+          <!-- title -->
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">なでしこが理解できる日本語とは</TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>前のコーナーでは、簡単なプログラムの動作を確認しました。次は、なでしこプログラムを書くときに欠かせない、基本中の基本ルールを確認してみましょう。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="seito.gif" width="90" height="88" border="0"></TD>
+            <TD>でも、なでしこってすごいですよね。日本語でプログラムを書けば、なんでも動いちゃうんでしょ。<BR>
+これなら、おじいちゃんでも子供でも、プログラムを作れちゃいますよね。<BR><BR></TD>
+            <TD> </TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>うーん。どんな日本語でも動くというのは、ちょっと違います。<BR>
+たしかに、なでしこでは、日本語の文章のようにプログラムを書くことができます。でも、どんな日本語でも動く、というわけではありません。<BR>
+「ホラ、何とかしといてヨ、あそこのアレを」というような不明瞭な指示や、単語を並べただけでは、動作しないのです。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"></TD>
+            <TD>
+ですから、<strong>今のところプログラムを動作させるためには、利用者が一定のルールにしたがって、プログラムを書いてやる必要があります。</strong></TD>
+            <TD valign="top" class="menuG">将来、人工知能のような高度な対話機能と理解力は備えたプログラムが開発されれば、それも実現できるかもしれません。<BR><BR></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="seito.gif" width="90" height="88" border="0"></TD>
+            <TD>そのルールって、むずかしいんですか？<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>それほど、むずかしくはありませんよ。たった<strong>2つの簡単なルール</strong>を覚えるだけで、とりあえずプログラムを作り始めることができます。<BR>
+ものすごく単純な例を見ながら、順を追って理解していけば、それほど複雑には感じないと思います。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- ********************** title *********************** -->
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">プログラムを実行したのに、エラーメッセージが・・・</TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>先ほどの「はじめてのプログラム」では、こんなプログラムを動かしました。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- code -->
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">「こんにちは」と言う。<BR>
+            </TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"></TD>
+            <TD>これで、「こんにちは」というWindowsっぽいダイアログが出てきました。たった1行ですが、これも立派ななでしこプログラムです。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 画像 -->
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD><IMG src="iu.png" width="134" height="101" border="0"></TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="seito.gif" width="90" height="88" border="0"></TD>
+            <TD>じゃあ、これをこんなふうに書きかえても動きそうですね。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- code -->
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">「こんにちは」としゃべる。<BR>
+            </TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>うーん。これを実行すると、次のようにエラーメッセージが表示されますネ。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 画像 -->
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD><IMG src="../pic/Image1a-2.png" width="320" height="166" border="0"><BR>
+            *エラーメッセージが表示された</TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="seito.gif" width="90" height="88" border="0"></TD>
+            <TD>エラーメッセージと言われても、難しいことが書いてあって、どうしたらいいのか分かりません・・・<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>"エラーメッセージ"というのは、プログラムの実行に失敗したとき、「こんなふうに失敗しましたヨ」となでしこから伝えられる返事です。これを読むと、どこで失敗したのか、どんなふうに失敗したのか、ある程度理解できます。<BR>
+今回の場合は、そんな難しい情報が読みとれなくても、とりあえず失敗したことが分かればいいでしょう。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="seito.gif" width="90" height="88" border="0"></TD>
+            <TD>でも、先生。このプログラムは、どうしてエラーになったんですか・・・<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- ********************** title *********************** -->
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">ルール1：あらかじめ登録されている命令を使う。</TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>さて、「しゃべる」は、「言う」と同じような意味ですが、なでしこプログラムとしては実行できません。なでしこは、<strong>あらかじめ登録してある言葉しか、命令として使えない</strong>のです。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="seito.gif" width="90" height="88" border="0"></TD>
+            <TD>だから、あらかじめ登録してある「言う」は使えても、登録していない「しゃべる」だと、エラーになってしまうんですね。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>そのとおりです。<BR>
+<BR>
+なでしこには、1000個以上の命令が用意してあります。でも、辞書に載っている言葉と比べたらずっと少ないですよね。よく似た意味の言葉があっても大半はひとつしか登録していないためです。<BR>
+ですから、なでしこがどのような命令を持っているのか、ある程度理解しておいたほうがいいでしょう。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="seito.gif" width="90" height="88" border="0"></TD>
+            <TD>それだと、使いたい命令を見つけるのが、大変そうですね。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>とはいえ、命令は用途に応じて分類してありますし、見つけるのはそれほどむずかしくありません。また、新しい命令を自分で登録することができるので、用途に応じて追加していけば、分かりやすくできるでしょう。<BR><BR></TD>
+            <TD valign="top" class="menuG">新しい命令を登録する機能を、関数と呼びます。ただし、ここでは関数については説明しません。新しい関数を登録するより、すでに登録済みの言葉を上手に使いこなすことを優先するといいでしょう。</TD>
+          </TR>
+          <!-- ******************** title ************************ -->
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">ルール2:つなげる言葉は、命令ごとに決まっている。</TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>では、次のプログラムを試してみましょう。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- code -->
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">「こんにちは」と表示<BR>
+            </TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"></TD>
+            <TD>これは、「こんにちは」をウィンドウに表示するプログラムです。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 画像 -->
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD><IMG src="../pic/Image2-1.gif" width="288" height="180" border="0"><BR>
+            *「こんにちは」をウィンドウに表示</TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="seito.gif" width="90" height="88" border="0"></TD>
+            <TD>先生、こんなふうに書いたのですが、エラーになりました！<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- code -->
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">「こんにちは」で表示<BR>
+            </TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>ふーむ。動作した場合とエラーになった場合の違いをよく見てください。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="seito.gif" width="90" height="88" border="0"></TD>
+            <TD>あ、わかった！　命令は同じですが、つなげる言葉が<strong>「と」</strong>ではなく<strong>「で」</strong>になっていました。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>表示したい言葉"こんにちは"と、命令"表示する"の間の"つなぎ言葉"が違っているのですね。このような"つなぎ言葉"を<strong>助詞</strong>と呼びます。<BR>
+実は、<strong>なでしこでは、命令ごとに使える助詞が決まっています。</strong>「表示する」の場合は、<strong>「と」</strong>だけでなく<strong>「を」</strong>も使えます。次のプログラムは、どちらも同じ意味になります。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- code -->
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">「こんにちは」と表示<BR>
+            </TD>
+            <TD></TD>
+          </TR>
+          <TR></TR>
+          <!-- code -->
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">「こんにちは」を表示<BR>
+            </TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>でも、次のプログラムのように、<strong>「で」</strong>という助詞は「表示」命令には用意されていないので使えません。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- code -->
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">「こんにちは」で表示　//これはバツ<BR>
+            </TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="seito.gif" width="90" height="88" border="0"></TD>
+            <TD>日本語としても、ちょっと違和感がありますね。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>以上、なでしこの基本ルールを説明しました。<BR>
+なでしこでプログラムを書くときは、この2つの基本ルールを意識しましょう。<BR>
+<BR>
+　・ルール1：あらかじめ登録されている命令を使う<BR>
+　・ルール2：命令ごとに決まっている、つなげる言葉(助詞)を使う<BR>
+</TD>
+            <TD></TD>
+          </TR>
+          <!-- ******************** title ************************ -->
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">なでしこの命令を探す方法</TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="seito.gif" width="90" height="88" border="0"></TD>
+            <TD>先生、命令や助詞は、どうやって確認すればいいんですか？<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>それには、なでしこエディタの左タブを使います。ここに「命令一覧」や「命令検索」といった機能があります。<BR>
+なでしこには、1000個以上の命令がありますから、それを全部暗記することは大変でしょう。そこで、このような機能を使って命令や助詞を確認します。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 画像 -->
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD><IMG src="../pic/Image3-1.png" width="320" height="229" border="0"><BR>
+            *なでしこエディタの左タブにある、「命令一覧」や「命令検索」で命令を確認する</TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="seito.gif" width="90" height="88" border="0"></TD>
+            <TD>じゃあ「命令一覧」は、どんなふうに使うんですか？<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>これは、なでしこの命令を種類ごとに分類したものです。<BR>
+上下に分かれていて、上欄に命令の種類を表示し、下欄に実際の命令を表示します。上欄の「+」記号をクリックすると、大分類を展開したり、分類内の命令を表示できます。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="seito.gif" width="90" height="88" border="0"></TD>
+            <TD>たとえば、「言う」命令はどうやって探すのですか？<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>「言う」命令は、「システム」-「基本命令」として分類されています。<BR>
+ですから、「システム」の前にある「+」記号をクリックし、それから「基本命令」を選択すると、下の欄に該当する命令が表示されます。<BR>
+ほら、ここに「言う」命令がありますね。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 画像 -->
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD><IMG src="../pic/Image3-2.png" width="320" height="229" border="0"><BR>
+            *「言う」命令を確認する</TD>
+            <TD></TD>
+          </TR>
+          <!-- ******************** title ************************ -->
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">命令ごとの助詞を確認する方法</TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="seito.gif" width="90" height="88" border="0"></TD>
+            <TD>では、「言う」命令の助詞を確認するには、どのようにするんですか？<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>「命令一覧」の下欄に表示された「言う」命令をクリックすると、なでしこエディタの一番下に、命令の説明が表示されます。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- code -->
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD class="code">【名前】言う (いう)【引数】{文字列=?}Sを|Sと【説明】メッセージSをダイアログに表示する。<BR>
+            </TD>
+            <TD></TD>
+          </TR>
+          <!-- 画像 -->
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD><IMG src="../pic/Image4-1.png" width="320" height="229" border="0"><BR>
+            *「言う」命令をクリックすると、ウィンドウ下に説明が表示される</TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>ここで、「【引数】」のところを見てください。<strong>「Sを|Sと」</strong>とありますよね。これで、「を」と「と」が助詞として使えることが分かります。<BR><BR></TD>
+            <TD valign="top" class="menuG">ちなみに、<strong>「引数」(ひきすう)</strong>というのは、命令に与えるデータのことです。「言う」命令では、"「こんにちは」と"が引数になります。</TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="seito.gif" width="90" height="88" border="0"></TD>
+            <TD>これなら、命令さえ見つかれば、簡単に使える助詞を確認できますね。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>でも、一番簡単な方法は、表示された命令をダブルクリックすることでしょう。<BR>
+たとえば「言う」命令をダブルクリックすると、なでしこエディタのプログラム記述欄に、"Sを言う"というように、プログラムの雛形が自動的に入力されます。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 画像 -->
+          <TR>
+            <TD></TD>
+            <TD align="center"></TD>
+            <TD><IMG src="../pic/Image4-2.png" width="320" height="229" border="0"><BR>
+            *「言う」命令をダブルクリックすると、雛形が挿入される</TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="seito.gif" width="90" height="88" border="0"></TD>
+            <TD>こっちの場合は、Sのところだけ書き直すだけでいいですね。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- ******************** title ************************ -->
+            <TD bgcolor="#ffffff"></TD>
+            <TD colspan="2" class="newsTitle">なでしこ学習のコツ</TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="seito.gif" width="90" height="88" border="0"></TD>
+            <TD>それでは、さっそくプログラムを作って見たいと思います。でも、私の作りたいプログラムにどんな命令が使えるのか、よくわかりません。<BR><BR></TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>そうですね。<BR>
+            最初は、基本的なサンプルプログラムをひととおり眺めてみるのが、良いと思います。<BR>
+            なでしこにサンプルプログラムが多数付属していますし、インターネットなどで解説が多数公開されていますから、目的に応じて参考にするといいでしょう。<BR>
+<BR>
+　・なでしこサンプルプログラム	なでしこに付属のサンプルプログラム集<BR>
+　　C:\Program Files\nadesiko_lang\sample<BR>
+<BR>
+　・<a href="http://pc.nikkeibp.co.jp/article/NPC/20070222/262977/">日経PCオンライン</a><BR>
+　・<a href="http://journal.mycom.co.jp/column/nihongoprog/index.html">マイコミ ジャーナル</a><BR>
+　・<a href="http://nadesi.com/wiki/">ユーザーズWiki</a><BR>
+</TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="seito.gif" width="90" height="88" border="0"></TD>
+            <TD>いっぱいあって、ビックリしました。これなら、参考になるものが何か見つかりそうですね！</TD>
+            <TD></TD>
+          </TR>
+          <!-- 本文 -->
+          <TR>
+            <TD bgcolor="#ffffff"></TD>
+            <TD align="center" valign="top"><IMG src="sensei.gif" width="90" height="88" border="0"></TD>
+            <TD>このチュートリアルでも、引き続き、基本的なテクニックについて説明していきます。<BR>
+<BR>
+では、基本的なサンプルプログラムをひととおり眺めて行きましょう。
+<BR><BR>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+          </TR>
+          <TR>
+            <TD></TD>
+            <TD colspan="2">
+            <HR>
+            次のページ<A href="02-1-calc.htm">→計算機の変わりに使う</A><BR>
+            前のページ<A href="01-1-hello.htm">←はじめてのプログラム</A>
+            <HR>
+            </TD>
+            <TD></TD>
+          </TR>
+        </TBODY>
+      </TABLE>
+      </TD>
+    </TR>
+    <TR>
+      <TD bgcolor="#ffcccc" class="head"><A href="http://nadesi.com/">なでしこWEB</A> &gt; <A href="../index.htm">マニュアル</A> &gt; <A href="index.htm">プログラミング基礎</A></TD>
+    </TR>
+  </TBODY>
+</TABLE>
+</CENTER>
+<CENTER></CENTER>
+<CENTER></CENTER>
+</BODY>
+</HTML>
