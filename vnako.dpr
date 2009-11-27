@@ -115,7 +115,5 @@ uses
 begin
   Application.Initialize;
   Application.CreateForm(TfrmNako, frmNako);
-  Application.CreateForm(TFormReplace, FormReplace);
-  Application.CreateForm(TFormSearch, FormSearch);
   Application.Run;
 end.

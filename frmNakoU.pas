@@ -160,6 +160,7 @@ type
     UseDebug:  Boolean;
     UseLineNo: Boolean;
     backBmp: TBitmap;
+    FMainFile: string; // メインファイル名
     //
     edtPropNormal: TEditorProp;
     //
@@ -213,6 +214,13 @@ var
   _flag_vnako_exe:Boolean = True;
   _dnako_loader: TDnakoLoader = nil;
   _dnako_success: Boolean = False;
+
+  {$IFDEF FMPMODE}
+  _flag_fmp_mode: Boolean = False;
+  _flag_fmp_key_enabled:Boolean = False;
+  _fmp_key1: String = '';
+  _flag_fmp_remove_src: Boolean = False;
+  {$ENDIF}
 
 procedure UpdateAfterEvent(o: TObject);
 procedure ExtractMixFile(var fname: string);
@@ -583,6 +591,22 @@ var
     while (ParamCount >= i) do
     begin
       s := ParamStr(i);
+      {$IFDEF FMPMODE}
+      if s = '-setkey' then begin
+        Inc(i);
+        if ParamStr(i) = _fmp_key1 then
+        begin
+          _flag_fmp_key_enabled := true;
+          inc(i);
+          Continue;
+        end;
+      end;
+      if s = '-killsrc' then begin
+        Inc(i);
+        _flag_fmp_remove_src := True;
+        Continue;
+      end;
+      {$ENDIF}
       params := params + s + #13#10;
       if Copy(LowerCase(s),1,6) = '-debug' then
       begin
@@ -609,6 +633,9 @@ var
         end;
       end;
     end;
+    {$IFDEF FMPMODE}
+    if not _flag_fmp_key_enabled then Halt;
+    {$ENDIF}
     //----------------------------------
     // command
     p := nako_getVariable('コマンドライン');
@@ -640,6 +667,7 @@ var
     // load
     fname := Trim(fname);
     if fname <> '' then Result := nako_load(PChar(fname)) else Result := 0;
+    FMainFile := fname;
   end;
 
   function _runDefaultFile(fname: string): DWORD;
@@ -653,6 +681,7 @@ var
     hi_setStr(p, path);
     //
     Result := nako_load(PChar(fname));
+    FMainFile := fname;
   end;
 
   procedure msg(s: string); // for DEBUG
@@ -683,6 +712,7 @@ var
           '開発者または製造元へ連絡してください。'#13#10 + '--------------'#13#10 + e.Message);
       end;
     end;
+    FMainFile := ParamStr(0);
   end;
 
   procedure __runFromCommandLine;
@@ -726,6 +756,9 @@ begin
     // vnako の関数を登録
     RegistCallbackFunction(Self.Handle);
     nako_addFileCommand;
+    {$IFDEF FMPMODE}
+    nako_setVariable('noload_libvnako',hi_newBool(True));
+    {$ENDIF}
     nako_LoadPlugins;
     _dnako_success := True;
   except on e:Exception do
@@ -973,6 +1006,16 @@ begin
     begin
       SendCOPYDATA( DebugEditorHandle, 'stop', 0, self.Handle);
     end;
+
+    {$IFDEF FMPMODE}
+    if _flag_fmp_remove_src then
+    begin
+      try
+        DeleteFile(FMainFile);
+      except
+      end;
+    end;
+    {$ENDIF}
 
   finally
     flagNowClose := False;
