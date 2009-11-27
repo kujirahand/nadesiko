@@ -1600,11 +1600,21 @@ var
   PluginInit: procedure (h: DWORD); stdcall;
 
   procedure chkDLL(name: AnsiString);
-  var s: AnsiString;
+  var s: AnsiString; p: PHiValue;
   begin
     s := UpperCase(ExtractFileName(name));
+    // 自身は取り込み不要
     if s = 'DNAKO.DLL' then Exit;
-
+    // vnako 二重取り込みチェック
+    if s = 'LIBVNAKO.DLL' then
+    begin
+      p := HiSystem.GetVariable(hi_tango2id('noload_libvnako'));
+      if p <> nil then 
+      begin
+        if hi_bool(p) then Exit;
+      end;
+    end;
+    // その他、二重取り込みチェック
     if dll.IndexOf(s) < 0 then
     begin
       dll.Add(s);
