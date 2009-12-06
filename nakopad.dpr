@@ -38,7 +38,8 @@ uses
   nkf in 'hi_unit\NKF.PAS',
   unit_rewrite_icon in 'hi_unit\unit_rewrite_icon.pas',
   SHA1 in 'hi_unit\Sha1.pas',
-  vnako_message in 'vnako_unit\vnako_message.pas';
+  vnako_message in 'vnako_unit\vnako_message.pas',
+  unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas';
 
 {$R *.res}
 

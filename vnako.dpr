@@ -108,7 +108,8 @@ uses
   VistaAltFixUnit in 'component\VistaAltFixUnit.pas',
   GraphicEx in 'component\GraphicEx\GraphicEx.pas',
   vnako_message in 'vnako_unit\vnako_message.pas',
-  frmCalendarU in 'vnako_unit\frmCalendarU.pas' {frmCalendar};
+  frmCalendarU in 'vnako_unit\frmCalendarU.pas' {frmCalendar},
+  unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas';
 
 {$R *.res}
 
