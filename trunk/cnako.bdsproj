@@ -125,7 +125,7 @@
 			<Directories Name="PackageDCPOutputDir"></Directories>
 			<Directories Name="SearchPath"></Directories>
 			<Directories Name="Packages">vclx;vcl;rtl;dbrtl;vcldb;adortl;dbxcds;dbexpress;xmlrtl;vclie;inet;inetdbbde;inetdbxpress;dclOfficeXP;soaprtl;dsnap;vclactnband;bdertl;vcldbx</Directories>
-			<Directories Name="Conditionals"></Directories>
+			<Directories Name="Conditionals">DELUX_VERSION</Directories>
 			<Directories Name="DebugSourceDirs"></Directories>
 			<Directories Name="UsePackages">False</Directories>
 		</Directories>

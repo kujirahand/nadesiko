@@ -17,8 +17,8 @@ object frmMakeExe: TfrmMakeExe
   TextHeight = 12
   object Panel1: TPanel
     Left = 0
-    Top = 224
-    Width = 578
+    Top = 234
+    Width = 586
     Height = 144
     Align = alBottom
     TabOrder = 0
@@ -207,7 +207,7 @@ object frmMakeExe: TfrmMakeExe
   object Panel2: TPanel
     Left = 0
     Top = 0
-    Width = 578
+    Width = 586
     Height = 25
     Align = alTop
     BevelOuter = bvNone
@@ -241,8 +241,8 @@ object frmMakeExe: TfrmMakeExe
   object lstFiles: TListBox
     Left = 0
     Top = 25
-    Width = 578
-    Height = 199
+    Width = 586
+    Height = 209
     Align = alClient
     ItemHeight = 12
     TabOrder = 2

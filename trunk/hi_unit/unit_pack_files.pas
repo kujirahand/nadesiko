@@ -6,7 +6,11 @@ unit unit_pack_files;
 interface
 
 uses
-  Windows, SysUtils, hima_types, hima_stream;
+  Windows, SysUtils, hima_types, hima_stream
+  {$IFDEF DELUX_VERSION}
+  ,unit_pack_files_pro
+  {$ENDIF}
+  ;
 
 {
   TFileMixReader
@@ -85,6 +89,11 @@ procedure DoAngou(var ms: THMemoryStream);
 procedure DoAngou3(var ms: THMemoryStream; enc:Boolean);
 procedure DoAngou4(var ms: THMemoryStream; enc:Boolean);
 procedure DoAngou5(var ms: THMemoryStream; enc:Boolean);
+{$IFDEF DELUX_VERSION}
+// define [unit_pack_files_pro.pas] ---> Delux version
+{$ELSE}
+procedure DoAngou6(var ms: THMemoryStream; enc:Boolean);
+{$ENDIF}
 
 {実行ファイルへリソースの埋め込み／読み込み}
 function WritePackExeFile(outFileName, exeFileName, packFileName: AnsiString): Boolean;
@@ -433,6 +442,16 @@ begin
   end;
 end;
 
+{$IFDEF DELUX_VERSION}
+  // define [unit_pack_files_pro.pas]
+  // ---> Delux version
+{$ELSE}
+procedure DoAngou6(var ms: THMemoryStream; enc:Boolean);
+begin
+  raise Exception.Create('[ERROR] DELUX VERSION ONLY!!');
+end;
+{$ENDIF}
+
 
 function JPosEx(const sub, str: AnsiString; idx:Integer): Integer;
 var
@@ -536,7 +555,7 @@ begin
                     if comp=3 then DoAngou3(ms, True) else
                     if comp=4 then DoAngou4(ms, True) else
                     if comp=5 then DoAngou5(ms, True) else
-
+                    if comp=6 then DoAngou6(ms, True) else
                     ;
                     FileLen  := ms.Size;
                     FilePos  := fs.Position ;
@@ -630,6 +649,7 @@ begin
     if info.Comp = 3 then DoAngou3(ms, False) else
     if info.Comp = 4 then DoAngou4(ms, False) else
     if info.Comp = 5 then DoAngou5(ms, False) else
+    if info.Comp = 6 then DoAngou6(ms, False) else
     ;
   except
   end;
@@ -698,6 +718,7 @@ begin
       if IsUser then
       begin
         Result := False;
+        raise Exception.Create('ユーザー操作による読み書きはできません。');
         Exit;
       end else
       begin
@@ -705,6 +726,7 @@ begin
         if pf.Comp = 3 then DoAngou3(ms, False) else
         if pf.Comp = 4 then DoAngou4(ms, False) else
         if pf.Comp = 5 then DoAngou5(ms, False) else
+        if pf.Comp = 6 then DoAngou6(ms, False) else
         ;
       end;
     end else

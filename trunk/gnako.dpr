@@ -16,7 +16,8 @@ uses
   unit_pack_files in 'hi_unit\unit_pack_files.pas',
   hima_stream in 'hi_unit\hima_stream.pas',
   mini_file_utils in 'hi_unit\mini_file_utils.pas',
-  nadesiko_version in 'nadesiko_version.pas';
+  nadesiko_version in 'nadesiko_version.pas',
+  unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas';
 
 {$R gnako.res}
 

@@ -16,7 +16,8 @@ uses
   hima_stream in 'hi_unit\hima_stream.pas',
   mini_file_utils in 'hi_unit\mini_file_utils.pas',
   EasyMasks in 'hi_unit\EasyMasks.pas',
-  nadesiko_version in 'nadesiko_version.pas';
+  nadesiko_version in 'nadesiko_version.pas',
+  unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas';
 
 var
   _nako_loader: TDnakoLoader;
