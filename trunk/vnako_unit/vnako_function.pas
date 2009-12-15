@@ -2802,7 +2802,11 @@ begin
   cancel := hi_str(nako_getVariable('ダイアログキャンセル値'));
   ime    := hi_str(nako_getVariable('ダイアログIME'));
   //-----------------------------------
+  {$IFDEF IS_LIBVNAKO}
+  if title = '' then title := 'なでしこ';
+  {$ELSE}
   if title = '' then title := Application.Title;
+  {$ENDIF}
 end;
 
 function getDialogS(ValueName: string; initValue: string): string; // ダイアログ詳細から値を取り出す
@@ -7823,6 +7827,69 @@ begin
   end;
 end;
 
+function browser_click(h: DWORD): PHiValue; stdcall;
+var
+  obj: TObject;
+  idname: string;
+  inp: Variant;
+begin
+  Result := nil;
+  obj     := getGui(getArg(h, 0));
+  idname  := getArgStr(h, 1);
+  //
+  try
+    inp := browser_getId(obj as TUIWebBrowser, idname);
+    if (VarIsEmpty(inp) or VarIsNull(inp)) then
+    begin
+      Exit;
+    end;
+    GuiInfos[TUIWebBrowser(obj).Tag].freetag := 1;
+    try
+      inp.click;
+    except
+    end;
+  finally
+    inp := Unassigned;
+  end;
+end;
+
+function browser_printpreview(h: DWORD): PHiValue; stdcall;
+var
+  obj: TObject;
+  idname: string;
+  d1, d2:OleVariant;
+begin
+  Result := nil;
+  obj     := getGui(getArg(h, 0));
+  //
+  try
+    TUIWebBrowser(obj).ExecWB(7, 0, d1, d2);
+  except
+  end;
+  d1 := Unassigned;
+  d2 := Unassigned;
+end;
+
+function browser_execwb(h: DWORD): PHiValue; stdcall;
+var
+  obj: TObject;
+  idname: string;
+  cmd,opt:Integer;
+  d1, d2:OleVariant;
+begin
+  Result := nil;
+  obj     := getGui(getArg(h, 0));
+  cmd := getArgInt(h, 1);
+  opt := getArgInt(h, 2);
+  //
+  try
+    TUIWebBrowser(obj).ExecWB(cmd, opt, d1, d2);
+  except
+  end;
+  d1 := Unassigned;
+  d2 := Unassigned;
+end;
+
 
 function browser_setHTML(h: DWORD): PHiValue; stdcall;
 var
@@ -8713,6 +8780,9 @@ begin
   AddFunc('ブラウザHTML書換','{グループ}OBJのIDをSに|Sへ', 2396, browser_setHTML, 'ブラウザ部品OBJで表示中のIDのHTMLを書き換える(IDにはid属性か「name属性かタグ名\出現番号(0起点)」)','ぶらうざHTMLかきかえ');
   AddFunc('ブラウザHTML取得','{グループ}OBJのIDを', 2395, browser_getHTML, 'ブラウザ部品OBJで表示中のIDのHTMLを取得する(IDにはid属性か「name属性かタグ名\出現番号(0起点)」)','ぶらうざHTMLしゅとく');
   AddFunc('ブラウザ読込待機','{グループ}OBJの', 2394, browser_waitToComplete, 'ブラウザ部品OBJで表示中のIDのHTMLを取得する','ぶらうざHTMLよみこみたいき');
+  AddFunc('ブラウザ要素クリック','{グループ}OBJのIDを', 2393, browser_click, 'ブラウザ部品OBJで表示中のID要素をクリックする','ぶらうざようそくりっく');
+  AddFunc('ブラウザ印刷プレビュー','{グループ}OBJで|OBJを', 2392, browser_printpreview, 'ブラウザ部品OBJで印刷プレビューを出す','ぶらうざいんさつぷれびゅー');
+  AddFunc('ブラウザEXECWB','{グループ}OBJのCMDをOPTで', 2391, browser_execwb, 'ブラウザ部品OBJにコマンドを送る','ぶらうざEXECWB');
 
   //-色定数
   AddIntVar('白色', $FFFFFF, 2330, '白色','しろいろ');

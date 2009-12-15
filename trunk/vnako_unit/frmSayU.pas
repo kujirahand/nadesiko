@@ -173,7 +173,11 @@ end;
 
 procedure TfrmSay.FormCreate(Sender: TObject);
 begin
+  {$IFDEF IS_LIBVNAKO}
+  Self.Caption := '‚È‚Å‚µ‚±';
+  {$ELSE}
   Self.Caption := Application.Title;
+  {$ENDIF}
   FBmp := TBitmap.Create;
   FMemo := '';
   FIsNitaku := False;

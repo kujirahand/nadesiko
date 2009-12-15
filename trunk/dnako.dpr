@@ -35,8 +35,11 @@ uses
   BlowFish in 'hi_unit\BlowFish.pas',
   CryptUtils in 'hi_unit\CryptUtils.pas',
   unit_file in 'hi_unit\unit_file.pas',
-  EasyMasks in 'hi_unit\EasyMasks.pas',
-  unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas';
+  EasyMasks in 'hi_unit\EasyMasks.pas'
+  {$IFDEF DELUX_VERSION}
+  ,unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas'
+  {$ENDIF}
+  ;
 
 const
   nako_OK = 1; // ä÷êîÇÃê¨å˜
