@@ -2,6 +2,8 @@ library libvnako;
 
 {%File 'libvnako.bdsproj'}
 
+// define "IS_LIBVNAKO"
+
 uses
   Windows,
   SysUtils,
@@ -80,6 +82,7 @@ procedure ImportNakoFunction; stdcall;
 var
   p: PHiValue;
   path: string;
+  h:HWND;
 begin
   // ñΩóﬂÇìÒèdìoò^ÇµÇ»Ç¢
   p := nako_getVariable('âÊñ ÉNÉäÉA');
@@ -87,11 +90,14 @@ begin
   // OPTION FLAG
   _flag_vnako_exe := False;
   _dnako_success  := True;
+  //
+  h := GetForegroundWindow;
   // CREATE
   frmNako := TfrmNako.Create(nil);
   Bokan := frmNako;
 
   vnako_function.RegistCallbackFunction(frmNako.Handle);
+  nako_setMainWindowHandle(h);
 
   path := nako_getPluginsDir;
   try

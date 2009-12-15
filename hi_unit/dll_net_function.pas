@@ -2434,10 +2434,22 @@ function sys_http_post(args: DWORD): PHiValue; stdcall;
 var
   http: TKHttpClient;
   url, head,body: string;
+
+  procedure _method_https;
+  begin
+    raise Exception.Create('未サポートです。');
+  end;
+
 begin
   head := getArgStr(args, 0, True);
   body := getArgStr(args, 1, False);
   url  := getArgStr(args, 2);
+
+  if Copy(url,1,8) = 'https://' then
+  begin
+    _method_https;
+    Exit;
+  end;
 
   http := TKHttpClient.Create(nil);
   try

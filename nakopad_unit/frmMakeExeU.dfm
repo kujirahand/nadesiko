@@ -59,9 +59,9 @@ object frmMakeExe: TfrmMakeExe
       object chkAngou: TCheckBox
         Left = 16
         Top = 24
-        Width = 161
+        Width = 305
         Height = 17
-        Caption = #26263#21495#21270#12375#12390#26801#21253
+        Caption = #38627#35501#21270#12375#12390#26801#21253
         TabOrder = 0
       end
       object chkIncludeDLL: TCheckBox
@@ -79,7 +79,7 @@ object frmMakeExe: TfrmMakeExe
         Top = 40
         Width = 265
         Height = 17
-        Caption = #24375#21147#12395#26263#21495#21270#12375#12390#26801#21253'('#12487#12521#12483#12463#12473#29256#12398#12415')'
+        Caption = #24375#21147#12395#38627#35501#21270#12375#12390#26801#21253'('#12487#12521#12483#12463#12473#29256#12398#12415')'
         Enabled = False
         TabOrder = 2
       end

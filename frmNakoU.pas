@@ -478,7 +478,10 @@ begin
   if FlagBokan = False then
   begin
     // •êŠÍ
+    {$IFDEF IS_LIBVNAKO}
+    {$ELSE}
     Application.Title := '‚È‚Å‚µ‚±';
+    {$ENDIF}
     IsBokan   := True;
     FlagBokan := True;
     Bokan     := Self;
