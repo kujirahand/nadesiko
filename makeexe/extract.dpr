@@ -96,16 +96,16 @@ begin
   // extract
   debug('path='+dirPack);
   unit_archive.PATH_ARCHIVE_DLL := dirPack;
-  if (FileExists(dirPack + 'arc.yz1')) then
+  if (FileExists(dirPack + 'arc.zip')) then
   begin
-    yz1_extract(dirPack + 'arc.yz1', dirPack);
+    zip7_extract(dirPack + 'arc.zip', dirPack);
   end else
   if (FileExists(dirPack + 'ARC.YZ1')) then
   begin
     yz1_extract(dirPack + 'ARC.YZ1', dirPack);
   end else
   begin
-    MessageBox(0, 'ERROR','ARC.YZ1がありません。',MB_OK);
+    MessageBox(0, 'ERROR','圧縮データがありません。',MB_OK);
   end;
   // read cofig
   buf := dirPack + config;
