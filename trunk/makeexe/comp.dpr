@@ -28,7 +28,8 @@ begin
   begin
     arcfile := ParamStr(1);
   end else begin
-    arcfile := path + 'arc.yz1';
+    //arcfile := path + 'arc.yz1';
+    arcfile := path + 'arc.zip';
   end;
   if ParamCount >= 2 then
   begin
@@ -48,8 +49,10 @@ begin
   tmp := TempDir + 'packfile.bin';
   // ---
   e := TFileMixWriter.Create;
-  e.AddFile(path+'Yz1.dll', 'Yz1.dll', 0);
-  e.AddFile(arcfile, 'arc.yz1', 0);
+  //e.AddFile(path+'Yz1.dll', 'Yz1.dll', 0);
+  e.AddFile(path+'7-zip32.dll', '7-zip32.dll', 0);
+  //e.AddFile(arcfile, 'arc.yz1', 0);
+  e.AddFile(arcfile, 'arc.zip', 0);
   e.AddFile(config, 'config.txt', 0);
   e.SaveToFile(tmp);
   e.Free;
