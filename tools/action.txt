@@ -10,6 +10,7 @@
 メニューエディタ,menu.nako
 ファイル名の挿入,selectfile.nako
 フォルダ名の挿入,selectdir.nako
+WindowsAPI利用支援,API支援.nako
 色番号の挿入,selectcolor.nako
 キー番号の挿入,insert_keyno.nako
 多角形描画,poly.nako
