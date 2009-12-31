@@ -734,6 +734,8 @@ begin
   // (2) データの処理
   // (3) 戻り値を設定
 
+  SetErrorMode(SEM_FAILCRITICALERRORS);
+
   // フォルダ？
   if DirectoryExists(fname) then
   begin
@@ -748,6 +750,8 @@ begin
   begin
     hi_setBool(Result, False);
   end;
+  
+  SetErrorMode(0);
 end;
 
 function sys_ExistsDir (args: DWORD): PHiValue; stdcall;
@@ -2051,6 +2055,8 @@ begin
   if p = nil then p := nako_getSore;
   sp := hi_str(p);
 
+  SetErrorMode(SEM_FAILCRITICALERRORS);
+
   if DirectoryExists(sp) then
   begin
     GetDiskFreeSpaceEx(PChar(sp), iFree, iTotal, nil);
@@ -2059,6 +2065,9 @@ begin
     iTotal := -1;
   end;
   Result := hi_newFloat(iTotal);
+
+  SetErrorMode(0);
+
 end;
 function sys_getDiskFreeSize(args: DWORD): PHiValue; stdcall;
 var
