@@ -1189,7 +1189,7 @@ var
   i: Integer;
   function _CheckId(ch: string): String;
   begin
-    if Pos(ch, '/?"%\;:''`') > 0 then
+    if Pos(ch, '<>/?"%\;:''`') > 0 then
     begin
       ch := '%' + IntToHex(Ord(ch[1]), 2);
     end;
