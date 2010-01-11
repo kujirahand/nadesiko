@@ -156,7 +156,7 @@ begin
   if UpperCase(b) = 'UTF-16' then isUTF16 := True else isUTF16 := False;
   res := NkfConvertStr(s, Format('--ic=%s --oc=%s',[a, b]), isUTF16);
   // (3) –ß‚è’l‚ğİ’è
-  Result := hi_newStr(res+#0);
+  Result := hi_newStr(PAnsiChar(res+#0));
 end;
 
 
