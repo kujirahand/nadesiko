@@ -1868,6 +1868,8 @@ begin
     if cmd='paste'          then begin edtActive.SelText := Clipboard.AsText; end else
     //if cmd='makeexe'        then mnuMakeExeFileClick(nil) else
     if cmd='stop'           then sub_stop else
+    if cmd='selectall'      then edtActive.SelectAll else
+    if cmd='selectnone'     then edtActive.SelLength := 0 else
     ;
     Application.ProcessMessages ;
 end;
