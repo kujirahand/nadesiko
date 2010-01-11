@@ -745,7 +745,7 @@ procedure THimaFile.Analize(src: AnsiString);
 var
   lineNo: Integer;
   indent: Integer;
-  p: PAnsiChar;
+  p, pNext: PAnsiChar;
   block: THimaBlock;
   token: THimaToken;
   s, tokenJosi: AnsiString;
@@ -801,9 +801,24 @@ var
       end;
     end;
 
+    function __checkCommaCRLF: Boolean;
+    begin
+      Result := False;
+      if p^ <> ',' then Exit;
+      pNext := p;
+      Inc(pNext);
+      while pNext^ in [#9, ' '] do Inc(pNext);
+      if (StrLComp(pNext, #13#10, 2) = 0) then
+      begin
+        Inc(pNext, 2);
+        Result := True;
+      end;
+    end;
+
   begin
     Result := False;
-    if StrLComp(p,','#13#10, 3) = 0 then
+    //if StrLComp(p,','#13#10, 3) = 0 then
+    if __checkCommaCRLF then
     begin
       // 例外をチェック
       Result := True;
@@ -830,7 +845,7 @@ var
         Inc(p);
         Exit;
       end;
-      Inc(p,3);
+      p := pNext;
       Result := True;
     end;
   end;
