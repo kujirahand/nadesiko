@@ -67,6 +67,11 @@ type
     procedure SelectAll;
     procedure SelectionReplace(findStr, replaceStr: string);
     procedure CellColor(v: Integer);
+    procedure SelectionMerge;
+    procedure SelectionAlignment(alignValue: Integer);
+    procedure SelectionVAlignment(alignValue: Integer);
+    procedure SelectionShrinkToFilt(value: Boolean);
+    procedure SelectionWrapText(value: Boolean);
     function MacroExec(s: string; arg:string): string;
     procedure Print;
     procedure PrintPreview;
@@ -187,6 +192,14 @@ type
 
 procedure MsgBox(s: string);
 function RowColToCellName(row, col: Integer): string;
+
+const
+  xlBottom = -4107;
+  xlCenter = -4108;
+  xlJustify = -4130;
+  xlLeft = -4131;
+  xlRight = -4152;
+  xlTop = -4160;
 
 implementation
 
@@ -944,6 +957,48 @@ begin
     Result := E_Application.Selection.Row;
   except
     Result := 0;
+  end;
+end;
+
+procedure TKExcel.SelectionShrinkToFilt(value: Boolean);
+begin
+  try
+    E_Application.Selection.ShrinkToFit := value;
+  except
+  end;
+end;
+
+// Check xlCenter, xlTop, xlBottom
+procedure TKExcel.SelectionVAlignment(alignValue: Integer);
+begin
+  try
+    E_Application.Selection.VerticalAlignment := alignValue;
+  except
+  end;
+end;
+
+procedure TKExcel.SelectionWrapText(value: Boolean);
+begin
+  try
+    E_Application.Selection.WrapText := value;
+  except
+  end;
+end;
+
+procedure TKExcel.SelectionMerge;
+begin
+  try
+    E_Application.Selection.Merge;
+  except
+  end;
+end;
+
+// Check xlCenter,xlLeft, xlRight
+procedure TKExcel.SelectionAlignment(alignValue: Integer);
+begin
+  try
+    E_Application.Selection.HorizontalAlignment := alignValue;
+  except
   end;
 end;
 
