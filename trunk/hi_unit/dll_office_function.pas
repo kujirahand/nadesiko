@@ -497,6 +497,47 @@ begin
   Result := nil;
 end;
 
+function excel_selection_merge(h: DWORD): PHiValue; stdcall;
+begin
+  excel.SelectionMerge;
+  Result := nil;
+end;
+
+function excel_selection_align(h: DWORD): PHiValue; stdcall;
+var
+  v: string;
+  i: Integer;
+begin
+  v := getArgStr(h, 0, False);
+  i := 0;
+  if v = '右' then i := xlRight;
+  if v = '左' then i := xlLeft;
+  if Copy(v,1,2) = '中' then i := xlCenter;
+  if i <> 0 then
+  begin
+    excel.SelectionAlignment(i);
+  end;
+  Result := nil;
+end;
+
+function excel_selection_valign(h: DWORD): PHiValue; stdcall;
+var
+  v: string;
+  i: Integer;
+begin
+  v := getArgStr(h, 0, False);
+  i := 0;
+  if v = '上' then i := xlTop;
+  if v = '下' then i := xlBottom;
+  if Copy(v,1,2) = '中' then i := xlCenter;
+  if i <> 0 then
+  begin
+    excel.SelectionAlignment(i);
+  end;
+  Result := nil;
+end;
+
+
 function excel_macro(h: DWORD): PHiValue; stdcall;
 var
   a, b: PHiValue;
@@ -1916,6 +1957,9 @@ begin
   AddFunc  ('エクセルシート先頭移動','SHEETを', 4724, excel_moveSheetTop, 'ExcelのSHEETをブックの先頭に移動する','えくせるしーとせんとういどう');
   AddFunc  ('エクセルシート保護','SHEETをPASSWORDで', 4725, excel_protect_on, 'ExcelのSHEETの保護機能をPASSWORD付きでオンにする','えくせるしーとほご');
   AddFunc  ('エクセルシート保護解除','SHEETをPASSWORDで', 4726, excel_protect_off, 'ExcelのSHEETの保護をPASSWORDで解除する','えくせるしーとほごかいじょ');
+  AddFunc  ('エクセル選択範囲マージ','', 4728, excel_selection_merge,'選択されているセルをマージする。','えくせるせんたくはんいまーじ');
+  AddFunc  ('エクセル選択範囲左右配置設定','Vに|Vへ', 4729, excel_selection_align,'選択されているセルを、左・右・中央に寄せる','えくせるせんたくはんいさゆうはいち');
+  AddFunc  ('エクセル選択範囲上下配置設定','Vに|Vへ', 4730, excel_selection_valign,'選択されているセルを、上・下・中央に寄せる','えくせるせんたくはんいじょうげはいち');
 
   //-ワード(Word)
   AddFunc  ('ワード起動','{=1}Aで', 4330, word_open,'可視A(オンかオフ)でワードを起動する','わーどきどう');
