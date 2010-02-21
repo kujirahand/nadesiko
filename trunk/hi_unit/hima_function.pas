@@ -270,7 +270,6 @@ function sys_groupCopyRef(args: THiArray): PHiValue; stdcall;
 function sys_groupCopyVal(args: THiArray): PHiValue; stdcall;
 function sys_groupAddMember(args: THiArray): PHiValue; stdcall;
 function sys_alias(args: THiArray): PHiValue; stdcall;
-function sys_namespace_change(args: THiArray): PHiValue; stdcall;
 function sys_copyData(args: THiArray): PHiValue; stdcall;
 function EasyExecPointer(args: THiArray): PHiValue; stdcall;
 
@@ -3829,25 +3828,6 @@ begin
   except on e: Exception do
    raise Exception.Create(e.Message);
   end;
-end;
-
-
-function sys_namespace_change(args: THiArray): PHiValue; stdcall;
-var
-  s: PHiValue;
-  ss: AnsiString;
-  spc: THiScope;
-begin
-  s := args.FindKey(token_s);
-  ss := hi_str(s);
-  if ss = 'システム' then
-    spc := HiSystem.Namespace.GetTopSpace
-  else
-    spc := HiSystem.Namespace.FindSpace(hi_tango2id(ss));
-  if spc = nil then raise Exception.Create('ネームスペース"'+ss+'"は存在しません。ファイル名がネームスペースです。');
-
-  HiSystem.Namespace.CurSpace := spc;
-  Result := nil;
 end;
 
 function sys_groupCopyVal(args: THiArray): PHiValue; stdcall;
