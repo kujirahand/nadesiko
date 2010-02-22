@@ -1003,7 +1003,7 @@ begin
       CanClose := False;
       Exit;
     end;
-    nako_stop;
+    if self = Bokan then nako_stop;
 
     if DebugEditorHandle > 0 then
     begin
