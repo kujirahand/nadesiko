@@ -21,3 +21,5 @@ nakolua.dll,7200-7299
 nako_pdf.dll,6500-6549
 nako_twain.dll,6550-6559
 nako_qrcode.dll,6560-6569
+---ext01
+nako_ext01.dll,6570-6599
