@@ -10,7 +10,8 @@ uses
   Lua in 'component\luautils\Lua.pas',
   LuaLib in 'component\luautils\LuaLib.pas',
   LuaUtils in 'component\luautils\LuaUtils.pas',
-  LauxLib in 'component\luautils\LauxLib.pas';
+  LauxLib in 'component\luautils\LauxLib.pas',
+  frmWebDialogU in 'pro_unit\ext01\frmWebDialogU.pas' {frmWebDialog};
 
 //------------------------------------------------------------------------------
 // Luaë§Ç…ìoò^Ç∑ÇÈä÷êî

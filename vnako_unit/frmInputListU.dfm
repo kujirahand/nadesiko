@@ -1,9 +1,9 @@
 object frmInputList: TfrmInputList
   Left = 192
   Top = 114
-  Width = 467
-  Height = 328
   Caption = #38917#30446#35352#20837
+  ClientHeight = 291
+  ClientWidth = 451
   Color = clBtnFace
   Font.Charset = SHIFTJIS_CHARSET
   Font.Color = clWindowText
@@ -20,12 +20,13 @@ object frmInputList: TfrmInputList
   TextHeight = 12
   object panelBase: TPanel
     Left = 0
-    Top = 233
-    Width = 459
+    Top = 250
+    Width = 451
     Height = 41
     Align = alBottom
     TabOrder = 0
     OnResize = panelBaseResize
+    ExplicitTop = 229
     object panelBtn: TPanel
       Left = 280
       Top = 5
@@ -56,8 +57,8 @@ object frmInputList: TfrmInputList
   object veList: TValueListEditor
     Left = 0
     Top = 0
-    Width = 459
-    Height = 233
+    Width = 451
+    Height = 250
     Align = alClient
     Font.Charset = SHIFTJIS_CHARSET
     Font.Color = clWindowText
@@ -74,9 +75,10 @@ object frmInputList: TfrmInputList
     OnKeyUp = veListKeyUp
     OnMouseDown = veListMouseDown
     OnSelectCell = veListSelectCell
+    ExplicitHeight = 229
     ColWidths = (
       150
-      303)
+      295)
   end
   object dlgOpen: TOpenDialog
     Left = 48
@@ -110,6 +112,14 @@ object frmInputList: TfrmInputList
         OnClick = mnuSaveClick
       end
       object N2: TMenuItem
+        Caption = '-'
+      end
+      object mnuCopyAsText: TMenuItem
+        Caption = #38917#30446#19968#35239#12434#12486#12461#12473#12488#12392#12375#12390#12467#12500#12540
+        ShortCut = 16466
+        OnClick = mnuCopyAsTextClick
+      end
+      object N3: TMenuItem
         Caption = '-'
       end
       object C1: TMenuItem

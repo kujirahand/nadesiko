@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Grids, ValEdit, ExtCtrls, FileCtrl, Menus;
+  Dialogs, StdCtrls, Grids, ValEdit, ExtCtrls, FileCtrl, Menus,
+  Clipbrd;
 
 type
   TfrmInputList = class(TForm)
@@ -24,6 +25,8 @@ type
     N2: TMenuItem;
     C1: TMenuItem;
     mnuReset: TMenuItem;
+    N3: TMenuItem;
+    mnuCopyAsText: TMenuItem;
     procedure panelBaseResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -46,6 +49,7 @@ type
     procedure mnuSaveClick(Sender: TObject);
     procedure C1Click(Sender: TObject);
     procedure mnuResetClick(Sender: TObject);
+    procedure mnuCopyAsTextClick(Sender: TObject);
   private
     { Private êÈåæ }
     procedure ChangeIME(ARow: Integer);
@@ -410,6 +414,12 @@ procedure TfrmInputList.veListSelectCell(Sender: TObject; ACol,
 begin
   ChangeIME(ARow) ;
   veList.Invalidate ;
+end;
+
+procedure TfrmInputList.mnuCopyAsTextClick(Sender: TObject);
+begin
+  Clipboard.AsText := getResult;
+  Beep;
 end;
 
 procedure TfrmInputList.mnuOpenClick(Sender: TObject);
