@@ -3897,7 +3897,7 @@ var
   bmp: TBitmap;
   obj: TObject;
   o  : PHiValue;
-  a{, w, h,cx, cy}: Integer;
+  a  : Integer;
 begin
   // 引数
   o   := nako_getFuncArg(handle, 0);
@@ -3907,27 +3907,40 @@ begin
   //
   if obj is TImage then
   begin
-    //TImage(obj).Picture := nil;
-    {
-    if ((0 <= a)and(a <= 90))or((270 <= a)and(a <= 360)) then
-    begin
-      bmp.Width   := Round(cos(DegToRad(a)) * w + sin(DegToRad(a)) * h);
-      bmp.Height  := Round(sin(DegToRad(a)) * w + cos(DegToRad(a)) * h);
-    end else
-    begin
-      bmp.Height  := Round(Abs(cos(DegToRad(a)))*w+Abs(sin(DegToRad(a)))*h);
-      bmp.Width   := Round(Abs(sin(DegToRad(a)))*w+Abs(cos(DegToRad(a)))*h);
-    end;
-    }
-    //TImage(obj).Canvas.Draw(0,0,bmp);
-    //ShowMessage(IntToStr(Round(sin(DegToRad(90)) * bmp.Width)));
     try
       Rotate(bmp, a);
     except
     end;
   end;
   //
-  TImage(obj).Width := bmp.Width;
+  TImage(obj).Width  := bmp.Width;
+  TImage(obj).Height := bmp.Height;
+  // 戻り
+  Result := nil;
+end;
+
+function cmd_picRotateFast(handle: DWORD): PHiValue; stdcall;
+var
+  bmp: TBitmap;
+  obj: TObject;
+  o  : PHiValue;
+  a  : Integer;
+begin
+  // 引数
+  o   := nako_getFuncArg(handle, 0);
+  bmp := getBmp(o);
+  obj := getGui(o);
+  a   := getArgInt(handle, 1);
+  //
+  if obj is TImage then
+  begin
+    try
+      RotateFast(bmp, a);
+    except
+    end;
+  end;
+  //
+  TImage(obj).Width  := bmp.Width;
   TImage(obj).Height := bmp.Height;
   // 戻り
   Result := nil;
@@ -8666,7 +8679,8 @@ begin
   AddFunc('画像セピア',           '{グループ}OBJをAで',              2141,cmd_sepia,    'イメージOBJをカラーAでセピア化する', 'がぞうせぴあ');
   AddFunc('画像右回転',           '{グループ}OBJを',                 2142,cmd_pic90r,   'イメージOBJを右回転させる', 'がぞうみぎかいてん');
   AddFunc('画像左回転',           '{グループ}OBJを',                 2143,cmd_pic90l,   'イメージOBJを左回転させる', 'がぞうひだりかいてん');
-  AddFunc('画像回転',             '{グループ}OBJをAで',              2161,cmd_picRotate, 'イメージOBJをA度回転させる', 'がぞうかいてん');
+  AddFunc('画像回転',             '{グループ}OBJをAで',              2161,cmd_picRotate,    'イメージOBJをA度回転させる。', 'がぞうかいてん');
+  AddFunc('画像高速回転',         '{グループ}OBJをAで',              2166,cmd_picRotateFast,'イメージOBJをA度回転させる。', 'がぞうかいてん');
   AddFunc('画像垂直反転',         '{グループ}OBJを',                 2144,cmd_VertRev,  'イメージOBJを垂直反転させる', 'がぞうすいちょくはんてん');
   AddFunc('画像水平反転',         '{グループ}OBJを',                 2145,cmd_HorzRev,  'イメージOBJを水平反転させる', 'がぞうすいへいはんてん');
   AddFunc('画像リサイズ',         '{グループ}OBJをW,Hで|Hへ',        2146,cmd_Resize,   'イメージOBJをW,Hのサイズへ変更する', 'がぞうりさいず');
