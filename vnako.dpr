@@ -3,6 +3,8 @@ program vnako;
 {%File 'component\hedit251\heverdef.inc'}
 {%File 'vnako.bdsproj'}
 
+{$UNDEF FMPMODE}
+
 uses
   SysUtils,
   Classes,

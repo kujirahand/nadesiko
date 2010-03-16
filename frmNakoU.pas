@@ -860,6 +860,7 @@ var
 
     with frmError do
     begin
+      Caption := hi_str(nako_getVariable('エラーダイアログタイトル'));
       edtMain.Lines.Text  := PChar(s);
       btnDebug.Visible    := True;
       btnContinue.Visible := True;
@@ -1229,6 +1230,7 @@ begin
     on e: Exception do
     begin
       // --- デバッグダイアログの起動
+      frmError.Caption := hi_str(nako_getVariable('エラーダイアログタイトル'));
       frmError.edtMain.Lines.Text := '' +
         '[' + group.name + 'の' + eventName + 'を実行中のエラー]'#13#10 +
         nako_getErrorStr;
