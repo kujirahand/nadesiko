@@ -6609,7 +6609,7 @@ var
         if Pos('JAVA', s) > 0                   then dc := dc + [CS_NoJava];
         if Pos('ActiveX', s) > 0                then dc := dc + [CS_NoActiveXRun];
         if Pos('ActiveXダウンロード', s) > 0    then dc := dc + [cs_NoActiveXDownLoad];
-        if Pos('ダイアログ', s) > 0             then dc := dc + [CS_Silent];
+        if Pos('ダイアログ', s) > 0             then begin dc := dc + [CS_Silent]; e.Silent := True; end;
         if Pos('オフラインモード', s) > 0       then dc := dc + [CS_OffLine];
         //
         e.DownLoadControl := dc;
