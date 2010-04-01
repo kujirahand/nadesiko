@@ -91,6 +91,8 @@ function ShortToLongFileName(ShortName: String):String;
 
 {Windowsのバージョンを文字列で列挙}
 function getWinVersion: string;
+function isVistaOr7: Boolean;
+function isWindowsSeven: Boolean;
 function isWindowsVista:Boolean;
 function isWindows2000:Boolean;
 function isWindowsXP:Boolean;
@@ -268,6 +270,26 @@ begin
             Result := '不明 Version = '+ IntToStr(GetVersion);
         end;
     end;
+end;
+
+function isVistaOr7: Boolean;
+var
+  osInfo: OSVERSIONINFO;
+begin
+  Result := False;
+  osInfo.dwOSVersionInfoSize:=sizeof(OSVERSIONINFO);
+  if not GetVersionEx(osInfo) then Exit;
+  Result := osInfo.dwMajorVersion >= 6;
+end;
+
+function isWindowsSeven: Boolean;
+var
+  osInfo: OSVERSIONINFO;
+begin
+  Result := False;
+  osInfo.dwOSVersionInfoSize:=sizeof(OSVERSIONINFO);
+  if not GetVersionEx(osInfo) then Exit;
+  Result := (osInfo.dwMajorVersion = 6) and (osInfo.dwMinorVersion = 1);
 end;
 
 function isWindowsVista:Boolean;
