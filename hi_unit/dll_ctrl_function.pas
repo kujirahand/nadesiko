@@ -1152,7 +1152,7 @@ begin
   AddFunc('窓ハンドル右クリック','{=?}HANDLEを|HANDLEの',4266, cmd_win_click_r,'HANDLEのウィンドウを右クリックする','まどはんどるみぎくりっく');
   AddFunc('窓ハンドル非同期クリック','{=?}HANDLEを|HANDLEの',4278, cmd_win_click_a,'HANDLEのウィンドウをクリックする(クリック終了を待機しない。PostMessageを使用)','まどはんどるひどうきくりっく');
   AddFunc('窓ハンドル値取得','{=?}HANDLEを|HANDLEの',4281, cmd_getcursel,'HANDLEのウィンドウのカーソルインデックスを得る','まどはんどるあたいしゅとく');
-  AddFunc('窓ハンドル値設定','{=?}HANDLEにVを|HANDLEへ',4282, cmd_setcursel,'HANDLEのウィンドウのカーソルインデックスを得る','まどはんどるあたいしゅとく');
+  AddFunc('窓ハンドル値設定','{=?}HANDLEにVを|HANDLEへ',4282, cmd_setcursel,'HANDLEのウィンドウのカーソルインデックスを得る','まどはんどるあたいせってい');
   AddFunc('窓ハンドルアイテム数取得','{=?}HANDLEを|HANDLEの',4283, cmd_wingetitemcount,'HANDLEのウィンドウのアイテム数を得る','まどはんどるあいてむすうしゅとく');
   AddFunc('窓ハンドルアイテム取得','{=?}HANDLEを|HANDLEの',4284, cmd_wingetitems,'HANDLEのウィンドウのアイテムを得る','まどはんどるあいてむしゅとく');
   AddFunc('窓ハンドル画面座標計算','{=?}HANDLEのX,Yを|Yで',4285, cmd_ClientToScreen,'HANDLEのウィンドウのX,Y座標を絶対座標「x,y」で得る','まどはんどるがめんざひょうけいさん');

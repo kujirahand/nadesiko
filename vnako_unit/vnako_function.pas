@@ -8648,7 +8648,7 @@ begin
   AddFunc('画像表示',   '{=?}X,{=?}YへSを',                2114,cmd_loadPic,  'ファイルSの画像を表示する。','がぞうひょうじ');
   AddFunc('画像描画',   '{グループ=?}OBJのX,YへSを',               2115,cmd_loadPic2, 'オブジェクトOBJのX,YへファイルSの画像を表示する。','がぞうびょうが');
   AddFunc('文字描画',   '{グループ=?}OBJのX,YへSを',               2116,cmd_textout,  'オブジェクトOBJのX,Yへ文字Sをアンチエイリアス描画する。','もじびょうが');
-  AddFunc('文字表示',   '{グループ=?}OBJのX,YへSを',               2117,cmd_textout2, 'オブジェクトOBJのX,Yへ文字Sを描画する。（アンチエイリアスしない）','もじしゅつりょく');
+  AddFunc('文字表示',   '{グループ=?}OBJのX,YへSを',               2117,cmd_textout2, 'オブジェクトOBJのX,Yへ文字Sを描画する。（アンチエイリアスしない）','もじひょうじ');
   AddFunc('文字遅延描画','{グループ=?}OBJのX,YへSを{数値=200}Aで', 2118,cmd_textoutDelay,  'オブジェクトOBJのX,Yへ文字Sを遅延Aミリ秒で描画する。','もじちえんびょうが');
   AddFunc('窓キャプチャ','{グループ=?}OBJへSを', 2119, cmd_capture,  'タイトルがSのウィンドウをキャプチャしてオブジェクトOBJへ描画する。Sに「デスクトップ」を指定することも可能。','まどきゃぷちゃ');
   AddFunc('文字遅延表示','{グループ=?}OBJのX,YへSを{数値=200}Aで', 2124,cmd_textoutDelayNoneAlias,  'オブジェクトOBJのX,Yへ文字Sを遅延Aミリ秒で描画する。(アンチエイリアスなし)','もじちえんひょうじ');
@@ -8680,7 +8680,7 @@ begin
   AddFunc('画像右回転',           '{グループ}OBJを',                 2142,cmd_pic90r,   'イメージOBJを右回転させる', 'がぞうみぎかいてん');
   AddFunc('画像左回転',           '{グループ}OBJを',                 2143,cmd_pic90l,   'イメージOBJを左回転させる', 'がぞうひだりかいてん');
   AddFunc('画像回転',             '{グループ}OBJをAで',              2161,cmd_picRotate,    'イメージOBJをA度回転させる。', 'がぞうかいてん');
-  AddFunc('画像高速回転',         '{グループ}OBJをAで',              2166,cmd_picRotateFast,'イメージOBJをA度回転させる。', 'がぞうかいてん');
+  AddFunc('画像高速回転',         '{グループ}OBJをAで',              2166,cmd_picRotateFast,'イメージOBJをA度回転させる。', 'がぞうこうそくかいてん');
   AddFunc('画像垂直反転',         '{グループ}OBJを',                 2144,cmd_VertRev,  'イメージOBJを垂直反転させる', 'がぞうすいちょくはんてん');
   AddFunc('画像水平反転',         '{グループ}OBJを',                 2145,cmd_HorzRev,  'イメージOBJを水平反転させる', 'がぞうすいへいはんてん');
   AddFunc('画像リサイズ',         '{グループ}OBJをW,Hで|Hへ',        2146,cmd_Resize,   'イメージOBJをW,Hのサイズへ変更する', 'がぞうりさいず');
@@ -8694,7 +8694,7 @@ begin
   AddFunc('画像ORコピー',         '{グループ}OBJ1を{グループ}OBJ2のX,Yへ',     2154,cmd_img_copyOr, 'イメージOBJ1をイメージOBJ2のX,YへORコピーする。', 'がぞうORこぴー');
   AddFunc('画像XORコピー',        '{グループ}OBJ1を{グループ}OBJ2のX,Yへ',     2155,cmd_img_copyXOR, 'イメージOBJ1をイメージOBJ2のX,YへXORコピーする。', 'がぞうXORこぴー');
   AddFunc('画像色取得',           '{グループ=?}OBJのX,Yを|Yから', 2156,cmd_img_getC, 'イメージOBJのX,Yにある色番号を取得する。', 'がぞういろしゅとく');
-  AddFunc('画像色置換',           '{グループ=?}OBJのAをBに|AからBへ',2157,cmd_img_change, 'イメージOBJの色Aを色Bに置換します。', 'がぞういろこうかん');
+  AddFunc('画像色置換',           '{グループ=?}OBJのAをBに|AからBへ',2157,cmd_img_change, 'イメージOBJの色Aを色Bに置換します。', 'がぞういろちかん');
   AddFunc('画像線画変換',         '{グループ=?}OBJを|OBJへ',2158,cmd_img_linePic, 'イメージOBJの画像を線画に変換', 'がぞうせんがへんかん');
   AddFunc('画像エッジ変換',       '{グループ=?}OBJを|OBJへ',2159,cmd_img_edge, 'イメージOBJの画像をエッジに変換', 'がぞうえっじへんかん');
   AddFunc('画像合成',             '{グループ=?}OBJ1を{グループ}OBJ2のX,Yへ|Yに',2160,cmd_img_gousei, 'イメージOBJ1をOBJ2のX,Yへ合成します。OBJ1の左上の色を透過色として扱う。', 'がぞうごうせい');
@@ -8793,7 +8793,7 @@ begin
   AddFunc('ブラウザFORM送信','{グループ}OBJのIDを', 2397, browser_submit, 'ブラウザ部品OBJで表示中のページにあるFORMタグを送信する(IDにはid属性か「name属性かタグ名\出現番号(0起点)」)を送信する','ぶらうざFORMそうしん');
   AddFunc('ブラウザHTML書換','{グループ}OBJのIDをSに|Sへ', 2396, browser_setHTML, 'ブラウザ部品OBJで表示中のIDのHTMLを書き換える(IDにはid属性か「name属性かタグ名\出現番号(0起点)」)','ぶらうざHTMLかきかえ');
   AddFunc('ブラウザHTML取得','{グループ}OBJのIDを', 2395, browser_getHTML, 'ブラウザ部品OBJで表示中のIDのHTMLを取得する(IDにはid属性か「name属性かタグ名\出現番号(0起点)」)','ぶらうざHTMLしゅとく');
-  AddFunc('ブラウザ読込待機','{グループ}OBJの', 2394, browser_waitToComplete, 'ブラウザ部品OBJで表示中のIDのHTMLを取得する','ぶらうざHTMLよみこみたいき');
+  AddFunc('ブラウザ読込待機','{グループ}OBJの', 2394, browser_waitToComplete, 'ブラウザ部品OBJで表示中のIDのHTMLを取得する','ぶらうざよみこみたいき');
   AddFunc('ブラウザ要素クリック','{グループ}OBJのIDを', 2393, browser_click, 'ブラウザ部品OBJで表示中のID要素をクリックする','ぶらうざようそくりっく');
   AddFunc('ブラウザ印刷プレビュー','{グループ}OBJで|OBJを', 2392, browser_printpreview, 'ブラウザ部品OBJで印刷プレビューを出す','ぶらうざいんさつぷれびゅー');
   AddFunc('ブラウザEXECWB','{グループ}OBJのCMDをOPTで', 2391, browser_execwb, 'ブラウザ部品OBJにコマンドを送る','ぶらうざEXECWB');
@@ -8834,12 +8834,12 @@ begin
   AddFunc('数値入力',        '{=?}Sと|Sを|Sの|Sで', 2410,cmd_dlgInputNum,  'メッセージSを表示して数値を入力してもらう。', 'すうちにゅうりょく');
   AddFunc('吹き出し表示',    'X,Yへ{=?}Sと|Sを|Sの|Sで',  2411,cmd_dlgHukidasi, 'X,YへメッセージSを吹き出しにして表示する。', 'ふきだしひょうじ');
   AddFunc('二択',            'Sで|Sを|Sの',               2412,cmd_nitaku,      'メッセージSを表示し、はいかいいえで尋ねるダイアログを表示し、結果をはい(=1)いいえ(=0)で返す。', 'にたく');
-  AddFunc('リスト絞込み選択','{=?}Sで|Sと|Sを|Sの|Sから',     2421,cmd_dlgList,  'メッセージSを表示し、はいかいいえで尋ねるダイアログを表示し、結果をはい(=1)いいえ(=0)で返す。', 'にたく');
+  AddFunc('リスト絞込み選択','{=?}Sで|Sと|Sを|Sの|Sから',     2421,cmd_dlgList,  'メッセージSを表示し、はいかいいえで尋ねるダイアログを表示し、結果をはい(=1)いいえ(=0)で返す。', 'りすとしぼりこみせんたく');
   AddFunc('日付選択',        '', 2416,cmd_dlgInputDate,  'カレンダーを表示して日付選択ダイアログを表示し日付を返す。', 'ひづけせんたく');
   //-Vistaダイアログ
   AddFunc('二択ダイアログ表示','{=?}QでSの|QとSを',  2413,cmd_nitaku_vista, 'Vista以降の標準二択ダイアログに質問Qと説明Sを表示する。', 'にたくだいあろぐひょうじ');
-  AddFunc('警告ダイアログ表示','{=?}QでSの|QとSを',  2414,cmd_warning_vista, 'Vista以降の標準二択ダイアログにタイトルQと説明Sを表示する。', 'にたくだいあろぐひょうじ');
-  AddFunc('情報ダイアログ表示','{=?}QでSの|QとSを',  2415,cmd_okdialog_vista, 'Vista以降の標準二択ダイアログにタイトルQと説明Sを表示する。', 'にたくだいあろぐひょうじ');
+  AddFunc('警告ダイアログ表示','{=?}QでSの|QとSを',  2414,cmd_warning_vista, 'Vista以降の標準二択ダイアログにタイトルQと説明Sを表示する。', 'けいこくだいあろぐひょうじ');
+  AddFunc('情報ダイアログ表示','{=?}QでSの|QとSを',  2415,cmd_okdialog_vista, 'Vista以降の標準二択ダイアログにタイトルQと説明Sを表示する。', 'じょうほうだいあろぐひょうじ');
 
   //-ダイアログオプション
   AddStrVar('ダイアログ詳細','',2420,'ダイアログに関するオプションをハッシュ形式で指定する。(文字書体/文字サイズ/文字色)','だいあろぐしょうさい');
@@ -8857,7 +8857,7 @@ begin
   //-詳細印刷
   AddFunc('プリンタ描画開始', '', 2455, cmd_printBeginDoc,  '', 'ぷりんたびょうがかいし');
   AddFunc('プリンタ描画終了', '', 2456, cmd_printEndDoc,  '', 'ぷりんたびょうがしゅうりょう');
-  AddFunc('プリンタ用紙幅',   '', 2457, cmd_printPaperWidth,  '', 'ぷりんたようしたかさ');
+  AddFunc('プリンタ用紙幅',   '', 2457, cmd_printPaperWidth,  '', 'ぷりんたようしはば');
   AddFunc('プリンタ用紙高さ', '', 2458, cmd_printPaperHeight,  '', 'ぷりんたようしたかさ');
   AddFunc('プリンタ改ページ', '', 2465, cmd_printPaperNewPage,  '', 'ぷりんたかいぺーじ');
 
