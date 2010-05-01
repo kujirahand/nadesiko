@@ -1946,7 +1946,7 @@ begin
   AddFunc  ('エクセル漢字読み候補取得','{=?}Sを|Sの', 4712, excel_yomiAll,'Excelを利用して漢字のよみがなの候補を全て取得する','えくせるかんじよみこうほしゅとく');
   AddFunc  ('エクセルセル読み取得','{=?}CELLの', 4716, excel_cell_yomi,'Excelの指定CELLにある漢字のヨミガナを取得する','えくせるせるよみしゅとく');
   AddFunc  ('エクセル選択行取得','', 4717, excel_getSelectionRow,'Excelで選択している行を得て返す','えくせるせんたくぎょうしゅとく');
-  AddFunc  ('エクセル選択列取得','', 4718, excel_getSelectionCol,'Excelで選択している列を得て返す','えくせるせんたくぎょうしゅとく');
+  AddFunc  ('エクセル選択列取得','', 4718, excel_getSelectionCol,'Excelで選択している列を得て返す','えくせるせんたくれつしゅとく');
   AddFunc  ('エクセルシート削除','{=?}SHEETを|SHEETの', 4719, excel_deleteSheet,'Excelでシート名SHEETを削除して、成功したかどうかを真偽値で返す','えくせるしーとさくじょ');
   AddFunc  ('エクセル行挿入','{=?}ROWに|ROWへ', 4720, excel_insertRow,'ExcelでROW(例えば3)番目の行に空行を挿入する','えくせるぎょうそうにゅう');
   AddFunc  ('エクセル列挿入','{=?}COLNAMEに|COLNAMEへ', 4721, excel_insertCol,'ExcelでCOLNAME(例えばF)に空列を挿入する','えくせるれつそうにゅう');
@@ -1958,12 +1958,12 @@ begin
   AddFunc  ('エクセルシート保護','SHEETをPASSWORDで', 4725, excel_protect_on, 'ExcelのSHEETの保護機能をPASSWORD付きでオンにする','えくせるしーとほご');
   AddFunc  ('エクセルシート保護解除','SHEETをPASSWORDで', 4726, excel_protect_off, 'ExcelのSHEETの保護をPASSWORDで解除する','えくせるしーとほごかいじょ');
   AddFunc  ('エクセル選択範囲マージ','', 4728, excel_selection_merge,'選択されているセルをマージする。','えくせるせんたくはんいまーじ');
-  AddFunc  ('エクセル選択範囲左右配置設定','Vに|Vへ', 4729, excel_selection_align,'選択されているセルを、左・右・中央に寄せる','えくせるせんたくはんいさゆうはいち');
-  AddFunc  ('エクセル選択範囲上下配置設定','Vに|Vへ', 4730, excel_selection_valign,'選択されているセルを、上・下・中央に寄せる','えくせるせんたくはんいじょうげはいち');
+  AddFunc  ('エクセル選択範囲左右配置設定','Vに|Vへ', 4729, excel_selection_align,'選択されているセルを、左・右・中央に寄せる','えくせるせんたくはんいさゆうはいちせってい');
+  AddFunc  ('エクセル選択範囲上下配置設定','Vに|Vへ', 4730, excel_selection_valign,'選択されているセルを、上・下・中央に寄せる','えくせるせんたくはんいじょうげはいちせってい');
 
   //-ワード(Word)
   AddFunc  ('ワード起動','{=1}Aで', 4330, word_open,'可視A(オンかオフ)でワードを起動する','わーどきどう');
-  AddFunc  ('ワード終了','', 4331, word_close,'ワードを終了する','わーどしゅうしょう');
+  AddFunc  ('ワード終了','', 4331, word_close,'ワードを終了する','わーどしゅうりょう');
   AddFunc  ('ワード保存','Fへ|Fに', 4332, word_save,'ワード文書Fを保存する','わーどほぞん');
   AddFunc  ('ワード開く','Fを|Fで|Fの', 4333, word_load,'ワード文書Fをひらく','わーどひらく');
   AddFunc  ('ワード新規文書','', 4334, word_new,'新規ワード文書を作る','わーどしんきぶんしょ');

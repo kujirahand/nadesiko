@@ -1286,7 +1286,7 @@ begin
   //AddStrVar('抽出文字列', '', 795, '『正規表現マッチ』や『ワイルドカード一致』命令後にカッコで括った部分が抽出され代入される。','ちゅうしゅつもじれつ');
   //-簡易暗号化
   AddFunc  ('簡易暗号化',    'SをKEYで',   781, sys_easy_angouka,'文字列SへKEYで暗号をかけて返す。','かんいあんごうか');
-  AddFunc  ('簡易暗号化解除','SをKEYで',   782, sys_easy_angou_kaijo,'暗号化した文字列SをKEYで暗号を解除して返す。','かんいあんごうかいじょ');
+  AddFunc  ('簡易暗号化解除','SをKEYで',   782, sys_easy_angou_kaijo,'暗号化した文字列SをKEYで暗号を解除して返す。','かんいあんごうかかいじょ');
   AddFunc  ('BLOWFISH暗号化', 'SをKEYで', 720, sys_blowfish_enc,'文字列SへKEYでBLOWSH暗号をかけて返す。','BLOWFISHあんごうか');
   AddFunc  ('BLOWFISH復号化', 'SをKEYで', 721, sys_blowfish_dec,'文字列SへKEYでBLOWSH暗号を解除して返す。','BLOWFISHふくごうか');
   AddFunc  ('CRYPT暗号化',    'SをSALTで',   788, sys_crypt,'文字列Sへ種SALTでUnix互換のCRYPT(DES)暗号をかけて返す。','CRYPTあんごうか');

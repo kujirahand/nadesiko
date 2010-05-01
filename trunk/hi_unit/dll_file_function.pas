@@ -2905,7 +2905,7 @@ begin
   //-開く保存
   AddFunc  ('保存','{文字列=?}SをFに|Fへ',             500, sys_saveAll,  '文字列Sの内容をファイル名Fへ保存する。','ほぞん');
   AddFunc  ('開く','{参照渡し 変数=?}VにFを|VへFから', 501, sys_loadAll,  '変数V(省略した場合は『それ』)にファイル名Fの内容を読み込む。','ひらく');
-  AddFunc  ('読む','{参照渡し 変数=?}VにFを|VへFから', 502, sys_loadAll,  '変数V(省略した場合は『それ』)にファイル名Fの内容を読み込む。','ひらく');
+  AddFunc  ('読む','{参照渡し 変数=?}VにFを|VへFから', 502, sys_loadAll,  '変数V(省略した場合は『それ』)にファイル名Fの内容を読み込む。','よむ');
   AddFunc  ('追加保存','{文字列=?}SをFに|Fへ',         504, sys_saveAllAdd,'文字列Sの内容をファイル名Fへ追加保存する。','ついかほぞん');
   //-一行ずつ読み書き
   AddFunc  ('毎行読む','{参照渡し 変数=?}VにFを|VへFから', 503, sys_loadEveryLine,  '一行ずつ読むためにファイル名Fを開いてハンドルを返す。反復と組み合わせて使う。','まいぎょうよむ');
@@ -2954,7 +2954,7 @@ begin
   //-ファイル情報
   AddFunc  ('ファイルサイズ','Fの',           556, sys_getFileSize,'ファイルFのサイズを返す','ふぁいるさいず');
   AddFunc  ('ファイル日付','Fの',             557, sys_getFileDate,'ファイルFの日付を返す','ふぁいるひづけ');
-  AddFunc  ('ファイル作成日時','Fの',         621, sys_getCreateFileDate,'ファイルFの作成日時を返す','ふぁいるひづけ');
+  AddFunc  ('ファイル作成日時','Fの',         621, sys_getCreateFileDate,'ファイルFの作成日時を返す','ふぁいるさくせいにちじ');
   AddFunc  ('ファイル更新日時','Fの',         622, sys_getWriteFileDate,'ファイルFの更新日時を返す','ふぁいるこうしんにちじ');
   AddFunc  ('ファイル最終アクセス日時','Fの', 623, sys_getLastAccessFileDate,'ファイルFの最終アクセス日時を返す','ふぁいるさいしゅうあくせすにちじ');
   AddFunc  ('ファイル作成日時変更','{=?}FをSに|Sへ',  624, sys_setFileDateCreate,'ファイルFの作成日時をSに設定する','ふぁいるさくせいにちじへんこう');
@@ -3009,7 +3009,7 @@ begin
   //+レジストリ/INIファイル(nakofile.dll)
   //-レジストリ
   AddFunc  ('レジストリ開く','Sの', 580, sys_registry_open,'レジストリパスSを開いてハンドルを返す','れじすとりひらく');
-  AddFunc  ('レジストリ閉じる','Hの|Hを', 581, sys_registry_close,'レジストリのハンドルHを閉じる','れじすとりひらく');
+  AddFunc  ('レジストリ閉じる','Hの|Hを', 581, sys_registry_close,'レジストリのハンドルHを閉じる','れじすとりとじる');
   AddFunc  ('レジストリ書く','HでSにAを', 582, sys_registry_write,'レジストリのハンドルHを使ってキーSに文字列Aを書く','れじすとりかく');
   AddFunc  ('レジストリ整数書く','HでSにAを', 583, sys_registry_writeInt,'レジストリのハンドルHを使ってキーSに整数Aを書く','れじすとりせいすうかく');
   AddFunc  ('レジストリキー削除','HでSを', 584, sys_registry_deleteKey,'レジストリのハンドルHを使ってキーSを削除する','れじすとりきーさくじょ');
@@ -3022,7 +3022,7 @@ begin
   AddFunc  ('レジストリ値設定','KEYのVにSを|VへSの', 657, sys_reg_easy_write,'レジストリキーKEYの値Vに文字列Sを書き込む。ハンドル操作不要版。','れじすとりあたいせってい');
   AddFunc  ('レジストリ値取得','KEYのVから|Vを', 658, sys_reg_easy_read,'レジストリキーKEYの値Vの値を読む。ハンドル操作不要版。','れじすとりあたいしゅとく');
   AddFunc  ('レジストリバイナリ読む','{=?}HのSをCNTで', 670, sys_registry_read_bin,'レジストリのハンドルHをつかって値SをCNTバイト読む。','れじすとりばいなりよむ');
-  AddFunc  ('レジストリバイナリ書く','{=?}HのSにVをCNTで', 671, sys_registry_write_bin,'レジストリのハンドルHをつかって値SにデータVをCNTバイト読む。','れじすとりばいなりよむ');
+  AddFunc  ('レジストリバイナリ書く','{=?}HのSにVをCNTで', 671, sys_registry_write_bin,'レジストリのハンドルHをつかって値SにデータVをCNTバイト読む。','れじすとりばいなりかく');
   //-INIファイル
   AddFunc  ('INI開く','Fの', 591, sys_ini_open,'INIファイルFを開いてハンドルを返す','INIひらく');
   AddFunc  ('INI閉じる','Hの|Hを', 592, sys_ini_close,'INIファイルのハンドルHを閉じる','INIとじる');
@@ -3033,9 +3033,9 @@ begin
   AddFunc  ('関連付け','SをAに|Aへ', 655, sys_kanrenduke,'拡張子SをアプリケーションAと関連付けする','かんれんづけ');
   AddFunc  ('関連付け解除','Sを|Sの', 656, sys_kanrendukekaijo,'拡張子Sの関連付けを解除する','かんれんづけかいじょ');
   //-壁紙
-  AddFunc  ('壁紙設定','{=?}Fに|Fへ', 651, sys_ChangeWallpaper,'画像ファイルFに壁紙を変更する。','かべがみへんこう');
+  AddFunc  ('壁紙設定','{=?}Fに|Fへ', 651, sys_ChangeWallpaper,'画像ファイルFに壁紙を変更する。','かべがみせってい');
   AddFunc  ('壁紙取得','', 652, sys_getWallpaper,'壁紙のファイル名を取得する。','かべがみしゅとく');
-  AddFunc  ('壁紙スタイル設定','{=?}Aに|Aへ', 653, sys_ChangeWallpaperStyle,'壁紙のスタイルA(中央|拡大|タイル)に変更する','かべがみすたいるへんこう');
+  AddFunc  ('壁紙スタイル設定','{=?}Aに|Aへ', 653, sys_ChangeWallpaperStyle,'壁紙のスタイルA(中央|拡大|タイル)に変更する','かべがみすたいるせってい');
   AddFunc  ('壁紙スタイル取得','', 654, sys_getWallpaperStyle,'壁紙のスタイルを取得する。','かべがみすたいるしゅとく');
   //-スクリーンセーバー
   AddFunc  ('スクリーンセイバー取得','', 681, sys_getScr,'スクリーンセイバーのファイル名を取得する。','すくりーんせいばーしゅとく');
@@ -3057,7 +3057,7 @@ begin
   AddFunc  ('スタートメニュー',  '',            607, sys_ProgramsDir,'スタートメニュー\プログラムのフォルダのパス返す','すたーとめにゅー');//スタートメニュー\プログラム\
   AddFunc  ('マイドキュメント',  '',            608, sys_MyDocumentDir, 'マイドキュメントのフォルダのパスを返す','まいどきゅめんと');
   AddFunc  ('FAVORITESパス',     '',            609, sys_FavoritesDir,'','FAVORITESぱす');
-  AddFunc  ('お気入りフォルダ',  '',            610, sys_FavoritesDir,'','おきにいりぱす');
+  AddFunc  ('お気入りフォルダ',  '',            610, sys_FavoritesDir,'','おきにいりふぉるだ');
   AddFunc  ('マイミュージック',  '',            612, sys_MyMusicDir,'','まいみゅーじっく');
   AddFunc  ('マイピクチャー',    '',            613, sys_MyPictureDir,'','まいぴくちゃー');
   AddFunc  ('マイピクチャ',      '',            669, sys_MyPictureDir,'','まいぴくちゃ');
