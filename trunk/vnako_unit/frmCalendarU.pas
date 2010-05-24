@@ -16,6 +16,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure grdCalClick(Sender: TObject);
     procedure edtDateKeyPress(Sender: TObject; var Key: Char);
+    procedure FormCreate(Sender: TObject);
   private
     { Private êÈåæ }
   public
@@ -53,10 +54,14 @@ begin
   end;
 end;
 
+procedure TfrmCalendar.FormCreate(Sender: TObject);
+begin
+  setInitValue('', Now);
+end;
+
 procedure TfrmCalendar.FormShow(Sender: TObject);
 begin
   ResultStr := '';
-  setInitValue('', Now);
   Res := False;
 end;
 
