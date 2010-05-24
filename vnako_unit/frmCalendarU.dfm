@@ -3,8 +3,8 @@ object frmCalendar: TfrmCalendar
   Top = 0
   BorderStyle = bsDialog
   Caption = #26085#20184#12398#36984#25246
-  ClientHeight = 204
-  ClientWidth = 321
+  ClientHeight = 266
+  ClientWidth = 329
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,18 +13,24 @@ object frmCalendar: TfrmCalendar
   Font.Style = []
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object grdCal: TMonthCalendar
-    Left = 8
-    Top = 35
-    Width = 127
-    Height = 153
+    Left = 0
+    Top = 0
+    Width = 329
+    Height = 266
+    Align = alClient
     AutoSize = True
-    Date = 0.367246689813328000
+    Date = 0.556875682872487200
     TabOrder = 0
     OnClick = grdCalClick
+    ExplicitLeft = 8
+    ExplicitTop = 35
+    ExplicitWidth = 134
+    ExplicitHeight = 153
   end
   object edtDate: TDateTimePicker
     Left = 8
