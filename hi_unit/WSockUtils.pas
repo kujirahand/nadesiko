@@ -175,7 +175,7 @@ var
   phe: PHostEnt;
   addr: u_long;
 begin
-  addr := inet_addr(PChar(ip));
+  addr := inet_addr(PAnsiChar(ip));
   phe := gethostbyaddr(@addr, SizeOf(addr), AF_INET);
   if phe = nil then phe := GetHostEnt(ip);
   if phe = nil then
@@ -195,11 +195,11 @@ var
   phe: PHostEnt;
 begin
   // サーバー名からIPアドレスを得る
-  phe := gethostbyname(PChar(server));
+  phe := gethostbyname(PAnsiChar(server));
   if phe = nil then
   begin
     // IPアドレスの指定があったか？
-    addr := inet_addr(PChar(server));
+    addr := inet_addr(PAnsiChar(server));
     phe  := gethostbyaddr(@addr, 4, AF_INET);
   end;
   Result := phe;

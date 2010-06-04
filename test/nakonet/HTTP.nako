@@ -1,0 +1,22 @@
+●テスト_nakonet_HTTPダウンロード
+　もしインターネット接続判定がオフならば戻る
+　###
+　URL=「http://nadesi.com」
+　FILE=テンポラリフォルダ＆「test.html」
+　URLをFILEへHTTPダウンロード。
+　FILEを開いてSJIS変換
+　「なでしこ」が何文字目。
+　N=（それ>0）
+　Nを表示
+　Nと1でテスト実行
+
+●テスト_nakonet_HTTPデータ取得
+　もしインターネット接続判定がオフならば戻る
+　###
+　URL=「http://nadesi.com」
+　S=URLからHTTPデータ取得してSJIS変換。
+　「なでしこ」が何文字目。
+　N=（それ>0）
+　Nを表示
+　Nと1でテスト実行
+

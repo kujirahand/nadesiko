@@ -37,6 +37,10 @@ function getTokenStr(var p: PAnsiChar; splitter: AnsiString): AnsiString;
 // 特定の区切り文字までを取得する（区切り文字は削除する）
 function getToken_s(var s: AnsiString; splitter: AnsiString): AnsiString;
 
+// 特定の区切り文字までを取得する（区切り文字は削除する）
+function getTokenChW(var p: PChar; ch: TChars): string;
+
+
 //------------------------------------------------------------------------------
 // 検索取り出し
 //------------------------------------------------------------------------------
@@ -103,16 +107,33 @@ function URLDecode(s: AnsiString):string;
 function ExpandTab(const s: AnsiString; tabCnt: Integer): AnsiString;
 
 // パスの終端に\をつける
-function CheckPathYen(s: AnsiString): string;
+function CheckPathYen(s: AnsiString): AnsiString;
 
 // ";"で区切った複数のワイルドカードのパターンにマッチさせる
-function MatchesMaskEx(Filename, Masks: string): Boolean;
+function MatchesMaskEx(Filename, Masks: AnsiString): Boolean;
+
+function TrimA(const S: AnsiString): AnsiString;
 
 implementation
 
 uses Masks;
 
-function MatchesMaskEx(Filename, Masks: string): Boolean;
+function TrimA(const S: AnsiString): AnsiString;
+var
+  I, L: Integer;
+begin
+  L := Length(S);
+  I := 1;
+  while (I <= L) and (S[I] <= ' ') do Inc(I);
+  if I > L then Result := '' else
+  begin
+    while S[L] <= ' ' do Dec(L);
+    Result := Copy(S, I, L - I + 1);
+  end;
+end;
+
+
+function MatchesMaskEx(Filename, Masks: AnsiString): Boolean;
 var
   i: Integer;
   list: THStringList;
@@ -239,7 +260,7 @@ end;
 
 
 // パスの終端に\をつける
-function CheckPathYen(s: AnsiString): string;
+function CheckPathYen(s: AnsiString): AnsiString;
 begin
   Result := IncludeTrailingPathDelimiter(string(s));
 end;
@@ -341,6 +362,21 @@ begin
       Inc(p, 2); Continue;
     end;
 
+    if p^ in ch then
+    begin
+      Inc(p);
+      Break;
+    end;
+
+    Result := Result + p^; Inc(p);
+  end;
+end;
+
+function getTokenChW(var p: PChar; ch: TChars): string;
+begin
+  Result := '';
+  while p^ <> #0 do
+  begin
     if p^ in ch then
     begin
       Inc(p);

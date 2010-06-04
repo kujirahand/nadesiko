@@ -70,7 +70,7 @@ begin
   end;
 
   // マルチキャスト　メンバーに追加
-  Mreq.imr_multiaddr.S_addr := inet_addr(PChar(FHost)) ;
+  Mreq.imr_multiaddr.S_addr := inet_addr(PAnsiChar(FHost)) ;
   Mreq.imr_interface.S_addr := INADDR_ANY ;
   CheckError(
     setsockopt(FSocketHandle, IPPROTO_IP, IP_ADD_MEMBERSHIP, @Mreq, sizeof(Mreq)),
@@ -136,7 +136,7 @@ begin
   begin
     FRemoteAddr.sin_port         := htons(FPortNo);
     FRemoteAddr.sin_family       := AF_INET;
-    FRemoteAddr.sin_addr.S_addr  := inet_addr(PChar(FHost));
+    FRemoteAddr.sin_addr.S_addr  := inet_addr(PAnsiChar(FHost));
     FillChar(FRemoteAddr.sin_zero, SizeOf(FRemoteAddr.sin_zero), 0); //隙間を埋める
   end;
   

@@ -25,16 +25,16 @@ type
     hProgress: HWND;
     WorkCount: Integer;
   public
-    target: string;
-    ResultData: string;
-    errormessage: string;
+    target: AnsiString;
+    ResultData: AnsiString;
+    errormessage: AnsiString;
     Status: TNetDialogStatus;
     procedure WorkBegin(Sender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
     procedure WorkEnd(Sender: TObject; AWorkMode: TWorkMode);
     procedure Work(Sender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
-    function ShowDialog(stext, sinfo: string; Visible: Boolean): Boolean;
-    procedure setInfo(s: string);
-    procedure setText(s: string);
+    function ShowDialog(stext, sinfo: AnsiString; Visible: Boolean): Boolean;
+    procedure setInfo(s: AnsiString);
+    procedure setText(s: AnsiString);
     procedure Cancel;
     procedure Comlete;
     procedure Error;
@@ -56,8 +56,8 @@ type
   end;
 
 function NetDialog:TNetDialog;
-function get_on_off(str: string): Boolean;
-procedure alert(msg: string);
+function get_on_off(str: AnsiString): Boolean;
+procedure alert(msg: AnsiString);
 
 procedure RegistFunction;
 
@@ -74,9 +74,9 @@ var FNetDialog: TNetDialog = nil;
 const NAKO_HTTP_OPTION = 'HTTPオプション';
 const FTP_NG_PATTERN   = 'FTPフォルダ除外パターン';
 
-procedure alert(msg: string);
+procedure alert(msg: AnsiString);
 begin
-  Windows.MessageBox(0, PChar(msg), 'Alert', MB_OK);
+  Windows.MessageBoxA(0, PAnsiChar(msg), 'Alert', MB_OK);
 end;
 
 function NetDialog:TNetDialog;
@@ -88,14 +88,14 @@ begin
   Result := FNetDialog;
 end;
 
-function nako_http_opt_get(name:string): string;
+function nako_http_opt_get(name: string): string;
 var
   p: PHiValue;
   s: TStringList;
 begin
   p := nako_getVariable(NAKO_HTTP_OPTION);
   s := TStringList.Create;
-  s.Text := hi_str(p);
+  s.Text := string(hi_str(p));
   Result := Trim(s.Values[name]);
   s.Free;
 end;
@@ -158,7 +158,7 @@ end;
 function sys_http_download(args: DWORD): PHiValue; stdcall;
 var
   a, b: PHiValue;
-  url, local: string;
+  url, local: AnsiString;
   h: TkskHttpDialog;
 
 begin
@@ -191,13 +191,13 @@ end;
 function sys_http_downloaddata(args: DWORD): PHiValue; stdcall;
 var
   a: PHiValue;
-  url, local, s: string;
+  url, local, s: AnsiString;
 
   procedure subDownload;
   begin
     // 何らかの理由で標準命令が使えなかったときに使うサブメソッド
     local := TempDir + 'temp';
-    if URLDownloadToFile(nil, PChar(url), PChar(local), 0, nil) <> s_ok then
+    if URLDownloadToFileA(nil, PAnsiChar(url), PAnsiChar(local), 0, nil) <> s_ok then
     begin
       raise Exception.Create(url+'をダウンロードできませんでした。');
     end;
@@ -249,7 +249,7 @@ end;
 function sys_http_downloadhead(args: DWORD): PHiValue; stdcall;
 var
   a: PHiValue;
-  url, s: string;
+  url, s: AnsiString;
   http: TkskHttp; // WinInet 使用
 begin
   a := nako_getFuncArg(args, 0);
@@ -270,7 +270,7 @@ end;
 function sys_http_downloadhead2(args: DWORD): PHiValue; stdcall;
 var
   a: PHiValue;
-  url, s: string;
+  url, s: AnsiString;
   http: TKHttpClient; // 独自仕様
 begin
   a := nako_getFuncArg(args, 0);
@@ -296,7 +296,7 @@ end;
 var _idftp: Tidftp = nil;
 var _idftp_logfile:TIdLogFile = nil;
 
-function get_on_off(str: string): Boolean;
+function get_on_off(str: AnsiString): Boolean;
 begin
   str := JReplace_(str, 'オン','1');
   str := JReplace_(str, 'オフ','0');
@@ -369,8 +369,8 @@ var
   fs: TFileStream;
   pfname: PString;
   ps: PString;
-  localname: string;
-  servername: string;
+  localname: AnsiString;
+  servername: AnsiString;
 begin
   pfname := Sender.arg1;
   ps     := Sender.arg2;
@@ -409,12 +409,12 @@ end;
 
 procedure proc_ftp_uploadDir(Sender: TNetThread; ftp: Tidftp);
 var
-  local, remote, pat: String;
+  local, remote, pat: AnsiString;
 
-  procedure _upload(local, remote: string);
+  procedure _upload(local, remote: AnsiString);
   var
     dirs, files: THStringList;
-    tmp: string;
+    tmp: AnsiString;
     i: Integer;
     flgSubDir: Boolean;
   begin
@@ -500,7 +500,7 @@ end;
 function sys_ftp_upload(args: DWORD): PHiValue; stdcall;
 var
   pLocal, pRemote: PHiValue;
-  fname,remote: string;
+  fname,remote: AnsiString;
   uploader: TNetThread;
   bShow: Boolean;
 begin
@@ -548,7 +548,7 @@ end;
 function sys_ftp_uploadDir(args: DWORD): PHiValue; stdcall;
 var
   pLocal, pRemote: PHiValue;
-  fname, remote: string;
+  fname, remote: AnsiString;
   uploader: TNetThread;
   bShow: Boolean;
 begin
@@ -600,7 +600,7 @@ end;
 function sys_ftp_mode(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
-  s: string;
+  s: AnsiString;
 begin
   p  := nako_getFuncArg(args, 0);
   s  := hi_str(p);
@@ -621,7 +621,7 @@ end;
 function sys_ftp_upCurDir(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
-  s: string;
+  s: AnsiString;
 begin
   p  := nako_getFuncArg(args, 0);
   s  := hi_str(p);
@@ -645,18 +645,20 @@ end;
 
 procedure proc_ftp_downloadDir(Sender: TNetThread; ftp: Tidftp);
 var
-  local, remote, pat: string;
+  local, remote, pat: AnsiString;
   isError: Boolean;
-  errors: string;
+  errors: AnsiString;
 
-  procedure _getDir(_local, _remote: string);
+  procedure _getDir(_local, _remote: AnsiString);
   var
-    tmp, tmp_d: string;
+    tmp, tmp_d: AnsiString;
     dirs, saiki: TStringList;
     i: Integer;
-    p: PChar;
+    p: PAnsiChar;
     item: TIdFTPListItem;
     f: TSearchRec;
+    d1, d2: TDateTime;
+    i1, i2: LongInt;
   begin
     if isError then Exit;
     if Sender.Terminated then Exit;
@@ -683,7 +685,7 @@ var
             if MatchesMaskEx(tmp, pat) then Continue;
             if tmp <> '' then
             begin
-              p := PChar(tmp);
+              p := PAnsiChar(tmp);
               tmp_d := sjis_copyByte(p,24);
               if tmp <> tmp_d then tmp_d := tmp_d + '..';
               NetDialog.target :=
@@ -695,7 +697,11 @@ var
             begin
               if FindFirst(_local + tmp, faAnyFile, f) = 0 then
               begin
-                if FileTimeToDateTimeEx(f.FindData.ftLastWriteTime) = item.ModifiedDate then
+                d1 := FileTimeToDateTimeEx(f.FindData.ftLastWriteTime);
+                d2 := item.ModifiedDate;
+                i1 := DelphiDateTimeToUnix(d1);
+                i2 := DelphiDateTimeToUnix(d2);
+                if Abs(i1 - i2) < 30 then // 誤差30秒は許容する
                 begin
                   if f.Size = item.Size then
                   begin
@@ -778,7 +784,7 @@ function sys_ftp_download(args: DWORD): PHiValue; stdcall;
 var
   pLocal, pRemote: PHiValue;
   dat: TMemoryStream;
-  fname, remote: string;
+  fname, remote: AnsiString;
   thread: TNetThread;
   bShow: Boolean;
 begin
@@ -826,7 +832,7 @@ end;
 function sys_ftp_downloadDir(args: DWORD): PHiValue; stdcall;
 var
   pLocal, pRemote: PHiValue;
-  fname, remote: string;
+  fname, remote: AnsiString;
   thread: TNetThread;
   bShow: Boolean;
 begin
@@ -874,7 +880,7 @@ end;
 function sys_ftp_glob(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
-  s, res, tmp: string;
+  s, res, tmp: AnsiString;
   sl: TStringList;
   i: Integer;
   item: TIdFTPListItem;
@@ -914,7 +920,7 @@ end;
 function sys_ftp_glob2(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
-  s, res: string;
+  s, res: AnsiString;
 begin
   p := nako_getFuncArg(args, 0);
   s := hi_str(p);
@@ -934,7 +940,7 @@ end;
 function sys_ftp_globDir(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
-  s, res, tmp: string;
+  s, res, tmp: AnsiString;
   sl: TStringList;
   i: Integer;
 begin
@@ -967,7 +973,7 @@ end;
 function sys_ftp_mkdir(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
-  s: string;
+  s: AnsiString;
 begin
   p := nako_getFuncArg(args, 0);
   s := hi_str(p);
@@ -981,7 +987,7 @@ end;
 function sys_ftp_rmdir(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
-  s: string;
+  s: AnsiString;
 begin
   p := nako_getFuncArg(args, 0);
   s := hi_str(p);
@@ -998,7 +1004,7 @@ end;
 function sys_ftp_changeDir(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
-  s: string;
+  s: AnsiString;
 begin
   p := nako_getFuncArg(args, 0);
   s := hi_str(p);
@@ -1024,7 +1030,7 @@ end;
 function sys_ftp_delFile(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
-  s: string;
+  s: AnsiString;
 begin
   p := nako_getFuncArg(args, 0);
   s := hi_str(p);
@@ -1081,7 +1087,7 @@ end;
 function sys_ftp_chmod(args: DWORD): PHiValue; stdcall;
 var
   ps, pa: PHiValue;
-  s, a, cmd: string;
+  s, a, cmd: AnsiString;
 begin
   ps := nako_getFuncArg(args, 0);
   pa := nako_getFuncArg(args, 1);
@@ -1110,7 +1116,7 @@ end;
 
 function sys_ftp_setLogFile(args: DWORD): PHiValue; stdcall;
 var
-  f: string;
+  f: AnsiString;
 begin
   f := getArgStr(args, 0, True);
   if _idftp_logfile = nil then
@@ -1123,7 +1129,7 @@ end;
 
 procedure getPop3Info(pop3: TKPop3Dialog);
 var
-  option: string;
+  option: AnsiString;
 begin
   pop3.Host       := hi_str(nako_getVariable('メールホスト'));
   pop3.Port       := StrToIntDef(hi_str(nako_getVariable('メールポート')), 110);
@@ -1184,10 +1190,10 @@ begin
   if pop3.Password = '' then raise Exception.Create('メールパスワードが空です。');
 end;
 
-function Popd3CheckMessageIdAsFileName(msgid: string): string;
+function Popd3CheckMessageIdAsFileName(msgid: AnsiString): AnsiString;
 var
   i: Integer;
-  function _CheckId(ch: string): String;
+  function _CheckId(ch: AnsiString): AnsiString;
   begin
     if Pos(ch, '<>/?"%\;:''`') > 0 then
     begin
@@ -1207,7 +1213,7 @@ procedure __sys_pop3_recv_indy(Sender: TNetThread; ptr: Pointer);
 var
   pop3: TIdPOP3;
   msgids, msgidsNow, raw: TStringList;
-  tmpDir, msgid, fmt: string;
+  tmpDir, msgid, fmt: AnsiString;
   i: Integer;
   bRemove: Boolean;
   iFrom: Integer;
@@ -1297,13 +1303,13 @@ begin
   end;
 end;
 
-function __sys_pop3_recv_indy10(recv_dir: string; iFrom:Integer = 0; iTo:Integer = -1): PHiValue; stdcall;
+function __sys_pop3_recv_indy10(recv_dir: AnsiString; iFrom:Integer = 0; iTo:Integer = -1): PHiValue; stdcall;
 var
-  tmpDir, fname, txtFile: string;
-  from, replyto: string;
+  tmpDir, fname, txtFile: AnsiString;
+  from, replyto: AnsiString;
   pop3: TIdPop3;
   eml, sub: TEml;
-  txt, msgid, afile, attach_dir: string;
+  txt, msgid, afile, attach_dir: AnsiString;
   msgids: TStringList;
   fs: THStringList;
   th: TNetThread;
@@ -1431,7 +1437,7 @@ end;
 
 function sys_pop3_recv_indy10(args: DWORD): PHiValue; stdcall;
 var
-  dir: string;
+  dir: AnsiString;
 begin
   dir := getArgStr(args, 0);
   Result := __sys_pop3_recv_indy10(dir);
@@ -1439,7 +1445,7 @@ end;
 
 function sys_pop3_recv_indy10split(args: DWORD): PHiValue; stdcall;
 var
-  dir: string;
+  dir: AnsiString;
   iFrom, iTo: Integer;
 begin
   iFrom := getArgInt(args, 0);
@@ -1451,7 +1457,7 @@ end;
 
 function sys_gmail_recv(args: DWORD): PHiValue; stdcall;
 var
-  account, password, dir: string;
+  account, password, dir: AnsiString;
   p_id, p_pass, p_opt, p_port, p_host: PHiValue;
 begin
   // get Args
@@ -1477,7 +1483,7 @@ end;
 function sys_gmail_recv_split(args: DWORD): PHiValue; stdcall;
 var
   iFrom, iTo: Integer;
-  account, password, dir: string;
+  account, password, dir: AnsiString;
   p_id, p_pass, p_opt, p_port, p_host: PHiValue;
 begin
   // get Args
@@ -1507,7 +1513,7 @@ end;
 
 function __yahoo_recv(args: DWORD; IsBB: Boolean): PHiValue; stdcall;
 var
-  account, password, dir: string;
+  account, password, dir: AnsiString;
   p_id, p_pass, p_opt, p_port, p_host: PHiValue;
 begin
   // get Args
@@ -1551,7 +1557,7 @@ end;
 procedure __sys_pop3_list_indy(Sender: TNetThread; ptr: Pointer);
 var
   pop3: TIdPOP3;
-  line, res: string;
+  line, res: AnsiString;
 begin
   pop3 := TIdPOP3(ptr);
   //
@@ -1683,12 +1689,12 @@ end;
 
 function sys_pop3_recv(args: DWORD): PHiValue; stdcall;
 var
-  tmpDir, dir, fname, afile, txtFile,emlFile: string;
-  from, replyto: string;
+  tmpDir, dir, fname, afile, txtFile,emlFile: AnsiString;
+  from, replyto: AnsiString;
   pop3: TKPop3Dialog;
   i, j, sid: Integer;
   eml, sub: TEml;
-  txt, msgid: string;
+  txt, msgid: AnsiString;
   msgids: TStringList;
 const
   FILE_MSGIDS = 'msgids.___';
@@ -1776,7 +1782,7 @@ begin
           Break;
         end;
         StrWriteFile(txtFile, txt);
-        CopyFile(PChar(fname), PChar(emlFile), False);
+        CopyFileA(PAnsiChar(fname), PAnsiChar(emlFile), False);
         //---
         eml.Free;
       except on e: Exception do
@@ -1837,9 +1843,9 @@ procedure _sys_ping_async(Sender: TNetThread; ptr: Pointer);
 var
   i: Integer;
   p: TICMP;
-  event, tmp: string;
+  event, tmp: AnsiString;
   bRes: Boolean;
-  function _r: string;
+  function _r: AnsiString;
   begin
     if bRes then Result := '1' else Result := '0';
   end;
@@ -1847,7 +1853,7 @@ begin
   bRes := True;
   //
   p := TICMP(ptr);
-  event := string(PChar(Sender.arg1));
+  event := string(PAnsiChar(Sender.arg1));
   //
   try
     i := p.Ping;
@@ -1861,14 +1867,14 @@ begin
   if bRes then
   begin
     tmp := event + '(' + _r + ')';
-    nako_eval(PChar(tmp));
+    nako_eval(PAnsiChar(tmp));
   end;
 end;
 
 function sys_ping_async(args: DWORD): PHiValue; stdcall;
 var
   p: TICMP;
-  event, host: string;
+  event, host: AnsiString;
   th: TNetThread;
 begin
   Result := nil;
@@ -1882,7 +1888,7 @@ begin
   th := TNetThread.Create(True);
   th.method := _sys_ping_async;
   th.arg0 := p;
-  th.arg1 := PChar(event);
+  th.arg1 := PAnsiChar(event);
   th.Resume;
 end;
 
@@ -1890,7 +1896,7 @@ var tcp_clients: Array of TNakoTcpClient;
 function sys_tcp_command(args: DWORD): PHiValue; stdcall;
 var
   tcpid: Integer;
-  cmd, value, s: string;
+  cmd, value, s: AnsiString;
   i: Integer;
   p: TNakoTcpClient;
 begin
@@ -1959,8 +1965,8 @@ var udp_clients: Array of TNakoUdp;
 function sys_udp_command(args: DWORD): PHiValue; stdcall;
 var
   udpid: Integer;
-  cmd: string;
-  value, s: string;
+  cmd: AnsiString;
+  value, s: AnsiString;
   p: TNakoUdp;
 begin
   Result := nil;
@@ -2027,8 +2033,8 @@ var tcp_servers: Array of TNakoTcpServer;
 function sys_tcp_svr_command(args: DWORD): PHiValue; stdcall;
 var
   tcpid: Integer;
-  cmd, cmd2: string;
-  value: string;
+  cmd, cmd2: AnsiString;
+  value: AnsiString;
   i: Integer;
   p: TNakoTcpServer;
 begin
@@ -2101,7 +2107,7 @@ end;
 function sys_smtp_send(args: DWORD): PHiValue; stdcall;
 var
   smtp: TKSmtpDialog;
-  addHead, option, from, rcptto, title, body, attach, html, cc, bcc: string;
+  addHead, option, from, rcptto, title, body, attach, html, cc, bcc: AnsiString;
 begin
   smtp := TKSmtpDialog.Create(nil);
   try
@@ -2140,7 +2146,7 @@ end;
 
 procedure getSmtpInfoIndy(smtp: TIdSMTP);
 var
-  option: string;
+  option: AnsiString;
   Login : TIdSASLLogin;
   Provider : TIdUserPassProvider;
   SSLHandler: TIdSSLIOHandlerSocketOpenSSL;
@@ -2207,8 +2213,8 @@ function sys_smtp_send_indy10(args: DWORD): PHiValue; stdcall;
 var
   smtp: TIdSMTP;
   msg: TIdMessage;
-  addHead, from, rcptto, title, body, attach, html, cc, bcc: string;
-  tmp: string;
+  addHead, from, rcptto, title, body, attach, html, cc, bcc: AnsiString;
+  tmp: AnsiString;
   eml: TEml;
   th: TNetThread;
 begin
@@ -2276,7 +2282,7 @@ end;
 
 function sys_gmail_send(args: DWORD): PHiValue; stdcall;
 var
-  account, password, dir: string;
+  account, password, dir: AnsiString;
   p_id, p_pass, p_opt, p_port, p_host: PHiValue;
 begin
   // get Args
@@ -2301,7 +2307,7 @@ end;
 
 function __yahoo_send(args: DWORD; IsBB:Boolean): PHiValue; stdcall;
 var
-  account, password, dir: string;
+  account, password, dir: AnsiString;
   p_id, p_pass, p_opt, p_port, p_host: PHiValue;
 begin
   // get Args
@@ -2382,7 +2388,7 @@ function sys_eml_getHeader(args: DWORD): PHiValue; stdcall;
 var
   i: Integer;
   e: TEmlHeaderRec;
-  s: string;
+  s: AnsiString;
 begin
   Result := hi_var_new;
   nako_hash_create(Result);
@@ -2390,7 +2396,7 @@ begin
   begin
     e := eml.Header.Get(i);
     s := e.Name;
-    nako_hash_set(Result, PChar(s), hi_newStr(eml.Header.GetDecodeValue(s)));
+    nako_hash_set(Result, PAnsiChar(s), hi_newStr(eml.Header.GetDecodeValue(s)));
   end;
 end;
 
@@ -2400,7 +2406,7 @@ var
   e: THttpHeadList;
   i: Integer;
   h: THttpHead;
-  k, v: string;
+  k, v: AnsiString;
 begin
   // set hash
   Result := hi_var_new;
@@ -2414,7 +2420,7 @@ begin
       h := e.Items[i];
       k := h.Key;
       v := h.Value;
-      nako_hash_set(Result, PChar(k), hi_newStr(v));
+      nako_hash_set(Result, PAnsiChar(k), hi_newStr(v));
     end;
     if e.HttpVersion <> '' then
     begin
@@ -2433,7 +2439,7 @@ end;
 function sys_http_post(args: DWORD): PHiValue; stdcall;
 var
   http: TKHttpClient;
-  url, head,body: string;
+  url, head,body: AnsiString;
 
   procedure _method_https;
   begin
@@ -2467,9 +2473,9 @@ end;
 function sys_http_post_easy(args: DWORD): PHiValue; stdcall;
 var
   http: TKHttpClient;
-  url, body, head: string;
-  key, keys: string;
-  value, fname, name, mime: string;
+  url, body, head: AnsiString;
+  key, keys: AnsiString;
+  value, fname, name, mime: AnsiString;
   hash, pv: PHiValue;
   sl: TStringList;
   i: Integer;
@@ -2480,7 +2486,7 @@ begin
   nako_hash_create(hash);
 
   SetLength(keys, 65536);
-  nako_hash_keys(hash, PChar(keys), 65535);
+  nako_hash_keys(hash, PAnsiChar(keys), 65535);
 
   sl := TStringList.Create;
   http := TKHttpClient.Create(nil);
@@ -2490,7 +2496,7 @@ begin
     for i := 0 to sl.Count - 1 do
     begin
       key := sl.Strings[i];
-      pv := nako_hash_get(hash, PChar(key));
+      pv := nako_hash_get(hash, PAnsiChar(key));
       value := hi_str(pv);
       if key = '' then Continue;
       // value is file ?
@@ -2545,7 +2551,7 @@ end;
 function sys_http_get(args: DWORD): PHiValue; stdcall;
 var
   http: TKHttpClient;
-  url, head: string;
+  url, head: AnsiString;
 begin
   head := getArgStr(args, 0, True);
   url  := getArgStr(args, 1);
@@ -2565,7 +2571,7 @@ end;
 function sys_ntp_sync(args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
-  server: string;
+  server: AnsiString;
   IdNTP:TIdSNTP;
 begin
   s := nako_getFuncArg(args, 0);
@@ -2789,17 +2795,17 @@ begin
   Status := statError;
 end;
 
-procedure TNetDialog.setInfo(s: string);
+procedure TNetDialog.setInfo(s: AnsiString);
 begin
   SetDlgWinText(hProgress, IDC_EDIT_INFO, s);
 end;
 
-procedure TNetDialog.setText(s: string);
+procedure TNetDialog.setText(s: AnsiString);
 begin
   SetDlgWinText(hProgress, IDC_EDIT_TEXT, s);
 end;
 
-function TNetDialog.ShowDialog(stext, sinfo: string; Visible: Boolean): Boolean;
+function TNetDialog.ShowDialog(stext, sinfo: AnsiString; Visible: Boolean): Boolean;
 var
   msg: TMsg;
 begin
@@ -2807,8 +2813,8 @@ begin
   Status := statWork;
 
   // ダイアログの表示
-  hProgress  := CreateDialog(
-      hInstance, PChar(IDD_DIALOG_PROGRESS), hParent, @procProgress);
+  hProgress  := CreateDialogA(
+      hInstance, PAnsiChar(IDD_DIALOG_PROGRESS), hParent, @procProgress);
 
   // ダイアログに情報を表示
   SetDlgWinText(hProgress, IDC_EDIT_TEXT, stext);
@@ -2843,9 +2849,9 @@ var zero_progress_max_count: Integer;
 
 procedure TNetDialog.Work(Sender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
 var
-  s: string;
+  s: AnsiString;
   w_max, w_per: Integer;
-  s_max: string;
+  s_max: AnsiString;
 begin
   if hProgress = 0 then Exit;
 
