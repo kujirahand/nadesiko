@@ -85,13 +85,13 @@ type
     FGt, FLt: TJsonAvlEntry;
     FBf: integer;
     FHash: Cardinal;
-    FName: PChar;
+    FName: PAnsiChar;
     FObj: Pointer;
   public
-    class function Hash(k: PChar): Cardinal; virtual;
-    constructor Create(AName: PChar; Obj: Pointer); virtual;
+    class function Hash(k: PAnsiChar): Cardinal; virtual;
+    constructor Create(AName: PAnsiChar; Obj: Pointer); virtual;
     destructor Destroy; override;
-    property Name: PChar read FName;
+    property Name: PAnsiChar read FName;
     property Obj: Pointer read FObj;
   end;
 
@@ -103,15 +103,15 @@ type
   protected
     procedure doDeleteEntry(Entry: TJsonAvlEntry); virtual;
     function CompareNodeNode(node1, node2: TJsonAvlEntry): integer; virtual;
-    function CompareKeyNode(k: PChar; h: TJsonAvlEntry): integer; virtual;
+    function CompareKeyNode(k: PAnsiChar; h: TJsonAvlEntry): integer; virtual;
     function Insert(h: TJsonAvlEntry): TJsonAvlEntry; virtual;
-    function Search(k: PChar; st: TJsonAvlSearchTypes = [stEqual]): TJsonAvlEntry; virtual;
+    function Search(k: PAnsiChar; st: TJsonAvlSearchTypes = [stEqual]): TJsonAvlEntry; virtual;
   public
     constructor Create; virtual;
     destructor Destroy; override;
     function IsEmpty: boolean;
     procedure Clear; virtual;
-    procedure Delete(k: PChar);
+    procedure Delete(k: PAnsiChar);
     property count: Integer read FCount;
   end;
 
@@ -119,8 +119,8 @@ type
   protected
     procedure doDeleteEntry(Entry: TJsonAvlEntry); override;
   public
-    function Put(k: PChar; Obj: TJsonObject): TJsonObject;
-    function Get(k: PChar): TJsonObject;
+    function Put(k: PAnsiChar; Obj: TJsonObject): TJsonObject;
+    function Get(k: PAnsiChar): TJsonObject;
   end;
 
 
@@ -132,7 +132,7 @@ type
     FPath: array[0..JSON_AVL_MAX_DEPTH - 2] of TJsonAvlEntry;
   public
     constructor Create(tree: TJsonAvlTree); virtual;
-    procedure Search(k: PChar; st: TJsonAvlSearchTypes = [stEQual]);
+    procedure Search(k: PAnsiChar; st: TJsonAvlSearchTypes = [stEQual]);
     procedure First;
     procedure Last;
     function GetIter: TJsonAvlEntry;
@@ -151,8 +151,8 @@ type
   protected
     procedure doDeleteEntry(Entry: TJsonAvlEntry); override;
   public
-    procedure RegisterMethod(Aname: PChar; Sender: TObject; Method: Pointer);
-    procedure Invoke(Obj: TJsonTableString; out Result: TJsonObject; out error: string);
+    procedure RegisterMethod(Aname: PAnsiChar; Sender: TObject; Method: Pointer);
+    procedure Invoke(Obj: TJsonTableString; out Result: TJsonObject; out error: AnsiString);
   end;
 
   TJsonRpcClass = class of TJsonRpcService;
@@ -161,9 +161,9 @@ type
   protected
     procedure doDeleteEntry(Entry: TJsonAvlEntry); override;
   public
-    procedure RegisterService(AName: PChar; obj: TJsonRpcService);
-    function Invoke(service: TJsonRpcService; Obj: TJsonObject; var error: string): TJsonObject; overload;
-    function Invoke(service: PChar; s: PChar): TJsonObject; overload;
+    procedure RegisterService(AName: PAnsiChar; obj: TJsonRpcService);
+    function Invoke(service: TJsonRpcService; Obj: TJsonObject; var error: AnsiString): TJsonObject; overload;
+    function Invoke(service: PAnsiChar; s: PAnsiChar): TJsonObject; overload;
   end;
 
   TJsonArray = class
@@ -185,8 +185,8 @@ type
   TJsonWriter = class
   protected
     // abstact methods to overide
-    function Append(buf: PChar; Size: Integer): Integer; overload; virtual; abstract;
-    function Append(buf: PChar): Integer; overload; virtual; abstract;
+    function Append(buf: PAnsiChar; Size: Integer): Integer; overload; virtual; abstract;
+    function Append(buf: PAnsiChar): Integer; overload; virtual; abstract;
     procedure Reset; virtual; abstract;
   public
     function Write(obj: TJsonObject; format: boolean; level: integer): Integer; virtual;
@@ -194,17 +194,17 @@ type
 
   TJsonWriterString = class(TJsonWriter)
   private
-    FBuf: PChar;
+    FBuf: PAnsiChar;
     FBPos: integer;
     FSize: integer;
   protected
-    function Append(buf: PChar; Size: Integer): Integer; overload; override;
-    function Append(buf: PChar): Integer; overload; override;
+    function Append(buf: PAnsiChar; Size: Integer): Integer; overload; override;
+    function Append(buf: PAnsiChar): Integer; overload; override;
     procedure Reset; override;
   public
     constructor Create; virtual;
     destructor Destroy; override;
-    property Data: PChar read FBuf;
+    property Data: PAnsiChar read FBuf;
     property Size: Integer read FSize;
     property Position: integer read FBPos;
   end;
@@ -213,8 +213,8 @@ type
   private
     FStream: TStream;
   protected
-    function Append(buf: PChar; Size: Integer): Integer; override;
-    function Append(buf: PChar): Integer; override;
+    function Append(buf: PAnsiChar; Size: Integer): Integer; override;
+    function Append(buf: PAnsiChar): Integer; override;
     procedure Reset; override;
   public
     constructor Create(AStream: TStream); reintroduce; virtual;
@@ -224,8 +224,8 @@ type
   private
     FSize: Integer;
   protected
-    function Append(buf: PChar; Size: Integer): Integer; override;
-    function Append(buf: PChar): Integer; override;
+    function Append(buf: PAnsiChar; Size: Integer): Integer; override;
+    function Append(buf: PAnsiChar): Integer; override;
     procedure Reset; override;
   public
     constructor Create; reintroduce; virtual;
@@ -237,8 +237,8 @@ type
     FSocket: longint;
     FSize: Integer;
   protected
-    function Append(buf: PChar; Size: Integer): Integer; override;
-    function Append(buf: PChar): Integer; override;
+    function Append(buf: PAnsiChar; Size: Integer): Integer; override;
+    function Append(buf: PAnsiChar): Integer; override;
     procedure Reset; override;
   public
     constructor Create(ASocket: longint); reintroduce; virtual;
@@ -300,17 +300,17 @@ type
     state, saved_state: TJsonTokenerState;
     obj: TJsonObject;
     current: TJsonObject;
-    obj_field_name: PChar;
+    obj_field_name: PAnsiChar;
   end;
 
   TJsonTokener = class
   public
-    str: PChar;
+    str: PAnsiChar;
     pb: TJsonWriterString;
     depth, is_double, st_pos, char_offset: Integer;
     err:  TJsonTokenerError;
     ucs_char: Cardinal;
-    quote_char: char;
+    quote_char: AnsiChar;
     stack: array[0..JSON_TOKENER_MAX_DEPTH-1] of TJsonTokenerSrec;
   public
     constructor Create; virtual;
@@ -347,7 +347,7 @@ type
 
   TJsonCompareResult = (cpLess, cpEqu, cpGreat, cpError);
 
-  TJsonOnValidateError = procedure(sender: Pointer; error: TJsonValidateError; const objpath: string);
+  TJsonOnValidateError = procedure(sender: Pointer; error: TJsonValidateError; const objpath: AnsiString);
 
   TJsonObject = class
   private
@@ -363,7 +363,7 @@ type
         json_type_int: (c_int: JsonInt);
         json_type_object: (c_object: TJsonTableString);
         json_type_array: (c_array: TJsonArray);
-        json_type_string: (c_string: PChar);
+        json_type_string: (c_string: PAnsiChar);
       end;
     function GetJsonType: TJsonType;
   public
@@ -373,29 +373,29 @@ type
 
     // Writers
     function SaveTo(stream: TStream; format: boolean = false): integer; overload;
-    function SaveTo(const FileName: string; format: boolean = false): integer; overload;
+    function SaveTo(const FileName: AnsiString; format: boolean = false): integer; overload;
     function SaveTo(socket: longint; format: boolean = false): integer; overload;
     function CalcSize(format: boolean = false): integer;
-    function AsJSon(format: boolean = false): PChar;
+    function AsJSon(format: boolean = false): PAnsiChar;
 
     // parser
-    class function Parse(s: PChar): TJsonObject;
-    class function ParseEx(tok: TJsonTokener; str: PChar; len: integer): TJsonObject;
+    class function Parse(s: PAnsiChar): TJsonObject;
+    class function ParseEx(tok: TJsonTokener; str: PAnsiChar; len: integer): TJsonObject;
 
     // constructors / destructor
     constructor Create(jt: TJsonType = json_type_object); overload; virtual;
     constructor Create(b: boolean); overload; virtual;
     constructor Create(i: JsonInt); overload; virtual;
     constructor Create(d: double); overload; virtual;
-    constructor Create(p: PChar); overload; virtual;
-    constructor Create(const s: string); overload; virtual;
+    constructor Create(p: PAnsiChar); overload; virtual;
+    constructor Create(const s: AnsiString); overload; virtual;
     destructor Destroy; override;
     procedure Free; reintroduce; // objects are refcounted
 
     function AsBoolean: Boolean;
     function AsInteger: JsonInt;
     function AsDouble: Double;
-    function AsString: PChar;
+    function AsString: PAnsiChar;
     function AsArray: TJsonArray;
     function AsObject: TJsonTableString;
 
@@ -403,7 +403,7 @@ type
     function Clone: TJsonObject;
 
     // validate methods
-    function Validate(const rules, defs: string; callback: TJsonOnValidateError = nil; sender: Pointer = nil): boolean; overload;
+    function Validate(const rules, defs: AnsiString; callback: TJsonOnValidateError = nil; sender: Pointer = nil): boolean; overload;
     function Validate(rules, defs: TJsonObject; callback: TJsonOnValidateError = nil; sender: Pointer = nil): boolean; overload;
 
     // compare
@@ -417,7 +417,7 @@ type
   end;
 
   TJsonObjectIter = record
-    key: PChar;
+    key: PAnsiChar;
     val: TJsonObject;
     Ite: TJsonAvlIterator;
   end;
@@ -452,7 +452,7 @@ const
   json_hex_chars_set = ['0'..'9','a'..'f'];
 
 {$ifdef MSWINDOWS}
-  function sprintf(buffer, format: PChar): longint; varargs; cdecl; external 'msvcrt.dll';
+  function sprintf(buffer, format: PAnsiChar): longint; varargs; cdecl; external 'msvcrt.dll';
 {$endif}
 
 {$IFDEF UNIX}
@@ -485,9 +485,9 @@ begin
   Result := Round((dt - 25569) * 86400000) + (GetTimeBias * 60000);
 end;
 
-function FloatToStr(d: Double): string;
+function FloatToStr(d: Double): AnsiString;
 var
-  buffer: array[0..255] of char;
+  buffer: array[0..255] of AnsiChar;
 begin
 {$IFDEF UNIX}
   sprintf(buffer, '%lf', [d]);
@@ -497,7 +497,7 @@ begin
   Result := buffer;
 end;
 
-function strdup(s: PChar): PChar;
+function strdup(s: PAnsiChar): PAnsiChar;
 var
   l: Integer;
 begin
@@ -602,7 +602,7 @@ begin
     Result := 0;
 end;
 
-constructor TJsonObject.Create(p: PChar);
+constructor TJsonObject.Create(p: PAnsiChar);
 begin
   Create(json_type_string);
   o.c_string := strdup(p);
@@ -699,7 +699,7 @@ begin
     Result := 0.0;
 end;
 
-function TJsonObject.AsString: PChar;
+function TJsonObject.AsString: PAnsiChar;
 begin
   if JsonIsValid(Self) then
   begin
@@ -732,7 +732,7 @@ begin
     Result := nil;
 end;
 
-function TJsonObject.AsJSon(format: boolean): PChar;
+function TJsonObject.AsJSon(format: boolean): PAnsiChar;
 begin
   if not JsonIsValid(Self) then
     Result := 'null' else
@@ -750,7 +750,7 @@ begin
   end;
 end;
 
-class function TJsonObject.Parse(s: PChar): TJsonObject;
+class function TJsonObject.Parse(s: PAnsiChar): TJsonObject;
 var
   tok: TJsonTokener;
   obj: TJsonObject;
@@ -763,9 +763,9 @@ begin
   Result := obj;
 end;
 
-class function TJsonObject.ParseEx(tok: TJsonTokener; str: PChar; len: integer): TJsonObject;
+class function TJsonObject.ParseEx(tok: TJsonTokener; str: PAnsiChar; len: integer): TJsonObject;
 
-  function hexdigit(x: char): byte;
+  function hexdigit(x: AnsiChar): byte;
   begin
     if x <= '9' then
       Result := byte(x) - byte('0') else
@@ -775,7 +775,7 @@ class function TJsonObject.ParseEx(tok: TJsonTokener; str: PChar; len: integer):
 
 var
   obj: TJsonObject;
-  c: char;
+  c: AnsiChar;
   utf_out: array[0..2] of byte;
 
   numi: JsonInt;
@@ -1379,10 +1379,10 @@ begin
   Release;
 end;
 
-constructor TJsonObject.Create(const s: string);
+constructor TJsonObject.Create(const s: AnsiString);
 begin
   Create(json_type_string);
-  o.c_string := strdup(PChar(s));
+  o.c_string := strdup(PAnsiChar(s));
 end;
 
 function TJsonObject.Clone: TJsonObject;
@@ -1428,7 +1428,7 @@ begin
     Result := json_type_null;
 end;
 
-function TJsonObject.SaveTo(const FileName: string; format: boolean): integer;
+function TJsonObject.SaveTo(const FileName: AnsiString; format: boolean): integer;
 var
   stream: TFileStream;
 begin
@@ -1440,12 +1440,12 @@ begin
   end;
 end;
 
-function TJsonObject.Validate(const rules, defs: string; callback: TJsonOnValidateError = nil; sender: Pointer = nil): boolean;
+function TJsonObject.Validate(const rules, defs: AnsiString; callback: TJsonOnValidateError = nil; sender: Pointer = nil): boolean;
 var
   r, d: TJsonObject;
 begin
-  r := TJsonObject.Parse(PChar(rules));
-  d := TJsonObject.Parse(PChar(defs));
+  r := TJsonObject.Parse(PAnsiChar(rules));
+  d := TJsonObject.Parse(PAnsiChar(defs));
   Result := Validate(r, d, callback, sender);
   r.Release;
   d.Release;
@@ -1459,7 +1459,7 @@ var
   datatypes: TJsonAvlTree;
   names: TJsonAvlTree;
 
-  function FindInheritedProperty(const prop: PChar; p: TJsonTableString): TJsonObject;
+  function FindInheritedProperty(const prop: PAnsiChar; p: TJsonTableString): TJsonObject;
   var
     o: TJsonObject;
     e: TJsonAvlEntry;
@@ -1522,7 +1522,7 @@ var
     end;
   end;
 
-  function FindInheritedField(const prop: PChar; p: TJsonTableString): TJsonObject;
+  function FindInheritedField(const prop: PAnsiChar; p: TJsonTableString): TJsonObject;
   var
     o: TJsonObject;
     e: TJsonAvlEntry;
@@ -1549,7 +1549,7 @@ var
       Result := nil;
   end;
 
-  function InheritedFieldExist(const obj: TJsonObject; p: TJsonTableString; const name: string = ''): boolean;
+  function InheritedFieldExist(const obj: TJsonObject; p: TJsonTableString; const name: AnsiString = ''): boolean;
   var
    o: TJsonObject;
    e: TJsonAvlEntry;
@@ -1589,7 +1589,7 @@ var
     end;
   end;
 
-  function getInheritedBool(f: PChar; p: TJsonTableString; default: boolean = false): boolean;
+  function getInheritedBool(f: PAnsiChar; p: TJsonTableString; default: boolean = false): boolean;
   var
     o: TJsonObject;
   begin
@@ -1640,7 +1640,7 @@ var
     end;
   end;
 
-  function CheckEnum(o: TJsonObject; p: TJsonTableString; name: string = ''): boolean;
+  function CheckEnum(o: TJsonObject; p: TJsonTableString; name: AnsiString = ''): boolean;
   var
     enum: TJsonObject;
     i: integer;
@@ -1667,7 +1667,7 @@ var
       callback(sender, veValueNotInEnum, name);
   end;
 
-  function CheckLength(len: integer; p: TJsonTableString; const objpath: string): boolean;
+  function CheckLength(len: integer; p: TJsonTableString; const objpath: AnsiString): boolean;
   var
     length, o: TJsonObject;
   begin
@@ -1713,7 +1713,7 @@ var
     end;
   end;
 
-  function CheckRange(obj: TJsonObject; p: TJsonTableString; const objpath: string): boolean;
+  function CheckRange(obj: TJsonObject; p: TJsonTableString; const objpath: AnsiString): boolean;
   var
     length, o: TJsonObject;
   begin
@@ -1760,12 +1760,12 @@ var
   end;
 
 
-  function process(o: TJsonObject; p: TJsonTableString; objpath: string = ''): boolean;
+  function process(o: TJsonObject; p: TJsonTableString; objpath: AnsiString = ''): boolean;
   var
     ite: TJsonAvlIterator;
     ent: TJsonAvlEntry;
     p2, o2, sequence: TJsonObject;
-    s: PChar;
+    s: PAnsiChar;
     i: integer;
     uniquelist, fieldlist: TJsonAvlTree;
   begin
@@ -2178,7 +2178,7 @@ end;
 
 { TJsonWriterString }
 
-function TJsonWriterString.Append(buf: PChar; Size: Integer): Integer;
+function TJsonWriterString.Append(buf: PAnsiChar; Size: Integer): Integer;
   function max(a, b: Integer): integer; begin if a > b then  Result := a else Result := b end;
 begin
   Result := size;
@@ -2203,7 +2203,7 @@ begin
   end;
 end;
 
-function TJsonWriterString.Append(buf: PChar): Integer;
+function TJsonWriterString.Append(buf: PAnsiChar): Integer;
 begin
   Result := Append(buf, strlen(buf));
 end;
@@ -2231,12 +2231,12 @@ end;
 
 { TJsonWriterStream }
 
-function TJsonWriterStream.Append(buf: PChar; Size: Integer): Integer;
+function TJsonWriterStream.Append(buf: PAnsiChar; Size: Integer): Integer;
 begin
   Result := FStream.Write(buf^, Size);
 end;
 
-function TJsonWriterStream.Append(buf: PChar): Integer;
+function TJsonWriterStream.Append(buf: PAnsiChar): Integer;
 begin
   Result := FStream.Write(buf^, StrLen(buf));
 end;
@@ -2254,13 +2254,13 @@ end;
 
 { TJsonWriterFake }
 
-function TJsonWriterFake.Append(buf: PChar; Size: Integer): Integer;
+function TJsonWriterFake.Append(buf: PAnsiChar; Size: Integer): Integer;
 begin
   inc(FSize, Size);
   Result := FSize;
 end;
 
-function TJsonWriterFake.Append(buf: PChar): Integer;
+function TJsonWriterFake.Append(buf: PAnsiChar): Integer;
 begin
   inc(FSize, Strlen(buf));
   Result := FSize;
@@ -2279,13 +2279,13 @@ end;
 
 { TJsonWriterSock }
 
-function TJsonWriterSock.Append(buf: PChar; Size: Integer): Integer;
+function TJsonWriterSock.Append(buf: PAnsiChar; Size: Integer): Integer;
 begin
   Result := send(FSocket, buf^, size, 0);
   inc(FSize, Result);
 end;
 
-function TJsonWriterSock.Append(buf: PChar): Integer;
+function TJsonWriterSock.Append(buf: PAnsiChar): Integer;
 begin
   Result := send(FSocket, buf^, strlen(buf), 0);
   inc(FSize, Result);
@@ -2311,7 +2311,7 @@ begin
   inherited;
 end;
 
-procedure TJsonRpcService.Invoke(Obj: TJsonTableString; out Result: TJsonObject; out error: string);
+procedure TJsonRpcService.Invoke(Obj: TJsonTableString; out Result: TJsonObject; out error: AnsiString);
 var
   Method: TJsonObject;
   Params: TJsonObject;
@@ -2319,7 +2319,7 @@ var
 begin
   Result := nil;
   // find Method
-  Method := TJsonObject(obj.Get(PChar('method')));
+  Method := TJsonObject(obj.Get(PAnsiChar('method')));
   if Method = nil then
   begin
     Error := 'Procedure not found.';
@@ -2333,7 +2333,7 @@ begin
   end;
 
   // find params
-  Params := obj.Get(PChar('params'));
+  Params := obj.Get(PAnsiChar('params'));
   if not (JsonIsValid(Params) and (Params.JsonType = json_type_array)) then
   begin
     Error := 'Params must be an array.';
@@ -2351,7 +2351,7 @@ begin
   end;
 end;
 
-procedure TJsonRpcService.RegisterMethod(Aname: PChar;
+procedure TJsonRpcService.RegisterMethod(Aname: PAnsiChar;
   Sender: TObject; Method: Pointer);
 var
   p: PJsonRpcMethod;
@@ -2370,7 +2370,7 @@ begin
   inherited;
 end;
 
-function TJsonRpcServiceList.Invoke(service: TJsonRpcService; Obj: TJsonObject; var error: string): TJsonObject;
+function TJsonRpcServiceList.Invoke(service: TJsonRpcService; Obj: TJsonObject; var error: AnsiString): TJsonObject;
 var
   Table: TJsonTableString;
 begin
@@ -2391,11 +2391,11 @@ begin
   service.Invoke(Table, Result, error);
 end;
 
-function TJsonRpcServiceList.Invoke(service: PChar; s: PChar): TJsonObject;
+function TJsonRpcServiceList.Invoke(service: PAnsiChar; s: PAnsiChar): TJsonObject;
 var
   js, ret, id: TJsonObject;
   p: TJsonAvlEntry;
-  error: string;
+  error: AnsiString;
 begin
 
   p := Search(service);
@@ -2421,7 +2421,7 @@ begin
       Put('result', ret);
       if error = '' then
         Put('error', nil) else
-        Put('error', TJsonObject.Create(PChar(Error)));
+        Put('error', TJsonObject.Create(PAnsiChar(Error)));
       id := js.AsObject.Get('id');
       if JsonIsValid(id) then id.AddRef;
       Put('id', id);
@@ -2439,7 +2439,7 @@ begin
   end;
 end;
 
-procedure TJsonRpcServiceList.RegisterService(AName: PChar; obj: TJsonRpcService);
+procedure TJsonRpcServiceList.RegisterService(AName: PAnsiChar; obj: TJsonRpcService);
 begin
   Insert(TJsonAvlEntry.Create(AName, obj));
 end;
@@ -2447,11 +2447,11 @@ end;
 { TJsonWriter }
 
 function TJsonWriter.Write(obj: TJsonObject; format: boolean; level: integer): Integer;
-  function Escape(str: PChar): Integer;
+  function Escape(str: PAnsiChar): Integer;
   var
     pos, start_offset: Integer;
-    c: char;
-    buf: array[0..5] of char;
+    c: AnsiChar;
+    buf: array[0..5] of AnsiChar;
   begin
     pos := 0; start_offset := 0;
     repeat
@@ -2478,8 +2478,8 @@ function TJsonWriter.Write(obj: TJsonObject; format: boolean; level: integer): I
           if(pos - start_offset > 0) then
             Append(str + start_offset, pos - start_offset);
           buf := '\u00';
-          buf[4] := json_hex_chars[ord(c) shr 4];
-          buf[5] := json_hex_chars[ord(c) and $f];
+          buf[4] := AnsiChar(json_hex_chars[ord(c) shr 4]);
+          buf[5] := AnsiChar(json_hex_chars[ord(c) and $f]);
           Append(buf, 6);
           inc(pos);
           start_offset := pos;
@@ -2505,7 +2505,7 @@ function TJsonWriter.Write(obj: TJsonObject; format: boolean; level: integer): I
 var
   i: Integer;
   iter: TJsonObjectIter;
-  s: string;
+  s: AnsiString;
   val: TJsonObject;
 begin
   if not JsonIsValid(obj) then
@@ -2542,12 +2542,12 @@ begin
     json_type_int:
       begin
         str(obj.o.c_int, s);
-        Result := Append(PChar(s));
+        Result := Append(PAnsiChar(s));
       end;
     json_type_double:
       begin
         s := FloatToStr(obj.o.c_double);
-        Result := Append(PChar(s));
+        Result := Append(PAnsiChar(s));
       end;
     json_type_string:
       begin
@@ -2853,7 +2853,7 @@ begin
   result := h;
 end;
 
-function TJsonAvlTree.Search(k: PChar; st: TJsonAvlSearchTypes): TJsonAvlEntry;
+function TJsonAvlTree.Search(k: PAnsiChar; st: TJsonAvlSearchTypes): TJsonAvlEntry;
 var
   cmp, target_cmp: integer;
   match_h, h: TJsonAvlEntry;
@@ -2895,7 +2895,7 @@ begin
   result := match_h;
 end;
 
-procedure TJsonAvlTree.Delete(k: PChar);
+procedure TJsonAvlTree.Delete(k: PAnsiChar);
 var
   depth, rm_depth: longint;
   branch: TJsonAvlBitArray;
@@ -3092,7 +3092,7 @@ begin
   FCount := 0;
 end;
 
-function TJsonAvlTree.CompareKeyNode(k: PChar; h: TJsonAvlEntry): integer;
+function TJsonAvlTree.CompareKeyNode(k: PAnsiChar; h: TJsonAvlEntry): integer;
 begin
   Result := StrComp(k, h.FName);
 end;
@@ -3115,7 +3115,7 @@ begin
   FTree := tree;
 end;
 
-procedure TJsonAvlIterator.Search(k: PChar; st: TJsonAvlSearchTypes);
+procedure TJsonAvlIterator.Search(k: PAnsiChar; st: TJsonAvlSearchTypes);
 var
   h: TJsonAvlEntry;
   d: longint;
@@ -3290,7 +3290,7 @@ end;
 
 { TJsonAvlEntry }
 
-constructor TJsonAvlEntry.Create(AName: PChar; Obj: Pointer);
+constructor TJsonAvlEntry.Create(AName: PAnsiChar; Obj: Pointer);
 begin
   FName := strdup(AName);
   FObj := Obj;
@@ -3303,7 +3303,7 @@ begin
   inherited;
 end;
 
-class function TJsonAvlEntry.Hash(k: PChar): Cardinal;
+class function TJsonAvlEntry.Hash(k: PAnsiChar): Cardinal;
 var
   h: Cardinal;
 begin
@@ -3325,7 +3325,7 @@ begin
   inherited;
 end;
 
-function TJsonTableString.Get(k: PChar): TJsonObject;
+function TJsonTableString.Get(k: PAnsiChar): TJsonObject;
 var
   e: TJsonAvlEntry;
 begin
@@ -3335,7 +3335,7 @@ begin
     Result := nil
 end;
 
-function TJsonTableString.Put(k: PChar; Obj: TJsonObject): TJsonObject;
+function TJsonTableString.Put(k: PAnsiChar; Obj: TJsonObject): TJsonObject;
 begin
   Result := TJsonObject(Insert(TJsonAvlEntry.Create(k, obj)).FObj);
 end;

@@ -531,12 +531,12 @@ constructor TWKakko.Create(var p: PChar);
     begin
         SelectList := TStringList.Create ;
 
-        s := getTokenCh(p, [']']);
+        s := getTokenChW(p, [']']);
         ps := PChar(s);
         while ps^ <> #0 do
         begin
             SelectList.Add(
-                getTokenCh(ps, ['|'])
+                getTokenChW(ps, ['|'])
             );
         end;
         //ï∂éöêîÇ≈É\Å[Ég

@@ -13,7 +13,7 @@ type
   TKabin = class
   public
     server: TIdTcpServer;
-    password: string;
+    password: AnsiString;
     port: Integer;
     constructor Create;
     destructor Destroy; override;
@@ -21,11 +21,11 @@ type
     procedure Close;
     procedure OnConnect(AThread:TIdContext);
     procedure OnExecute(AThread:TIdContext);
-    function getConnectionMD5: string;
+    function getConnectionMD5: AnsiString;
   end;
 
-function PHiValue2Json(p: PHiValue): string;
-function Json2PHiValue(json: string): PHiValue;
+function PHiValue2Json(p: PHiValue): AnsiString;
+function Json2PHiValue(json: AnsiString): PHiValue;
 function JsonObject2PHiValue(obj: TJsonObject): PHiValue;
 
 implementation
@@ -33,9 +33,9 @@ implementation
 uses jconvertex;
 
 
-function PHiValue2Json(p: PHiValue): string;
+function PHiValue2Json(p: PHiValue): AnsiString;
 var
-  s, key: string;
+  s, key: AnsiString;
   i: Integer;
   p2: PHiValue;
 begin
@@ -76,12 +76,12 @@ begin
   begin
     Result := '';
     SetLength(s, 1024 * 16);
-    nako_hash_keys(p, PChar(s), 1024 * 16);
+    nako_hash_keys(p, PAnsiChar(s), 1024 * 16);
     while s <> '' do
     begin
       key := getToken_s(s, #13#10);
-      SetLength(key, StrLen(PChar(key)));
-      p2  := nako_hash_get(p, PChar(key));
+      SetLength(key, StrLen(PAnsiChar(key)));
+      p2  := nako_hash_get(p, PAnsiChar(key));
       Result := Result + '"' + key + '":' + PHiValue2Json(p2) + ',';
     end;
     if Result <> '' then Result := Copy(Result, 1, Length(Result) - 1);
@@ -89,12 +89,12 @@ begin
   end;
 end;
 
-function Json2PHiValue(json: string): PHiValue;
+function Json2PHiValue(json: AnsiString): PHiValue;
 var
   obj: TJsonObject;
 begin
   try
-    obj := TJsonObject.Parse(PChar(json));
+    obj := TJsonObject.Parse(PAnsiChar(json));
     Result := JsonObject2PHiValue(obj);
   except
     Result := nil; Exit;
@@ -105,7 +105,7 @@ function JsonObject2PHiValue(obj: TJsonObject): PHiValue;
 var
   ite: TJsonObjectIter;
   i: Integer;
-  s: string;
+  s: AnsiString;
 begin
   if obj = nil then
   begin
@@ -179,9 +179,9 @@ const
     '<allow-access-from domain="*" to-ports="*" />'#13#10+
     '</cross-domain-policy>'#0;
 
-function TKabin.getConnectionMD5: string;
+function TKabin.getConnectionMD5: AnsiString;
 var
-  str: string;
+  str: AnsiString;
 begin
   str := IntToStr(server.DefaultPort) + ':' + password + ':com.nadesi.kabin';
   Result := MD5StringS( str );
@@ -189,11 +189,11 @@ end;
 
 procedure TKabin.OnConnect(AThread:TIdContext);
 var
-  cmd, line, pw, md5: string;
+  cmd, line, pw, md5: AnsiString;
   json: TJsonObject;
   obj: TJsonTableString;
 
-  procedure err(msg: string);
+  procedure err(msg: AnsiString);
   begin
     AThread.Connection.IOHandler.Write('{"status":"error","message":"'+msg+'"}'#0);
     AThread.Connection.Disconnect;
@@ -216,7 +216,7 @@ begin
   // Connect ?
   // {command:"password", password:"xxx"}
   try
-    json := TJsonObject.Parse(PChar(line));
+    json := TJsonObject.Parse(PAnsiChar(line));
     obj := json.AsObject;
     if obj = nil then begin err('No Object'); Exit; end;
     cmd := obj.Get('command').AsString;
@@ -244,20 +244,20 @@ end;
 
 procedure TKabin.OnExecute(AThread: TIdContext);
 var
-  line: string;
+  line: AnsiString;
   funcid: LongWord;
   args: PHiValue;
-  cmd, src: string;
+  cmd, src: AnsiString;
   res: PHiValue;
   json: TJsonObject;
   
-  procedure err(msg: string);
+  procedure err(msg: AnsiString);
   begin
     AThread.Connection.IOHandler.Write('{"status":false,"message":"'+msg+'"}'#0);
   end;
   procedure ok_json;
   var
-    r: string;
+    r: AnsiString;
   begin
     r := PHiValue2Json(res);
     r := sjisToUtf8(r);
@@ -273,7 +273,7 @@ begin
     if line = '' then Continue;
 
     try
-      json := TJsonObject.Parse(PChar(line));
+      json := TJsonObject.Parse(PAnsiChar(line));
       cmd := json.AsObject.Get('command').AsString;
     except
       err('Wrong Format.');
@@ -289,7 +289,7 @@ begin
         err('Wrong Format.');
         Continue;
       end;
-      res := nako_eval(PChar(src));
+      res := nako_eval(PAnsiChar(src));
       ok_json;
       Continue;
     end;

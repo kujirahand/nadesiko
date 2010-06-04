@@ -504,13 +504,13 @@ procedure TKIpFinder.Search(hostName:string);
 begin
 	Cancel;			{ Ç∑Ç≈Ç…ÉTÅ[É`íÜÇ»ÇÁé~ÇﬂÇÈ }
 	FSearching:=True;
-	FIpAddress.S_addr:=inet_addr(PChar(hostName));
+	FIpAddress.S_addr:=inet_addr(PAnsiChar(hostName));
 	if FIpAddress.S_addr<>Integer(INADDR_NONE) then begin
 		FSearching:=False;
 		if assigned(FOnFind) then FOnFind(Self,IpAddress);
 	end
 	else begin
-		FTaskHandle:=WSAAsyncGetHostByName(FWnd,WM_KOK_ASYNCCMD,PChar(hostName),@FBuffer,sizeof(FBuffer));
+		FTaskHandle:=WSAAsyncGetHostByName(FWnd,WM_KOK_ASYNCCMD,PAnsiChar(hostName),@FBuffer,sizeof(FBuffer));
 		if FTaskHandle=0 then begin
 			FSearching:=False;
 			ThrowError(WSAGetLastError);
@@ -637,7 +637,7 @@ begin
 	FCloseReserved:=False;
 	lg.l_onoff:=1;
 	lg.l_linger:=0;
-	if setsockopt(Handle,SOL_SOCKET,SO_LINGER,PChar(@lg),sizeof(lg))<>0 then begin
+	if setsockopt(Handle,SOL_SOCKET,SO_LINGER,PAnsiChar(@lg),sizeof(lg))<>0 then begin
 		ThrowError(WSAGetLastError);
 	end;
 	inherited;
@@ -655,7 +655,7 @@ begin
 	FCloseReserved:=True;
 	lg.l_onoff:=0;
 	lg.l_linger:=0;
-	if setsockopt(Handle,SOL_SOCKET,SO_LINGER,PChar(@lg),sizeof(lg))<>0 then begin
+	if setsockopt(Handle,SOL_SOCKET,SO_LINGER,PAnsiChar(@lg),sizeof(lg))<>0 then begin
 		ThrowError(WSAGetLastError);
 	end;
 	if FSendBuff.Count=0 then Close;
@@ -1252,7 +1252,7 @@ function LocalHostName:string;
 begin
 	if not CanUseWinsock then begin
 		SetLength(result,512);
-		if gethostname(PChar(result),512)<>0 then begin
+		if gethostname(PAnsiChar(result),512)<>0 then begin
 			result:='';
 		end
 		else begin

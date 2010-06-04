@@ -126,6 +126,9 @@ function ShortToLongFileName(ShortName: AnsiString):String;
 function LongToShortFileName(LongName: AnsiString):String;
 procedure RunAsAdmin(hWnd: THandle; aFile: AnsiString; aParameters: AnsiString);
 
+function DelphiDateTimeToUnix(ConvDate:TdateTime):longint;
+function UnixToDelphiDateTime(USec:longint):TDateTime;
+
 var MainWindowHandle: THandle = 0;
 
 const
@@ -134,10 +137,35 @@ const
   HOTKEYF_ALT = $04;
   HOTKEYF_EXT = $08;
 
+const
+  UnixStartDate : tdatetime = 25569.0;
+  TENTHOFSEC=100;
+  SECOND=1000;
+  MINUTE=60000;
+  HOUR=3600000;
+  DAY=86400000;
+  SECONDSPERDAY=86400;
+
 implementation
 
 uses
   unit_windows_api, unit_string;
+
+function DelphiDateTimeToUnix(ConvDate:TdateTime):longint;
+   // Converts Delphi TDateTime to Unix seconds,
+   //  ConvDate = the Date and Time that you want to convert
+   //  example:   UnixSeconds:=DelphiDateTimeToUnix(Now);
+begin
+  Result:=round((ConvDate-UnixStartDate)*SECONDSPERDAY);
+end;
+
+function UnixToDelphiDateTime(USec:longint):TDateTime;
+{Converts Unix seconds to Delphi TDateTime,
+   USec = the Unix Date Time that you want to convert
+   example:  DelphiTimeDate:=UnixToDelphiTimeDate(693596);}
+begin
+  Result:=(Usec/SECONDSPERDAY)+UnixStartDate;
+end;
 
 procedure RunAsAdmin(hWnd: THandle; aFile: AnsiString; aParameters: AnsiString);
 var

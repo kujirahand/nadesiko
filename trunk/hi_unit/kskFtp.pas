@@ -22,15 +22,15 @@ type
   private
     hFTPSession : HINTERNET;
     FStream: TStream;
-    FName: string;
+    FName: AnsiString;
     OnError: TNotifyEvent;
     OnProgress: TkskProgress;
     FMode: DWORD;
   protected
     procedure Execute; override;
   public
-    status: string;
-    constructor Create(AhFTPSession: HINTERNET; AName: string; AStream: TStream;
+    status: AnsiString;
+    constructor Create(AhFTPSession: HINTERNET; AName: AnsiString; AStream: TStream;
       AMode: DWORD ; AOnError, AOnComplate: TNotifyEvent; AOnProgress: TkskProgress);
   end;
 
@@ -38,26 +38,26 @@ type
   private
     hFTPSession : HINTERNET;
     FStream: TStream;
-    FRemoteFile: string;
+    FRemoteFile: AnsiString;
     OnError: TNotifyEvent;
     OnProgress: TkskProgress;
     FMode: DWORD;
   protected
     procedure Execute; override;
   public
-    status: string;
-    constructor Create(AhFTPSession: HINTERNET; ARemoteFile: string;
+    status: AnsiString;
+    constructor Create(AhFTPSession: HINTERNET; ARemoteFile: AnsiString;
       AStream: TStream; AMode: DWORD ;
       AOnError, AOnComplate: TNotifyEvent; AOnProgress: TkskProgress);
   end;
 
   TkskFTP = class
   private
-    FCurrentDir : string;
+    FCurrentDir : AnsiString;
     FPort : Integer;
-    FHost : String;
-    FUserID : String;
-    FPassword : String;
+    FHost : AnsiString;
+    FUserID : AnsiString;
+    FPassword : AnsiString;
     FConnected : boolean;
     hInternetSession : HINTERNET;
     hFTPSession : HINTERNET;
@@ -72,7 +72,7 @@ type
     procedure OnComplate(Sender: TObject);
   public
     useDialog: Boolean;
-    ErrorMsg: string;
+    ErrorMsg: AnsiString;
     constructor Create;
     destructor Destroy; override;
     procedure Initialize;
@@ -80,57 +80,57 @@ type
 
     function Connect : boolean;
     function Disconnect : boolean;
-    function Upload( ALocalFile, ARemoteFile : string ) : Boolean;
-    function Download( ARemoteFile, ALocalFile : string ) : boolean;
+    function Upload( ALocalFile, ARemoteFile : AnsiString ) : Boolean;
+    function Download( ARemoteFile, ALocalFile : AnsiString ) : boolean;
     function CheckConfig : Integer;
-    function CreateDir(DirName : string) : boolean;
-    function ChangeDir(DirName : string) : boolean;
-    function DeleteDir(DirName : string) : boolean;
-    function DeleteFile(FileName : string) : boolean;
-    function RanemeFile(OldName, NewName: string) : boolean;
-    function Command(s: string; UseRes: Boolean; var res: string) : boolean;
-    function Glob(path: string): string;        //ファイルを列挙するとき
-    function GlobDir(path: string): string;     //フォルダを列挙するとき
-    procedure ShowDialog(title, text, info: string); // ダイアログ
+    function CreateDir(DirName : AnsiString) : boolean;
+    function ChangeDir(DirName : AnsiString) : boolean;
+    function DeleteDir(DirName : AnsiString) : boolean;
+    function DeleteFile(FileName : AnsiString) : boolean;
+    function RanemeFile(OldName, NewName: AnsiString) : boolean;
+    function Command(s: AnsiString; UseRes: Boolean; var res: AnsiString) : boolean;
+    function Glob(path: AnsiString): AnsiString;        //ファイルを列挙するとき
+    function GlobDir(path: AnsiString): AnsiString;     //フォルダを列挙するとき
+    procedure ShowDialog(title, text, info: AnsiString); // ダイアログ
 
     property Connected : Boolean read FConnected;
-    property CurrentDir : string read FCurrentDir;
+    property CurrentDir : AnsiString read FCurrentDir;
     property Mode : Cardinal read FMode write FMode default FTP_TRANSFER_TYPE_BINARY;
 
   published
     property Port : Integer read FPort write FPort default INTERNET_DEFAULT_FTP_PORT;
-    property UserID : string read FUserID write FUserID;
-    property Host : string read FHost write FHost;
-    property Password : string read FPassword write FPassword;
+    property UserID : AnsiString read FUserID write FUserID;
+    property Host : AnsiString read FHost write FHost;
+    property Password : AnsiString read FPassword write FPassword;
   end;
 
   //----------------------------------------------------------------------------
   TkskHttp = class
   public
     procProgress: TkskProgress;
-    UserAgent: string;
-    HTTP_VERSION: string;
+    UserAgent: AnsiString;
+    HTTP_VERSION: AnsiString;
     TimeOut: Integer;
     constructor Create;
-    function Get(const URL, FileName: string): Boolean;
-    function GetAsText(const URL: string): string;
-    function GetAsMem(const URL: string; mem: TMemoryStream): Boolean;
-    function GetHeader(const URL: string): string;
-    function Post(const URL, Data, boundary, USER, PW: string; port: Integer): string;
+    function Get(const URL, FileName: AnsiString): Boolean;
+    function GetAsText(const URL: AnsiString): AnsiString;
+    function GetAsMem(const URL: AnsiString; mem: TMemoryStream): Boolean;
+    function GetHeader(const URL: AnsiString): AnsiString;
+    function Post(const URL, Data, boundary, USER, PW: AnsiString; port: Integer): AnsiString;
   end;
 
   THTTPSyncFileDownloader = class(TThread)
   private
-    FUserAgent, FURL, FHeaders: String;
+    FUserAgent, FURL, FHeaders: AnsiString;
     FOnError: TNotifyEvent;
     FOnProgress: TkskProgress;
     Stream: TStream;
-    FHttpVersion: string;
+    FHttpVersion: AnsiString;
   protected
     procedure Execute; override;
   public
-    ErrorMsg: string;
-    constructor Create(aUserAgent, aURL, aHeaders, aHttpVersion: String; aStream: TStream;
+    ErrorMsg: AnsiString;
+    constructor Create(aUserAgent, aURL, aHeaders, aHttpVersion: AnsiString; aStream: TStream;
       AOnComplete, AOnError: TNotifyEvent; AOnProgress: TkskProgress);
   end;
 
@@ -146,22 +146,22 @@ type
       var flagStop: Boolean);
   public
     Stream: TMemoryStream;
-    id: string;
-    password: string;
+    id: AnsiString;
+    password: AnsiString;
     UseBasicAuth: Boolean;
     UseDialog: Boolean;
-    UserAgent: string;
-    httpVersion: string;
+    UserAgent: AnsiString;
+    httpVersion: AnsiString;
     constructor Create;
     destructor Destroy; override;
-    function DownloadDialog(const URL: string): Boolean;
+    function DownloadDialog(const URL: AnsiString): Boolean;
   end;
 
 var MainWindowHandle: THandle = 0;
 
 function IsGlobalOffline: boolean;
 function IsInternetConnected: boolean;
-procedure splitURL(url:string; var protocol:string; var domain:string; var path:string; var port:Integer);
+procedure splitURL(url:AnsiString; var protocol:AnsiString; var domain:AnsiString; var path:AnsiString; var port:Integer);
 procedure SetTimeOut(hSession:HINTERNET; Seconds: Integer); //TimeOutの設定
 
 implementation
@@ -223,9 +223,9 @@ begin
     SizeOf(TimeOut));
 end;
 
-procedure splitURL(url:string; var protocol:string; var domain:string; var path:string; var port:Integer);
+procedure splitURL(url:AnsiString; var protocol:AnsiString; var domain:AnsiString; var path:AnsiString; var port:Integer);
 var
-  sport: string;
+  sport: AnsiString;
 begin
   protocol := getToken_s(url, '://');
   domain   := getToken_s(url, '/');
@@ -249,7 +249,7 @@ type
     hConnect: HINTERNET;
     fExpectResponse: BOOL;
     dwFlags: DWORD;
-    lpszCommand: PChar;
+    lpszCommand: PAnsiChar;
     dwContext: DWORD;
     phFtpCommand: PHINTERNET): BOOL; stdcall;
 
@@ -295,7 +295,7 @@ end;
 
 procedure TkskFTP.Initialize;
 begin
-  hInternetSession := InternetOpen({PChar(Application.Exename)}'ftp.exe',
+  hInternetSession := InternetOpen({PAnsiChar(Application.Exename)}'ftp.exe',
                               INTERNET_OPEN_TYPE_DIRECT,
                               nil, nil, 0 );
 end;
@@ -322,18 +322,18 @@ end;
 
 function TkskFTP.Connect : boolean;
 // ftp接続をする。正常終了でtrueを返す。
-var   buf : array[0..MAX_PATH-1] of char;
+var   buf : array[0..MAX_PATH-1] of AnsiChar;
       bufsize : DWORD;
 begin
   // 設定が不完全か、すでに接続されていればExit
   if( (CheckConfig <> $0000) ) then begin Result := false; Exit end;
   if( Connected ) then begin Result := True; Exit end;
   // そうでなければ接続を試みる。
-  hFTPSession := InternetConnect(hInternetSession,
-                                 PChar(Host),
+  hFTPSession := InternetConnectA(hInternetSession,
+                                 PAnsiChar(Host),
                                  Port,
-                                 PChar(UserID),
-                                 PChar(Password),
+                                 PAnsiChar(UserID),
+                                 PAnsiChar(Password),
                                  INTERNET_SERVICE_FTP,
                                  INTERNET_FLAG_PASSIVE,
                                  0
@@ -341,7 +341,7 @@ begin
   if(hFTPSession<>nil) then begin
     FConnected := true;
     Result := true;
-    FtpGetCurrentDirectory(hFTPSession,buf,bufsize);
+    FtpGetCurrentDirectoryA(hFTPSession,buf,bufsize);
     FCurrentDir := buf;
   end
   else Result := false
@@ -357,7 +357,7 @@ begin
 end;
 
 
-function TkskFTP.Upload(ALocalFile, ARemoteFile : string) : boolean;
+function TkskFTP.Upload(ALocalFile, ARemoteFile : AnsiString) : boolean;
 var
   uploader: TkskFtpWriter;
   stream: TMemoryStream;
@@ -390,16 +390,16 @@ begin
   end else
   begin
     // not useDialog
-    if(not FtpPutFile(hFTPSession,
-                    PChar(ALocalfile),
-                    PChar(ARemotefile),
+    if(not FtpPutFileA(hFTPSession,
+                    PAnsiChar(ALocalfile),
+                    PAnsiChar(ARemotefile),
                     Mode or INTERNET_FLAG_RELOAD,
                     0 )
     ) then Result := false else Result := true;
   end;
 end;
 
-function TkskFTP.Download(ARemotefile,ALocalfile : string) : boolean;
+function TkskFTP.Download(ARemotefile,ALocalfile : AnsiString) : boolean;
 var
   stream: TMemoryStream;
   downloader: TkskFtpReader;
@@ -431,9 +431,9 @@ begin
     end;
   end else
   begin
-    if( not FtpGetFile(hFTPSession,
-          PChar(ARemotefile),
-          PChar(ALocalfile),
+    if( not FtpGetFileA(hFTPSession,
+          PAnsiChar(ARemotefile),
+          PAnsiChar(ALocalfile),
           false, // 上書きエラーを出すかどうか
           FILE_ATTRIBUTE_NORMAL,
           Mode,
@@ -441,11 +441,11 @@ begin
   end;
 end;
 
-function TkskFTP.ChangeDir(DirName : string) : boolean;
+function TkskFTP.ChangeDir(DirName : AnsiString) : boolean;
 var buf : array[0..MAX_PATH] of char;
     bufsize : DWORD;
 begin
-  Result := FtpSetCurrentDirectory(hFTPSession,PChar(DirName));
+  Result := FtpSetCurrentDirectoryA(hFTPSession,PAnsiChar(DirName));
   if Result then
   begin
     bufsize := MAX_PATH;
@@ -457,7 +457,7 @@ end;
 
 { TkskHttp }
 
-function TkskHttp.Get(const URL, FileName: string): Boolean;
+function TkskHttp.Get(const URL, FileName: AnsiString): Boolean;
 var
   mem: TMemoryStream;
 begin
@@ -470,26 +470,26 @@ begin
   end;
 end;
 
-function TkskFTP.DeleteDir(DirName: string): boolean;
+function TkskFTP.DeleteDir(DirName: AnsiString): boolean;
 begin
-    Result := FtpRemoveDirectory(hFTPSession, PChar(DirName));
+    Result := FtpRemoveDirectoryA(hFTPSession, PAnsiChar(DirName));
 end;
 
-function TkskFTP.DeleteFile(FileName: string): boolean;
+function TkskFTP.DeleteFile(FileName: AnsiString): boolean;
 begin
-    Result := FtpDeleteFile(hFTPSession, PChar(FileName));
+    Result := FtpDeleteFileA(hFTPSession, PAnsiChar(FileName));
 end;
 
-function TkskFTP.Glob(path: string): string;
+function TkskFTP.Glob(path: AnsiString): AnsiString;
 var
-    fd: TWin32FindData;
+    fd: TWin32FindDataA;
     //res: Cardinal ;
     hDir: HINTERNET;
 begin
     Result := '';
-    hDir := FtpFindFirstFile(
+    hDir := FtpFindFirstFileA(
         hFTPSession,
-        PChar(path),
+        PAnsiChar(path),
         fd,
         INTERNET_FLAG_RELOAD,
         0);
@@ -510,16 +510,16 @@ begin
     end;
 end;
 
-function TkskFTP.GlobDir(path: string): string;
+function TkskFTP.GlobDir(path: AnsiString): AnsiString;
 var
-    fd: TWin32FindData;
+    fd: TWin32FindDataA;
     //res: Cardinal ;
     hDir: HINTERNET;
 begin
     Result := '';
-    hDir := FtpFindFirstFile(
+    hDir := FtpFindFirstFileA(
         hFTPSession,
-        PChar(path),
+        PAnsiChar(path),
         fd,
         INTERNET_FLAG_RELOAD,
         0);
@@ -541,11 +541,11 @@ begin
     end;
 end;
 
-function TkskFTP.CreateDir(DirName: string): boolean;
+function TkskFTP.CreateDir(DirName: AnsiString): boolean;
 var buf : array[0..MAX_PATH] of char;
     bufsize : DWORD;
 begin
-  Result := FtpCreateDirectory(hFTPSession, PChar(DirName));
+  Result := FtpCreateDirectoryA(hFTPSession, PAnsiChar(DirName));
   if Result then
   begin
     bufsize := MAX_PATH;
@@ -554,7 +554,7 @@ begin
   end;
 end;
 
-function TkskHttp.GetAsText(const URL: string): string;
+function TkskHttp.GetAsText(const URL: AnsiString): AnsiString;
 var
   mem: TMemoryStream;
 begin
@@ -573,7 +573,7 @@ begin
   end;
 end;
 
-function TkskHttp.GetAsMem(const URL: string; mem: TMemoryStream): Boolean;
+function TkskHttp.GetAsMem(const URL: AnsiString; mem: TMemoryStream): Boolean;
 var
   hHttpSession, hReqUrl: HInternet;
   Buffer: array[0..1023]of Char;
@@ -589,13 +589,13 @@ begin
   if hHttpSession = nil then Exit; // ERROR
   try
     // OpenURL
-    hReqUrl := InternetOpenURL(hHttpSession, PChar(URL), nil, 0,0,0);
+    hReqUrl := InternetOpenURLA(hHttpSession, PAnsiChar(URL), nil, 0,0,0);
     if hReqUrl = nil then Exit;
     try
       // Query Head
       nRead := Length(Buffer);
       HttpQueryInfo(hReqUrl, HTTP_QUERY_CONTENT_LENGTH, @Buffer[0], nRead, d);
-      nTotal := StrToIntDef(PChar(@Buffer[0]), 0); // ?w?b?_?(c)?c,???^(3)?????3/4
+      nTotal := StrToIntDef(PAnsiChar(@Buffer[0]), 0); // ?w?b?_?(c)?c,???^(3)?????3/4
       nCount := 0;
       // get data
       repeat
@@ -625,7 +625,7 @@ begin
   end;
 end;
 
-function TkskHttp.GetHeader(const URL: string): string;
+function TkskHttp.GetHeader(const URL: AnsiString): AnsiString;
 var
   hHttpSession, hReqUrl: HInternet;
   Buffer: array[0..4095]of Char;
@@ -639,13 +639,13 @@ begin
   if hHttpSession = nil then Exit; // ERROR
   try
     // OpenURL
-    hReqUrl := InternetOpenURL(hHttpSession, PChar(URL), nil, 0,0,0);
+    hReqUrl := InternetOpenURLA(hHttpSession, PAnsiChar(URL), nil, 0,0,0);
     if hReqUrl = nil then raise Exception.Create('URLが開けません。');
     try
       // Query Head
       nRead := Length(Buffer); d := 0;
       HttpQueryInfo(hReqUrl, HTTP_QUERY_RAW_HEADERS_CRLF, @Buffer[0], nRead, d);
-      Result := String( PChar( @Buffer[0] ) );
+      Result := AnsiString( PAnsiChar( @Buffer[0] ) );
     finally
       InternetCloseHandle(hReqUrl);
     end;
@@ -654,14 +654,14 @@ begin
   end;
 end;
 
-function TkskHttp.Post(const URL, Data, boundary, USER, PW: string; port: Integer): string;
+function TkskHttp.Post(const URL, Data, boundary, USER, PW: AnsiString; port: Integer): AnsiString;
 const
   BUFFSIZE = 500;
 
 var
   hSession, hConnect, hReq: HINTERNET;
-  server, path: string;
-  buf: string;
+  server, path: AnsiString;
+  buf: AnsiString;
   dwBytesRead: DWORD;
   pcBuffer: Array [0..BUFFSIZE-1] of Char;
 
@@ -702,19 +702,19 @@ begin
     // session
     if (USER='')and(PW='') then
     begin
-      hConnect := InternetConnect(
-        hSession, PChar(server), port, nil, nil, INTERNET_SERVICE_HTTP, 0, 0);
+      hConnect := InternetConnectA(
+        hSession, PAnsiChar(server), port, nil, nil, INTERNET_SERVICE_HTTP, 0, 0);
     end else
     begin
-      hConnect := InternetConnect(
-        hSession, PChar(server), port, PChar(USER), PChar(PW),
+      hConnect := InternetConnectA(
+        hSession, PAnsiChar(server), port, PAnsiChar(USER), PAnsiChar(PW),
         INTERNET_SERVICE_HTTP, 0, 0);
     end;
     if hConnect = nil then raise Exception.Create(URL+'を開けません。' + GetLastErrorStr);
     try
 
-      hReq := HttpOpenRequest(
-        hConnect, 'POST', PChar(path), nil, nil, nil,
+      hReq := HttpOpenRequestA(
+        hConnect, 'POST', PAnsiChar(path), nil, nil, nil,
         INTERNET_FLAG_NO_CACHE_WRITE, 0);
 
       if UseHttpSendReqEx then
@@ -752,7 +752,7 @@ end;
 { THTTPSyncFileDownloader }
 
 constructor THTTPSyncFileDownloader.Create(aUserAgent, aURL, aHeaders,
-  aHttpVersion: String; aStream: TStream; AOnComplete, AOnError: TNotifyEvent;
+  aHttpVersion: AnsiString; aStream: TStream; AOnComplete, AOnError: TNotifyEvent;
   AOnProgress: TkskProgress);
 begin
   inherited Create(False);
@@ -778,12 +778,12 @@ var
   hcon: HINTERNET;
   lpBuffer: array[0..65535] of Byte;
   dwBytesRead: DWORD;
-  szHeader: string;
+  szHeader: AnsiString;
   dwTotal, dwRead, Reserved: DWORD;
   flagStop: Boolean;
   dwFlags: DWORD;
   dwBuffLen: DWORD;
-  protocol, domain, path: string;
+  protocol, domain, path: AnsiString;
   b: BOOL;
 
   procedure closeHandleAll;
@@ -793,7 +793,7 @@ var
     if Assigned(hSession) then InternetCloseHandle(hSession);
   end;
 
-  procedure err(msg: string);
+  procedure err(msg: AnsiString);
   begin
     //
     closeHandleAll;
@@ -807,18 +807,18 @@ var
     Result := False;
     splitURL(FUrl, protocol, domain, path, port);
     // connect
-    hcon := InternetConnect(hSession, PChar(domain),
+    hcon := InternetConnectA(hSession, PAnsiChar(domain),
       port,
       '',// username
       '',// password
       INTERNET_SERVICE_HTTP, 0, 0);
     if not Assigned(hcon) then begin err('接続エラー'); Exit; end;
     // request
-    hRequest := HttpOpenRequest(
+    hRequest := HttpOpenRequestA(
       hcon,
       'GET',
-      PChar(path),
-      PChar(FHttpVersion),
+      PAnsiChar(path),
+      PAnsiChar(FHttpVersion),
       nil,
       nil,
       INTERNET_FLAG_SECURE,
@@ -845,7 +845,7 @@ var
 
     if FHeaders <> '' then
     begin
-      b := HttpAddRequestHeaders(hRequest, PChar(FHeaders), Length(FHeaders),
+      b := HttpAddRequestHeadersA(hRequest, PAnsiChar(FHeaders), Length(FHeaders),
         HTTP_ADDREQ_FLAG_REPLACE or HTTP_ADDREQ_FLAG_ADD);
       if not b then begin err('ヘッダの設定に失敗しました。'); exit; end;
     end;
@@ -868,7 +868,7 @@ begin
   inherited;
 
   flagStop := False;
-  hSession := InternetOpen(PChar(FUserAgent), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0);
+  hSession := InternetOpenA(PAnsiChar(FUserAgent), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0);
   if not Assigned(hSession) then
   begin
     err('セッションが開けません。'); Exit;
@@ -877,8 +877,8 @@ begin
   // InternetOpenUrl
   szheader := FHeaders;
   SetLength(szHeader, Length(szHeader));
-  hRequest := InternetOpenUrl(hSession, PChar(FUrl),
-                PChar(szheader), Length(szheader),
+  hRequest := InternetOpenUrlA(hSession, PAnsiChar(FUrl),
+                PAnsiChar(szheader), Length(szheader),
                 INTERNET_FLAG_RELOAD, 0);
 
   // CA(認証)エラーの場合、無視オプションをセットする
@@ -900,7 +900,7 @@ begin
   ZeroMemory(@lpBuffer, dwBytesRead);
   HttpQueryInfo(hRequest, HTTP_QUERY_CONTENT_LENGTH,
       @lpBuffer, dwBytesRead, Reserved);
-  dwTotal := StrToIntDef(string( @lpBuffer ), 0);
+  dwTotal := StrToIntDef(AnsiString( @lpBuffer ), 0);
   dwRead  := 0;
 
   dwBytesRead := Length(lpBuffer);
@@ -963,11 +963,11 @@ begin
   inherited;
 end;
 
-function TkskHttpDialog.DownloadDialog(const URL: string): Boolean;
+function TkskHttpDialog.DownloadDialog(const URL: AnsiString): Boolean;
 var
   hParent: HWND;
   msg: TMsg;
-  head: string;
+  head: AnsiString;
 begin
   //Result := False;
   hParent := getMainWindowHandle;
@@ -979,8 +979,8 @@ begin
   if UseDialog then
   begin
     // ダイアログの表示
-    hProgress  := CreateDialog(
-        hInstance, PChar(IDD_DIALOG_PROGRESS), hParent, @procProgress);
+    hProgress  := CreateDialogA(
+        hInstance, PAnsiChar(IDD_DIALOG_PROGRESS), hParent, @procProgress);
 
     // ダイアログに情報を表示
     SetDlgWinText(hProgress, IDC_EDIT_TEXT, 'ダウンロード準備中');
@@ -1050,7 +1050,7 @@ end;
 procedure TkskHttpDialog.OnProgress(var readByte, totalByte: Cardinal;
   var flagStop: Boolean);
 var
-  s: string;
+  s: AnsiString;
 begin
   // download text
   s := 'ダウンロード中 (' + IntToStr(Trunc(readByte/1024)) + '/' + IntToStr(Trunc(totalByte/1024)) + 'KB)';
@@ -1073,7 +1073,7 @@ end;
 
 { TkskFtpWriter }
 
-constructor TkskFtpWriter.Create(AhFTPSession: HINTERNET; AName: string;
+constructor TkskFtpWriter.Create(AhFTPSession: HINTERNET; AName: AnsiString;
   AStream: TStream; AMode: DWORD;
   AOnError, AOnComplate: TNotifyEvent; AOnProgress: TkskProgress);
 begin
@@ -1098,9 +1098,9 @@ var
 begin
   inherited;
 
-  hFile := FtpOpenFile(
+  hFile := FtpOpenFileA(
     hFTPSession,
-    PChar(FName),
+    PAnsiChar(FName),
     GENERIC_WRITE, FMode, 0);
 
   if hFile = nil then
@@ -1164,7 +1164,7 @@ end;
 procedure TkskFTP.OnProgress(var readByte, totalByte: Cardinal;
   var flagStop: Boolean);
 var
-  s: string;
+  s: AnsiString;
 begin
   // download text
   s := '転送中 (' + IntToStr(Trunc(readByte/1024)) + '/' + IntToStr(Trunc(totalByte/1024)) + ')';
@@ -1185,18 +1185,18 @@ begin
   end;
 end;
 
-procedure TkskFTP.ShowDialog(title, text, info: string);
+procedure TkskFTP.ShowDialog(title, text, info: AnsiString);
 var
   hParent: HWND;
   msg: TMsg;
 begin
   hParent   := getMainWindowHandle;
-  hProgress := CreateDialog(hInstance, PChar(IDD_DIALOG_PROGRESS),
+  hProgress := CreateDialogA(hInstance, PAnsiChar(IDD_DIALOG_PROGRESS),
                 hParent, @procProgress);
 
   SetDlgWinText(hProgress, IDC_EDIT_TEXT, text);
   SetDlgWinText(hProgress, IDC_EDIT_INFO, info);
-  SetWindowText(hProgress, PChar(title));
+  SetWindowText(hProgress, PAnsiChar(title));
 
   ShowWindow(hProgress, SW_SHOW);
 
@@ -1223,7 +1223,7 @@ end;
 { TkskFtpReader }
 
 constructor TkskFtpReader.Create(AhFTPSession: HINTERNET;
-  ARemoteFile: string; AStream: TStream; AMode: DWORD; AOnError,
+  ARemoteFile: AnsiString; AStream: TStream; AMode: DWORD; AOnError,
   AOnComplate: TNotifyEvent; AOnProgress: TkskProgress);
 begin
   inherited Create(False);
@@ -1250,7 +1250,7 @@ begin
 { // FtpGetFileSize で解決
   // ファイルのトータルサイズを求める
   hFile := FtpFindFirstFile(
-    hFTPSession, PChar(FRemoteFile),
+    hFTPSession, PAnsiChar(FRemoteFile),
     fd, 0, 0);
   if hFile = nil then
   begin
@@ -1262,9 +1262,9 @@ begin
 }
 
   // 読み取りファイルを開く
-  hFile := FtpOpenFile(
+  hFile := FtpOpenFileA(
     hFTPSession,
-    PChar(FRemoteFile),
+    PAnsiChar(FRemoteFile),
     GENERIC_READ, FMode or INTERNET_FLAG_RELOAD, 0);
 
   if hFile = nil then
@@ -1315,12 +1315,12 @@ begin
   end;
 end;
 
-function TkskFTP.RanemeFile(OldName, NewName: string): boolean;
+function TkskFTP.RanemeFile(OldName, NewName: AnsiString): boolean;
 begin
-  Result := FtpRenameFile(hFTPSession, PChar(OldName), PChar(NewName));
+  Result := FtpRenameFileA(hFTPSession, PAnsiChar(OldName), PAnsiChar(NewName));
 end;
 
-function TkskFTP.Command(s: string; UseRes: Boolean; var res: string): boolean;
+function TkskFTP.Command(s: AnsiString; UseRes: Boolean; var res: AnsiString): boolean;
 var
   hRes: HINTERNET;
   hLib: THandle;
@@ -1336,7 +1336,7 @@ begin
   res := ''; hRes := nil;
 
   Result := proc( hFTPSession, UseRes,
-    FTP_TRANSFER_TYPE_ASCII, PChar(s), 0, @hRes);
+    FTP_TRANSFER_TYPE_ASCII, PAnsiChar(s), 0, @hRes);
   if not Result then Exit;
   if UseRes = False then Exit;
 

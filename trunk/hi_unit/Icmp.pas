@@ -199,7 +199,7 @@ type
                              ): DWord; stdcall;
 
   // Event handler type declaration for TICMP.OnDisplay event.
-  TICMPDisplay = procedure(Sender: TObject; Msg : String) of object;
+  TICMPDisplay = procedure(Sender: TObject; Msg : AnsiString) of object;
   TICMPReply   = procedure(Sender: TObject; Error : Integer) of object;
 
   // The object wich encapsulate the ICMP.DLL
@@ -211,9 +211,9 @@ type
     IcmpSendEcho :    TIcmpSendEcho;
     hICMP :           THandle;                    // Handle for the ICMP Calls
     FReply :          TIcmpEchoReply;             // ICMP Echo reply buffer
-    FAddress :        String;                     // Address given
-    FHostName :       String;                     // Dotted IP of host (output)
-    FHostIP :         String;                     // Name of host      (Output)
+    FAddress :        AnsiString;                     // Address given
+    FHostName :       AnsiString;                     // Dotted IP of host (output)
+    FHostIP :         AnsiString;                     // Name of host      (Output)
     FIPAddress :      TIPAddr;                    // Address of host to contact
     FSize :           Integer;                    // Packet size (default to 56)
     FTimeOut :        Integer;                    // Timeout (default to 4000mS)
@@ -229,19 +229,19 @@ type
     constructor Create; virtual;
     destructor  Destroy; override;
     function    Ping : Integer;
-    procedure   SetAddress(Value : String);
-    function    GetErrorString : String;
+    procedure   SetAddress(Value : AnsiString);
+    function    GetErrorAnsiString : AnsiString;
 
-    property Address       : String         read  FAddress   write SetAddress;
+    property Address       : AnsiString         read  FAddress   write SetAddress;
     property Size          : Integer        read  FSize      write FSize;
     property Timeout       : Integer        read  FTimeout   write FTimeout;
     property Reply         : TIcmpEchoReply read  FReply;
     property TTL           : Integer        read  FTTL       write FTTL;
     Property Flags         : Integer        read  FFlags     write FFlags;
     property ErrorCode     : DWORD          read  FLastError;
-    property ErrorString   : String         read  GetErrorString;
-    property HostName      : String         read  FHostName;
-    property HostIP        : String         read  FHostIP;
+    property ErrorAnsiString   : AnsiString         read  GetErrorAnsiString;
+    property HostName      : AnsiString         read  FHostName;
+    property HostIP        : AnsiString         read  FHostIP;
     property OnDisplay     : TICMPDisplay   read  FOnDisplay write FOnDisplay;
     property OnEchoRequest : TNotifyEvent   read  FOnEchoRequest
                                             write FOnEchoRequest;
@@ -315,13 +315,13 @@ var
     Phe : PHostEnt;             // HostEntry buffer for name lookup
 begin
     // Convert host address to IP address
-    FIPAddress := inet_addr(PChar(FAddress));
+    FIPAddress := inet_addr(PAnsiChar(FAddress));
     if FIPAddress <> LongInt(INADDR_NONE) then
         // Was a numeric dotted address let it in this format
         FHostName := FAddress
     else begin
         // Not a numeric dotted address, try to resolve by name
-        Phe := GetHostByName(PChar(FAddress));
+        Phe := GetHostByName(PAnsiChar(FAddress));
         if Phe = nil then begin
             FLastError := GetLastError;
             if Assigned(FOnDisplay) then
@@ -339,7 +339,7 @@ end;
 
 
 {* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
-procedure TICMP.SetAddress(Value : String);
+procedure TICMP.SetAddress(Value : AnsiString);
 begin
     // Only change if needed (could take a long time)
     if FAddress = Value then
@@ -351,7 +351,7 @@ end;
 
 
 {* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
-function TICMP.GetErrorString : String;
+function TICMP.GetErrorAnsiString : AnsiString;
 begin
     case FLastError of
     IP_SUCCESS:               Result := 'No error';
@@ -379,7 +379,7 @@ begin
     IP_GENERAL_FAILURE:       Result := 'General failure';
     IP_PENDING:               Result := 'Pending';
     else
-        Result := 'ICMP error #' + IntToStr(FLastError);
+        Result := 'ICMP error #' + AnsiString(IntToStr(FLastError));
     end;
 end;
 
@@ -391,7 +391,7 @@ var
   pReqData, pData:   Pointer;
   pIPE:              PIcmpEchoReply;       // ICMP Echo reply buffer
   IPOpt:             TIPOptionInformation; // IP Options for packet to send
-  Msg:               String;
+  Msg:               AnsiString;
 begin
     Result     := 0;
     FLastError := 0;

@@ -909,11 +909,11 @@ end;
 
 function sys_crypt(args: DWORD): PHiValue; stdcall;
 var
-  res, salt, s: string;
+  res, salt, s: AnsiString;
 begin
   s   := getArgStr(args, 0, True);
   salt := getArgStr(args, 1);
-  res := _crypt(Pchar(s), PChar(salt));
+  res := _crypt(PAnsiChar(s), PAnsiChar(salt));
   Result := hi_newStr(res);
 end;
 

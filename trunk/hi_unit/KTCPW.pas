@@ -77,7 +77,7 @@ var
   p: PHiValue;
 begin
   s := InstanceName + '→エラーメッセージ＝『' + E.Message + '』;';
-  nako_evalEx(PChar(s), p);
+  nako_evalEx(PAnsiChar(s), p);
   nako_var_free(p);
   DoEvent('エラー時');
 end;
@@ -96,7 +96,7 @@ begin
   }
   
   s := Self.InstanceName + 'の' + EventName + ';';
-  p := nako_eval(PChar(s));
+  p := nako_eval(PAnsiChar(s));
   if p <> nil then nako_var_free(p);
 end;
 
@@ -148,7 +148,7 @@ var
 begin
   // イベントの実行
   s := Self.InstanceName + 'の' + EventName + ';';
-  nako_evalEx(PChar(s), p);
+  nako_evalEx(PAnsiChar(s), p);
   if p <> nil then nako_var_free(p);
 end;
 
@@ -230,7 +230,7 @@ begin
   Target.IpStr := ip;
 
   s := InstanceName + '→相手IP=『' + ip + '』;';
-  nako_evalEx(PChar(s), p);
+  nako_evalEx(PAnsiChar(s), p);
   nako_var_free(p);
   DoEvent('接続した時');
 end;
@@ -244,7 +244,7 @@ begin
   // 相手のIPをセット
   ip := handle2ip(Target.Handle);
   s := InstanceName + '→相手IP=『' + ip + '』;';
-  nako_evalEx(PChar(s), p);
+  nako_evalEx(PAnsiChar(s), p);
   nako_var_free(p);
   DoEvent('切断した時');
 end;
@@ -255,7 +255,7 @@ var
   p: PHiValue;
 begin
   s := InstanceName + '→エラーメッセージ＝『' + E.Message + '』;';
-  nako_evalEx(PChar(s), p);
+  nako_evalEx(PAnsiChar(s), p);
   nako_var_free(p);
   DoEvent('エラー時');
 end;
@@ -268,11 +268,11 @@ var
 begin
   // 相手のIPをセット
   s := InstanceName + '→相手IP=『' + handle2ip(Target.Handle) + '』;';
-  nako_evalEx(PChar(s), p);
+  nako_evalEx(PAnsiChar(s), p);
   nako_var_free(p);
   // 受信データをセット
   s := InstanceName + '→受信データ=『' + Target.RecvString + '』;';
-  nako_evalEx(PChar(s), p);
+  nako_evalEx(PANsiChar(s), p);
   nako_var_free(p);
   //
   DoEvent('受信した時');
@@ -285,7 +285,7 @@ var
 begin
   // 相手のIPをセット
   s := InstanceName + '→相手IP=『' + handle2ip(Target.Handle) + '』;';
-  nako_evalEx(PChar(s), p);
+  nako_evalEx(PAnsiChar(s), p);
   nako_var_free(p);
   
   DoEvent('送信完了した時');
@@ -305,7 +305,7 @@ var
   s: string;
 begin
   s := Self.InstanceName + 'の' + EventName + ';';
-  nako_evalEx(PChar(s), p);
+  nako_evalEx(PAnsiChar(s), p);
   if p <> nil then nako_var_free(p);
 end;
 

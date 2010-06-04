@@ -8,32 +8,32 @@ uses
 // 関数が正しく登録できるかチェックする
 procedure _checkTag(tag, name: DWORD);
 // 関数を登録する
-procedure AddFunc(name, argStr: string; tag: Integer; func: THimaSysFunction;
-  kaisetu, yomigana: string; IzonFiles: string = '');
+procedure AddFunc(name, argStr: AnsiString; tag: Integer; func: THimaSysFunction;
+  kaisetu, yomigana: AnsiString; IzonFiles: AnsiString = '');
 // 文字列を登録する
-procedure AddStrVar(name, value: string; tag: Integer; kaisetu,
-  yomigana: string);
+procedure AddStrVar(name, value: AnsiString; tag: Integer; kaisetu,
+  yomigana: AnsiString);
 // 整数を登録する
-procedure AddIntVar(name: string; value, tag: Integer; kaisetu,
-  yomigana: string);
+procedure AddIntVar(name: AnsiString; value, tag: Integer; kaisetu,
+  yomigana: AnsiString);
 // セッター・ゲッターをセットする
-procedure SetSetterGetter(name, setter, getter: string; tag: DWORD; desc, yomi: string);
+procedure SetSetterGetter(name, setter, getter: AnsiString; tag: DWORD; desc, yomi: AnsiString);
 
 //-----------------------------------------------------
 // ファイルの有無をチェック
-function CheckFileExists(var fname: string): Boolean;
+function CheckFileExists(var fname: AnsiString): Boolean;
 // エラー文字列を取得
-function nako_getErrorStr: string;
+function nako_getErrorStr: AnsiString;
 //-----------------------------------------------------
 // 引数を簡単に取得する
 function getArg(h: DWORD; Index: Integer; UseHokan: Boolean = False): PHiValue;
 function getArgInt(h: DWORD; Index: Integer; UseHokan: Boolean = False): Integer;
 function getArgIntDef(h: DWORD; Index: Integer; Def:Integer): Integer;
-function getArgStr(h: DWORD; Index: Integer; UseHokan: Boolean = False): string;
+function getArgStr(h: DWORD; Index: Integer; UseHokan: Boolean = False): AnsiString;
 function getArgBool(h: DWORD; Index: Integer; UseHokan: Boolean = False): Boolean;
 function getArgFloat(h: DWORD; Index: Integer; UseHokan: Boolean = False): HFloat;
 // 動詞の語尾変化を削除
-function DeleteGobi(key: string): string;
+function DeleteGobi(key: AnsiString): AnsiString;
 // 実行ファイルに埋め込まれたファイルを取りだす
 function _getEmbedFile(var f:string): Boolean;
 
@@ -42,10 +42,10 @@ implementation
 
 function _getEmbedFile(var f:string): Boolean;
 var
-  path: string;
+  path: AnsiString;
 begin
   SetLength(path, 4096);
-  if (nako_getEmbedFile(PChar(f), PChar(path), 4095)) then
+  if (nako_getEmbedFile(PAnsiChar(f), PAnsiChar(path), 4095)) then
   begin
     f := string(path);
     Result := True;
@@ -55,18 +55,18 @@ begin
   end;
 end;
 
-function nako_getErrorStr: string;
+function nako_getErrorStr: AnsiString;
 var
   len: Integer;
 begin
   len := nako_getError(nil, 0);
   SetLength(Result, len + 1);
-  nako_getError(PChar(Result), len);
-  Result := PChar(Result);
+  nako_getError(PAnsiChar(Result), len);
+  Result := PAnsiChar(Result);
 end;
 
 // 文字コードの範囲内かどうか調べる
-function CharInRange(p: PChar; fromCH, toCH: string): Boolean;
+function CharInRange(p: PAnsiChar; fromCH, toCH: AnsiString): Boolean;
 var
   code: Integer;
   fromCode, toCode: Integer;
@@ -102,11 +102,11 @@ begin
 end;
 
 // 動詞の語尾変化を削除
-function DeleteGobi(key: string): string;
-var p: PChar;
+function DeleteGobi(key: AnsiString): AnsiString;
+var p: PAnsiChar;
 begin
   //key := HimaSourceConverter(0, key);
-  p := PChar(key);
+  p := PAnsiChar(key);
 
   if CharInRange(p, 'ぁ','ん') then // ひらがなから始まれば語尾を消さない
   begin
@@ -130,13 +130,13 @@ begin
   end;
 end;
 {//old
-function DeleteGobi(key: string): string;
+function DeleteGobi(key: AnsiString): AnsiString;
 var
-  p, pS: PChar;
-  pp: PChar;
-  s: string;
+  p, pS: PAnsiChar;
+  pp: PAnsiChar;
+  s: AnsiString;
 begin
-  p := PChar(key); pS := p; pp := p;
+  p := PAnsiChar(key); pS := p; pp := p;
 
   // ひらがな以外が最後に現れた位置(+1文字の所)を記録
   while p^ <> #0 do begin
@@ -198,7 +198,7 @@ begin
     Result := hi_int(p);
   end;
 end;
-function getArgStr(h: DWORD; Index: Integer; UseHokan: Boolean = False): string;
+function getArgStr(h: DWORD; Index: Integer; UseHokan: Boolean = False): AnsiString;
 begin
   Result := hi_str(getArg(h, Index,UseHokan));
 end;
@@ -213,11 +213,11 @@ end;
 
 
 // ファイルの有無をチェック
-function CheckFileExists(var fname: string): Boolean;
+function CheckFileExists(var fname: AnsiString): Boolean;
 var
-  f: string;
+  f: AnsiString;
 
-  function chk(f: string): Boolean;
+  function chk(f: AnsiString): Boolean;
   begin
     Result := FileExists(f);
     if Result then
@@ -226,7 +226,7 @@ var
     end;
   end;
 
-  function path(f: string): string;
+  function path(f: AnsiString): AnsiString;
   begin
     if Copy(f,Length(f),1) <> '\' then
     begin
@@ -263,8 +263,8 @@ begin
   Result := False;
 end;
 
-procedure AddFunc(name, argStr: string; tag: Integer; func: THimaSysFunction;
-  kaisetu, yomigana: string; IzonFiles: string = '');
+procedure AddFunc(name, argStr: AnsiString; tag: Integer; func: THimaSysFunction;
+  kaisetu, yomigana: AnsiString; IzonFiles: AnsiString = '');
 begin
   try
     _checkTag(tag, 0);
@@ -275,27 +275,27 @@ begin
       //raise Exception.Create('『'+name+'』(tag='+IntToStr(tag)+')が重複しています。');
     end;
   end;
-  nako_addFunction2(PChar(name), PChar(argStr), func, tag, PChar(IzonFiles));
+  nako_addFunction2(PAnsiChar(name), PAnsiChar(argStr), func, tag, PAnsiChar(IzonFiles));
 end;
 
-procedure AddStrVar(name, value: string; tag: Integer; kaisetu,
-  yomigana: string);
+procedure AddStrVar(name, value: AnsiString; tag: Integer; kaisetu,
+  yomigana: AnsiString);
 begin
   _checkTag(tag, 0);
-  nako_addStrVar(PChar(name), PChar(value), tag);
+  nako_addStrVar(PAnsiChar(name), PAnsiChar(value), tag);
 end;
 
-procedure AddIntVar(name: string; value, tag: Integer; kaisetu,
-  yomigana: string);
+procedure AddIntVar(name: AnsiString; value, tag: Integer; kaisetu,
+  yomigana: AnsiString);
 begin
   _checkTag(tag, 0);
-  nako_addIntVar(PChar(name), value, tag);
+  nako_addIntVar(PAnsiChar(name), value, tag);
 end;
 
 // セッター・ゲッターをセットする
-procedure SetSetterGetter(name, setter, getter: string; tag: DWORD; desc, yomi: string);
+procedure SetSetterGetter(name, setter, getter: AnsiString; tag: DWORD; desc, yomi: AnsiString);
 begin
-  nako_addSetterGetter(PChar(name), PChar(setter), PChar(getter), tag);
+  nako_addSetterGetter(PAnsiChar(name), PAnsiChar(setter), PAnsiChar(getter), tag);
 end;
 
 // 関数が正しく登録できるかチェックする

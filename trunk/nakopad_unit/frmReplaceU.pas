@@ -32,6 +32,7 @@ type
     { Private êÈåæ }
   public
     { Public êÈåæ }
+    procedure MemoryField;
   end;
 
 var
@@ -56,6 +57,7 @@ end;
 
 procedure TfrmReplace.btnFindClick(Sender: TObject);
 begin
+  MemoryField;
   frmNakopad.FFindKey := cmbFind.Text;
   frmNakopad.mnuFindNextClick(nil);
 end;
@@ -64,6 +66,7 @@ procedure TfrmReplace.btnReplaceClick(Sender: TObject);
 var
   s: string;
 begin
+  MemoryField;
   s := cmbFind.Text;
   if frmNakopad.edtActive.SelText = s then
   begin
@@ -82,6 +85,7 @@ procedure TfrmReplace.btnReplaceAllClick(Sender: TObject);
 var
   s: string;
 begin
+  MemoryField;
   if chkSelection.Checked then
   begin
     s := frmNakopad.edtActive.SelText;
@@ -134,6 +138,28 @@ begin
   if o is TComboBox then
   begin
     TComboBox(o).SelText := Clipboard.AsText;
+  end;
+end;
+
+procedure TfrmReplace.MemoryField;
+var
+  s: string;
+begin
+  if cmbFind.Text <> '' then
+  begin
+    s := cmbFind.Text;
+    if cmbFind.Items.IndexOf(s) < 0 then
+    begin
+      cmbFind.Items.Insert(0, s);
+    end;
+  end;
+  if cmbReplace.Text <> '' then
+  begin
+    s := cmbReplace.Text;
+    if cmbReplace.Items.IndexOf(s) < 0 then
+    begin
+      cmbReplace.Items.Insert(0, s);
+    end;
   end;
 end;
 
