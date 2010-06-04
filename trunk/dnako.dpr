@@ -24,7 +24,6 @@ uses
   mini_file_utils in 'hi_unit\mini_file_utils.pas',
   hima_stream in 'hi_unit\hima_stream.pas',
   unit_pack_files in 'hi_unit\unit_pack_files.pas',
-  unit_date in 'hi_unit\unit_date.pas',
   nako_dialog_const in 'hi_unit\nako_dialog_const.pas',
   nako_dialog_function2 in 'hi_unit\nako_dialog_function2.pas',
   common_function in 'hi_unit\common_function.pas',
@@ -35,11 +34,9 @@ uses
   BlowFish in 'hi_unit\BlowFish.pas',
   CryptUtils in 'hi_unit\CryptUtils.pas',
   unit_file in 'hi_unit\unit_file.pas',
-  EasyMasks in 'hi_unit\EasyMasks.pas'
-  {$IFDEF DELUX_VERSION}
-  ,unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas'
-  {$ENDIF}
-  ;
+  EasyMasks in 'hi_unit\EasyMasks.pas' {$IFDEF DELUX_VERSION},
+  unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas' {$ENDIF},
+  unit_date in 'hi_unit\unit_date.pas';
 
 const
   nako_OK = 1; // ä÷êîÇÃê¨å˜

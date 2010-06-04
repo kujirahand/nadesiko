@@ -2,7 +2,7 @@ unit unit_date;
 
 interface
 uses
-  SysUtils, DateUtils, unit_string, Variants;
+  WIndows, SysUtils, DateUtils, unit_string, Variants;
 
 
 
@@ -18,7 +18,32 @@ function StrToDateEx(str: AnsiString): TDateTime;
 {西暦、和暦に対応した日付変換用関数}
 function StrToDateStr(str: AnsiString): AnsiString;
 
+function UNIXTimeToDelphiDateTime(UnixTime: LongWord): TDateTime;
+function DelphiDateTimeToUNIXTime(DelphiTime : TDateTime): LongWord;
+
 implementation
+
+function UNIXTimeToDelphiDateTime(UnixTime: LongWord): TDateTime;
+var
+  TimeZoneInformation: TTimeZoneInformation;
+begin
+  GetTimeZoneInformation(TimeZoneInformation);
+  Result := UnixDateDelta +
+    (UnixTime/(24*3600)) -
+    ((TimeZoneInformation.Bias) / (24 * 60));
+end;
+
+function DelphiDateTimeToUNIXTime(DelphiTime : TDateTime): LongWord;
+var
+  TimeZoneInformation: TTimeZoneInformation;
+begin
+  GetTimeZoneInformation(TimeZoneInformation);
+
+  Result :=
+    Round((DelphiTime - UnixDateDelta +
+      (TimeZoneInformation.Bias / (24*60))) * SecsPerDay);
+end;
+
 
 {西暦、和暦に対応した日付変換用関数}
 function StrToDateStr(str: AnsiString): AnsiString;
