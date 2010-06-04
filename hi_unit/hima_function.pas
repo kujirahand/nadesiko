@@ -431,6 +431,8 @@ function sys_date_wa(args: THiArray): PHiValue; stdcall;
 function sys_date_format(args: THiArray): PHiValue; stdcall;
 function sys_MinutesSub(args: THiArray): PHiValue; stdcall;
 function sys_HourSub(args: THiArray): PHiValue; stdcall;
+function sys_fromUnixTime(args: THiArray): PHiValue; stdcall;
+function sys_toUnixTime(args: THiArray): PHiValue; stdcall;
 
 function sys_format(args: THiArray): PHiValue; stdcall;
 function sys_formatzero(args: THiArray): PHiValue; stdcall;
@@ -5655,6 +5657,29 @@ begin
   db := StrToDateEx(hi_str(b));
 
   Result := hi_newInt(Round((db-da)*HoursPerDay));
+end;
+
+function sys_fromUnixTime(args: THiArray): PHiValue; stdcall;
+var
+  i: Integer;
+  d: TDateTime;
+begin
+  i := getArgInt(args, 0, True);
+  d := UNIXTimeToDelphiDateTime(i);
+  Result := hi_newStr(FormatDateTime('yyyy/mm/dd hh:nn:ss', d));
+end;
+
+function sys_toUnixTime(args: THiArray): PHiValue; stdcall;
+var
+  d: TDateTime;
+begin
+  try
+    d := StrToDateEx(getArgStr(args, 0, True));
+  except
+    Result := hi_newInt(0);
+    Exit;
+  end;
+  Result := hi_newInt(DelphiDateTimeToUNIXTime(d));
 end;
 
 function sys_date_wa(args: THiArray): PHiValue; stdcall;

@@ -900,6 +900,8 @@ begin
   AddFunc  ('曜日番号取得','{=?}Sの', 5063, sys_weekno, 'Sに指定した日付の曜日番号をで返す。不正な日付の場合は今日の曜日番号を返す。(0=日/1=月/2=火/3=水/4=木/5=金/6=土)','ようびばんごうしゅとく');
   AddFunc  ('和暦変換','{=?}Sを',    418, sys_date_wa, 'Sを和暦に変換する。Sは明治以降の日付が有効。','われきへんかん');
   AddFunc  ('日時形式変換','{=?}DATEをFORMATに|DATEから|FORMATで|FORMATへ',    409, sys_date_format, '日時(DATE)を指定形式(FORMAT)に変換する。フォーマットには「RSS形式」や「yyyy/mm/dd hh:nn:ss」を指定する','にちじけいしきへんかん');
+  AddFunc  ('UNIXTIME変換','{=?}DATEを', 427, sys_toUnixTime, '日時をUnix Timeに変換する','UNIXTIMEへんかん');
+  AddFunc  ('UNIXTIME_日時変換','{=?}Iを', 428, sys_fromUnixTime, 'Unix TimeであるIをなでしこ日時形式に変換する','UNIXTIME_にちじへんかん');
   //-日付時間計算
   AddFunc  ('時間加算','{=?}SにAを', 415, sys_timeAdd, '時間SにAを加えて返す。Aには「(+|-)hh:nn:dd」で指定する。','じかんかさん');
   AddFunc  ('日付加算','{=?}SにAを', 414, sys_dateAdd, '日付SにAを加えて返す。Aには「(+|-)yyyy/mm/dd」で指定する。','ひづけかさん');
