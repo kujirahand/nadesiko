@@ -5966,6 +5966,7 @@ begin
   //
   e := TFileMixReader.Create(hi_str(a));
   try
+    e.autoDelete := False;
     if False = e.ReadAndSaveToFile(hi_str(b), hi_str(c), True) then
     begin
       raise Exception.Create('パックファイルからの抽出ができません。');
@@ -5987,6 +5988,7 @@ begin
 
   e := TFileMixReader.Create(hi_str(a));
   try
+    e.autoDelete := False;
     if False = e.ReadFileAsString(hi_str(b), s, True) then
     begin
       Exception.Create('パックファイルからの抽出ができません。');
@@ -6006,6 +6008,7 @@ begin
   a := nako_getFuncArg(args, 0);; // pack
   e := TFileMixReader.Create(hi_str(a));
   try
+    e.autoDelete := False;
     s := e.EnumFiles;
     Result := hi_newStr(s.Text);
     FreeAndNil(s);
