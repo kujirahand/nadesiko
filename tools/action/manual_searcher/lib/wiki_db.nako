@@ -25,7 +25,7 @@ DBについて
 
 ■wikiDB
 　・{SQLITE}COMMAND
-　・{SQLITE}WIKI
+　・{SQLITE3}WIKI
 　・命令検索({文字列}WORDの|{文字列}WORDを)～
 　　返り値とは配列。SQL文とは文字列
 　　LENとは整数=WORDの文字数
@@ -108,7 +108,9 @@ DBについて
 </table>」を戻す
 　・作る～
 　　COMMANDのファイル = ランタイムパス&`tools\command.db`
-　　WIKIのファイル　　= ランタイムパス&`tools\wiki.db`
+　　WIKIのファイル　　= ランタイムパス&`tools\konawiki.db`
 　　# INPUT="..." ※INPUTファイルの指定が必要
 　　`SJIS`にSQLITE出力コード設定。
+　　`SJIS`にSQLITE3出力コード設定
+
 
