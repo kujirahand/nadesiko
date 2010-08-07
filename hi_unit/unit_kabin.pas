@@ -121,7 +121,16 @@ begin
         s := Utf8ToAnsi(s);
         Result := hi_newStr(s);
       end;
-    json_type_int:      Result := hi_newInt(obj.AsInteger);
+    json_type_int:
+      begin
+           if (obj.AsInteger > MaxInt) then
+           begin
+             Result := hi_newFloat(obj.AsDouble);
+           end
+           else begin
+             Result := hi_newInt(obj.AsInteger);
+           end;
+      end;
     json_type_double:   Result := hi_newFloat(obj.AsDouble);
     json_type_object:
       begin
