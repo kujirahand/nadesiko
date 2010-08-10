@@ -66,7 +66,7 @@ implementation
 uses mini_file_utils, unit_file, KPop3, KSmtp, KTcp, KTCPW, unit_string2,
   WSockUtils, Icmp, KHttp, jconvert, md5, nako_dialog_function,
   nadesiko_version, messages, nako_dialog_const, CommCtrl, unit_kabin,
-  hima_types, unit_content_type, IdAttachment, unit_string;
+  hima_types, unit_content_type, IdAttachment, unit_string, unit_date;
 
 var pProgDialog: PHiValue = nil;
 var FNetDialog: TNetDialog = nil;
@@ -699,8 +699,8 @@ var
               begin
                 d1 := FileTimeToDateTimeEx(f.FindData.ftLastWriteTime);
                 d2 := item.ModifiedDate;
-                i1 := DelphiDateTimeToUnix(d1);
-                i2 := DelphiDateTimeToUnix(d2);
+                i1 := DelphiDateTimeToUNIXTime(d1);
+                i2 := DelphiDateTimeToUNIXTime(d2);
                 if Abs(i1 - i2) < 30 then // Œë·30•b‚Í‹–—e‚·‚é
                 begin
                   if f.Size = item.Size then
@@ -1448,9 +1448,9 @@ var
   dir: AnsiString;
   iFrom, iTo: Integer;
 begin
-  iFrom := getArgInt(args, 0);
-  iTo   := getArgInt(args, 1);
-  dir   := getArgStr(args, 2);
+  dir   := getArgStr(args, 0);
+  iFrom := getArgInt(args, 1);
+  iTo   := getArgInt(args, 2);
   Result := __sys_pop3_recv_indy10(dir,iFrom,iTo);
 end;
 

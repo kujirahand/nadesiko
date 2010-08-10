@@ -34,7 +34,8 @@ uses
   unit_eml in 'hi_unit\unit_eml.pas',
   unit_kabin in 'hi_unit\unit_kabin.pas',
   json in 'hi_unit\json.pas',
-  unit_content_type in 'hi_unit\unit_content_type.pas';
+  unit_content_type in 'hi_unit\unit_content_type.pas',
+  unit_date in 'hi_unit\unit_date.pas';
 
 //------------------------------------------------------------------------------
 // Plug-in import function
