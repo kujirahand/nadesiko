@@ -425,7 +425,7 @@ begin
   FillChar(OFN,SizeOf(OFN),0);
   with OFN do
   begin
-    lStructSize := 76; // for Delphi6
+    lStructSize := SizeOf(OFN);
     hWndOwner := hOwner;
     lpstrFilter := PAnsiChar(Filter);
     nFilterIndex := 1;
