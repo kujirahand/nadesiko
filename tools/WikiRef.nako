@@ -54,9 +54,11 @@ WEB検索とはボタン##生成
 
 #-----------------------------------------------------------------------
 # DBを開く処理
-CMD=「{母艦パス}command.db」をSQLITE開く。
-WIKI=「{母艦パス}wiki.db」をSQLITE開く。
+SQLITE3自動変換=オフ。
 「SJIS」にSQLITE出力コード設定。
+「SJIS」にSQLITE3出力コード設定。
+CMD=「{母艦パス}command.db」をSQLITE開く。
+WIKI=「{母艦パス}wiki.db」をSQLITE3開く。
 #-----------------------------------------------------------------------
 # 初期化
 母艦は「オフライン版 なでしこWIKIリファレンス検索ツール」
@@ -65,12 +67,16 @@ WEB検索の可視はオフ。
 # コマンドラインチェック
 検索エディタ＝コマンドライン￥１
 もし、検索エディタ≠空ならば
+　　Ｃ＝コマンドライン￥１
+　　Ｃを「::」で区切る。
+　　もし、それ￥０＝「-debug」ならば
+　　　　検索エディタ＝「言う」
 　　検索エディタを一発表示処理。
 
 ●検索ボタン__クリックした時
 　　WEB検索の可視はオフ。
 　　IN=検索エディタをSJIS_UTF8N変換
-　　Ｆ＝「SELECT id,name FROM logs WHERE name LIKE '%{IN}%';」をSQLITE実行
+　　Ｆ＝WIKIで「SELECT id,name FROM logs WHERE name LIKE '%{IN}%';」をSQLITE3実行
 　　もし、Ｆが空ならば
 　　　　結果メモ＝「"{検索エディタ}"は見当たりません。」
 　　　　戻る。
@@ -85,7 +91,12 @@ WEB検索の可視はオフ。
 ●一発表示処理（Ｎを）
 　　ＵＮ＝NをSJIS_UTF8N変換
 　　SQL=「SELECT id,name,body FROM logs WHERE name = '{UN}';」
-　　Ｒ＝SQLをSQLITE実行。
+　　Ｒ＝WIKIでSQLをSQLITE3実行。
+　　T=Ｒ￥１￥２
+　　Ｔ＝Ｔの「{\13\10}」を「__BR__」に置換。
+　　Ｔ＝Ｔの「{\13}」を改行に置換。
+　　Ｔ＝Ｔの「{\10}」を改行に置換。
+　　Ｔ＝Ｔの「__BR__」を「{\13}{\10}」に置換。
 　　SQL=「SELECT name,args,desc,kana FROM command WHERE name = '{N}'」
 　　R2=ＣＭＤでＳＱＬをＳＱＬＩＴＥ実行。
 　　もし、（R2\1\0）＝「」ならば
@@ -94,7 +105,7 @@ WEB検索の可視はオフ。
 　　結果メモ＝「【名前】{R2\1\0} ({R2\1\3})
 【引数】{R2\1\1}
 【説明】{R2\1\2}
-」＆改行＆Ｒ\1\2
+」＆改行＆(T)
 　　検索エディタ＝Ｒ\1\1
 　　WEB検索の可視はオン。
 
@@ -109,4 +120,4 @@ WEB検索の可視はオフ。
 　　N=検索エディタをSJIS_UTF8N変換して、URLエンコード
 　　#U=「草花」をSJIS_UTF8N変換して、URLエンコード
 　　#「http://nadesi.com/man/page/go/search/exec?dm1=&dm2=&name={U}&title={U}&keyword={N}」を起動。
-　　「http://nadesi.com/man/page/{N}」を起動。
+　　「http://nadesi.com/man/index.php?{N}」を起動。
