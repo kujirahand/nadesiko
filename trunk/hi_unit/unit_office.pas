@@ -51,6 +51,7 @@ type
     procedure FileSave(fname: string);
     procedure FileSaveAsCsv(fname: string);
     procedure FileSaveAsTsv(fname: string);
+    procedure FileSaveAsPDF(fname: string);
     procedure SetCell(row, col: Integer; v: string);
     function  GetCell(row, col: Integer): string;
     procedure SetCellR(cell, v: string);
@@ -148,6 +149,7 @@ type
     procedure SaveToJpegDir(dir: string);
     procedure SaveToPdfDir(dir: string);
     procedure SaveToPngDir(dir: string);
+    procedure SaveToPDFFile(f: string);
     function MacroExec(s: string; arg:string): string;
     property Active: Boolean read FActive;
     property Visible: Boolean read GetVisible write SetVisible;
@@ -215,10 +217,29 @@ const
   xlExcel8 = 56;
   xlExcel9795 = 43;
   xlHtml = 44;
+  xlTypePDF = $00000000;
+  xlTypeXPS = $00000001;
+  xlQualityStandard = $00000000;
+  xlQualityMinimum = $00000001;
   xlUp = -4162;
   xlToRight = -4161;
   xlDown = -4121;
   xlFormatFromLeftOrAbove = 0;
+
+
+const
+  wdExportFormatPDF = 17;
+  wdExportOptimizeForPrint = 0;
+  wdFormatDocument = $00000000;
+  wdFormatTemplate = $00000001;
+  wdFormatText = $00000002;
+  wdFormatTextLineBreaks = $00000003;
+  wdFormatDOSText = $00000004;
+  wdFormatDOSTextLineBreaks = $00000005;
+  wdFormatRTF = $00000006;
+  wdFormatUnicodeText = $00000007;
+  wdFormatEncodedText = $00000007;
+  wdFormatHTML = $00000008;
 
 
 function RowColToCellName(row, col: Integer): string;
@@ -409,6 +430,10 @@ begin
   if (ext = '.txt')or(ext = '.tsv') then
   begin
     FileSaveAsTsv(fname); Exit;
+  end else
+  if (ext = '.pdf') then
+  begin
+    FileSaveAsPDF(fname); Exit;
   end;
 
   try E_Application.DisplayAlerts := False; except end;
@@ -443,6 +468,23 @@ begin
   try E_Application.DisplayAlerts := False; except end;
   E_WorkBook := E_Application.ActiveWorkBook;
   E_WorkBook.SaveAs(fname, xlCSV);
+  try E_Application.DisplayAlerts := FDisplayAlerts; except end;
+end;
+
+procedure TKExcel.FileSaveAsPDF(fname: string);
+begin
+  try E_Application.DisplayAlerts := False; except end;
+  E_WorkBook := E_Application.ActiveWorkBook;
+  try
+    E_WorkBook.ExportAsFixedFormat(
+      xlTypePDF,
+      fname,
+      xlQualityStandard);
+  except on e:Exception do
+    begin
+      raise Exception.Create('ï€ë∂Ç≈Ç´Ç‹ÇπÇÒÇ≈ÇµÇΩÅB' + e.Message);
+    end;
+  end;
   try E_Application.DisplayAlerts := FDisplayAlerts; except end;
 end;
 
@@ -1131,10 +1173,40 @@ begin
 end;
 
 procedure TKWord.FileSave(fname: string);
+var
+  ext: string;
 begin
   FWordDoc := FWordApp.ActiveDocument;
   FWordApp.DisplayAlerts := False;
-  FWordDoc.SaveAs(fname);
+  ext := LowerCase(ExtractFileExt(fname));
+  if ext = '.pdf' then
+  begin
+    FWordDoc.ExportAsFixedFormat(
+      fname,
+      wdExportFormatPDF,
+      False,
+      wdExportOptimizeForPrint
+      );
+  end else
+  if ext = '.doc' then
+  begin
+    FWordDoc.SaveAs(
+      fname, wdFormatDocument,
+      EmptyParam,
+      EmptyParam, EmptyParam, EmptyParam, EmptyParam,
+      EmptyParam, EmptyParam, EmptyParam, EmptyParam);
+  end else
+  if ext = '.html' then
+  begin
+    FWordDoc.SaveAs(
+      fname, wdFormatHTML,
+      EmptyParam,
+      EmptyParam, EmptyParam, EmptyParam, EmptyParam,
+      EmptyParam, EmptyParam, EmptyParam, EmptyParam);
+  end else
+  begin
+    FWordDoc.SaveAs(fname);
+  end;
 end;
 
 function TKWord.getAsText: string;
@@ -1807,6 +1879,11 @@ procedure TKPowerPoint.SaveToPdfDir(dir: string);
 begin
   ForceDirectories(dir);
   FPpApp.ActivePresentation.SaveAs(ppt_checkDir(dir), ppSaveAsPDF);
+end;
+
+procedure TKPowerPoint.SaveToPDFFile(f: string);
+begin
+  FPpApp.ActivePresentation.SaveAs(f, ppSaveAsPDF);
 end;
 
 procedure TKPowerPoint.SaveToPngDir(dir: string);
