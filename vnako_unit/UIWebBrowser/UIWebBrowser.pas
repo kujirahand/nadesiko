@@ -170,6 +170,7 @@ end;
 
     FIeNoBehavior  :boolean ;
     FIeAutoComplete  :boolean;
+    FIeLunaStyle:Boolean;
 
 
     FDownLoadControl : TDownLoadControl_ ;
@@ -387,6 +388,7 @@ onUITranslateAcceleratorイベントを使用すると、任意のショートカットキーを禁止した
     //入力フォームにおけるEditコントロール自動補完機能の設定ができる。
     //ie5only
     property IeAutoComplete  :boolean read FIeAutoComplete  write FIeAutoComplete;
+    property IeLunaStyle :boolean read FIeLunaStyle write FIeLunaStyle;
 //
 
      //TUIWebBrowser custom
@@ -624,6 +626,7 @@ begin
  inherited create(Aowner);
  IeAutoComplete := true;
  IeEnableAccelerator := true;
+ IeLunaStyle := true;
 
  IeEnableAccelerator := true;
  downloadControl := [  CS_Images , CS_Videos , CS_BGSounds ];
@@ -956,6 +959,7 @@ Show the page's source.
  if FieDontSCRIPT  then flag := flag or DOCHOSTUIFLAG_DISABLE_SCRIPT_INACTIVE ;
   if FIeNoBehavior     then  flag := flag or DOCHOSTUIFLAG_OVERRIDEBEHAVIORFACTORY;
  if FIeAutoComplete   then  flag := flag or DOCHOSTUIFLAG_ENABLE_FORMS_AUTOCOMPLETE;
+ if FIeLunaStyle then flag:=flag or DOCHOSTUIFLAG_THEME;
 
  pinfo.dwFlags := flag ;
    pInfo.cbSize := SizeOf(pInfo);

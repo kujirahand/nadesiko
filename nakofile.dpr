@@ -14,7 +14,7 @@ uses
   unit_pack_files in 'hi_unit\unit_pack_files.pas',
   hima_types in 'hi_unit\hima_types.pas',
   hima_stream in 'hi_unit\hima_stream.pas',
-  StrUnit in 'hi_unit\strunit.pas',
+  strunit in 'hi_unit\strunit.pas',
   mini_file_utils in 'hi_unit\mini_file_utils.pas',
   mini_func in 'hi_unit\mini_func.pas',
   unit_archive in 'hi_unit\unit_archive.pas',
@@ -27,7 +27,8 @@ uses
   EasyMasks in 'hi_unit\EasyMasks.pas',
   unit_blowfish in 'hi_unit\unit_blowfish.pas',
   BlowFish in 'hi_unit\BlowFish.pas',
-  CryptUtils in 'hi_unit\CryptUtils.pas';
+  CryptUtils in 'hi_unit\CryptUtils.pas',
+  unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas';
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

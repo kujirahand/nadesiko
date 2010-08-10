@@ -4481,8 +4481,9 @@ begin
 
   // (2) 処理
   str := hi_str(s);
-  h   := hima_function.MainWindowHandle;
-  if h = 0 then h := GetForegroundWindow;
+  //h   := hima_function.MainWindowHandle;
+  //if h = 0 then h := GetForegroundWindow;
+  h := GetForegroundWindow; // FMプラグインで実行されないので
 
   if a = nil then
     ret := ShowOpenDialog(h, str, CheckPathYen(GetCurrentDir))
@@ -4509,8 +4510,9 @@ begin
   // (2) 処理
   str := hi_str(s);
 
-  h   := hima_function.MainWindowHandle;
-  if h = 0 then h := GetForegroundWindow;
+  //h   := hima_function.MainWindowHandle;
+  //if h = 0 then h := GetForegroundWindow;
+  h := GetForegroundWindow; // FMプラグインで実行されないので
 
   if a = nil then
     ret := ShowSaveDialog(h, str, CheckPathYen(GetCurrentDir))

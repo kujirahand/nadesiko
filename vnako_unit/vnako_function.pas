@@ -642,7 +642,7 @@ uses
   frmSelectButtonU, dll_plugin_helper, unit_tree_list, frmSayU,
   frmInputNumU, frmHukidasiU, jvIcon, clipbrd, memoXP, SPILib,
   MedianCut, unit_vista, frmListU, unit_nakopanel, HEdtProp, GraphicEx,
-  frmCalendarU;
+  frmCalendarU, frmErrorU;
 
 type
   TRingBufferString = class
@@ -1468,9 +1468,17 @@ end;
 function ShowModalCheck(Form, Parent: TForm): Integer;
 var
   b: Boolean;
+  cap: string;
 begin
   if (Parent is TForm) then
   begin
+    if Form is TfrmError then
+    begin
+      cap := hi_str(nako_getVariable(''));
+      if True then
+      
+    end;
+
     Application.ProcessMessages;
     b := IsTopMost(Parent.Handle);
     if b then
@@ -2146,7 +2154,7 @@ begin
   begin
     Bokan.Redraw;
   end;
-
+  
   // (3) 結果の代入
   Result := nil; // 何も返さない場合は nil
 end;
@@ -8819,6 +8827,7 @@ begin
   AddIntVar('デバッグエディタハンドル', 0, 2360, 'なでしこエディタから実行された時、エディタハンドルが設定される。','でばっぐえでぃたはんどる');
   AddFunc('デバッグ', '', 2361, @cmd_debug, 'デバッグダイアログを表示する。','でばっぐ');//メソッドの上書き
   AddStrVar('エラーダイアログタイトル', 'なでしこのエラー', 2362, 'エラーダイアログのタイトルを指定する','えらーだいあろぐたいとる');
+  AddIntVar('エラーダイアログ表示許可', 1, 2363, 'エラーダイアログの表示を許可するかどうかを指定する(0なら許可しない)','えらーだいあろぐひょうじきょか');
 
   //+ダイアログ(vnako)
   //-ダイアログ
