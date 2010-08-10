@@ -140,6 +140,15 @@ begin
   excel.FileSaveAsTsv(hi_str(s));
 end;
 
+function excel_file_savePDF(h: DWORD): PHiValue; stdcall;
+var
+  s: PHiValue;
+begin
+  Result := nil;
+  s := nako_getFuncArg(h, 0);
+  excel.FileSaveAsPDF(hi_str(s));
+end;
+
 function excel_setCell(h: DWORD): PHiValue; stdcall;
 var
   cell, v: PHiValue;
@@ -855,12 +864,12 @@ end;
 
 function ppt_save_pdffile(h: DWORD): PHiValue; stdcall;
 var
-  dir: string;
+  f: string;
 begin
   Result := nil;
-  dir := getArgStr(h, 0, True);
+  f := getArgStr(h, 0, True);
   ppt_check;
-  ppt.SaveToPdfDir(dir);
+  ppt.SaveToPDFFile(f);
 end;
 
 //------------------------------------------------------------------------------
@@ -1910,6 +1919,7 @@ begin
   AddFunc  ('エクセルブック注目','Aの|Aに|Aを', 4307, excel_workbook_active,'A番目(1～n)のブックをアクティブにする','えくせるぶっくちゅうもく');
   AddFunc  ('エクセルCSV保存','Sへ|Sに', 4308, excel_file_saveCsv,'ファイルＳへファイルをCSV形式で保存する','えくせるCSVほぞん');
   AddFunc  ('エクセルTSV保存','Sへ|Sに', 4309, excel_file_saveTsv,'ファイルＳへファイルをTSV形式で保存する','えくせるTSVほぞん');
+  AddFunc  ('エクセルPDF保存','Sへ|Sに', 4731, excel_file_savePDF,'ファイルＳへファイルをPDF形式で保存する','えくせるPDFほぞん');
   AddFunc  ('エクセルセル設定','CELLへVを|CELLに', 4310, excel_setCell,'セルA(A1~)へVを設定する','えくせるせるせってい');
   AddFunc  ('エクセルセル取得','CELLの|CELLを', 4311, excel_getCell,'セルA(A1~)を取得して返す','えくせるせるしゅとく');
   AddFunc  ('エクセル一括設定','CELLへVを|CELLに', 4312, excel_setCellEx,'セル(A1~)へ二次元配列Vを一括設定する','えくせるせるいっかつせってい');
@@ -1991,6 +2001,7 @@ begin
   AddFunc  ('パワポインストールチェック','', 4758, ppt_checkInstall, 'Microsoft PowerPointがインストールされているか確認してはい(=1)かいいえ(=0)を返す','ぱわぽいんすとーるちぇっく');
   AddFunc  ('パワポJPEG出力','DIRへ', 4759, ppt_save_jpegfile,'PowerPointのスライドをJPEG形式で出力する','ぱわぽJPEGしゅつりょく');
   AddFunc  ('パワポPNG出力','DIRへ', 4760, ppt_save_pngfile,'PowerPointのスライドをPNG形式で出力する','ぱわぽPNGしゅつりょく');
+  AddFunc  ('パワポPDF出力','FILEへ|FILEに', 4761, ppt_save_pdffile,'PowerPointのスライドをPDF形式で出力する','ぱわぽPDFしゅつりょく');
 
   //+データベース連携(nakooffice.dll)
   //-ADO.データベース
