@@ -1,0 +1,290 @@
+# nakotter ver.0.32
+# http://www.undefin.net/nadesiko/nako/nakotter-ver.0.32.zip
+
+！変数宣言は必要
+
+##############################
+# ！『lib\oauth.nako』を取り込む
+# lib\oauth.nako
+
+
+！変数宣言は必要
+
+##############################
+# ！『unixtime.nako』を取り込む
+# unixtime.nako
+
+
+/*
+# "●UNIXTIME変換"がなでしこに実装される前のためのコード
+
+●GetSystemTime({参照渡}UTCTime) =DLL("kernel32.dll","VOID GetSystemTime(LPSYSTEMTIME UTCTime)")
+●詳細標準時取得
+	SYSTEMTIMEとは文字列
+	Iとは整数
+	BUFとは配列
+	SYSTEMTIMEに16を確保 //WORD(16bit)*8[byte]
+	GetSystemTime(SYSTEMTIME)
+	Iで0から7まで繰り返す
+		BUF[I]=SYSTEMTIMEの(I*2+1)を"WORD"でバイナリ取得
+	BUFで戻る
+●UNIX時間取得
+	Tとは配列=詳細標準時取得
+	_=日数差("1970/1/1","{T[0]}/{T[1]}/{T[3]}")*(60*60*24)+秒差("0:0:0","{T[4]}:{T[5]}:{T[6]}")
+
+# */
+
+●UNIX時間取得
+　今日&` `&今をUNIXTIME変換
+
+
+# unixtime.nako
+##############################
+
+##############################
+# ！『hmacsha1.nako』を取り込む
+# hmacsha1.nako
+
+#resource http://nadesiko.g.hatena.ne.jp/white-ball/20100402/1270147724
+
+●HMACSHA1取得(秘密鍵で内容の)
+　Bとは整数=64。Lとは整数=20
+　＃秘密鍵の長さの調整
+　秘密鍵のバイト数
+　もしそれ＞Bならば
+　　秘密鍵からSHA1取得
+　　2で行揃え
+　　反復
+　　　INT(「$」＆対象)を秘密鍵の回数に「byte」でバイナリ設定＃ハッシュ関数の出力のバイナリ変換
+　　秘密鍵は秘密鍵のL バイト左部分
+　　秘密鍵のバイト数
+　もしそれ＜Bならば
+　　「{\0}」を(B-それ)だけリフレイン
+　　秘密鍵は秘密鍵&それ
+　
+　＃鍵から作る2つの文字列の準備
+　鍵Iとは文字列。鍵IにBを確保
+　鍵Oとは文字列。鍵OにBを確保
+　文字とは整数
+　B/4回
+　　秘密鍵の(回数-1)*4+1 を「DWORD」でバイナリ取得
+　　文字はそれ
+　　XOR(文字,$36363636)を鍵Iの(回数-1)*4+1 に「DWORD」でバイナリ設定
+　　XOR(文字,$5C5C5C5C)を鍵Oの(回数-1)*4+1 に「DWORD」でバイナリ設定
+　
+　＃ハッシュ関数の適用
+　経過とは文字列
+　経過にLを確保
+　
+　(鍵I＆内容)からSHA1取得
+　2で行揃え
+　反復
+　　INT(「$」＆対象)を経過の回数に「byte」でバイナリ設定＃ハッシュ関数の出力のバイナリ変換
+　
+　(鍵O＆経過)からSHA1取得
+　2で行揃え
+　反復
+　　INT(「$」＆対象)を経過の回数に「byte」でバイナリ設定＃ハッシュ関数の出力のバイナリ変換
+　
+　経過を戻す
+
+
+# hmacsha1.nako
+##############################
+
+
+■トークン
+　・{文字列}トークンキー
+　・{文字列}シークレット
+
+■OAuth　+トークン
+　・{文字列}バージョン{="1.0"}
+　・{文字列}署名方式{="HMAC-SHA1"}
+　・{トークン}コンシューマ
+　・{文字列}リクエストトークンURL
+　・{文字列}アクセストークンURL
+　・{文字列}認証URL
+　・{トークン}リクエスト
+　・{非公開}基本パラメータ生成({ハッシュ=?}PARAMから)～
+　　パラメータとはハッシュ = PARAM
+　　パラメータ@『oauth_consumer_key』    = コンシューマのトークンキー
+　　パラメータ@『oauth_nonce』           = GUID生成の11文字右部分を小文字変換
+　　パラメータ@『oauth_signature_method』= 署名方式
+　　パラメータ@『oauth_timestamp』       = UNIX時間取得
+　　パラメータ@『oauth_version』         = バージョン
+　　_ = パラメータ
+　・HTTPリクエスト({文字列}URLへ{ハッシュ}PARAMで)～
+　　エラー監視
+　　　URL&『?』&(PARAMのURLパラメータ変換)からHTTPデータ取得
+　　エラーならば
+　　　『HTTPリクエストに失敗。パラメータの指定が間違っている可能性があります。』でエラー発生
+　・POST({文字列}URLへ{ハッシュ=?}PARAMで)～
+　　鍵とは文字列 = (コンシューマのシークレット)&『&』&シークレット
+　　基本パラメータとはハッシュ = 基本パラメータ生成
+　　基本パラメータ@『oauth_token』= トークンキー
+　　パラメータとはハッシュ。パラメータに基本パラメータをデータコピー
+　　署名とは文字列 = 『POST&』&(URLをURLエンコード)&『&』
+　　PARAMのハッシュキー列挙して反復、パラメータ@対象 = PARAM@対象
+　　パラメータをURLパラメータ変換をURLエンコードを署名に追加
+　　基本パラメータ@『oauth_signature』 = 鍵で署名の非公開署名生成をURLエンコード
+　　HEADとは文字列 = 基本パラメータからヘッダ生成
+　　BODYとは文字列 = PARAMをURLパラメータ変換
+　　それは空。HEADとBODYをURLへHTTPポスト
+　・GET({文字列}URLへ{ハッシュ=?}PARAMで)～
+　　鍵とは文字列 = (コンシューマのシークレット)&『&』&シークレット
+　　基本パラメータとはハッシュ = 基本パラメータ生成
+　　基本パラメータ@『oauth_token』= トークンキー
+　　パラメータとはハッシュ。パラメータに基本パラメータをデータコピー
+　　署名とは文字列 = 『GET&』&(URLをURLエンコード)&『&』
+　　PARAMのハッシュキー列挙して反復、パラメータ@対象 = PARAM@対象
+　　パラメータをURLパラメータ変換をURLエンコードを署名に追加
+　　基本パラメータ@『oauth_signature』 = 鍵で署名の非公開署名生成をURLエンコード
+　　HEADとは文字列 = 基本パラメータからヘッダ生成
+　　もしPARAMのハッシュキー列挙の要素数が0でなければ
+　　　URLに『?』&(PARAMをURLパラメータ変換)を追加
+　　それは空。HEADをURLへHTTPゲット
+　・リクエストトークン取得処理～
+　　パラメータとはハッシュ = 基本パラメータ生成
+　　鍵とは文字列   = (コンシューマのシークレット)&『&』
+　　署名とは文字列 = 『GET&』&(リクエストトークンURLをURLエンコード)&『&』
+　　パラメータをURLパラメータ変換をURLエンコードを署名に追加
+　　パラメータ@『oauth_signature』 = 鍵で署名の非公開署名生成
+　　リクエストトークン結果とはハッシュ
+　　リクエストトークンURLへパラメータでHTTPリクエスト
+　　リクエストトークン結果 = それの『&』を改行に置き換えてハッシュ変換
+　　もしリクエストトークン結果@`oauth_callback_confirmed`が`true`でなければ
+　　　『リクエストトークンの取得に失敗。パラメータの指定が間違っている可能性があります。』でエラー発生
+　　リクエストのトークンキー = リクエストトークン結果@`oauth_token`
+　　リクエストのシークレット = リクエストトークン結果@`oauth_token_secret`
+　　_ = リクエストトークン結果
+　・認証URL取得～
+　　認証URL&『?oauth_token=』&(リクエストのトークンキー)を戻す
+　・アクセストークン取得処理({文字列}暗証番号で)～
+　　パラメータとはハッシュ = 基本パラメータ生成
+　　パラメータ@『oauth_token』    = リクエストのトークンキー
+　　パラメータ@『oauth_verifier』 = 暗証番号
+　　鍵とは文字列   = (コンシューマのシークレット)&『&』&(リクエストのシークレット)
+　　署名とは文字列 = 『GET&』&(アクセストークンURLをURLエンコード)&『&』
+　　パラメータをURLパラメータ変換をURLエンコードを署名に追加
+　　パラメータ@『oauth_signature』 = 鍵で署名の非公開署名生成
+　　アクセストークン結果とはハッシュ
+　　アクセストークンURLへパラメータでHTTPリクエスト
+　　アクセストークン結果 = それの『&』を改行に置き換えてハッシュ変換
+　　トークンキー = アクセストークン結果@`oauth_token`
+　　シークレット = アクセストークン結果@`oauth_token_secret`
+　　_ = アクセストークン結果
+　・{非公開}非公開署名生成(KEYでSTRの)～
+　　鍵とは文字列
+　　鍵に64を確保
+　　鍵 = KEY
+　　鍵でSTRのHMACSHA1取得
+　　それをBASE64エンコード
+　・{非公開}ヘッダ生成({ハッシュ}PARAMから)～
+　　結果とは文字列 = 『Authorization: OAuth 』
+　　＃PARAMのハッシュキー列挙して反復
+　　『oauth_nonce,oauth_timestamp,oauth_consumer_key,oauth_signature_method,oauth_version,oauth_token,oauth_signature』を、
+　　『,』で区切って反復
+　　　結果に対象&『="』&(PARAM@対象)&『", 』を追加
+　　結果から2文字右端削除
+　　_ = 結果
+　・URLパラメータ変換({ハッシュ}PARAMを|PARAMの)～
+　　結果とは文字列
+　　KEYSとは配列=PARAMのハッシュキー列挙
+　　KEYSを配列ソート
+　　KEYSを反復
+　　　結果に対象&『=』&(PARAM@対象をパラメータエンコード)&『&』を追加
+　　結果から1文字右端削除
+　・{非公開}パラメータエンコード({文字列}Sを)～
+　　SをUTF8N変換をURLエンコードの『+』を『%20』に置換
+
+
+
+# lib\oauth.nako
+##############################
+
+
+# Cf. http://apiwiki.twitter.com/Twitter-API-Documentation
+
+■Nakotter
+　・{数値}バージョン{=0.32}
+　・{文字列}APIURL{="http://api.twitter.com/1/"}
+　・{文字列}フォーマット{=".json"}
+　・{OAuth}oauth
+　・{イベント}レスポンス処理
+　・つぶやく({ハッシュ=?}PARAMで{文字列}STRと)～
+　　URLとは文字列 = APIURL & 『statuses/update』 & フォーマット
+　　パラメータとはハッシュ = PARAM
+　　パラメータ@`status` = STR
+　　URLへパラメータでoauth.POST
+　　レスポンス処理。
+　・つぶやき削除({ハッシュ=?}PARAMで{文字列}STATUS_IDの)～
+　　URLとは文字列 = APIURL & 『statuses/destroy/』 & STATUS_ID & フォーマット
+　　URLへPARAMでoauth.POST
+　　レスポンス処理。
+　・リツイート({文字列}STATUS_IDを)～
+　　URLとは文字列 = APIURL & 『statuses/retweet/』 & STATUS_ID & フォーマット
+　　URLへoauth.POST
+　　レスポンス処理。
+　・ホームTL取得({ハッシュ=?}PARAMで)～
+　　URLとは文字列 = APIURL & 『statuses/home_timeline』 & フォーマット
+　　URLへPARAMでoauth.GET
+　　レスポンス処理。
+　・ユーザTL取得({ハッシュ=?}PARAMで{文字列}SCREEN_NAMEの)～
+　　URLとは文字列 = APIURL & 『statuses/user_timeline/』 & SCREEN_NAME & フォーマット
+　　URLへPARAMでoauth.GET
+　　レスポンス処理。
+　・フォロー({ハッシュ=?}PARAMで{文字列}SCREEN_NAMEを)～
+　　URLとは文字列 = APIURL & 『friendships/create/』 & SCREEN_NAME & フォーマット
+　　URLへPARAMでoauth.POST
+　　レスポンス処理。
+　・返信取得({ハッシュ=?}PARAMで)～
+　　URLとは文字列 = APIURL & 『statuses/mentions』 & フォーマット
+　　URLへPARAMでoauth.GET
+　　レスポンス処理。
+　・ふぁぼる({文字列}STATUS_IDを)～
+　　URLとは文字列 = APIURL & 『favorites/create/』 & STATUS_ID & フォーマット
+　　URLへoauth.GET
+　　レスポンス処理。
+　・API確認～
+　　URLとは文字列 = APIURL & 『help/test』 & フォーマット
+　　URLへoauth.GET
+　　レスポンス処理。
+　・返信する({文字列}STRと{文字列}STATUS_IDに|STATUS_IDへ)～
+　　パラメータとはハッシュ
+　　パラメータ@`in_reply_to_status_id` = STATUS_ID
+　　STRとパラメータでつぶやく
+　・認証～
+　　oauthのリクエストトークン取得処理
+　　oauthの認証URL取得してコピーして起動
+　　ダイアログ数値変換はオフ
+　　『暗証番号は？』と尋ねる
+　　oauthからそれでアクセストークン取得処理
+　・作る～
+　　# Twitter OAuth API
+　　oauthのリクエストトークンURL      = 『http://twitter.com/oauth/request_token』
+　　oauthのアクセストークンURL        = 『http://twitter.com/oauth/access_token』
+　　oauthの認証URL                    = 『http://twitter.com/oauth/authorize』
+　　# Nakotter コンシューマ
+　　oauthのコンシューマのトークンキー = 『lFjjUGoiNEMXKGKo60Kw』
+　　oauthのコンシューマのシークレット = 『VC0jfRWcmFvvG77KJagiLkmHptuoiTEJtfXTlUnrY』
+　　# HTTP Response の処理。デフォルトでは JSON 想定
+　　もしナデシコバージョン≦1.5329ならば
+　　　レスポンス処理は
+　　　　レスポンス部分
+　　　　JSONデータ修正_nako_v_1_5329
+　　違えば、もしナデシコバージョン≧1.533ならば
+　　　レスポンス処理は
+　　　　レスポンス部分
+　　　　JSONデータ修正_nako_v_1_533
+　　#違えば
+　　#　レスポンス処理は～レスポンス部分をJSONデコード
+
+●レスポンス部分
+　　STRとは文字列 = それ
+　　STRの改行&改行&改行まで切り取る
+　　_ = STR
+●JSONデータ修正_nako_v_1_5329
+　　それの『:null』を『:""』に置換の『:(\d{11,})』を『:"$1"』に正規表現置換をJSONデコード
+●JSONデータ修正_nako_v_1_533
+　　それの『:null』を『:""』に置換をJSONデコード
+

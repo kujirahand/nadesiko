@@ -108,7 +108,7 @@ DBについて
 </table>」を戻す
 　・作る～
 　　COMMANDのファイル = ランタイムパス&`tools\command.db`
-　　WIKIのファイル　　= ランタイムパス&`tools\konawiki.db`
+　　WIKIのファイル　　= ランタイムパス&`tools\wiki.db`
 　　# INPUT="..." ※INPUTファイルの指定が必要
 　　`SJIS`にSQLITE出力コード設定。
 　　`SJIS`にSQLITE3出力コード設定
