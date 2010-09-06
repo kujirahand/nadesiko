@@ -19,8 +19,8 @@ type
     btnDebug: TButton;
     btnContinue: TButton;
     btnClose: TButton;
-    edtMain: TEditor;
     btnOteage: TButton;
+    edtMain: TMemo;
     procedure panelBaseResize(Sender: TObject);
     procedure btnDebugClick(Sender: TObject);
     procedure btnContinueClick(Sender: TObject);
@@ -42,7 +42,8 @@ function frmError: TfrmError;
 
 implementation
 
-uses frmDebugU, dnako_import, frmNakoU, StrUnit, gui_benri, unit_string;
+uses frmDebugU, dnako_import, frmNakoU, StrUnit, gui_benri, unit_string,
+  dll_plugin_helper, dnako_import_types;
 
 function frmError: TfrmError;
 begin
@@ -77,8 +78,15 @@ begin
 end;
 
 procedure TfrmError.FormShow(Sender: TObject);
+var
+  v: PHiValue;
+  allow: Boolean;
 begin
   FlagEnd := False;
+  v := nako_getVariable('エラーダイアログ表示許可');
+  allow := hi_bool(v);
+  btnDebug.Visible := allow;
+  btnOteage.Visible := allow;
 end;
 
 procedure TfrmError.WMMousewheel(var Msg: TMessage);
