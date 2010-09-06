@@ -2078,6 +2078,7 @@ begin
   if p = nil then p := nako_getSore;
   sp := hi_str(p);
 
+  SetErrorMode(SEM_FAILCRITICALERRORS);
   if DirectoryExists(sp) then
   begin
     GetDiskFreeSpaceEx(PChar(sp), iFree, iTotal, nil);
