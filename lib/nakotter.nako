@@ -1,5 +1,5 @@
-# nakotter ver.0.32
-# http://www.undefin.net/nadesiko/nako/nakotter-ver.0.32.zip
+# nakotter ver.0.4
+# http://www.undefin.net/nadesiko/nako/nakotter-ver.0.4.zip
 
 ！変数宣言は必要
 
@@ -206,11 +206,33 @@
 # Cf. http://apiwiki.twitter.com/Twitter-API-Documentation
 
 ■Nakotter
-　・{数値}バージョン{=0.32}
+　・{数値}バージョン{=0.4}
 　・{文字列}APIURL{="http://api.twitter.com/1/"}
 　・{文字列}フォーマット{=".json"}
 　・{OAuth}oauth
 　・{イベント}レスポンス処理
+　・ホームTL取得({ハッシュ=?}PARAMで)～
+　　URLとは文字列 = APIURL & 『statuses/home_timeline』 & フォーマット
+　　URLへPARAMでoauth.GET
+　　レスポンス処理。
+　・ユーザTL取得({ハッシュ=?}PARAMで{文字列}SCREEN_NAMEの)～
+　　URLとは文字列 = APIURL & 『statuses/user_timeline/』 & SCREEN_NAME & フォーマット
+　　URLへPARAMでoauth.GET
+　　レスポンス処理。
+　・返信取得({ハッシュ=?}PARAMで)～
+　　PARAMで返信一覧取得
+　・返信一覧取得({ハッシュ=?}PARAMで)～
+　　URLとは文字列 = APIURL & 『statuses/mentions』 & フォーマット
+　　URLへPARAMでoauth.GET
+　　レスポンス処理。
+　・リツイート一覧取得({ハッシュ=?}PARAMで)～
+　　URLとは文字列 = APIURL & 『statuses/retweets_of_me』 & フォーマット
+　　URLへPARAMでoauth.GET
+　　レスポンス処理。
+　・つぶやき取得({ハッシュ=?}PARAMで{文字列}STATUS_IDを|STATUS_IDの)～
+　　URLとは文字列 = APIURL & 『statuses/show/』 & STATUS_ID & フォーマット
+　　URLへPARAMでoauth.GET
+　　レスポンス処理。
 　・つぶやく({ハッシュ=?}PARAMで{文字列}STRと)～
 　　URLとは文字列 = APIURL & 『statuses/update』 & フォーマット
 　　パラメータとはハッシュ = PARAM
@@ -225,25 +247,71 @@
 　　URLとは文字列 = APIURL & 『statuses/retweet/』 & STATUS_ID & フォーマット
 　　URLへoauth.POST
 　　レスポンス処理。
-　・ホームTL取得({ハッシュ=?}PARAMで)～
-　　URLとは文字列 = APIURL & 『statuses/home_timeline』 & フォーマット
+　・リツイートしたユーザ一覧取得({ハッシュ=?}PARAMで{文字列}STATUS_IDを)～
+　　URLとは文字列 = APIURL & 『statuses/』 & STATUS_ID & 『/retweeted_by』 & フォーマット
 　　URLへPARAMでoauth.GET
 　　レスポンス処理。
-　・ユーザTL取得({ハッシュ=?}PARAMで{文字列}SCREEN_NAMEの)～
-　　URLとは文字列 = APIURL & 『statuses/user_timeline/』 & SCREEN_NAME & フォーマット
+　・ユーザ列挙(SCREEN_NAMESで|SCREEN_NAMESの)～
+　　URLとは文字列 = APIURL & 『users/lookup』 & フォーマット
+　　PARAMとはハッシュ。
+　　もしSCREEN_NAMESの変数型確認が`配列`ならば
+　　　SCREEN_NAMES = SCREEN_NAMESを`,`で配列結合
+　　PARAM@`screen_name` = SCREEN_NAMES
 　　URLへPARAMでoauth.GET
+　　レスポンス処理。
+　・友達一覧取得({ハッシュ=?}PARAMで)～
+　　URLとは文字列 = APIURL & 『statuses/friends』 & フォーマット
+　　URLへPARAMでoauth.GET
+　　レスポンス処理。
+　・フォロワー一覧取得({ハッシュ=?}PARAMで)～
+　　URLとは文字列 = APIURL & 『statuses/followers』 & フォーマット
+　　URLへPARAMでoauth.GET
+　　レスポンス処理。
+　・受信DM一覧取得({ハッシュ=?}PARAMで)～
+　　URLとは文字列 = APIURL & 『direct_messages』 & フォーマット
+　　URLへPARAMでoauth.GET
+　　レスポンス処理。
+　・送信DM一覧取得({ハッシュ=?}PARAMで)～
+　　URLとは文字列 = APIURL & 『direct_messages/sent』 & フォーマット
+　　URLへPARAMでoauth.GET
+　　レスポンス処理。
+　・DM送信({文字列}USERへ{文字列}STRと|USERにSTRの|STRを)～
+　　URLとは文字列 = APIURL & 『direct_messages/new』 & フォーマット
+　　PARAMとはハッシュ。
+　　PARAM@`user` = USER
+　　PARAM@`text` = STR
+　　URLへPARAMでoauth.POST
+　　レスポンス処理。
+　・DM削除({文字列}IDの|IDを)～
+　　URLとは文字列 = APIURL & 『direct_messages/destroy/』 & ID & フォーマット
+　　URLへoauth.POST
 　　レスポンス処理。
 　・フォロー({ハッシュ=?}PARAMで{文字列}SCREEN_NAMEを)～
 　　URLとは文字列 = APIURL & 『friendships/create/』 & SCREEN_NAME & フォーマット
 　　URLへPARAMでoauth.POST
 　　レスポンス処理。
-　・返信取得({ハッシュ=?}PARAMで)～
-　　URLとは文字列 = APIURL & 『statuses/mentions』 & フォーマット
+　・リムーブ({ハッシュ=?}PARAMで{文字列}SCREEN_NAMEを)～
+　　URLとは文字列 = APIURL & 『friendships/destroy/』 & SCREEN_NAME & フォーマット
+　　URLへPARAMでoauth.POST
+　　レスポンス処理。
+　・フォロー関係取得({文字列}SOURCE_SCREEN_NAMEと{文字列}TARGET_SCREEN_NAMEの)～
+　　URLとは文字列 = APIURL & 『friendships/show』 & フォーマット
+　　PARAMとはハッシュ。
+　　PARAM@`source_screen_name` = SOURCE_SCREEN_NAME
+　　PARAM@`target_screen_name` = TARGET_SCREEN_NAME
+　　URLへPARAMでoauth.GET
+　　レスポンス処理。
+　・ふぁぼり一覧取得({ハッシュ=?}PARAMで)～
+　　URLとは文字列 = APIURL & 『favorites』 & フォーマット
 　　URLへPARAMでoauth.GET
 　　レスポンス処理。
 　・ふぁぼる({文字列}STATUS_IDを)～
 　　URLとは文字列 = APIURL & 『favorites/create/』 & STATUS_ID & フォーマット
-　　URLへoauth.GET
+　　URLへoauth.POST
+　　レスポンス処理。
+　・ふぁぼり削除({文字列}STATUS_IDを|STATUS_IDの)～
+　　URLとは文字列 = APIURL & 『favorites/destroy/』 & STATUS_ID & フォーマット
+　　URLへoauth.POST
 　　レスポンス処理。
 　・API確認～
 　　URLとは文字列 = APIURL & 『help/test』 & フォーマット
@@ -256,17 +324,20 @@
 　・認証～
 　　oauthのリクエストトークン取得処理
 　　oauthの認証URL取得してコピーして起動
+　　3秒待つ。
+　　TEMPとは整数 = ダイアログ数値変換
 　　ダイアログ数値変換はオフ
 　　『暗証番号は？』と尋ねる
 　　oauthからそれでアクセストークン取得処理
+　　ダイアログ数値変換 = TEMP
 　・作る～
 　　# Twitter OAuth API
 　　oauthのリクエストトークンURL      = 『http://twitter.com/oauth/request_token』
 　　oauthのアクセストークンURL        = 『http://twitter.com/oauth/access_token』
 　　oauthの認証URL                    = 『http://twitter.com/oauth/authorize』
 　　# Nakotter コンシューマ
-　　oauthのコンシューマのトークンキー = 『lFjjUGoiNEMXKGKo60Kw』
-　　oauthのコンシューマのシークレット = 『VC0jfRWcmFvvG77KJagiLkmHptuoiTEJtfXTlUnrY』
+　　oauthのコンシューマのトークンキー = 『』
+　　oauthのコンシューマのシークレット = 『』
 　　# HTTP Response の処理。デフォルトでは JSON 想定
 　　もしナデシコバージョン≦1.5329ならば
 　　　レスポンス処理は
@@ -287,4 +358,3 @@
 　　それの『:null』を『:""』に置換の『:(\d{11,})』を『:"$1"』に正規表現置換をJSONデコード
 ●JSONデータ修正_nako_v_1_533
 　　それの『:null』を『:""』に置換をJSONデコード
-

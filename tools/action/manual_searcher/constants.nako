@@ -35,10 +35,10 @@
 ！サンプルフォルダとは文字列　=ランタイムパス&`sample\`
 
 # BBS_URL
-！質問URL　　　=`http://www.himanavi.net/cgi/nade-bbs2/srch.cgi?mode=srch&no=0&word=%`
-！初心者URL　　=`http://www.himanavi.net/cgi/nade-1st/srch.cgi?no=0&word=%`
-！プログラムURL=`http://www.himanavi.net/cgi/nade-bbs/srch.cgi?mode=srch&no=0&word=%`
-！WikiURL　　　=`http://nadesi.com/man/page/?cx=partner-pub-3816223231062294%3A6jl3ku-nk7a&cof=FORID%3A10&ie=UTF-8&q=%`
+！質問URL　　　=`http://nade.jp-pro.net/bbs/bbs3/srch.cgi?mode=srch&no=0&word=%`
+！初心者URL　　=`http://nade.jp-pro.net/bbs/bbs/srch.cgi?no=0&word=%`
+！プログラムURL=`http://nade.jp-pro.net/bbs/bbs2/srch.cgi?mode=srch&no=0&word=%`
+！WikiURL　　　=`http://www.google.co.jp/cse?cx=partner-pub-3816223231062294%3Atopeve-xl75&ie=UTF-8&sa=検索&siteurl=nadesi.com%2Fman%2F&q=%`
 
 # プログラム定数
 ！ナコとは文字列　　=`.nako`
