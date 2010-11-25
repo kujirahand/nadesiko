@@ -1,5 +1,5 @@
-# nakotter ver.0.4
-# http://www.undefin.net/nadesiko/nako/nakotter-ver.0.4.zip
+# nakotter ver.0.42
+# http://www.undefin.net/nadesiko/nako/nakotter-ver.0.42.zip
 
 ！変数宣言は必要
 
@@ -113,12 +113,18 @@
 　　パラメータ@『oauth_timestamp』       = UNIX時間取得
 　　パラメータ@『oauth_version』         = バージョン
 　　_ = パラメータ
+　・{非公開}コンシューマチェック～
+　　もしコンシューマのトークンキーが空ならば
+　　　『コンシューマのトークンキーが空です。』でエラー発生
+　　もしコンシューマのシークレットが空ならば
+　　　『コンシューマのシークレットが空です。』でエラー発生
 　・HTTPリクエスト({文字列}URLへ{ハッシュ}PARAMで)～
 　　エラー監視
 　　　URL&『?』&(PARAMのURLパラメータ変換)からHTTPデータ取得
 　　エラーならば
 　　　『HTTPリクエストに失敗。パラメータの指定が間違っている可能性があります。』でエラー発生
 　・POST({文字列}URLへ{ハッシュ=?}PARAMで)～
+　　コンシューマチェック
 　　鍵とは文字列 = (コンシューマのシークレット)&『&』&シークレット
 　　基本パラメータとはハッシュ = 基本パラメータ生成
 　　基本パラメータ@『oauth_token』= トークンキー
@@ -131,6 +137,7 @@
 　　BODYとは文字列 = PARAMをURLパラメータ変換
 　　それは空。HEADとBODYをURLへHTTPポスト
 　・GET({文字列}URLへ{ハッシュ=?}PARAMで)～
+　　コンシューマチェック
 　　鍵とは文字列 = (コンシューマのシークレット)&『&』&シークレット
 　　基本パラメータとはハッシュ = 基本パラメータ生成
 　　基本パラメータ@『oauth_token』= トークンキー
@@ -144,6 +151,7 @@
 　　　URLに『?』&(PARAMをURLパラメータ変換)を追加
 　　それは空。HEADをURLへHTTPゲット
 　・リクエストトークン取得処理～
+　　コンシューマチェック
 　　パラメータとはハッシュ = 基本パラメータ生成
 　　鍵とは文字列   = (コンシューマのシークレット)&『&』
 　　署名とは文字列 = 『GET&』&(リクエストトークンURLをURLエンコード)&『&』
@@ -160,6 +168,7 @@
 　・認証URL取得～
 　　認証URL&『?oauth_token=』&(リクエストのトークンキー)を戻す
 　・アクセストークン取得処理({文字列}暗証番号で)～
+　　コンシューマチェック
 　　パラメータとはハッシュ = 基本パラメータ生成
 　　パラメータ@『oauth_token』    = リクエストのトークンキー
 　　パラメータ@『oauth_verifier』 = 暗証番号
@@ -181,7 +190,6 @@
 　　それをBASE64エンコード
 　・{非公開}ヘッダ生成({ハッシュ}PARAMから)～
 　　結果とは文字列 = 『Authorization: OAuth 』
-　　＃PARAMのハッシュキー列挙して反復
 　　『oauth_nonce,oauth_timestamp,oauth_consumer_key,oauth_signature_method,oauth_version,oauth_token,oauth_signature』を、
 　　『,』で区切って反復
 　　　結果に対象&『="』&(PARAM@対象)&『", 』を追加
@@ -206,11 +214,11 @@
 # Cf. http://apiwiki.twitter.com/Twitter-API-Documentation
 
 ■Nakotter
-　・{数値}バージョン{=0.4}
+　・{数値}バージョン{=0.42}
 　・{文字列}APIURL{="http://api.twitter.com/1/"}
 　・{文字列}フォーマット{=".json"}
 　・{OAuth}oauth
-　・{イベント}レスポンス処理
+　・レスポンス処理
 　・ホームTL取得({ハッシュ=?}PARAMで)～
 　　URLとは文字列 = APIURL & 『statuses/home_timeline』 & フォーマット
 　　URLへPARAMでoauth.GET
@@ -313,6 +321,18 @@
 　　URLとは文字列 = APIURL & 『favorites/destroy/』 & STATUS_ID & フォーマット
 　　URLへoauth.POST
 　　レスポンス処理。
+　・ブロック({文字列}SCREEN_NAMEを)～
+　　URLとは文字列 = APIURL & 『blocks/create/』 & SCREEN_NAME & フォーマット
+　　URLへoauth.POST
+　　レスポンス処理。
+　・ブロック解除({文字列}SCREEN_NAMEを|SCREEN_NAMEの)～
+　　URLとは文字列 = APIURL & 『blocks/destroy/』 & SCREEN_NAME & フォーマット
+　　URLへoauth.POST
+　　レスポンス処理。
+　・ブロックユーザ一覧取得({ハッシュ=?}PARAMで)～
+　　URLとは文字列 = APIURL & 『blocks/blocking』 & フォーマット
+　　URLへPARAMでoauth.GET
+　　レスポンス処理。
 　・API確認～
 　　URLとは文字列 = APIURL & 『help/test』 & フォーマット
 　　URLへoauth.GET
@@ -355,6 +375,18 @@
 　　STRの改行&改行&改行まで切り取る
 　　_ = STR
 ●JSONデータ修正_nako_v_1_5329
+　　JSONデータ修正_HOTFIX_201010
 　　それの『:null』を『:""』に置換の『:(\d{11,})』を『:"$1"』に正規表現置換をJSONデコード
 ●JSONデータ修正_nako_v_1_533
+　　JSONデータ修正_HOTFIX_201010
 　　それの『:null』を『:""』に置換をJSONデコード
+
+UTF8変換テーブルとはハッシュ=『\u003C=<
+\u003E=>』
+
+●JSONデータ修正_HOTFIX_201010
+　JSONとは文字列=それ
+　UTF8変換テーブルのハッシュキー列挙して反復
+　　JSON=JSONの対象をUTF8変換テーブル@対象に置換
+　_=JSON
+
