@@ -209,7 +209,7 @@ end;
 procedure ImportNakoFunction; stdcall;
 begin
   // なでしこシステムに関数を追加
-  // nako_qrcode.dll,6560-6569
+  // nako_qrcode.dll,6560-6579
   // <命令>
   //+バーコード[デラックス版のみ](nako_qrcode.dll)
   //-QRコード
