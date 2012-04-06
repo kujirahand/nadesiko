@@ -12,22 +12,22 @@ type
   private
     list: TList;
     function GetCount: Integer;
-    function GetValue(Index: Integer): string;
-    procedure SetValue(Index: Integer; const Value: string);
+    function GetValue(Index: Integer): AnsiString;
+    procedure SetValue(Index: Integer; const Value: AnsiString);
     procedure SetCount(const Value: Integer);
   public
     constructor Create;
     destructor Destroy; override;
     procedure Clear; virtual;
     procedure Delete(Index: Integer);
-    function GetCommaText: string;
-    function GetCommaTextEx(Splitter: Char; ColCount: Integer = -1): string;
-    function GetTabText: string;
-    function Add(Value: string): Integer;
+    function GetCommaText: AnsiString;
+    function GetCommaTextEx(Splitter: AnsiChar; ColCount: Integer = -1): AnsiString;
+    function GetTabText: AnsiString;
+    function Add(Value: AnsiString): Integer;
     property Count: Integer read GetCount write SetCount;
-    procedure Insert(Index: Integer; Value: string);
+    procedure Insert(Index: Integer; Value: AnsiString);
     procedure Move(FromI, ToI: Integer);
-    property Values[Index: Integer]: string read GetValue write SetValue;
+    property Values[Index: Integer]: AnsiString read GetValue write SetValue;
     procedure Assign(Source: TCsvCells);
     procedure TrimLast;
     function AllBlank: Boolean;
@@ -38,15 +38,15 @@ type
     list: TList;
     FUseHeader: Boolean;
     function GetCount: Integer;
-    function GetCell(ACol, ARow: Integer): string;
-    procedure SetCell(ACol, ARow: Integer; const Value: string);
+    function GetCell(ACol, ARow: Integer): AnsiString;
+    procedure SetCell(ACol, ARow: Integer; const Value: AnsiString);
     procedure SetCount(const Value: Integer);
     function GetColCount: Integer;
-    function GetAsText: string;
-    procedure SetAsText(const Value: string);
-    function GetAsTabText: string;
-    procedure SetAsTabText(const Value: string);
-    procedure SetAsTextCustom(const Delimiter: Char; const Value: string);
+    function GetAsText: AnsiString;
+    procedure SetAsText(const Value: AnsiString);
+    function GetAsTabText: AnsiString;
+    procedure SetAsTabText(const Value: AnsiString);
+    procedure SetAsTextCustom(const Delimiter: AnsiChar; const Value: AnsiString);
     procedure SetColCount(const Value: Integer);
     function GetRow(ARow: Integer): TCsvCells;
   public
@@ -67,17 +67,17 @@ type
     function GetRectData(ALeft,ATop,ARight,ABottom: Integer): TCsvSheet;
     procedure UniqueKey(Index: Integer);
     // ファイル操作
-    procedure LoadFromFile(FileName: string; ProgressFunc: TCsvProgressFunc = nil; Splitter: Char = ',');
-    procedure SaveToFile(FileName: string; ProgressFunc: TCsvProgressFunc = nil; Splitter: Char = ',');
+    procedure LoadFromFile(FileName: AnsiString; ProgressFunc: TCsvProgressFunc = nil; Splitter: AnsiChar = ',');
+    procedure SaveToFile(FileName: AnsiString; ProgressFunc: TCsvProgressFunc = nil; Splitter: AnsiChar = ',');
     // 機能
     procedure ReverseRow; // 逆さまにする
     procedure SortStr(Index: Integer);
     procedure SortNum(Index: Integer);
     procedure SortDate(Index: Integer);
-    function FindStr(Index: Integer; key: string; FromIndex: Integer = 0): Integer; // 普通に完全一致検索
-    function FindWildMatch(Index: Integer; key: string; FromIndex: Integer = 0): Integer;
-    function KeisenText: string;
-    function OutHtmlTable(attribute: string): string;
+    function FindStr(Index: Integer; key: AnsiString; FromIndex: Integer = 0): Integer; // 普通に完全一致検索
+    function FindWildMatch(Index: Integer; key: AnsiString; FromIndex: Integer = 0): Integer;
+    function KeisenText: AnsiString;
+    function OutHtmlTable(attribute: AnsiString): AnsiString;
     // コピーその他
     procedure Assign(Source: TCsvSheet);
     function AddCsvRow(sheet: TCsvSheet; Row: Integer): Integer;
@@ -86,31 +86,31 @@ type
     // プロパティ
     property Count: Integer read GetCount write SetCount;
     property ColCount: Integer read GetColCount write SetColCount;
-    property Cells[ACol, ARow: Integer]: string read GetCell write SetCell;
-    property AsText : string read GetAsText write SetAsText;
-    property AsTabText : string read GetAsTabText write SetAsTabText;
+    property Cells[ACol, ARow: Integer]: AnsiString read GetCell write SetCell;
+    property AsText : AnsiString read GetAsText write SetAsText;
+    property AsTabText : AnsiString read GetAsTabText write SetAsTabText;
     property UseHeader: Boolean read FUseHeader write FUseHeader;
     property Rows[ARow: Integer]: TCsvCells read GetRow;
   end;
 
-function uni2ansi(ws:WideString): string;
-function ansi2uni(s:String):WideString;
+function uni2ansi(ws:WideString): RawByteString;
+function ansi2uni(s:RawByteString):WideString;
 
 implementation
 
-uses StrUnit, wildcard, Variants;
+uses StrUnit, wildcard, Variants, unit_string;
 
-function uni2ansi(ws:WideString): string;
+function uni2ansi(ws:WideString): RawByteString;
 begin
   Result := UTF8Encode(ws);
 end;
 
-function ansi2uni(s:String):WideString;
+function ansi2uni(s:RawByteString):WideString;
 var
   i: Integer;
   c: Byte;
   f: Boolean;
-  tmp: string;
+  tmp: RawByteString;
 
   function chk(n:Integer): Boolean;
   var j: Integer;
@@ -179,11 +179,11 @@ begin
   if f then
   begin
     // UTF-8
-    Result := UTF8Decode(UTF8String(s));
+    Result := UTF8ToWideString(UTF8String(s));
   end else
   begin
     // SJIS
-    Result := tmp;
+    Result := WideString(tmp);
   end;
 end;
 
@@ -268,7 +268,7 @@ begin
   inherited;
 end;
 
-function TCsvSheet.FindStr(Index: Integer; key: string; FromIndex: Integer): Integer;
+function TCsvSheet.FindStr(Index: Integer; key: AnsiString; FromIndex: Integer): Integer;
 var
   i: Integer;
   p: TCsvCells ;
@@ -285,19 +285,19 @@ begin
   end;
 end;
 
-function TCsvSheet.FindWildMatch(Index: Integer; key: string;
+function TCsvSheet.FindWildMatch(Index: Integer; key: AnsiString;
   FromIndex: Integer): Integer;
 var
   i: Integer;
   p: TCsvCells ;
-  s: string;
+  s: AnsiString;
 begin
   Result := -1;
   for i := FromIndex to list.Count - 1 do
   begin
     p := list.Items[i];
     s := p.GetValue(Index);
-    if WildMatchFilename(s, key) then
+    if WildMatchFilename(string(s), string(key)) then
     begin
       Result := i;
       Break;
@@ -305,7 +305,7 @@ begin
   end;
 end;
 
-function TCsvSheet.GetAsTabText: string;
+function TCsvSheet.GetAsTabText: AnsiString;
 var
   c: TCsvCells;
   row: Integer;
@@ -318,7 +318,7 @@ begin
   end;
 end;
 
-function TCsvSheet.GetAsText: string;
+function TCsvSheet.GetAsText: AnsiString;
 var
   c: TCsvCells;
   row: Integer;
@@ -332,7 +332,7 @@ begin
 end;
 
 
-function TCsvSheet.GetCell(ACol, ARow: Integer): string;
+function TCsvSheet.GetCell(ACol, ARow: Integer): AnsiString;
 var
   c: TCsvCells ;
 begin
@@ -416,11 +416,11 @@ begin
     list.Insert(Index, TCsvCells.Create);
 end;
 
-function TCsvSheet.KeisenText: string;
+function TCsvSheet.KeisenText: AnsiString;
 const
-  KEI_TOP: array[0..2]of string = ('┏','┳','┓');
-  KEI_MID: array[0..2]of string = ('┣','╋','┫');
-  KEI_BOM: array[0..2]of string = ('┗','┻','┛');
+  KEI_TOP: array[0..2]of AnsiString = ('┏','┳','┓');
+  KEI_MID: array[0..2]of AnsiString = ('┣','╋','┫');
+  KEI_BOM: array[0..2]of AnsiString = ('┗','┻','┛');
   KEIW = '━';
   KEIH = '┃';
 
@@ -428,7 +428,7 @@ var
   col, row, cols, w, maxw: Integer;
   colWidth: array of Integer;
 
-  function StrRepeat(s: string; Count: Integer): string;
+  function StrRepeat(s: AnsiString; Count: Integer): AnsiString;
   var i: Integer;
   begin
     Result := '';
@@ -436,7 +436,7 @@ var
       Result := Result + s;
   end;
 
-  procedure subKeisen(L,M,R: string);
+  procedure subKeisen(L,M,R: AnsiString);
   var col: Integer;
   begin
     Result := Result + L;
@@ -492,8 +492,8 @@ begin
   subKeisen(KEI_BOM[0], KEI_BOM[1], KEI_BOM[2]);
 end;
 
-procedure TCsvSheet.LoadFromFile(FileName: string;
-  ProgressFunc: TCsvProgressFunc; Splitter: Char);
+procedure TCsvSheet.LoadFromFile(FileName: AnsiString;
+  ProgressFunc: TCsvProgressFunc; Splitter: AnsiChar);
 var
   i: Integer; c: TCsvCells; Cancel: Boolean;
   f: TextFile;
@@ -502,14 +502,14 @@ var
 
   procedure ReadLine;
   var
-    flagStr: Boolean; p: PChar; line, cell: string;
+    flagStr: Boolean; p: PAnsiChar; line, cell: AnsiString;
   label
     lblRead;
   begin
     flagStr := False;
     ReadLn(f, line);
     ReadBytes := ReadBytes + Length(line) + 2;
-    p := PChar(line);
+    p := PAnsiChar(line);
     cell := '';
 
     lblRead:
@@ -551,7 +551,7 @@ var
       begin
         ReadLn(f, line);
         ReadBytes := ReadBytes + Length(line) + 2;
-        p := PChar(line);
+        p := PAnsiChar(line);
         cell := cell + #13#10;
         goto lblRead;
       end;
@@ -561,7 +561,7 @@ var
 
 begin
   Clear ;
-  AssignFile(f, FileName);
+  AssignFile(f, string(FileName));
   try
     Reset(f);
     TotalSize := FileSize(f) * 128+ 1;
@@ -615,7 +615,7 @@ begin
   list.Move(FromI, ToI);
 end;
 
-function TCsvSheet.OutHtmlTable(attribute: string): string;
+function TCsvSheet.OutHtmlTable(attribute: AnsiString): AnsiString;
 var
   x, y: Integer;
   cols: Integer;
@@ -623,7 +623,7 @@ begin
   cols := ColCount ;
   if attribute <> '' then
   begin
-    Result := '<TABLE ' + trim(attribute) + '>'#13#10;
+    Result := '<TABLE ' + TrimA(attribute) + '>'#13#10;
   end else
   begin
     Result := '<TABLE>'#13#10;
@@ -690,8 +690,8 @@ begin
   end;
 end;
 
-procedure TCsvSheet.SaveToFile(FileName: string;
-  ProgressFunc: TCsvProgressFunc; Splitter: Char);
+procedure TCsvSheet.SaveToFile(FileName: AnsiString;
+  ProgressFunc: TCsvProgressFunc; Splitter: AnsiChar);
 var
   i: Integer; c: TCsvCells; Cancel: Boolean;
   f: TextFile;
@@ -725,28 +725,28 @@ begin
   end;
 end;
 
-procedure TCsvSheet.SetAsTabText(const Value: string);
+procedure TCsvSheet.SetAsTabText(const Value: AnsiString);
 begin
   SetAsTextCustom(#9, Value);
 end;
 
-procedure TCsvSheet.SetAsText(const Value: string);
+procedure TCsvSheet.SetAsText(const Value: AnsiString);
 begin
   SetAsTextCustom(',', Value);
 end;
 
-procedure TCsvSheet.SetAsTextCustom(const Delimiter: Char;
-  const Value: string);
+procedure TCsvSheet.SetAsTextCustom(const Delimiter: AnsiChar;
+  const Value: AnsiString);
 var
-  p: PChar;
+  p: PAnsiChar;
   flagStr: Boolean;
-  cell: string;
+  cell: AnsiString;
   c: TCsvCells;
 begin
   Clear;
   flagStr := False;
   c := TCsvCells.Create ;
-  p := PChar(Value);
+  p := PAnsiChar(Value);
   while p^ <> #0 do
   begin
     if p^ in LeadBytes then
@@ -805,7 +805,7 @@ begin
   if c.Count > 0 then list.Add(c) else c.Free ;
 end;
 
-procedure TCsvSheet.SetCell(ACol, ARow: Integer; const Value: string);
+procedure TCsvSheet.SetCell(ACol, ARow: Integer; const Value: AnsiString);
 begin
   if ARow >= list.Count then
   begin
@@ -1088,19 +1088,19 @@ end;
 
 { TCsvCells }
 
-function TCsvCells.Add(Value: string): Integer;
+function TCsvCells.Add(Value: AnsiString): Integer;
 var
-  p: PChar;
+  p: PAnsiChar;
 begin
   GetMem(p, Length(Value) + 1);
-  StrCopy(p, PChar(Value)); 
+  StrCopy(p, PAnsiChar(Value));
   Result := list.Add(p);
 end;
 
 function TCsvCells.AllBlank: Boolean;
 var
   i: Integer;
-  s: string;
+  s: AnsiString;
 begin
   Result := False;
   for i := 0 to list.Count - 1 do
@@ -1112,7 +1112,7 @@ begin
 end;
 
 procedure TCsvCells.Assign(Source: TCsvCells);
-var i: Integer; pSrc, pDes: PChar;
+var i: Integer; pSrc, pDes: PAnsiChar;
 begin
   list.Count := Source.Count ;
   for i := 0 to Source.Count - 1 do
@@ -1130,7 +1130,7 @@ begin
 end;
 
 procedure TCsvCells.Clear;
-var i: Integer; p: PChar;
+var i: Integer; p: PAnsiChar;
 begin
   for i := 0 to list.Count - 1 do
   begin
@@ -1147,7 +1147,7 @@ end;
 
 procedure TCsvCells.Delete(Index: Integer);
 var
-  p: PChar;
+  p: PAnsiChar;
 begin
   p := list.Items[Index];
   if p<>nil then Dispose(p);
@@ -1161,16 +1161,16 @@ begin
   inherited;
 end;
 
-function TCsvCells.GetCommaText: string;
+function TCsvCells.GetCommaText: AnsiString;
 var
   i: Integer;
 
-  function chkValue(s: string): string;
+  function chkValue(s: AnsiString): AnsiString;
   begin
     Result := s;
     if (JPosM('"', Result) > 0)or(JPosM(#13, Result) > 0)or(JPosM(#10, Result) > 0)then
     begin
-      Result := '"' + JReplace(Result, '"', '""', True) + '"';
+      Result := '"' + JReplaceA(Result, '"', '""') + '"';
     end else
     if (JPosM(',', Result) > 0)or(JPosM(' ', Result) > 0) then
     begin
@@ -1191,16 +1191,16 @@ begin
   if Result <> '' then System.Delete(Result, Length(Result), 1);
 end;
 
-function TCsvCells.GetCommaTextEx(Splitter: Char; ColCount: Integer): string;
+function TCsvCells.GetCommaTextEx(Splitter: AnsiChar; ColCount: Integer): AnsiString;
 var
   i: Integer;
 
-  function chkValue(s: string): string;
+  function chkValue(s: AnsiString): AnsiString;
   begin
     Result := s;
     if (JPosM('"', Result) > 0)or(JPosM(#13, Result) > 0)or(JPosM(#10, Result) > 0)then
     begin
-      Result := '"' + JReplace(Result, '"', '""', True) + '"';
+      Result := '"' + JReplaceA(Result, '"', '""') + '"';
     end else
     if (JPosM(Splitter, Result) > 0)or(JPosM(' ', Result) > 0) then
     begin
@@ -1228,15 +1228,15 @@ begin
 end;
 
 
-function TCsvCells.GetTabText: string;
+function TCsvCells.GetTabText: AnsiString;
 var
   i: Integer;
 
-  function chk(s: string): string;
+  function chk(s: AnsiString): AnsiString;
   begin
     if (JPosM('"', s) > 0)or(JPosM(#13, s) > 0)or(JPosM(#10, s) > 0) then
     begin
-      Result := '"' + JReplace(s, '"', '""', True) + '"';
+      Result := '"' + JReplaceU(s, '"', '""', True) + '"';
     end else
     if JPosM(#9, s) > 0 then
     begin
@@ -1251,30 +1251,30 @@ begin
   Result := '';
   for i := 0 to list.Count - 1 do
   begin
-    Result := Result + chk(PChar(list.Items[i])) + #9;
+    Result := Result + chk(PAnsiChar(list.Items[i])) + #9;
   end;
   System.Delete(Result,Length(Result),1);
 end;
 
-function TCsvCells.GetValue(Index: Integer): string;
+function TCsvCells.GetValue(Index: Integer): AnsiString;
 begin
   if (Index < list.Count)and(Index >= 0) then
   begin
-    Result := string(PChar( list.Items[Index] ));
+    Result := string(PAnsiChar( list.Items[Index] ));
   end else
   begin
     Result := '';
   end;
 end;
 
-procedure TCsvCells.Insert(Index: Integer; Value: string);
+procedure TCsvCells.Insert(Index: Integer; Value: AnsiString);
 var
-  p: PChar;
+  p: PAnsiChar;
 begin
   if Value <> '' then
   begin
     GetMem(p, Length(Value)+1);
-    StrCopy(p, PChar(Value));
+    StrCopy(p, PAnsiChar(Value));
   end else
     p := nil;
   if Index >= Count then list.Count := Index;
@@ -1295,15 +1295,15 @@ begin
   list.Count := Value;
 end;
 
-procedure TCsvCells.SetValue(Index: Integer; const Value: string);
-var p: PChar;
+procedure TCsvCells.SetValue(Index: Integer; const Value: AnsiString);
+var p: PAnsiChar;
 begin
   if Index >= list.Count then
   begin
     list.Count := Index + 1; // 伸びる
   end;
   GetMem(p, Length(Value) + 1);
-  StrCopy(p, PChar(Value));
+  StrCopy(p, PAnsiChar(Value));
   list.Items[Index] := p;
 end;
 

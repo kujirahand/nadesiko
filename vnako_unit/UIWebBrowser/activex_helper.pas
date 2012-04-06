@@ -619,7 +619,7 @@ begin
           InfoType := Format('\StringFileInfo\%0.4x%0.4x\%s'#0, [LoWord(LongInt(LangPtr^)),
             HiWord(LongInt(LangPtr^)), InfoType]);
         if VerQueryValue(Info, Pchar(InfoType), InfoData, len) then
-          Result := strPas(InfoData);
+          Result := StrPas(PAnsiChar(InfoData));
       end;
     finally
       FreeMem(Info, InfoSize);

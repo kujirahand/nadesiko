@@ -449,7 +449,7 @@ const
   json_number_chars = '0123456789.+-e';
   json_number_chars_set = ['0'..'9','.','+','-','e'];
   json_hex_chars = '0123456789abcdef';
-  json_hex_chars_set = ['0'..'9','a'..'f'];
+  json_hex_chars_set = ['0'..'9','a'..'f','A'..'F'];
 
 {$ifdef MSWINDOWS}
   function sprintf(buffer, format: PAnsiChar): longint; varargs; cdecl; external 'msvcrt.dll';

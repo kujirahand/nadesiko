@@ -30,7 +30,7 @@ var
 function ExtractFilePath(const s: AnsiString): AnsiString;
 var
   ss: AnsiString;
-  p, pEnd, pFrom: PChar;
+  p, pEnd, pFrom: PAnsiChar;
 begin
   if s = '' then
   begin
@@ -41,7 +41,7 @@ begin
   SetLength(ss, Length(s));
   Move(s[1], ss[1], Length(s));
 
-  p := PChar(ss);
+  p := PAnsiChar(ss);
   pFrom := p;
   pEnd  := nil;
   while p^ <> #0 do
@@ -58,7 +58,7 @@ begin
   if pEnd <> nil then
   begin
     pEnd^ := #0;
-    Result := AnsiString( PChar(pFrom) );
+    Result := AnsiString( PAnsiChar(pFrom) );
     if Copy(Result, Length(Result), 1) <> '\' then Result := Result + '\';
   end else
   begin
@@ -90,8 +90,8 @@ var
     if getMode = CNAKO_MODE_EXE then ReadLn;
     if debugmode then
     begin
-      s := ExtractFilePath(ParamStr(0)) + 'report.txt';
-      nako_makeReport(PChar(s));
+      s := AnsiString(ExtractFilePath(AnsiString(ParamStr(0)))) + 'report.txt';
+      nako_makeReport(PAnsiChar(s));
     end;
     Exit;
   end;
@@ -108,7 +108,7 @@ var
     i := 1;
     while i <= ParamCount do
     begin
-      s := ParamStr(i);
+      s := AnsiString(ParamStr(i));
       if (Copy(s, 1, 6) = '-debug') then
       begin
         debugmode := True;
@@ -122,7 +122,7 @@ var
       begin
         // ワンライナー
         Inc(i);
-        src := ParamStr(i);
+        src := AnsiString(ParamStr(i));
         Inc(i);
         FlagOneLiner := True;
       end else
@@ -138,7 +138,8 @@ var
       ErrLoad; ExitW;
     end;
     // ソースを実行
-    path := ExtractFilePath(src); if path = '' then path := ExtractFilePath(ParamStr(0));
+    path := ExtractFilePath(src);
+    if path = '' then path := ExtractFilePath(AnsiString(ParamStr(0)));
     nako_eval_str2('!変数宣言が不要'#13#10'母艦パスは"'+path+'"'#13#10);
     //
     if FlagOneLiner then
@@ -147,7 +148,7 @@ var
       ExitW;
     end else
     begin
-      res := nako_load(PChar(src));
+      res := nako_load(PAnsiChar(src));
     end;
   end;
 
@@ -170,7 +171,7 @@ begin
       // --- 実行ファイルからの起動
       nako_addFileCommand;
       nako_LoadPlugins;
-      path := ExtractFilePath(ParamStr(0));
+      path := ExtractFilePath(AnsiString(ParamStr(0)));
       nako_eval_str2('!変数宣言が不要'#13#10'母艦パスは"'+path+'"'#13#10);
       res := nako_runPackfile;
     end else
@@ -187,7 +188,7 @@ begin
     // プログラムの実行に失敗したとき
     len := nako_getError(nil, 0);
     SetLength(err, len);
-    nako_getError(PChar(err), len);
+    nako_getError(PAnsiChar(err), len);
     cout(err);
     ExitW;
     Exit;
@@ -200,7 +201,7 @@ begin
       // プログラムの実行に失敗したとき
       len := nako_getError(nil, 0);
       SetLength(err, len);
-      nako_getError(PChar(err), len);
+      nako_getError(PAnsiChar(err), len);
       cout(err);
       ExitW;
       Exit;
@@ -219,7 +220,7 @@ end;
 //------------------------------------------------------------------------------
 // メインプログラム
 begin
-  ReportMemoryLeaksOnShutdown := True;
+  ReportMemoryLeaksOnShutdown := False;
   _nako_loader := nil;
   try
     try

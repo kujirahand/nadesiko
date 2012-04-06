@@ -98,6 +98,7 @@ type
   //----------------------------------------------------------------------------
   THimaSysFunction = function (args: THiArray): PHiValue; stdcall;
   THiFuncType = (funcSystem, funcDll, funcUser);
+  THimaSysFunctionD = function (HandleArg: DWORD): PHiValue; stdcall;
 
   // 関数の型を表すクラス
   // [注意]（定義内容は含まない）関数内容は、HiSystem.DefFunctionリストにぶら下がっている
@@ -1141,17 +1142,16 @@ end;
 
 function sys_getTokenRange(args: THiArray): PHiValue; stdcall;
 var
-  s, a, b: PHiValue;
+  s: PHiValue;
   str, sa, sb, res, rem: AnsiString;
 begin
   // (1) 引数の取得
-  s := args.FindKey(token_s);
-  a := args.FindKey(token_a);
-  b := args.FindKey(token_b);
-
-  if s <> nil then str := hi_str(s) else str := hi_str(HiSystem.Sore);
-  sa := hi_str(a);
-  sb := hi_str(b);
+  s := args.Values[0];
+  if s = nil then s := HiSystem.Sore;
+  
+  str := hi_str(s);
+  sa := getArgStr(args, 1);
+  sb := getArgStr(args, 2);
 
   // (2) データの処理
   // --A-- [sa] --B-- [sb] --C--
@@ -1189,10 +1189,10 @@ begin
   // --A-- [sa] --B-- [sb] --C--
   res := ''; // B
 
-  idx1 := AnsiPos(string(sa), string(str));
+  idx1 := PosA(sa, str);
   if idx1 <> 0 then
   begin
-    idx2 := AnsiPos(string(sb),Copy(string(str),idx1 + Length(sa),High(integer)));
+    idx2 := PosA((sb),Copy(str,idx1 + Length(sa),High(integer)));
     if idx2 <> 0 then
     begin
       idx2 := idx2 + idx1 + Length(sa) - 1;
@@ -1235,7 +1235,7 @@ end;
 
 function sys_InRangeReplace(args: THiArray): PHiValue; stdcall;
 var
-  str, res, sa, sb, sc: AnsiString;
+  str, res, sa, sb, sc: string;
   s, a, b, c: PHiValue;
   idx1, idx2: Integer;
 begin
@@ -1248,36 +1248,38 @@ begin
   // (2) データの処理
   // ---- a ***** b ====
   // ---- c =====
-  str := hi_str(s);
-  sa  := hi_str(a);
-  sb  := hi_str(b);
-  sc  := hi_str(c);
+  str := string(hi_str(s));
+  sa  := string(hi_str(a));
+  sb  := string(hi_str(b));
+  sc  := string(hi_str(c));
 
-  idx1 := AnsiPos(string(sa), string(str));
+  idx1 := Pos(string(sa), string(str));
   if idx1 <> 0 then
   begin
-    idx2 := AnsiPos(string(sb),Copy(string(str),idx1 + Length(sa),High(integer)));
+    idx2 := Pos(string(sb),Copy(string(str),idx1 + Length(sa),High(integer)));
     if idx2 <> 0 then
     begin
       idx2 := idx2 + idx1 + Length(sa) - 1;
-      if idx2-idx1+Length(sb) >= Length(sc) then
       begin
-        Move(sc[1],str[idx1],Length(sc));
-        Delete(str,idx1+Length(sc),idx2-idx1+Length(sb)-Length(sc));
-      end else
-      begin
-        SetLength(res,Length(str)-(idx2-idx1+Length(sb))+Length(sc));
-        Move(str[1],res[1],idx1-1);
-        Move(sc[1],res[idx1],Length(sc));
-        Move(str[idx2+Length(sb)],res[idx1+Length(sc)],Length(str)-idx2-Length(sb)+1);
-        str:=res;
+        //SetLength(res,Length(str)-(idx2-idx1+Length(sb))+Length(sc));
+        //Move(str[1],res[1],idx1-1);
+        //Move(sc[1],res[idx1],Length(sc));
+        //Move(str[idx2+Length(sb)],res[idx1+Length(sc)],Length(str)-idx2-Length(sb)+1);
+        //str:=res;
+        // 前
+        res := Copy(str, 1, idx1);
+        // 置換後文字列
+        res := res + sc;
+        // 後ろ
+        res := res + Copy(str, idx2, Length(str));
+        str := res;
       end;
     end;
   end;
 
   // (3) 戻り値を設定
   Result := hi_var_new;
-  hi_setStr(Result, str);
+  hi_setStr(Result, AnsiString(str));
 end;
 
 function sys_split(args: THiArray): PHiValue;
@@ -1403,7 +1405,7 @@ begin
 
   // (2) データの処理
   // (3) 戻り値を設定
-  hi_setInt(Result, JPos(hi_str(a), hi_str(s)));
+  hi_setInt(Result, PosA(hi_str(a), hi_str(s)));
 end;
 
 function sys_posB(args: THiArray): PHiValue;
@@ -1434,7 +1436,7 @@ begin
 
   // (2) データの処理
   // (3) 戻り値を設定
-  hi_setInt(Result, JPosEx(hi_str(b), hi_str(s), hi_int(a)));
+  hi_setInt(Result, PosExA(hi_str(b), hi_str(s), hi_int(a)));
 end;
 
 function sys_posExB(args: THiArray): PHiValue; stdcall;
@@ -1450,7 +1452,7 @@ begin
 
   // (2) データの処理
   // (3) 戻り値を設定
-  hi_setInt(Result, PosEx(hi_str(b), hi_str(s), hi_int(a)));
+  hi_setInt(Result, PosExA2(hi_str(b), hi_str(s), hi_int(a)));
 end;
 
 function sys_addStr(args: THiArray): PHiValue; stdcall;
@@ -1544,14 +1546,14 @@ var
   res, i, len: integer;
 begin
   // (1) 引数の取得
-  ss := getArgStr(args, 0, True);
-  sa := getArgStr(args, 1);
+  ss := string(getArgStr(args, 0, True));
+  sa := string(getArgStr(args, 1));
 
   // (2) データの処理
   res := 0;
   len := Length(sa);
   repeat
-    i := AnsiPos(sa, ss);
+    i := Pos(sa, ss);
     if i <> 0 then
     begin
       Inc(res);
@@ -1578,7 +1580,7 @@ begin
 
   // (2) データの処理
   // (3) 戻り値を設定
-  hi_setStr(Result, JCopy(hi_str(s), hi_int(a), hi_int(cnt)));
+  hi_setStr(Result, CopyA(hi_str(s), hi_int(a), hi_int(cnt)));
 end;
 
 function sys_midB(args: THiArray): PHiValue;
@@ -2547,7 +2549,7 @@ begin
   HiSystem.PushRunFlag;
   try
     n := nil;
-    Result := HiSystem.ImportFile(fname, n);
+    Result := HiSystem.ImportFile(string(fname), n);
   finally
     HiSystem.PopRunFlag;
   end;
@@ -2627,10 +2629,10 @@ begin
     Move(ptr^,PAnsiChar(str)^,size);
     hi_setStr(Result,str)
   end else begin
-    vtype:= UpperCase(hi_str(b));
+    vtype:= UpperCaseA(hi_str(b));
     replace_dll_types(vtype);
     if vtype = '' then
-      raise Exception.Create(hi_str(b)+'は定義されていない型です。');
+      raise HException.Create(hi_str(b)+'は定義されていない型です。');
 
     case vtype[1] of
       REC_DTYPE_1CHAR:    hi_setInt(Result,pshortint(ptr)^);
@@ -2654,13 +2656,13 @@ begin
       REC_DTYPE__EXT:
       begin
         getToken_s(vtype,'(');
-        size := StrToIntDef(getToken_s(vtype,')'), 0);
+        size := StrToIntDef(string(getToken_s(vtype,')')), 0);
         SetLength(str,size);
         Move(ptr^,PAnsiChar(str)^,size);
         hi_setStr(Result,str)
       end;
       else
-        raise Exception.Create(hi_str(b)+'は定義されていない型です。');
+        raise HException.Create(hi_str(b)+'は定義されていない型です。');
     end;
   end;
 
@@ -2793,7 +2795,7 @@ var
   v: PHiValue;
 begin
   v := HiSystem.GetVariableS('正規表現修飾子');
-  Result := Trim(hi_str(v));
+  Result := TrimA(hi_str(v));
 end;
 
 function __reMatch(s, pat: AnsiString; var res: AnsiString): Boolean;
@@ -2813,13 +2815,13 @@ begin
       Exit; // マッチしなかったら抜ける
     end;
     if m.Count = 0 then Exit;
-    res := m.Strings[0];
+    res := AnsiString(m.Strings[0]);
     if m.Count > 1 then
     begin
       hi_ary_create(v);
       for i := 1 to  m.Count - 1 do
       begin
-        hi_ary_set(v, i - 1, hi_newStr(m.Strings[i]));
+        hi_ary_set(v, i - 1, hi_newStr(AnsiString(m.Strings[i])));
       end;
     end;
   finally
@@ -2886,7 +2888,7 @@ begin
 
       if Copy(pat,1,1)<>'m' then
       begin
-        pat := JReplace(pat, '#', '\#');
+        pat := JReplaceA(pat, '#', '\#');
         pat := 'm#' + pat + '#' + getRegExpOpt;
       end;
 
@@ -2940,7 +2942,7 @@ begin
   // match
   try
     try
-      a := JReplace(a, '#', '\#');
+      a := JReplaceA(a, '#', '\#');
       pat := 'tr#' + a + '#' + b + '#' + getRegExpOpt;
       re.Trans(pat, s);
 
@@ -2973,11 +2975,11 @@ begin
     try
       // シーケンスを置換
       // 既にエスケープされていれば確保
-      a := JReplace(a, '#',   '\#');
+      a := JReplaceA(a, '#',   '\#');
 
       // オプション
       ss := getRegExpOpt;
-      ss := JReplace(ss, 'g', '');
+      ss := JReplaceA(ss, 'g', '');
       if IsGlobal then
       begin
         pat := 's#' + a + '#' + b + '#g' + ss;
@@ -3077,7 +3079,7 @@ begin
       p := hi_var_new;
       //hi_setStr(p, token.Token + token.Josi);
       if token.TokenType = tokenNumber then
-        hi_setStr(p, FloatToStr(token.NumberToken) + token.Josi)
+        hi_setStr(p, FloatToStrA(token.NumberToken) + token.Josi)
       else
         hi_setStr(p, token.Token + token.Josi);
 
@@ -3137,7 +3139,7 @@ begin
   // (2) データの処理
   if ps.VType <> varStr then hi_setStr(ps, hi_str(ps));
 
-  fmt := UpperCase(hi_str(pf));
+  fmt := UpperCaseA(hi_str(pf));
   replace_dll_types(fmt);
 
   p   := PAnsiChar(ps.ptr_s);
@@ -3159,7 +3161,7 @@ begin
   begin
     case fmt[1] of
       REC_DTYPE_1CHAR:
-        Result := hi_newStr(Char(p^));
+        Result := hi_newStr(AnsiChar(p^));
       REC_DTYPE_1BYTE:
         Result := hi_newInt(Ord(p^));
       REC_DTYPE_2WORD:
@@ -3305,7 +3307,7 @@ begin
   p := PAnsiChar(ps.ptr_s);
   if hi_int(pi) > 1 then Inc(p, hi_int(pi)-1);
 
-  fmt := UpperCase(hi_str(pf));
+  fmt := UpperCaseA(hi_str(pf));
   replace_dll_types(fmt);
   if fmt = '' then
     // 理解できない型の場合は何もしない
@@ -3384,7 +3386,7 @@ begin
 
   // (2) データの処理
   // (3) 戻り値を設定
-  hi_setStr(Result, JCopy(hi_str(s), 1, hi_int(cnt)));
+  hi_setStr(Result, CopyA(hi_str(s), 1, hi_int(cnt)));
 end;
 
 function sys_leftB(args: THiArray): PHiValue;
@@ -3495,7 +3497,7 @@ begin
   // (2) データの処理
   // (3) 戻り値を設定
   Result := hi_var_new;
-  hi_setStr(Result, Trim(hi_str(s)));
+  hi_setStr(Result, TrimA(hi_str(s)));
 end;
 
 function sys_break(args: THiArray): PHiValue;
@@ -3561,7 +3563,7 @@ begin
   s := args.FindKey(token_s);
   if s <> nil then msg := hi_str(s) else msg := 'ユーザーエラー';
 
-  raise Exception.Create(msg);
+  raise HException.Create(msg);
 end;
 
 function sys_runtime_error_off(args: THiArray): PHiValue; stdcall;
@@ -3586,8 +3588,8 @@ var
 begin
   Result := nil;
   p := HiSystem.Eval('変数列挙');
-  s := AppPath + 'debug.txt';
-  FileSaveAll(hi_str(p), s);
+  s := AnsiString(AppPath) + 'debug.txt';
+  FileSaveAll((hi_str(p)), string(s));
   //ShellExecute(mainWindowHandle, 'open', PAnsiChar(s), '', '', SW_SHOW);
 
   i := MessageBox(MainWindowHandle, 'debug.txtへ変数の一覧を保存しました。'#13#10+
@@ -3629,7 +3631,7 @@ begin
   for i := 0 to HiSystem.plugins.Count - 1 do
   begin
     p := HiSystem.plugins.Items[i];
-    s := s + ExtractFileName(p.FullPath) + ',';
+    s := s + AnsiString(ExtractFileName(p.FullPath)) + ',';
     if p.Used then s := s + '使用中' else s := s + '';
     s := s + #13#10;
   end;
@@ -3655,15 +3657,15 @@ begin
 
   res := '';
 
-  if pos('グローバル',str) > 0 then
+  if PosA('グローバル',str) > 0 then
   begin
-    if Pos('ユーザー', str) > 0 then begin
+    if PosA('ユーザー', str) > 0 then begin
       res := res + HiSystem.Namespace.EnumKeysAndValues(True)
     end else begin
       res := res + HiSystem.Namespace.EnumKeysAndValues(False);
     end;
   end;
-  if pos('ローカル',str) > 0 then
+  if posA('ローカル',str) > 0 then
   begin
     if HiSystem.LocalScope.Count > 0 then
       res := res + HiSystem.Local.EnumKeysAndValues;
@@ -3755,7 +3757,7 @@ begin
   func := Pointer(hi_int(args.Items[1]));
   size := hi_int(args.Items[2]);
   rect := PAnsiChar(hi_str(args.Items[3]));
-  ret := UpperCase(hi_str(args.Items[4]));
+  ret := UpperCaseA(hi_str(args.Items[4]));
   //Result:=nil;
   //MessageBox(0,rect,rect,0);
 
@@ -3789,7 +3791,7 @@ begin
       begin
         if ret = 'PCHAR' then
         begin
-          resStr := string( TDllfuncPtr(func) );
+          resStr := AnsiString( TDllfuncPtr(func) );
         end else
         begin
           resPtr := TDllfuncPtr(func);
@@ -3913,12 +3915,12 @@ begin
     begin
       idName := hi_tango2id(DeleteGobi(hi_str(pa)));
       pp := HiSystem.Global.GetVar(idName);
-      if pp <> nil then raise Exception.Create(hi_id2tango(idName)+'は既に存在するので生成できません。');
+      if pp <> nil then raise HException.Create(hi_id2tango(idName)+'は既に存在するので生成できません。');
       pa := HiSystem.CreateHiValue(idName);
     end else
     begin
       // 適当な識別名をつける
-      idName := hi_tango2id('_AUTO' + IntToStr(HiSystem.TangoList.Count));
+      idName := hi_tango2id('_AUTO' + IntToStrA(HiSystem.TangoList.Count));
       pp := hi_var_new;
       //IDを設定
       pp.VarID := idName;
@@ -4045,7 +4047,8 @@ begin
     for i := 0 to s.Size-2{最後の00は非表示にする} do
     begin
       if ( (i mod 16) = 0 ) then res := res + #13#10 else res := res + ',';
-      res := res + IntToHex(Ord(p^), 2); Inc(p);
+      res := res + AnsiString(IntToHex(Ord(p^), 2));
+      Inc(p);
     end;
   end else
   begin
@@ -4053,11 +4056,11 @@ begin
     for i := 1 to Length(str) do
     begin
       if ( ((i-1) mod 16) = 0 ) then res := res + #13#10 else res := res + ',';
-      res := res + IntToHex(Ord(str[i]), 2);
+      res := res + AnsiString(IntToHex(Ord(str[i]), 2));
     end;
   end;
 
-  hi_setStr(Result, Trim(res));
+  hi_setStr(Result, TrimA(res));
 end;
 
 function sys_getSore(args: THiArray): PHiValue; stdcall;
@@ -4151,7 +4154,7 @@ begin
   if IsDialogConvNum then
   begin
     if IsNumber(t) then
-      hi_setIntOrFloat(Result, StrToFloat(t))
+      hi_setIntOrFloat(Result, StrToFloatA(t))
     else
       hi_setStr(Result, t);
   end else
@@ -4262,10 +4265,13 @@ begin
   SetLength(Result, 4096);
   if mciSendStringA(PAnsiChar(cmd), PAnsiChar(Result), Length(Result), 0) <> 0 then
   begin
-    raise Exception.Create('MCIコマンドエラー。' + string(PAnsiChar(Result)) + '(' + cmd + ')');
+    raise HException.Create(
+      'MCIコマンドエラー。' +
+      AnsiString(PAnsiChar(Result)) +
+      '(' + cmd + ')');
   end else
   begin
-    Result := string(PAnsiChar(Result));
+    Result := AnsiString(PAnsiChar(Result));
   end;
 end;
 
@@ -4457,7 +4463,7 @@ begin
   GetDialogSetting(init, cancel, ime, title);
   if OpenFolderDialog(str, title) then
   begin
-    ret := IncludeTrailingPathDelimiter(str);
+    ret := AnsiString(IncludeTrailingPathDelimiter(string(str)));
   end else
   begin
     ret := '';
@@ -4486,9 +4492,12 @@ begin
   h := GetForegroundWindow; // FMプラグインで実行されないので
 
   if a = nil then
-    ret := ShowOpenDialog(h, str, CheckPathYen(GetCurrentDir))
+    ret := ShowOpenDialog(h, str,
+      AnsiString(CheckPathYen(GetCurrentDir)))
   else
-    ret := ShowOpenDialog(h, str, CheckPathYen(GetCurrentDir),hi_str(a));
+    ret := ShowOpenDialog(h, str,
+      AnsiString(CheckPathYen(GetCurrentDir)),
+      hi_str(a));
 
   // (3) 結果の代入
   Result := hi_var_new;
@@ -4515,9 +4524,9 @@ begin
   h := GetForegroundWindow; // FMプラグインで実行されないので
 
   if a = nil then
-    ret := ShowSaveDialog(h, str, CheckPathYen(GetCurrentDir))
+    ret := ShowSaveDialog(h, str, AnsiString(CheckPathYen(GetCurrentDir)))
   else
-    ret := ShowSaveDialog(h, str, CheckPathYen(GetCurrentDir),hi_str(a));
+    ret := ShowSaveDialog(h, str, AnsiString(CheckPathYen(GetCurrentDir)),hi_str(a));
 
   // (3) 結果の代入
   Result := hi_var_new;
@@ -5121,10 +5130,10 @@ begin
   i := hi_int(a);
   while (i > $FF) do
   begin
-    s := Chr($FF and i) + s;
+    s := ANsiString(Chr($FF and i)) + s;
     i := i shr 8;
   end;
-  s := Chr($FF and i) + s;
+  s := AnsiString(Chr($FF and i)) + s;
   //
   Result := hi_newStr(s);
 end;
@@ -5203,7 +5212,7 @@ begin
   if a = nil then a := HiSystem.Sore;
   // (2) データの処理 / (3) 戻り値を設定
   Result := hi_var_new;
-  hi_setStr(Result, IntToHex(hi_int(a), 2));
+  hi_setStr(Result, AnsiString(IntToHex(hi_int(a), 2)));
 end;
 
 function sys_rgb(args: THiArray): PHiValue; stdcall;
@@ -5583,8 +5592,10 @@ begin
   a := args.Items[1];
   if s=nil then s := HiSystem.Sore;
 
-  ss := FormatDateTime( 'yyyy/mm/dd', IncDate( StrToDateEx(hi_str(s)),
-    ConvToHalf(hi_str(a))));
+  ss := AnsiString(FormatDateTime(
+    'yyyy/mm/dd',
+    IncDate(StrToDateEx(hi_str(s)),
+    ConvToHalf(hi_str(a)))));
   Result := hi_newStr(ss);
 end;
 
@@ -5597,11 +5608,11 @@ begin
   a := args.Items[1];
   if s=nil then s := HiSystem.Sore;
 
-  ss := FormatDateTime( 'hh:nn:ss',
+  ss := AnsiString(FormatDateTime( 'hh:nn:ss',
     IncTime(
       StrToDateEx(hi_str(s)),
       ConvToHalf(hi_str(a))
-    ));
+    )));
   Result := hi_newStr(ss);
 end;
 
@@ -5668,7 +5679,11 @@ var
 begin
   i := getArgInt(args, 0, True);
   d := UNIXTimeToDelphiDateTime(i);
-  Result := hi_newStr(FormatDateTime('yyyy/mm/dd hh:nn:ss', d));
+  Result := hi_newStr(
+    AnsiString(
+      FormatDateTime('yyyy/mm/dd hh:nn:ss', d)
+    )
+  );
 end;
 
 function sys_toUnixTime(args: THiArray): PHiValue; stdcall;
@@ -5732,7 +5747,7 @@ begin
   begin
     fmt := 'yyyy-mm-dd hh:nn:ss';
   end;
-  Result := hi_newStr(FormatDateTime(fmt, dt, fs));
+  Result := hi_newStr(AnsiString(FormatDateTime(string(fmt), dt, fs)));
 end;
 {$ENDIF}
 
@@ -5747,12 +5762,12 @@ begin
   sa := hi_str(a);
 
   try
-    if (Pos('f', sa) > 0)or(Pos('m', sa) > 0) then begin
-        ss := Format(sa,[hi_float(s)]);
-    end else if (Pos('d', sa) > 0)or(Pos('x', sa) > 0)or(Pos('X', sa) > 0) then begin
-        ss := Format(sa,[hi_int(s)]);
+    if (PosA('f', sa) > 0)or(PosA('m', sa) > 0) then begin
+        ss := FormatA(sa,[hi_float(s)]);
+    end else if (PosA('d', sa) > 0)or(PosA('x', sa) > 0)or(PosA('X', sa) > 0) then begin
+        ss := FormatA(sa,[hi_int(s)]);
     end else begin
-        ss := Format(sa,[hi_str(s)]);
+        ss := FormatA(sa,[hi_str(s)]);
     end;
     Result := hi_newStr(ss);
   except
@@ -5770,7 +5785,7 @@ begin
 
   try
     Result := hi_newStr(
-      Format('%.' + IntToStr(hi_int(a)) + 'd', [ hi_int(s) ] )
+      FormatA('%.' + IntToStrA(hi_int(a)) + 'd', [ hi_int(s) ] )
     );
   except
     Result := hi_clone(s);
@@ -5782,12 +5797,12 @@ var
 
   function InsertYenComma(const yen: AnsiString): AnsiString;
   begin
-    if Pos('.',yen)=0 then
+    if PosA('.',yen)=0 then
     begin
-        Result := FormatCurr('#,##0', HimaStrToNum(yen));
+        Result := AnsiString(FormatCurr('#,##0', HimaStrToNum(yen)));
     end else
     begin
-        Result := FormatCurr('#,##0.00', HimaStrToNum(yen));
+        Result := AnsiString(FormatCurr('#,##0.00', HimaStrToNum(yen)));
     end;
   end;
 
@@ -5828,7 +5843,7 @@ end;
 function sys_zen_kana(args: THiArray): PHiValue; stdcall;
 var s: AnsiString;
 begin
-  s := JCopy(getArgStr(args,0,True),1,1) + ' ';
+  s := CopyA(getArgStr(args,0,True),1,1) + ' ';
   Result := hi_newBool(s[1] in SysUtils.LeadBytes);
 end;
 function sys_hira_kana(args: THiArray): PHiValue; stdcall;
@@ -5914,22 +5929,22 @@ begin
   b := nako_getFuncArg(args, 1);; // pack
   c := nako_getFuncArg(args, 2);; // save
   //
-  WritePackExeFile(hi_str(c), hi_str(a), hi_str(b));
+  WritePackExeFile(string(hi_str(c)), string(hi_str(a)), string(hi_str(b)));
   Result := nil;
 end;
 
 function sys_unpackfile(args: THiArray): PHiValue; stdcall;
 var
   a,b: PHiValue;
-  m: THMemoryStream;
+  m: TMemoryStream;
 begin
   a := nako_getFuncArg(args, 0);; // exe
   b := nako_getFuncArg(args, 1);; // pack
   //
-  m := THMemoryStream.Create;
+  m := TMemoryStream.Create;
   try
-    ReadPackExeFile(hi_str(a), m);
-    m.SaveToFile(hi_str(b));
+    ReadPackExeFile(string(hi_str(a)), m);
+    m.SaveToFile(string(hi_str(b)));
   finally
     m.Free;
   end;
@@ -5944,7 +5959,7 @@ begin
   f := nako_getFuncArg(args, 0);
 
   Result := hi_var_new;
-  hi_setBool(Result, ReadPackExeFile(hi_str(f), nil, False));
+  hi_setBool(Result, ReadPackExeFile(string(hi_str(f)), nil, False));
 end;
 
 function sys_packfile_nako_load(args: THiArray): PHiValue; stdcall;
@@ -5961,10 +5976,10 @@ begin
 
   if FileMixReader <> nil then FileMixReader.Free;
 
-  FileMixReader := TFileMixReader.Create(hi_str(pPack));
+  FileMixReader := TFileMixReader.Create(string(hi_str(pPack)));
   try
     try
-      FileMixReader.ReadFileAsString(hi_str(pFile), s);
+      FileMixReader.ReadFileAsString(string(hi_str(pFile)), s);
       HiSystem.LoadSourceText(s, hi_str(pFile));
     except
       hi_setBool(Result, False); Exit;
@@ -5991,10 +6006,10 @@ begin
   b := nako_getFuncArg(args, 1);; // file
   c := nako_getFuncArg(args, 2);; // save
   //
-  e := TFileMixReader.Create(hi_str(a));
+  e := TFileMixReader.Create(string(hi_str(a)));
   try
     e.autoDelete := False;
-    if False = e.ReadAndSaveToFile(hi_str(b), hi_str(c), True) then
+    if False = e.ReadAndSaveToFile(string(hi_str(b)), string(hi_str(c)), True) then
     begin
       raise Exception.Create('パックファイルからの抽出ができません。');
     end;
@@ -6013,10 +6028,10 @@ begin
   a := nako_getFuncArg(args, 0);; // pack
   b := nako_getFuncArg(args, 1);; // file
 
-  e := TFileMixReader.Create(hi_str(a));
+  e := TFileMixReader.Create(string(hi_str(a)));
   try
     e.autoDelete := False;
-    if False = e.ReadFileAsString(hi_str(b), s, True) then
+    if False = e.ReadFileAsString(string(hi_str(b)), s, True) then
     begin
       Exception.Create('パックファイルからの抽出ができません。');
     end;
@@ -6033,7 +6048,7 @@ var
   s: THStringList;
 begin
   a := nako_getFuncArg(args, 0);; // pack
-  e := TFileMixReader.Create(hi_str(a));
+  e := TFileMixReader.Create(string(hi_str(a)));
   try
     e.autoDelete := False;
     s := e.EnumFiles;
@@ -6054,8 +6069,8 @@ begin
   //
   w := TFileMixWriter.Create;
   try
-    w.FileList.Text := hi_str(a);
-    w.SaveToFile(hi_str(b));
+    w.FileList.Text := string(hi_str(a));
+    w.SaveToFile(string(hi_str(b)));
   finally
     w.Free;
   end;
@@ -6073,7 +6088,7 @@ begin
   // (2) データの処理
   // (3) 戻り値を設定
   Result := hi_var_new;
-  hi_setStr(Result, ExtractFileName(hi_str(s)));
+  hi_setStr(Result, AnsiString(ExtractFileName(string(hi_str(s)))));
 end;
 
 function sys_extractFilePath(args: THiArray): PHiValue; stdcall;
@@ -6087,7 +6102,7 @@ begin
   // (2) データの処理
   // (3) 戻り値を設定
   Result := hi_var_new;
-  hi_setStr(Result, ExtractFilePath(hi_str(s)));
+  hi_setStr(Result, ExtractFilePathA(hi_str(s)));
 end;
 
 function sys_extractExt(args: THiArray): PHiValue; stdcall;
@@ -6102,7 +6117,7 @@ begin
   // (2) データの処理
   // (3) 戻り値を設定
   Result := hi_var_new;
-  hi_setStr(Result, ExtractFileExt(hi_str(s)));
+  hi_setStr(Result, AnsiString(ExtractFileExt(string(hi_str(s)))));
 end;
 
 function sys_changeExt(args: THiArray): PHiValue; stdcall;
@@ -6118,7 +6133,11 @@ begin
   // (2) データの処理
   // (3) 戻り値を設定
   Result := hi_var_new;
-  hi_setStr(Result, ChangeFileExt(hi_str(s), hi_str(a)));
+  hi_setStr(Result,
+    AnsiString(ChangeFileExt(
+      string(hi_str(s)), string(hi_str(a)))
+    )
+  );
 end;
 
 function sys_makeoriginalfile(args: THiArray): PHiValue; stdcall;
@@ -6132,7 +6151,11 @@ begin
   // OSのコマンドを使う場合
   // s := getOriginalFileName(hi_str(pDir), hi_str(pHeader));
   // 分かりやすい名前を使う場合
-  s := mini_file_utils.getUniqFilename(hi_str(pDir), hi_str(pHeader));
+  s := AnsiString(
+    mini_file_utils.getUniqFilename(
+      string(hi_str(pDir)),
+      string(hi_str(pHeader)))
+  );
 
   Result := hi_newStr(s);
 end;
@@ -6147,7 +6170,7 @@ begin
   if s=nil then s := nako_getSore;
   // (2) データの処理
   // (3) 戻り値を設定
-  Result := hi_newStr(getAbsolutePath(hi_str(s), hi_str(a), '\'));
+  Result := hi_newStr(AnsiString(getAbsolutePath(string(hi_str(s)), string(hi_str(a)), '\')));
 end;
 
 //------------------------------------------------------------------------------
@@ -6263,7 +6286,7 @@ begin
       Inc(p);
       m := getTokenStr(p,'}');
       arg := THimaArg.Create;
-      if Pos('=', m) > 0 then
+      if PosA('=', m) > 0 then
       begin
         kata  := getToken_s(m, '=');
         value := m;

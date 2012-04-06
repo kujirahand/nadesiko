@@ -6,11 +6,14 @@ unit hima_system;
 interface
 
 uses
-  Windows, SysUtils, hima_types, hima_parser, hima_token, hima_variable,
+  Windows, SysUtils, Classes, hima_types, hima_parser, hima_token, hima_variable,
   hima_variable_ex, hima_function, hima_stream, mmsystem, unit_pack_files;
 
 const
   MAX_STACK_COUNT = 4096; // 再帰スタックの最大数(あまり大きくするとDelphi自体がオーバーフローする)
+const
+  nako_OK= 1;
+  nako_NG = 0;
 
 type
   THiScope = class;
@@ -80,11 +83,11 @@ type
   // プラグイン管理用
   THiPlugin = class
   public
-    FullPath: AnsiString;
+    FullPath: string;
     Handle: THandle;
     ID: Integer;
     Used: Boolean;
-    memo: AnsiString;
+    memo: string;
     NotUseAutoFree: Boolean;
     constructor Create;
     destructor Destroy; override;
@@ -92,10 +95,10 @@ type
   //
   THiPlugins = class(THObjectList) // プラグイン管理用リスト
   public
-    function UsedList: AnsiString; // 利用されたプラグインのみを返す
-    procedure ChangeUsed(id, PluginID: Integer; Value: Boolean; memo: AnsiString; IzonFiles: AnsiString);
-    procedure addDll(fname: AnsiString);
-    function find(fname: AnsiString): Integer;
+    function UsedList: string; // 利用されたプラグインのみを返す
+    procedure ChangeUsed(id, PluginID: Integer; Value: Boolean; memo: string; IzonFiles: string);
+    procedure addDll(fname: string);
+    function find(fname: string): Integer;
   end;
 
   THiBreakType = (btNone, btContinue, btBreak);
@@ -119,7 +122,7 @@ type
     // システム命令の追加を管理するタグ(ヘルプファイル番号の重複を防ぐための簡易的なもの)
     FTime: DWORD;
     FRunFlagList: THList;
-    FPluginsDir: AnsiString;
+    FPluginsDir: string;
     // システム命令を追加する
     procedure CheckInitSystem;
     procedure AddSystemCommand;
@@ -129,11 +132,11 @@ type
     procedure AddFunc(name, argStr: AnsiString; tag: Integer; func: THimaSysFunction; kaisetu, yomigana: AnsiString; FIzonFiles: AnsiString = '');
     procedure constListClear;
     function GetGlobalSpace: THiScope;
-    function GetBokanPath: AnsiString;
+    function GetBokanPath: string;
     procedure SetFlagEnd(const Value: Boolean);
     function getRunFlag: THiRunFlag;
     procedure setRunFlag(RunFlag: THiRunFlag);
-    procedure SetPluginsDir(const Value: AnsiString);
+    procedure SetPluginsDir(const Value: string);
   public
     TokenFiles: THimaFiles;
     TopSyntaxNode: TSyntaxNode;
@@ -157,7 +160,7 @@ type
     GroupScope: THiGroupScope;  // グループスコープ
     LocalScope: THiVarScope;    // ローカルスコープ
     Namespace: THiNamespace;    // グローバル変数::ネームスペース実装用
-    DllNameList: THStringList;  // インポートしたDLLのリスト
+    DllNameList: TStringList;  // インポートしたDLLのリスト
     DllHInstList: THList;
     DebugEditorHandle: THandle; // 行番号の送信や停止処理のため
     DebugLineNo: Boolean;
@@ -171,13 +174,13 @@ type
     LastFileNo: Integer; // デバッグのために
     LastLineNo: Integer;
     FDummyGroup: PHiValue;
-    FIncludeBasePath: AnsiString; // 取り込み中のBasePath
+    FIncludeBasePath: string; // 取り込み中のBasePath
     runtime_error: Boolean;
     //
     constructor Create;
     destructor Destroy; override;
     // --- 外部から操作される部分 ---
-    function LoadFromFile(Source: AnsiString): Integer;       // ソース読み込み→構文木作成
+    function LoadFromFile(Source: string): Integer;       // ソース読み込み→構文木作成
     function LoadSourceText(Source, SourceName: AnsiString): Integer; // ソース読み込み→構文木作成
     function Run: PHiValue;                       // 読み込んだ構文木を実行
     procedure Run2;                               // 読み込んだ構文木を実行(値を返さない)
@@ -187,13 +190,13 @@ type
     function GetVariableRaw(VarID: DWORD): PHiValue; // 変数の取得
     function GetVariableNoGroupScope(VarID: DWORD): PHiValue; // 変数の取得
     function GetVariableS(vname: AnsiString): PHiValue; // 変数の取得
-    function ExpandStr(s: AnsiString): AnsiString;       // 文字列の展開
+    function ExpandStr(s: RawByteString): RawByteString;       // 文字列の展開
     procedure AddSystemFileCommand;               // ちょっと危険？なファイル関連の命令をシステムに追加する
     procedure LoadPlugins;                         // プラグインのロード
     function ErrorContinue: PHiValue;             // エラーで止まったノードを続ける
     procedure ErrorContinue2;
     // --- たまに使う部分
-    function ImportFile(FName: AnsiString; var node: TSyntaxNode): PHiValue; // 取り込み
+    function ImportFile(FName: string; var node: TSyntaxNode): PHiValue; // 取り込み
     function RunNode(node: TSyntaxNode; IsNoGetter: Boolean = False): PHiValue; // 構文木を渡して実行させる
     procedure RunNode2(node: TSyntaxNode; IsNoGetter: Boolean = False);         // 構文木を渡して実行させる(値を返さない)
     function CreateHiValue(VarId: Integer = 0): PHiValue;
@@ -207,18 +210,22 @@ type
     function RunGroupEvent(group: PHiValue; memberId: DWORD): PHiValue;
     function RunGroupMethod(group, method: PHiValue; args: THObjectList): PHiValue;
     property Global: THiScope read GetGlobalSpace;
-    property BokanPath: AnsiString read GetBokanPath;
+    property BokanPath: string read GetBokanPath;
     property FlagEnd: Boolean read FFlagEnd write SetFlagEnd;
     function GetSourceText(FileNo: Integer): AnsiString;
     procedure Test;
     procedure PushRunFlag; // Eval などで実行を遮る時に使う
     procedure PopRunFlag;
     function makeDllReport: AnsiString;
-    property PluginsDir: AnsiString read FPluginsDir write SetPluginsDir;
+    property PluginsDir: string read FPluginsDir write SetPluginsDir;
   end;
 
   TImportNakoSystem = procedure; stdcall;
   TPluginRequire    = function : DWORD; stdcall;
+
+  HException = class(Exception)
+    constructor Create(msg: AnsiString);
+  end;
 
 // HiSystem は唯一のもの(Singleton)
 function HiSystem: THiSystem;
@@ -232,6 +239,26 @@ function hi_id2fileno(id: DWORD): Integer;
 
 procedure _initTag;
 procedure _checkTag(tag:Integer; name: DWORD);
+procedure nako_var_free(value: PHiValue); stdcall; // 変数 value の値を解放する
+function nako_getFuncArg(handle: DWORD; index: Integer): PHiValue; stdcall; // nako_addFunction で登録したコールバック関数から引数を取り出すのに使う
+function nako_getSore: PHiValue; stdcall; // 変数『それ』へのポインタを取得する
+
+function getArg(h: DWORD; Index: Integer; UseHokan: Boolean = False): PHiValue;
+function getArgInt(h: DWORD; Index: Integer; UseHokan: Boolean = False): Integer;
+function getArgIntDef(h: DWORD; Index: Integer; Def:Integer): Integer;
+function getArgStr(h: DWORD; Index: Integer; UseHokan: Boolean = False): AnsiString;
+function getArgBool(h: DWORD; Index: Integer; UseHokan: Boolean = False): Boolean;
+function getArgFloat(h: DWORD; Index: Integer; UseHokan: Boolean = False): HFloat;
+
+function nako_var_new(name: PAnsiChar): PHiValue; stdcall; // 新規 PHiValue の変数を作成する。nameにnilを渡すと変数名をつけないで値だけ作成し変数名をつけるとグローバル変数として登録する。
+function nako_getVariable(vname: PAnsiChar): PHiValue; stdcall;// なでしこに登録されている変数のポインタを取得する
+
+procedure AddFunc(name, argStr: AnsiString; tag: Integer; func: THimaSysFunctionD;
+  kaisetu, yomigana: AnsiString; IzonFiles: AnsiString = '');
+function nako_addFunction2(name, args: PAnsiChar; func: THimaSysFunction; tag: Integer; IzonFiles: PAnsiChar): DWORD; stdcall; // 独自関数を追加する
+procedure nako_addStrVar(name: PAnsiChar; value: PAnsiChar; tag: Integer); stdcall; // 文字列型の変数をシステムに追加する。
+
+procedure AddStrVar(name, value: AnsiString; tag: Integer; kaisetu, yomigana: AnsiString);
 
 const
   BREAK_OFF = MaxInt;
@@ -277,7 +304,7 @@ var
   f: THimaFile;
 begin
   Result := -1;
-  f := HiSystem.TokenFiles.FindFile(hi_id2tango(id));
+  f := HiSystem.TokenFiles.FindFile(string(hi_id2tango(id)));
   if f <> nil then Result := f.Fileno;
 end;
 
@@ -325,13 +352,156 @@ begin
     i := tag - 1;
     while not __blank(i) do Dec(i);
     // レポートの表示
-    debugs('[命令タグ重複] tag='+IntToStr(tag)+' name='+hi_id2tango(name) + #13#10 +
-       'それ以前の空白番号=' + IntToStr(i));
+    debugs(
+      '[命令タグ重複] tag='+
+      AnsiString(IntToStr(tag))+
+      ' name='+hi_id2tango(name) +#13#10 +
+       'それ以前の空白番号=' + AnsiString(IntToStr(i)));
     //raise Exception.Create('[命令タグ重複] tag='+IntToStr(tag));
   end;
 
   // ビットをセットする
   __blank(tag, True);
+end;
+
+procedure nako_var_free(value: PHiValue); stdcall; // 変数 value の値を解放する
+begin
+  if value = nil then Exit;
+
+  if value.Registered = 1 then
+    hi_var_clear(value)  // ユーザー削除付加
+  else
+    hi_var_free(value);  // ユーザー削除可
+end;
+
+function nako_getFuncArg(handle: DWORD; index: Integer): PHiValue; stdcall; // nako_addFunction で登録したコールバック関数から引数を取り出すのに使う
+var
+  a: THiArray;
+begin
+  a := THiArray(handle);    // handle = THiArray へのアドレス
+
+  Assert((a is THiArray), 'nako_getFuncArgに不正なハンドルが渡されました。');
+
+  if a.Count > index then
+  begin
+    Result := a.Items[index]; // nil は nil として返す
+  end else
+  begin
+    Result := nil;
+  end;
+  if (Result <> nil) then
+  begin
+    if Result.VType = varLink then Result := hi_getLink(Result);
+  end;
+end;
+
+function nako_getSore: PHiValue; stdcall; // 変数『それ』へのポインタを取得する
+begin
+  Result := HiSystem.Sore;
+end;
+
+// 引数を簡単に取得する
+function getArg(h: DWORD; Index: Integer; UseHokan: Boolean = False): PHiValue;
+begin
+  Result := nako_getFuncArg(h, Index);
+  if (Result = nil)and(UseHokan) then
+  begin
+    Result := nako_getSore;
+  end;
+end;
+function getArgInt(h: DWORD; Index: Integer; UseHokan: Boolean = False): Integer;
+begin
+  Result := hi_int(getArg(h, Index,UseHokan));
+end;
+function getArgIntDef(h: DWORD; Index: Integer; Def:Integer): Integer;
+var p:PHiValue;
+begin
+  p := nako_getFuncArg(h, Index);
+  if p = nil then
+  begin
+    Result := Def;
+  end else
+  begin
+    Result := hi_int(p);
+  end;
+end;
+function getArgStr(h: DWORD; Index: Integer; UseHokan: Boolean = False): AnsiString;
+begin
+  Result := hi_str(getArg(h, Index,UseHokan));
+end;
+function getArgBool(h: DWORD; Index: Integer; UseHokan: Boolean = False): Boolean;
+begin
+  Result := hi_bool(getArg(h, Index,UseHokan));
+end;
+function getArgFloat(h: DWORD; Index: Integer; UseHokan: Boolean = False): HFloat;
+begin
+  Result := hi_float(getArg(h, Index,UseHokan));
+end;
+
+function nako_var_new(name: PAnsiChar): PHiValue; stdcall; // 新規 PHiValue の変数を作成する。nameにnilを渡すと変数名をつけないで値だけ作成し変数名をつけるとグローバル変数として登録する。
+begin
+  if name <> nil then
+  begin
+    Result := HiSystem.CreateHiValue(hi_tango2id(DeleteGobi(name)));
+  end else
+  begin
+    Result := hi_var_new;
+  end;
+end;
+
+function nako_getVariable(vname: PAnsiChar): PHiValue; stdcall;// なでしこに登録されている変数のポインタを取得する
+var
+  id: DWORD;
+begin
+  id := hi_tango2id(DeleteGobi(vname));
+  Result := HiSystem.GetVariable(id);
+end;
+
+procedure AddFunc(name, argStr: AnsiString; tag: Integer; func: THimaSysFunctionD;
+  kaisetu, yomigana: AnsiString; IzonFiles: AnsiString = '');
+begin
+  try
+    _checkTag(tag, 0);
+  except
+    on e:Exception do
+    begin
+      raise;
+      //raise Exception.Create('『'+name+'』(tag='+IntToStr(tag)+')が重複しています。');
+    end;
+  end;
+  nako_addFunction2(
+    PAnsiChar(name),
+    PAnsiChar(argStr),
+    THimaSysFunction(func),
+    tag,
+    PAnsiChar(IzonFiles));
+end;
+
+function nako_addFunction2(name, args: PAnsiChar; func: THimaSysFunction; tag: Integer; IzonFiles: PAnsiChar): DWORD; stdcall; // 独自関数を追加する
+begin
+  if HiSystem.AddFunction(name, args, func, tag, IzonFiles) then
+    Result := NAKO_OK
+  else
+    Result := NAKO_NG;
+end;
+
+procedure nako_addStrVar(name: PAnsiChar; value: PAnsiChar; tag: Integer); stdcall; // 文字列型の変数をシステムに追加する。
+var
+  p: PHiValue;
+  key: AnsiString;
+  id: DWORD;
+begin
+  key := DeleteGobi(name);
+  id  := HiSystem.TangoList.GetID(key, tag);
+  p := HiSystem.CreateHiValue(id);
+  p.Designer := 1;
+  hi_setStr(p, value);
+end;
+
+procedure AddStrVar(name, value: AnsiString; tag: Integer; kaisetu, yomigana: AnsiString);
+begin
+  _checkTag(tag, 0);
+  nako_addStrVar(PAnsiChar(name), PAnsiChar(value), tag);
 end;
 
 
@@ -429,7 +599,7 @@ procedure THiSystem.AddSystemCommand;
     hi_ary_create(p);
     for i := 0 to ParamCount do
     begin
-      a := hi_newStr(ParamStr(i));
+      a := hi_newStr(AnsiString(ParamStr(i)));
       hi_ary(p).Add(a);
     end;
   end;
@@ -452,7 +622,9 @@ procedure THiSystem.AddSystemCommand;
 
   function getRuntime: AnsiString;
   begin
-    Result := UpperCase(ExtractFileName(ParamStr(0)));
+    Result := AnsiString(
+      UpperCase(ExtractFileName(ParamStr(0)))
+    );
   end;
 
   procedure hi_makeAlias;
@@ -488,7 +660,7 @@ begin
   AddStrVar('ナデシコバージョン',    {'(バージョン毎に違う)'}NADESIKO_VER , 100, '実行中のなでしこのバージョン','なでしこばーじょん');
   AddStrVar('ナデシコ最終更新日',    {'(バージョン毎に違う)'}NADESIKO_DATE, 101, 'バージョンの更新日','なでしこさいしゅうこうしんび');
   AddStrVar('ナデシコランタイム',    {'(起動時に決定)'}getRuntime,    102, 'なでしこエンジンをロードした実行ファイルの名前(大文字)','なでしこらんたいむ');
-  AddStrVar('ナデシコランタイムパス',{'(起動時に決定)'}ParamStr(0),   103, 'なでしこエンジンをロードした実行ファイルのフルパス','なでしこらんたいむぱす');
+  AddStrVar('ナデシコランタイムパス',{'(起動時に決定)'}AnsiString(ParamStr(0)),   103, 'なでしこエンジンをロードした実行ファイルのフルパス','なでしこらんたいむぱす');
   AddStrVar('OS',                    {'(起動時に決定)'}getWinVersion, 104, 'OSの種類を保持する。Windows 7/Windows Vista/Windows Server 2003/Windows XP/Windows 2000/Windows Me/Windows 98/Windows NT 4.0/Windows NT 3.51/Windows 95','OS');
   AddStrVar('OSバージョン',          {'(起動時に決定)'}getWinVersionN,105, 'OSのバージョン番号を「Major.Minor(Build:PlatformId)」の形式返す。(4.10=Windows98/5.1=XP/6.0=Vista/6.1=Windows7','OSばーじょん');
 
@@ -1035,7 +1207,7 @@ begin
   ConstList := THList.Create;
   DefFuncList := THObjectList.Create;
   //
-  DllNameList := THStringList.Create;
+  DllNameList := TStringList.Create;
   DllHInstList := THList.Create;
   // namespace
   Namespace := THiNamespace.Create;
@@ -1291,18 +1463,19 @@ begin
   if (p <> nil) and (p.Registered = 0) then hi_var_free(p);
 end;
 
-function THiSystem.ExpandStr(s: AnsiString): AnsiString;
+function THiSystem.ExpandStr(s: RawByteString): RawByteString;
 var
   c, EOS, n: AnsiString;
   p: PAnsiChar;
 
-  function subEval(w: AnsiString): AnsiString;
+  function subEval(w: RawByteString): RawByteString;
   var
     vid: Integer;
     n: Integer;
     v: PHiValue;
     p: PAnsiChar;
-    dummy, c, s: AnsiString;
+    dummy: AnsiString;
+    c, s: RawByteString;
   begin
     w := HimaSourceConverter(-1, w);
     if w='' then begin Result := ''; Exit; end;
@@ -1335,10 +1508,10 @@ var
                   c := '';
                   while n > 255 do
                   begin
-                    c := Chr(n and $FF) + c;
+                    c := RawByteString(AnsiChar(n and $FF)) + c;
                     n := n shr 8;
                   end;
-                  c := Chr(n) + c;
+                  c := RawByteString(AnsiChar(n)) + c;
                   s := s + c;
                 end;
                 else begin
@@ -1363,7 +1536,7 @@ var
         end;
       end;
     end;
-    w := string(PAnsiChar(p));
+    w := AnsiString(PAnsiChar(p));
     if (w = '')or(w = #0) then Exit;
 
     vid := hi_tango2id(DeleteGobi(w));
@@ -1374,7 +1547,7 @@ var
       try
         v := Eval(w);
       except on e:Exception do
-        raise Exception.Create('文字列「'+w+'」の展開に失敗。'+e.Message);
+        raise Exception.Create('文字列「'+string(w)+'」の展開に失敗。'+e.Message);
       end;
     end;
     if v <> nil then
@@ -1403,7 +1576,12 @@ begin
   c := getOneChar(p);
   if (c = '"')or(c = '「') then
   begin
-    if c = '"' then EOS := '"' else EOS := '」';
+    if c = '"' then
+    begin
+      EOS := '"';
+    end else begin
+      EOS := '」';
+    end;
 
     while p^ <> #0 do
     begin
@@ -1440,9 +1618,9 @@ begin
   end;
 end;
 
-function THiSystem.GetBokanPath: AnsiString;
+function THiSystem.GetBokanPath: string;
 begin
-  Result := hi_str(GetVariable(hi_tango2id('母艦パス')));
+  Result := string(hi_str(GetVariable(hi_tango2id('母艦パス'))));
 end;
 
 function THiSystem.GetGlobalSpace: THiScope;
@@ -1518,13 +1696,13 @@ begin
   Result := GetVariable(hi_tango2id(vname));
 end;
 
-function THiSystem.ImportFile(FName: AnsiString; var node: TSyntaxNode): PHiValue;
+function THiSystem.ImportFile(FName: string; var node: TSyntaxNode): PHiValue;
 var
   f: THimaFile;
   parser: THiParser;
   oldNamespace: THiScope;
   n: TSyntaxNode;
-  tmpPath: AnsiString;
+  tmpPath: string;
 begin
   CheckInitSystem;
 
@@ -1539,10 +1717,10 @@ begin
     try
       f := TokenFiles.LoadAndAdd(FName);
     except on e: Exception do
-      raise Exception.Create(FName+'の取り込みに失敗。');
+      raise Exception.Create(string(FName)+'の取り込みに失敗。');
     end;
 
-    if f = nil then raise Exception.Create(FName+'の取り込みに失敗。');
+    if f = nil then raise Exception.Create(string(FName)+'の取り込みに失敗。');
     Namespace.CreateNewSpace(f.Fileno);
     FIncludeBasePath := f.Path;
 
@@ -1569,7 +1747,7 @@ begin
   FIncludeBasePath := tmpPath;
 end;
 
-function THiSystem.LoadFromFile(Source: AnsiString): Integer;
+function THiSystem.LoadFromFile(Source: string): Integer;
 var
   f: THimaFile;
   parser: THiParser;
@@ -1577,7 +1755,7 @@ begin
   CheckInitSystem;
   Result := -1;
 
-  f := TokenFiles.LoadAndAdd(Source);
+  f := TokenFiles.LoadAndAdd((Source));
   Namespace.CreateNewSpace(f.Fileno);
 
   if f.Count = 0 then Exit;
@@ -1593,8 +1771,9 @@ end;
 procedure THiSystem.LoadPlugins;
 var
   F:TSearchRec;
-  dll, dllpath: THStringList;
-  path, s: AnsiString;
+  dll, dllpath: TStringList;
+  path: string;
+  s: string;
   i: Integer;
   h: THandle;
   proc   : TImportNakoSystem;
@@ -1602,8 +1781,8 @@ var
   plugin : THiPlugin;
   PluginInit: procedure (h: DWORD); stdcall;
 
-  procedure chkDLL(name: AnsiString);
-  var s: AnsiString; p: PHiValue;
+  procedure chkDLL(name: string);
+  var s: string; p: PHiValue;
   begin
     s := UpperCase(ExtractFileName(name));
     // 自身は取り込み不要
@@ -1618,23 +1797,23 @@ var
       end;
     end;
     // その他、二重取り込みチェック
-    if dll.IndexOf(s) < 0 then
+    if dll.IndexOf((s)) < 0 then
     begin
-      dll.Add(s);
-      dllpath.Add(name);
+      dll.Add((s));
+      dllpath.Add((name));
     end;
   end;
 
-  function chk_header(s: AnsiString): Boolean;
+  function chk_header(s: string): Boolean;
   var
-    m: THFileStream;
+    m: TFileStream;
     b: AnsiString;
   begin
     Result := False;
     try
       SetLength(b, 2);
       // ↓重要：共有フォルダで実行するとき、fmShareDenyNone でないとなぜかエラーになる
-      m := THFileStream.Create(s, fmOpenRead or SysUtils.fmShareDenyNone);
+      m := TFileStream.Create(s, fmOpenRead or SysUtils.fmShareDenyNone);
       try
         m.Read(b[1], 2);
         if b = 'MZ' then
@@ -1645,31 +1824,31 @@ var
         FreeAndNil(m);
       end;
     except
-      errLog('dll.load.cannot.check_header=' + s);
+      errLog('dll.load.cannot.check_header=' + AnsiString(s));
     end;
   end;
 
 begin
   // todo: プラグインの取り込み
-  dll := THStringList.Create;
-  dllpath := THStringList.Create;
+  dll := TStringList.Create;
+  dllpath := TStringList.Create;
 
   // もしあるならパックファイルのDLLを調べる
   if FileMixReader <> nil then
   begin
-    path := HiSystem.PluginsDir;
-    FileMixReader.ExtractPatternFiles(path, '*.dll', False);
-    if SysUtils.FindFirst(path+'*.dll', FaAnyFile, F) = 0 then
+    path := (HiSystem.PluginsDir);
+    FileMixReader.ExtractPatternFiles((path), '*.dll', False);
+    if SysUtils.FindFirst(string(path)+'*.dll', FaAnyFile, F) = 0 then
     begin
       repeat
-        chkDLL(path + F.Name);
+        chkDLL(string(path) + F.Name);
       until FindNext(F) <> 0;
       FindClose(F);
     end;
   end else
   begin
     // plug-inフォルダ のプラグインを調べる
-    path := HiSystem.PluginsDir;
+    path := (HiSystem.PluginsDir);
     if (Pos(':\', path) = 0) then
     begin
       path := AppPath + path;
@@ -1706,13 +1885,13 @@ begin
   // プラグインかどうかの判別
   for i := 0 to dllpath.Count - 1 do
   begin
-    s := dllpath.Strings[i];
+    s := (dllpath.Strings[i]);
     // ヘッダを見てLoadLibraryできるかどうかチェックする
     if chk_header(s) = False then Continue;
-    h := LoadLibraryExA(PAnsiChar(s), 0, 0);
+    h := LoadLibraryEx(PChar(s), 0, 0);
     if h = 0 then
     begin
-      errLog('err.load.plugin=' + s);
+      errLog('err.load.plugin=' + AnsiString(s));
       Continue;
     end;
     try
@@ -1748,7 +1927,7 @@ begin
       begin
         proc;
       end;
-      errLog('add.plugin=' + s);
+      errLog('add.plugin=' + AnsiString(s));
     except
       raise Exception.Create('プラグインのロード中にエラー:'+s);
     end;
@@ -1767,7 +1946,7 @@ begin
   CheckInitSystem;
   Result := -1;
 
-  f := TokenFiles.LoadSourceAdd(Source, SourceName);
+  f := TokenFiles.LoadSourceAdd(Source, string(SourceName));
   Namespace.CreateNewSpace(f.Fileno);
 
   if f.Count = 0 then Exit;
@@ -1950,7 +2129,9 @@ function THiSystem.RunNode(node: TSyntaxNode; IsNoGetter: Boolean): PHiValue;
   var
     s: AnsiString;
   begin
-    s := Format('%d:%0.4d (%2d): ',[node.DebugInfo.FileNo, node.DebugInfo.LineNo,node.SyntaxLevel]);
+    s := AnsiString(
+      Format('%d:%0.4d (%2d): ',[node.DebugInfo.FileNo, node.DebugInfo.LineNo,node.SyntaxLevel])
+    );
     s := s + RepeatStr('　　', node.SyntaxLevel);
     s := s + node.DebugStr;
     // if node.Parent <> nil then s:=s+'*';
@@ -2005,7 +2186,7 @@ function THiSystem.RunNode(node: TSyntaxNode; IsNoGetter: Boolean): PHiValue;
 var
   res: PHiValue;
   bError: Boolean;
-  err: string;
+  err: AnsiString;
 label
   lblTop, lblGoto;
 begin
@@ -2048,7 +2229,7 @@ lblTop:
       // デバッグ用エディタへ現在実行中の行番号を通知
       if DebugLineNo and (DebugEditorHandle <> 0) then begin
         if (node.DebugInfo.FileNo = MainFileNo)and(node.DebugInfo.LineNo > 0) then begin
-          SendCOPYDATA(DebugEditorHandle, 'row ' + IntToStr(node.DebugInfo.LineNo), 0, MainWindowHandle);
+          SendCOPYDATA(DebugEditorHandle, 'row ' + IntToStrA(node.DebugInfo.LineNo), 0, MainWindowHandle);
         end;
       end;
 
@@ -2080,7 +2261,10 @@ lblTop:
         end;
       except
         on e:Exception do begin
-          err := JReplace(SyntaxClassToFuncName(node.ClassName), 'TSyntax', '');
+          err := JReplaceA(
+            AnsiString(SyntaxClassToFuncName(node.ClassName)),
+            'TSyntax',
+            '');
           raise Exception.CreateFmt('%s(%s)',
                 [e.Message, err]);
         end;
@@ -2106,7 +2290,7 @@ lblTop:
       if node <> nil then
       begin
         ContinueNode := node.Next;
-        raise EHimaRuntime.Create(node.DebugInfo, e.Message, []);
+        raise EHimaRuntime.Create(node.DebugInfo, AnsiString(e.Message), []);
       end else
       begin
         ContinueNode := nil;
@@ -2168,8 +2352,8 @@ begin
   pSetter  := Namespace.GetVar(SetterID); if pSetter = nil then raise Exception.CreateFmt(ERR_S_UNDEFINED,[SetterName]);
   pGetter  := Namespace.GetVar(GetterID); if pGetter = nil then raise Exception.CreateFmt(ERR_S_UNDEFINED,[GetterName]);
   // 関数？
-  if pSetter.VType <> varFunc then raise Exception.Create(SetterName + 'は関数ではありません。');
-  if pGetter.VType <> varFunc then raise Exception.Create(GetterName + 'は関数ではありません。');
+  if pSetter.VType <> varFunc then raise HException.Create(SetterName + 'は関数ではありません。');
+  if pGetter.VType <> varFunc then raise HException.Create(GetterName + 'は関数ではありません。');
   pVar := CreateHiValue(VarID);
   pVar.Designer := 1;
   pVar.Setter := pSetter;
@@ -2191,15 +2375,15 @@ var
 begin
   s := s + '; --- なでしこ解析レポート ---'#13#10;
   s := s + '[import]'#13#10;
-  s := s + HiSystem.DllNameList.Text + #13#10;
+  s := s + AnsiString(HiSystem.DllNameList.Text) + #13#10;
   s := s + '[plug-ins]'#13#10;
-  s := s + HiSystem.plugins.UsedList + #13#10;
+  s := s + AnsiString(HiSystem.plugins.UsedList) + #13#10;
   s := s + '[files]'#13#10;
-  s := s + HimaFileList.Text + #13#10;
+  s := s + AnsiString(HimaFileList.Text) + #13#10;
   Result := s;
 end;
 
-procedure THiSystem.SetPluginsDir(const Value: AnsiString);
+procedure THiSystem.SetPluginsDir(const Value: string);
 begin
   FPluginsDir := Value;
   mini_file_utils.DIR_PLUGINS := Value;
@@ -2276,7 +2460,7 @@ end;
 
 function THiScope.subEnumKeys(item: PHIDHashItem; ptr: Pointer): Boolean;
 var
-  p: PString;
+  p: PAnsiString;
 begin
   Result := True;
   p := ptr;
@@ -2286,7 +2470,7 @@ end;
 function THiScope.subEnumKeysAndValues(item: PHIDHashItem;
   ptr: Pointer): Boolean;
 var
-  p: PString;
+  p: PAnsiString;
   v: PHiValue;
   s: AnsiString;
 begin
@@ -2307,7 +2491,7 @@ begin
     varLink   : s := '(リンク)  ' + hi_str(v);
   end;
 
-  s := JReplace(s, #13#10, '{\n}');
+  s := JReplaceA(s, #13#10, '{\n}');
   if Length(s) > 256 then s := sjis_copyByte(PAnsiChar(s), 256) + '...';
 
 
@@ -2504,7 +2688,7 @@ begin
   for i := 0 to Count - 1 do
   begin
     s := Items[i];
-    Result := Result + Trim(s.EnumKeysAndValues(UserOnly)) + #13#10;
+    Result := Result + TrimA(s.EnumKeysAndValues(UserOnly)) + #13#10;
   end;
 end;
 
@@ -2645,7 +2829,7 @@ end;
 
 { THiPlugins }
 
-procedure THiPlugins.addDll(fname: AnsiString);
+procedure THiPlugins.addDll(fname: string);
 var
   p: THiPlugin;
 begin
@@ -2660,11 +2844,11 @@ begin
   Self.Add(p);
 end;
 
-procedure THiPlugins.ChangeUsed(id, PluginID: Integer; Value: Boolean; memo: AnsiString;
-  IzonFiles: AnsiString);
+procedure THiPlugins.ChangeUsed(id, PluginID: Integer; Value: Boolean; memo: string;
+  IzonFiles: string);
 var
   p: THiPlugin;
-  sl: THStringList;
+  sl: TStringList;
   i: Integer;
 begin
   // 依存関係のあるファイルをメモ
@@ -2688,11 +2872,11 @@ begin
   end;
 end;
 
-function THiPlugins.find(fname: AnsiString): Integer;
+function THiPlugins.find(fname: string): Integer;
 var
   i: Integer;
   p: THiPlugin;
-  name: AnsiString;
+  name: string;
 begin
   Result := -1;
   name := UpperCase(ExtractFileName(fname));
@@ -2708,7 +2892,7 @@ begin
   end;
 end;
 
-function THiPlugins.UsedList: AnsiString;
+function THiPlugins.UsedList: string;
 var
   i: Integer;
   p: THiPlugin;
@@ -2725,6 +2909,13 @@ begin
         Result := Result + p.FullPath + '(' + p.memo + ')' +#13#10;
     end;
   end;
+end;
+
+{ HException }
+
+constructor HException.Create(msg: AnsiString);
+begin
+  Exception(Self).Create(string(msg));
 end;
 
 initialization

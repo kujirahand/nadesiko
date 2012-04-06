@@ -268,7 +268,7 @@ type
     NextOutput: PByte;          // next output byte should be put there
     AvailableOutput: Cardinal;  // remaining free space at NextOutput
     TotalOutput: Cardinal;      // total number of bytes output so far
-    Msg: String;                // last error message, '' if no error
+    Msg: AnsiString;                // last error message, '' if no error
     State: PInternalState;      // not visible by applications
     DataType: Integer;          // best guess about the data type: ASCII or binary
     Adler: Cardinal;            // Adler32 value of the uncompressed data
@@ -325,10 +325,10 @@ const
   // preset dictionary flag in zlib header
   PRESET_DICT = $20;
 
-  ZLIB_VERSION: String[10] = '1.1.2';
+  ZLIB_VERSION: string[10] = '1.1.2';
 
   ERROR_BASE = Z_NEED_DICT;
-  ErrorMessages: array[0..9] of String = (
+  ErrorMessages: array[0..9] of string = (
     SNeedDict,            // Z_NEED_DICT       2
     SStreamEnd,           // Z_STREAM_END      1
     '',                   // Z_OK              0
@@ -341,13 +341,13 @@ const
     ''
   );
 
-function zError(Error: Integer): String;
+function zError(Error: Integer): AnsiString;
 function CRC32(CRC: Cardinal; Buffer: PByte; Len: Cardinal): Cardinal;
 
 //----------------- deflation support ----------------------------------------------------------------------------------
 
 function DeflateInit(var ZState: TZState; Level: Integer): Integer;
-function DeflateInit_(ZState: PZState; Level: Integer; const Version: String; StreamSize: Integer): Integer;
+function DeflateInit_(ZState: PZState; Level: Integer; const Version: AnsiString; StreamSize: Integer): Integer;
 function Deflate(var ZState: TZState; Flush: Integer): Integer;
 function DeflateEnd(var ZState: TZState): Integer;
 
@@ -553,8 +553,8 @@ type
 //----------------- inflation support ----------------------------------------------------------------------------------
 
 function InflateInit(var Z: TZState): Integer;
-function InflateInit_(var Z: TZState; const Version: String; StreamSize: Integer): Integer;
-function InflateInit2_(var Z: TZState; W: Integer; const Version: String; StreamSize: Integer): Integer;
+function InflateInit_(var Z: TZState; const Version: AnsiString; StreamSize: Integer): Integer;
+function InflateInit2_(var Z: TZState; W: Integer; const Version: AnsiString; StreamSize: Integer): Integer;
 function InflateInit2(var Z: TZState; AWindowBits: Integer): Integer;
 function InflateEnd(var Z: TZState): Integer;
 function InflateReset(var Z: TZState): Integer;
@@ -582,10 +582,10 @@ type
 
 //----------------------------------------------------------------------------------------------------------------------
 
-function zError(Error: Integer): String;
+function zError(Error: Integer): AnsiString;
 
 begin
-  Result := ErrorMessages[Z_NEED_DICT - Error];
+  Result := AnsiString(ErrorMessages[Z_NEED_DICT - Error]);
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1987,7 +1987,7 @@ end;
 //----------------------------------------------------------------------------------------------------------------------
 
 function DeflateInit2_(var ZState: TZState; Level: Integer; imMethod: Byte; AWindowBits: Integer; MemLevel:
-  Integer; Strategy: Integer; const Version: String; StreamSize: Integer): Integer;
+  Integer; Strategy: Integer; const Version: AnsiString; StreamSize: Integer): Integer;
 
 // initializes the hash table (Previous[] will be initialized on the fly)
 
@@ -1997,10 +1997,14 @@ var
   Overlay: PWordArray;
   // We overlay PendingBuffer and DistanceBuffer + LiteralBuffer. This works since the average
   // output size for (length, distance) codes is <= 24 Bits.
+  r: Boolean;
 
 begin
   NoHeader := 0;
-  if (Version  =  '') or (Version[1] <> ZLIB_VERSION[1]) or (StreamSize <> SizeOf(TZState)) then
+  r := (Version  =  '')
+    or (Version[1] <> ZLIB_VERSION[1])
+    or (StreamSize <> SizeOf(TZState));
+  if r then
   begin
     Result := Z_VERSION_ERROR;
     Exit;
@@ -2064,7 +2068,7 @@ begin
 
     Result := DeflateReset(ZState);
   except
-    ZState.Msg := ErrorMessages[ERROR_BASE - Z_MEM_ERROR];
+    ZState.Msg := AnsiString(ErrorMessages[ERROR_BASE - Z_MEM_ERROR]);
     // free already allocated data on error
     DeflateEnd(ZState);
     raise;
@@ -2130,7 +2134,7 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-function DeflateInit_(ZState: PZState; Level: Integer; const Version: String; StreamSize: Integer): Integer;
+function DeflateInit_(ZState: PZState; Level: Integer; const Version: AnsiString; StreamSize: Integer): Integer;
 
 // Initializes the internal stream state for compression. 
 //
@@ -2469,14 +2473,14 @@ begin
      ((ZState.NextInput = nil) and (ZState.AvailableInput <> 0)) or
      ((S.Status = FINISH_STATE) and (Flush <> Z_FINISH)) then
   begin
-    ZState.Msg := ErrorMessages[ERROR_BASE - Z_STREAM_ERROR];
+    ZState.Msg := AnsiString(ErrorMessages[ERROR_BASE - Z_STREAM_ERROR]);
     Result := Z_STREAM_ERROR;
     Exit;
   end;
 
   if ZState.AvailableOutput = 0 then
   begin
-    ZState.Msg := ErrorMessages[ERROR_BASE - Z_BUF_ERROR];
+    ZState.Msg := AnsiString(ErrorMessages[ERROR_BASE - Z_BUF_ERROR]);
     Result := Z_BUF_ERROR;
     Exit;
   end;
@@ -2534,7 +2538,7 @@ begin
        (Flush <= OldFlush) and
        (Flush <> Z_FINISH) then
     begin
-      ZState.Msg := ErrorMessages[ERROR_BASE - Z_BUF_ERROR];
+      ZState.Msg := AnsiString(ErrorMessages[ERROR_BASE - Z_BUF_ERROR]);
       Result := Z_BUF_ERROR;
       Exit;
     end;
@@ -2542,7 +2546,7 @@ begin
   // user must not provide more input after the first FINISH
   if (S.Status = FINISH_STATE) and (ZState.AvailableInput <> 0) then
   begin
-    ZState.Msg := ErrorMessages[ERROR_BASE - Z_BUF_ERROR];
+    ZState.Msg := AnsiString(ErrorMessages[ERROR_BASE - Z_BUF_ERROR]);
     Result := Z_BUF_ERROR;
     Exit;
   end;
@@ -5197,7 +5201,7 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-function InflateInit2_(var Z: TZState; W: Integer; const Version: String; StreamSize: Integer): Integer;
+function InflateInit2_(var Z: TZState; W: Integer; const Version: AnsiString; StreamSize: Integer): Integer;
 
 begin
   if (Version = '') or
@@ -5277,7 +5281,7 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-function InflateInit_(var Z: TZState; const Version: String; StreamSize: Integer): Integer;
+function InflateInit_(var Z: TZState; const Version: AnsiString; StreamSize: Integer): Integer;
 
 begin
   Result := InflateInit2_(Z, DEF_WBITS, Version, StreamSize);

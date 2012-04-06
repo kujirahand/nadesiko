@@ -23,15 +23,11 @@ type
 
   TStrSortGrid = class(TStringGrid)
   private
-   FOwner: TStringGrid;
    FSetCol:Longint;
    FGetFixS:String;
    FSortFlg:Boolean;
    FSortops:TSortops;
    FSortUp:Boolean;
-   FSortUpGlyps:TBitmap;
-   FSortDownGlyps:TBitmap;
-   FGlyph: Pointer;
    FSpacing:Integer;
    procedure BubbleSortGrid(MotoGrid : TStringGrid; StartIdx, EndIdx, SortIdx : Integer);
    function  GetSortUpGlyps(Kind:TSortUpKind) : TBitmap;

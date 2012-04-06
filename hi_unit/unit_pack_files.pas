@@ -6,7 +6,7 @@ unit unit_pack_files;
 interface
 
 uses
-  Windows, SysUtils, hima_types, hima_stream
+  Windows, SysUtils, Classes, hima_types, hima_stream
   {$IFDEF DELUX_VERSION}
   ,unit_pack_files_pro
   {$ENDIF}
@@ -31,7 +31,7 @@ uses
 }
 type
   TFileMixHeader = packed record
-    HeaderID : Array [0..3] of Char;  // 必ず "fMix"
+    HeaderID : Array [0..3] of AnsiChar;  // 必ず "fMix"
     FormatVersion : Byte;             // 今は、1のみ
     FileCount : Word;                 // ファイルの数
     FileSize : DWORD;                 // ヘッダを含めたファイル全体のサイズ
@@ -39,7 +39,7 @@ type
 
   PFileMixFileHeader = ^TFileMixFileHeader;
   TFileMixFileHeader = packed record
-    FileName : Array [0..255] of Char;
+    FileName : Array [0..255] of AnsiChar;
     FilePos  : DWORD;
     FileLen  : DWORD;
     Comp     : Byte;    // 0=非圧縮 1=XORで暗号化 2=暗号化 3=強力暗号化 4=強力暗号化2
@@ -47,35 +47,35 @@ type
 
   TFileMixWriter = class
   public
-    FileList: THStringList;
+    FileList: TStringList;
   public
     constructor Create;
     destructor Destroy; override;
-    function AddFile(const FName, ArchieveName: AnsiString; compress: BYTE{0:off 1:easy}): Integer;
-    function SaveToFile(const FName: AnsiString): Boolean;
+    function AddFile(const FName, ArchieveName: string; compress: BYTE{0:off 1:easy}): Integer;
+    function SaveToFile(const FName: string): Boolean;
   end;
 
   TFileMixReader = class
   private
-    fs: THFileStream;
+    fs: TFileStream;
     fList: THList;
   public
     theHeader: TFileMixHeader;
-    TempFile: AnsiString;
+    TempFile: string;
     autoDelete: Boolean;
     procedure AutoDeleteTempFile;
   public
-    constructor Create(const FName: AnsiString);
+    constructor Create(const FName: string);
     destructor Destroy; override;
-    function ReadFile(const FName: AnsiString; var ms: THMemoryStream; IsUser: Boolean = False): Boolean;
-    function ReadAndSaveToFile(const ReadName, SaveName: AnsiString; IsUser: Boolean = False): Boolean;
-    function ReadFileAsString(const FName: AnsiString; var str: AnsiString; IsUser: Boolean = False): Boolean;
+    function ReadFile(const FName: string; var ms: TMemoryStream; IsUser: Boolean = False): Boolean;
+    function ReadAndSaveToFile(const ReadName, SaveName: string; IsUser: Boolean = False): Boolean;
+    function ReadFileAsString(const FName: string; var str: AnsiString; IsUser: Boolean = False): Boolean;
     function EnumFiles: THStringList;
-    procedure SaveToDataFile(const fname: AnsiString);
-    procedure ExtractAllFile(const dir: AnsiString; ext: AnsiString = '');
-    procedure Extract(info: PFileMixFileHeader; ms: THMemoryStream);
-    procedure ExtractPatternFiles(const outdir: AnsiString; pattern: AnsiString; overwrite:Boolean = True);
-    function Find(const FName: AnsiString): PFileMixFileHeader;
+    procedure SaveToDataFile(const fname: string);
+    procedure ExtractAllFile(const dir: string; ext: string = '');
+    procedure Extract(info: PFileMixFileHeader; ms: TMemoryStream);
+    procedure ExtractPatternFiles(const outdir: string; pattern: string; overwrite:Boolean = True);
+    function Find(const FName: string): PFileMixFileHeader;
     procedure debug;
   end;
 
@@ -84,23 +84,23 @@ var FileMixReader: TFileMixReader = nil;
 var FileMixReaderSelfCreate: Boolean = False;
 
 {簡単な暗号をかける}
-procedure DoXor(var ms: THMemoryStream);
-procedure DoAngou(var ms: THMemoryStream);
-procedure DoAngou3(var ms: THMemoryStream; enc:Boolean);
-procedure DoAngou4(var ms: THMemoryStream; enc:Boolean);
-procedure DoAngou5(var ms: THMemoryStream; enc:Boolean);
+procedure DoXor(var ms: TMemoryStream);
+procedure DoAngou(var ms: TMemoryStream);
+procedure DoAngou3(var ms: TMemoryStream; enc:Boolean);
+procedure DoAngou4(var ms: TMemoryStream; enc:Boolean);
+procedure DoAngou5(var ms: TMemoryStream; enc:Boolean);
 {$IFDEF DELUX_VERSION}
 // define [unit_pack_files_pro.pas] ---> Delux version
 {$ELSE}
-procedure DoAngou6(var ms: THMemoryStream; enc:Boolean);
+procedure DoAngou6(var ms: TMemoryStream; enc:Boolean);
 {$ENDIF}
 
 {実行ファイルへリソースの埋め込み／読み込み}
-function WritePackExeFile(outFileName, exeFileName, packFileName: AnsiString): Boolean;
-function ReadPackExeFile(FileName: AnsiString; xQDA:THMemoryStream; RealRead: Boolean = True):Boolean;
+function WritePackExeFile(outFileName, exeFileName, packFileName: string): Boolean;
+function ReadPackExeFile(FileName: string; xQDA:TMemoryStream; RealRead: Boolean = True):Boolean;
 
 {パックファイルをOPENする}
-function OpenPackFile(packExeFile: AnsiString): Boolean;
+function OpenPackFile(packExeFile: string): Boolean;
 
 {オリジナル一時ファイル名の取得}
 function getOriginalFileName(dirname, header: AnsiString): AnsiString;
@@ -118,17 +118,17 @@ var AutoDeletePackFile: string = '';
 {オリジナル一時ファイル名の取得}
 function getOriginalFileName(dirname, header: AnsiString): AnsiString;
 begin
-  if dirname='' then dirname := TempDir;
+  if dirname='' then dirname := AnsiString(TempDir);
   SetLength(Result, MAX_PATH);
   GetTempFileNameA(PAnsiChar(dirname), PAnsiChar(header), 0, PAnsiChar(Result));
   SetLength(Result,StrLen(PAnsiChar(Result)));
 end;
 
 
-function OpenPackFile(packExeFile: AnsiString): Boolean;
+function OpenPackFile(packExeFile: string): Boolean;
 var
-  mem: THMemoryStream;
-  fname: AnsiString;
+  mem: TMemoryStream;
+  fname: string;
   guid: TGUID;
 begin
   Result := False;
@@ -136,7 +136,7 @@ begin
   if FileMixReader = nil then
   begin
 
-    mem := THMemoryStream.Create ;
+    mem := TMemoryStream.Create ;
     try
       try
 
@@ -161,7 +161,13 @@ begin
         Result := True;
       except
         on e:Exception do
-          raise Exception.Create('ファイルの展開に失敗しました。'+e.Message+#13#10+'temp://' + fname);
+          raise Exception.Create(
+            string(
+              'ファイルの展開に失敗しました。'+
+              e.Message+
+              #13#10+'temp://' +
+              fname
+            ));
       end;
     finally
       mem.Free;
@@ -170,15 +176,15 @@ begin
 end;
 
 
-function WritePackExeFile(outFileName, exeFileName, packFileName: AnsiString): Boolean;
+function WritePackExeFile(outFileName, exeFileName, packFileName: string): Boolean;
 var
-  OutFile, SSTTC, PackFile: THFileStream;
+  OutFile, SSTTC, PackFile: TFileStream;
 begin
   Result := False;
   try
-    OutFile:=THFileStream.Create(outFileName, fmCreate);//出力EXE
-    SSTTC:=THFileStream.Create(exeFileName, fmOpenRead or fmShareDenyWrite);
-    PackFile:=THFileStream.Create(packFileName, fmOpenRead or fmShareDenyWrite);
+    OutFile:=TFileStream.Create(outFileName, fmCreate);//出力EXE
+    SSTTC:=TFileStream.Create(exeFileName, fmOpenRead or fmShareDenyWrite);
+    PackFile:=TFileStream.Create(packFileName, fmOpenRead or fmShareDenyWrite);
     //書込み中（結合）
     OutFile.CopyFrom(SSTTC, SSTTC.Size);//ランタイム実行ファイル
     OutFile.CopyFrom(PackFile, PackFile.Size);//ゲームデータアーカイブ
@@ -192,22 +198,22 @@ begin
   Result := True;
 end;
 
-function ReadPackExeFile(FileName: AnsiString; xQDA:THMemoryStream; RealRead: Boolean = True):Boolean;
+function ReadPackExeFile(FileName: string; xQDA:TMemoryStream; RealRead: Boolean = True):Boolean;
 //参考：部員弐号の数々の問題
 //<!-- saved from url=(0060)http://members.jcom.home.ne.jp/buin2gou/delphi/DelphiFAQ.htm -->
 var
   FixUp, v, pebase : Integer;
-  exe : THFileStream;
-  buf : Char;
+  exe : TFileStream;
+  buf : AnsiChar;
 begin
   Result := False;
   // ファイル自体が存在しなければ失敗
-  if FileExists(FileName) = False then
+  if FileExists(string(FileName)) = False then
   begin
     Result := False; Exit;
   end;
   // EXEファイルを読む
-  exe := THFileStream.Create(FileName, fmOpenRead or SysUtils.fmShareDenyNone);
+  exe := TFileStream.Create(FileName, fmOpenRead or SysUtils.fmShareDenyNone);
   try
     // EXEファイルのヘッダ先頭を調べる
     exe.Position := 0;
@@ -254,14 +260,14 @@ begin
 end;
 
 // 簡易暗号化（ユーザーが復号化できる）
-procedure DoXor(var ms: THMemoryStream);
+procedure DoXor(var ms: TMemoryStream);
 var
   p: PByte;
   i: Integer;
   xorb: Byte;
 
 const
-  pat: array [0..6] of Char = 'tOmo<sK';
+  pat: array [0..6] of AnsiChar = 'tOmo<sK';
 
 begin
   // 先頭メモリを取得
@@ -277,7 +283,7 @@ begin
 end;
 
 // 簡易暗号化その２（実行時のみ展開が許される／ユーザーからの展開は失敗する）
-procedure DoAngou(var ms: THMemoryStream);
+procedure DoAngou(var ms: TMemoryStream);
 var
   p: PByte;
   i: Integer;
@@ -315,7 +321,7 @@ var
   //------------------------------------------------------------------------------
 
 const
-  pat: array [0..21] of Char = 'KF4J7F54R4X2K5P8594HQN';
+  pat: array [0..21] of AnsiChar = 'KF4J7F54R4X2K5P8594HQN';
 
 begin
   // 先頭メモリを取得
@@ -335,7 +341,7 @@ end;
 var key3real: AnsiString = '';
 
 // 簡易暗号化その3（実行時のみ展開が許される／ユーザーからの展開は失敗する）
-procedure DoAngou3(var ms: THMemoryStream; enc:Boolean);
+procedure DoAngou3(var ms: TMemoryStream; enc:Boolean);
 var
   p: PByte;
   i: Integer;
@@ -379,7 +385,7 @@ begin
 end;
 
 // 簡易暗号化その4（実行時のみ展開が許される／ユーザーからの展開は失敗する）
-procedure DoAngou4(var ms: THMemoryStream; enc:Boolean);
+procedure DoAngou4(var ms: TMemoryStream; enc:Boolean);
 var
   p: PByte;
   i: Integer;
@@ -415,7 +421,7 @@ begin
 end;
 
 // 簡易暗号化その5（実行時のみ展開が許される／ユーザーからの展開は失敗する）
-procedure DoAngou5(var ms: THMemoryStream; enc:Boolean);
+procedure DoAngou5(var ms: TMemoryStream; enc:Boolean);
 var
   p: PByte;
   i, len: Integer;
@@ -446,7 +452,7 @@ end;
   // define [unit_pack_files_pro.pas]
   // ---> Delux version
 {$ELSE}
-procedure DoAngou6(var ms: THMemoryStream; enc:Boolean);
+procedure DoAngou6(var ms: TMemoryStream; enc:Boolean);
 begin
   raise Exception.Create('[ERROR] DELUX VERSION ONLY!!');
 end;
@@ -476,7 +482,7 @@ end;
 
 
 {デリミタ文字列までの単語を切り出す。}
-function GetToken(const delimiter: AnsiString; var str: AnsiString): AnsiString;
+function GetToken(const delimiter: AnsiString; var str: AnsiString): AnsiString; overload;
 var
     i: Integer;
 begin
@@ -491,17 +497,32 @@ begin
     Delete(str,1,i + Length(delimiter) -1);
 end;
 
+function GetToken(const delimiter: string; var str: string): string; overload;
+var
+    i: Integer;
+begin
+    i := Pos(delimiter, str);
+    if i=0 then
+    begin
+        Result := str;
+        str := '';
+        Exit;
+    end;
+    Result := Copy(str, 1, i-1);
+    Delete(str,1,i + Length(delimiter) -1);
+end;
+
 { TFileMixWriter }
 
 function TFileMixWriter.AddFile(const FName,
-  ArchieveName: AnsiString;  compress: BYTE): Integer;
+  ArchieveName: string;  compress: BYTE): Integer;
 begin
   Result := FileList.Add(FName + '=' + ArchieveName + '=' +IntToStr(compress));
 end;
 
 constructor TFileMixWriter.Create;
 begin
-  FileList := THStringList.Create;
+  FileList := TStringList.Create;
 end;
 
 destructor TFileMixWriter.Destroy;
@@ -510,14 +531,15 @@ begin
   inherited;
 end;
 
-function TFileMixWriter.SaveToFile(const FName: AnsiString): Boolean;
+function TFileMixWriter.SaveToFile(const FName: string): Boolean;
 var
     fileHeader: TFileMixFileHeader;
     mixHeader: TFileMixHeader;
-    fs: THFileStream;
-    ms: THMemoryStream;
+    fs: TFileStream;
+    ms: TMemoryStream;
     i,j: Integer;
-    s, readName, name: AnsiString;
+    s, readName, name: string;
+    aname: AnsiString;
 begin
     Result := False;
     with mixHeader do
@@ -527,7 +549,7 @@ begin
         FileCount := FileList.Count ;
         FileSize := 0; //後で書き換え
     end;
-    fs := THFileStream.Create(FName, fmCreate);
+    fs := TFileStream.Create(FName, fmCreate);
     try
     try
         fs.Seek(0, soBeginning);
@@ -544,9 +566,10 @@ begin
                 readName := GetToken('=', s);
                 name := UpperCase(gettoken('=',s));
                 for j:=0 to 255 do FileName[j] := #0;
-                StrLCopy(@FileName[0],PAnsiChar(name), 255); // filename
-                Comp := StrToIntDef(s,0);
-                ms := THMemoryStream.Create ;
+                aname := AnsiString(name);
+                StrLCopy(@FileName[0],PAnsiChar(aname), 255); // filename
+                Comp := StrToIntDef(string(s),0);
+                ms := TMemoryStream.Create ;
                 try
                     //ファイル読込
                     ms.LoadFromFile(readName);
@@ -586,7 +609,7 @@ end;
 
 { TFileMixReader }
 
-constructor TFileMixReader.Create(const FName: AnsiString);
+constructor TFileMixReader.Create(const FName: string);
 var
     i: Integer;
     p: PFileMixFileHeader;
@@ -594,7 +617,7 @@ begin
     autoDelete := True;
     TempFile := FName;
     fList := THList.Create ;
-    fs := THFileStream.Create(FName, fmOpenRead);
+    fs := TFileStream.Create(FName, fmOpenRead);
     fs.Seek(0,soBeginning);
     fs.Read(theHeader, sizeof(theHeader));
     if StrLComp(@theHeader.HeaderID[0], 'fMix', 4) <> 0 then raise EInOutError.CreateFmt('"%s"は、TFileMixHeaderでは形式が違うため読めません。',[FName]);
@@ -615,8 +638,8 @@ procedure TFileMixReader.AutoDeleteTempFile;
 begin
   if autoDelete then
   begin
-    if FileExists(TempFile) then
-      DeleteFile(TempFile);
+    if FileExists(string(TempFile)) then
+      DeleteFile(string(TempFile));
   end;
 end;
 
@@ -636,13 +659,13 @@ begin
   inherited;
 end;
 
-procedure TFileMixReader.Extract(info: PFileMixFileHeader; ms: THMemoryStream);
+procedure TFileMixReader.Extract(info: PFileMixFileHeader; ms: TMemoryStream);
 begin
   // データの取り出し
   try
     ms.Clear;
     fs.Seek(info.FilePos, soBeginning);
-    ms.Seek(0, soBeginning);
+    ms.Seek(0, Classes.soBeginning);
     ms.CopyFrom(fs, info.FileLen);
     if info.Comp = 1 then DoXor(ms) else
     if info.Comp = 2 then DoAngou(ms) else
@@ -655,25 +678,25 @@ begin
   end;
 end;
 
-procedure TFileMixReader.ExtractAllFile(const dir: AnsiString; ext: AnsiString = '');
+procedure TFileMixReader.ExtractAllFile(const dir: string; ext: string = '');
 var
   i: Integer;
   p: PFileMixFileHeader;
-  ms: THMemoryStream;
-  f, ext2: AnsiString;
+  ms: TMemoryStream;
+  f, ext2: string;
 begin
-  ForceDirectories(dir);
+  ForceDirectories(string(dir));
   for i := 0 to fList.Count - 1 do
   begin
     p := fList.Items[i];
-    f := p.FileName;
-    ext2 := ExtractFileExt(f);
+    f := string(AnsiString(p.FileName));
+    ext2 := (ExtractFileExt(string(f)));
     if (ext = '')or(ext = ext2) then
     begin
-      ms := THMemoryStream.Create;
+      ms := TMemoryStream.Create;
       try
         Extract(p, ms);
-        ms.SaveToFile(dir + p.FileName);
+        ms.SaveToFile(dir + string(AnsiString(p.FileName)));
       finally
         ms.Free;
       end;
@@ -682,9 +705,9 @@ begin
 end;
 
 function TFileMixReader.ReadAndSaveToFile(const ReadName,
-  SaveName: AnsiString; IsUser: Boolean): Boolean;
+  SaveName: string; IsUser: Boolean): Boolean;
 var
-  ms: THMemoryStream;
+  ms: TMemoryStream;
 begin
   Result := ReadFile(ReadName, ms, IsUser);
   if Result = True then
@@ -694,8 +717,8 @@ begin
   end;
 end;
 
-function TFileMixReader.ReadFile(const FName: AnsiString;
-  var ms: THMemoryStream; IsUser: Boolean): Boolean;
+function TFileMixReader.ReadFile(const FName: string;
+  var ms: TMemoryStream; IsUser: Boolean): Boolean;
 var
   pf: PFileMixFileHeader;
 begin
@@ -706,7 +729,7 @@ begin
   if pf = nil then Exit;
   // データの取り出し
   try
-    ms := THMemoryStream.Create ;
+    ms := TMemoryStream.Create ;
     fs.Seek(pf.FilePos, soBeginning);
     ms.Seek(0, soBeginning);
     ms.CopyFrom(fs, pf.FileLen);
@@ -742,10 +765,10 @@ begin
 end;
 
 
-function TFileMixReader.ReadFileAsString(const FName: AnsiString;
+function TFileMixReader.ReadFileAsString(const FName: string;
   var str: AnsiString; IsUser: Boolean): Boolean;
 var
-  m:THMemoryStream;
+  m:TMemoryStream;
 begin
   // メモリの読み込み
   m := nil;
@@ -762,11 +785,11 @@ begin
   FreeAndNil(m);
 end;
 
-procedure TFileMixReader.SaveToDataFile(const fname: AnsiString);
+procedure TFileMixReader.SaveToDataFile(const fname: string);
 var
-  mem: THMemoryStream;
+  mem: TMemoryStream;
 begin
-  mem := THMemoryStream.Create ;
+  mem := TMemoryStream.Create ;
   try
     fs.Position := 0;
     mem.CopyFrom(fs, fs.Size);
@@ -791,12 +814,12 @@ begin
   end;
 end;
 
-function getFileSize(fname: AnsiString): Cardinal;
+function getFileSize(fname: string): Cardinal;
 var
   Rec : TSearchRec;
 begin
   { ファイルの検索 }
-  if FindFirst(fname, faAnyFile, Rec) = 0 then
+  if FindFirst(string(fname), faAnyFile, Rec) = 0 then
   begin
     { サイズの取得 }
     Result := Rec.Size;
@@ -807,29 +830,29 @@ begin
   end;
 end;
 
-procedure TFileMixReader.ExtractPatternFiles(const outdir: AnsiString; pattern: AnsiString; overwrite:Boolean = True);
+procedure TFileMixReader.ExtractPatternFiles(const outdir: string; pattern: string; overwrite:Boolean = True);
 var
   i: Integer;
   p: PFileMixFileHeader;
-  dir, f: AnsiString;
-  ms: THMemoryStream;
+  dir, f: string;
+  ms: TMemoryStream;
 begin
   dir := CheckPathYen(outdir);
-  ForceDirectories(dir);
+  ForceDirectories(string(dir));
   for i := 0 to fList.Count - 1 do
   begin
     p := fList.Items[i];
-    f := p.FileName;
-    if MatchesMask(f, pattern) then
+    f := string(AnsiString(p.FileName));
+    if MatchesMask(string(f), string(pattern)) then
     begin
       if overwrite = False then
       begin
-        if FileExists(dir + f) then
+        if FileExists(string(dir + f)) then
         begin
           if getFileSize(dir + f) = p.FileLen then Continue;
         end;
       end;
-      ms := THMemoryStream.Create;
+      ms := TMemoryStream.Create;
       try
         Extract(p, ms);
         try
@@ -844,17 +867,19 @@ begin
   end;
 end;
 
-function TFileMixReader.Find(const FName: AnsiString): PFileMixFileHeader;
+function TFileMixReader.Find(const FName: string): PFileMixFileHeader;
 var
   p: PFileMixFileHeader;
   i: Integer;
+  fname_a: AnsiString;
 begin
   Result := nil;
   // ファイル名の検索
+  fname_a := AnsiString(UpperCase(FName));
   for i := 0 to fList.Count - 1 do
   begin
     p := fList.Items[i];
-    if UpperCase(p.FileName) = UpperCase(FName) then
+    if UpperCaseA(p.FileName) = fname_a then
     begin
       Result := p;
       Break;
@@ -864,33 +889,33 @@ end;
 
 function getEmbedFile(var fname: AnsiString):Boolean;
 var
-  f: AnsiString;
-  readf, savef: AnsiString;
-  tmp: AnsiString;
+  f: string;
+  readf, savef: string;
+  tmp: string;
 begin
   Result := False;
   if unit_pack_files.FileMixReader <> nil then
   begin
     // 展開名
-    f := ParamStr(0) + '?' + fname;
+    f := (ParamStr(0)) + '?' + string(fname);
     f := JReplace(f, ':', '');
     f := JReplace(f, '\', '.');
     f := JReplace(f, '?', '\');
 
-    tmp := TempDir + 'com.nadesi.dll.dnako.embed\' + f;
-    if FileExists(tmp) then
+    tmp := (TempDir) + 'com.nadesi.dll.dnako.embed\' + f;
+    if FileExists(string(tmp)) then
     begin
-      fname := tmp;
+      fname := AnsiString(tmp);
       Result := True;
       Exit;
     end;
-    ForceDirectories(ExtractFilePath(tmp));
-    readf := fname;
-    savef := tmp;
+    ForceDirectories(string(ExtractFilePath(string(tmp))));
+    readf := string(fname);
+    savef := string(tmp);
     // debugs('read:' + readf + #13 + 'save:' + savef);
     if unit_pack_files.FileMixReader.ReadAndSaveToFile(readf, savef, True) then
     begin
-      fname := savef;
+      fname := AnsiString(savef);
       Result := True;
     end;
   end;
@@ -911,9 +936,9 @@ begin
   end;
   if AutoDeletePackFile <> '' then
   begin
-    if FileExists(AutoDeletePackFile) then
+    if FileExists(string(AutoDeletePackFile)) then
      begin
-      DeleteFile(AutoDeletePackFile);
+      DeleteFile(string(AutoDeletePackFile));
      end;
   end;
 end;

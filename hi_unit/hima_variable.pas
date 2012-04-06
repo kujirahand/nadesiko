@@ -46,7 +46,7 @@ function hi_bin   (v: PHiValue): AnsiString;
 // 変換←THiValue
 procedure hi_setInt   (v: PHiValue; const i: Integer);
 procedure hi_setFloat (v: PHiValue; const f: HFloat);
-procedure hi_setStr   (v: PHiValue; const s: AnsiString);
+procedure hi_setStr   (v: PHiValue; const s: RawByteString);
 procedure hi_setBool  (v: PHiValue; const b: Boolean);
 procedure hi_setIntOrFloat(v: PHiValue; f: HFloat);
 
@@ -74,7 +74,8 @@ function hi_vtype2str(p: PHiValue): AnsiString;
 
 implementation
 
-uses hima_string, hima_variable_ex, hima_function, hima_system, hima_token;
+uses hima_string, hima_variable_ex, hima_function, hima_system, hima_token,
+  unit_string;
 var var_pool_list: THList = nil;
 
 function hi_vtype2str(p: PHiValue): AnsiString;
@@ -425,8 +426,8 @@ begin
   try
     // 変数の型によって変換を行う
     case v.VType of
-      varInt    : Result := IntToStr(hi_int(v));
-      varFloat  : Result := FloatToStr(hi_float(v));
+      varInt    : Result := IntToStrA(hi_int(v));
+      varFloat  : Result := FloatToStrA(hi_float(v));
       varLink   : Result := hi_str(hi_getLink(v));
       varArray  : Result := THiArray(v.ptr).AsString;
       varHash   : Result := THiHash(v.ptr).AsString;
@@ -587,7 +588,7 @@ begin
   except
     v := nil; if id = 0 then Exit;
     //<デバッグ用>
-    raise Exception.Create('変数削除エラー。' + IntToStr(id) + ':' + hi_id2tango(id));
+    raise HException.Create('変数削除エラー。' + IntToStrA(id) + ':' + hi_id2tango(id));
     //</デバッグ用>
   end;
 
@@ -636,7 +637,7 @@ begin
   PHFloat(v.ptr)^ := f;
 end;
 
-procedure hi_setStr(v: PHiValue; const s: AnsiString);
+procedure hi_setStr(v: PHiValue; const s: RawByteString);
 begin
   hi_var_clear(v);
   v.VType := varStr;

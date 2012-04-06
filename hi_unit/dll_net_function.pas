@@ -413,7 +413,7 @@ var
 
   procedure _upload(local, remote: AnsiString);
   var
-    dirs, files: THStringList;
+    dirs, files: TStringList;
     tmp: AnsiString;
     i: Integer;
     flgSubDir: Boolean;
@@ -1311,7 +1311,7 @@ var
   eml, sub: TEml;
   txt, msgid, afile, attach_dir: AnsiString;
   msgids: TStringList;
-  fs: THStringList;
+  fs: TStringList;
   th: TNetThread;
   cnt: Integer;
 const

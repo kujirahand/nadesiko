@@ -12,28 +12,24 @@ uses
   AppEvnts, ShellAPI,
   // nadesiko unit
   dnako_loader, unit_pack_files, hima_types, dnako_import_types,
-  unit_string, vnako_function,unit_tree_list,
-  // TEditor
-  heClasses, HEdtProp, heFountain, HEditor, EditorEx, heRaStrings, JavaFountain,
-  CppFountain, PerlFountain, HTMLFountain, DelphiFountain, NadesikoFountain,
-  hOleddEditor,
+  unit_string, vnako_function, unit_tree_list,
   // Added Component
   TrackBox,Buttons,
-  HViewEdt,
   // XPManifest
 {$IF RTLVersion >=15}
   XPMan,
 {$IFEND}
-  IdBaseComponent, IdComponent, IdTCPServer, TntStdCtrls,
-  TntExtCtrls, TntGrids,
-  vnako_message
+  IdBaseComponent, IdComponent, IdTCPServer,
+  vnako_message,
+  // TEditor Support
+  HEditor, heRaStrings, heClasses, HEdtProp
   ;
 
 const
   WM_NotifyTasktray = WM_USER + 100;
 
 type
-  THiEditor = class(TEditorEx)
+  THiEditor = class(TEditor)
   private
     FHoverTime : Cardinal;
     FOnMouseEnter : TNotifyEvent;
@@ -47,7 +43,7 @@ type
     function GetCaretXY: TPoint;
     procedure SetCaretXY(x,y: Integer);
     procedure ShowCaret;
-    procedure ViewFlag(s: string);
+    procedure ViewFlag(s: AnsiString);
     procedure PutMark(tag: Integer);
     procedure GotoMark(tag: Integer);
     property HoverTime:Cardinal read FHoverTime write FHoverTime;
@@ -79,8 +75,8 @@ type
   public
     property DragMode;
     property DragKind;
-    procedure hi_setDragMode(s: string);
-    function hi_getDragMode: string;
+    procedure hi_setDragMode(s: AnsiString);
+    function hi_getDragMode: AnsiString;
   end;
 
   TfrmNako = class(TForm)
@@ -136,6 +132,7 @@ type
     procedure wmDevChange(var Msg: TMessage); message WM_DEVICECHANGE;
   public
     IsLiveTasktray: boolean;
+    edtPropNormal: TEditorProp;
     procedure InitTasktray;
     procedure FinishTasktray;
     procedure ChangeTrayIcon;
@@ -160,15 +157,13 @@ type
     UseDebug:  Boolean;
     UseLineNo: Boolean;
     backBmp: TBitmap;
-    FMainFile: string; // メインファイル名
-    //
-    edtPropNormal: TEditorProp;
+    FMainFile: AnsiString; // メインファイル名
     //
     function GetRect: TRect;
     procedure ClearScreen(col: Integer);
     property BackCanvas: TCanvas read GetBackCanvas;
     procedure Redraw;
-    procedure setStyle(s: string);
+    procedure setStyle(s: AnsiString);
     // event
     procedure eventClick(Sender: TObject);
     procedure eventChange(Sender: TObject);
@@ -202,7 +197,7 @@ type
     procedure eventListClose(Sender: TObject);
     procedure eventListSelect(Sender: TObject);
     //
-    procedure doEvent(group: PGuiInfo; eventName: string);
+    procedure doEvent(group: PGuiInfo; eventName: AnsiString);
     //
     procedure SetBokanHensu;
   end;
@@ -218,7 +213,7 @@ var
   {$IFDEF FMPMODE}
   _flag_fmp_mode: Boolean = False;
   _flag_fmp_key_enabled:Boolean = False;
-  _fmp_key1: String = '';
+  _fmp_key1: AnsiString = '';
   _flag_fmp_remove_src: Boolean = False;
   {$ENDIF}
 
@@ -230,7 +225,7 @@ implementation
 uses dnako_import,
   hima_stream, mini_file_utils, fileDrop, unit_windows_api, frmDebugU,
   frmErrorU, frmInputListU, UIWebBrowser, dll_plugin_helper, unit_dbt,
-  gui_benri, VistaAltFixUnit;
+  gui_benri;
 
 {$R *.dfm}
 
@@ -248,12 +243,12 @@ end;
 // mix file の取り出しとファイルの検索
 procedure ExtractMixFile(var fname: string);
 var
-  s: THMemoryStream;
+  s: TMemoryStream;
   f: string;
 
   function chk(f: string): Boolean;
   begin
-    Result := FileExists(f);
+    Result := FileExists(string(f));
     if Result then
     begin
       fname := f;
@@ -272,9 +267,9 @@ begin
 
   // mix file を検索
   if FileMixReader <> nil then
-  if FileMixReader.ReadFile(fname, s) then
+  if FileMixReader.ReadFile(string(fname), s) then
   begin
-    f := TempDir + ExtractFileName(fname);
+    f := TempDir + ExtractFileName(string(fname));
     s.SaveToFile(f);
     fname := f;
     s.Free;
@@ -287,7 +282,7 @@ begin
   // curdir
   if chk(path(GetCurrentDir) + fname) then Exit;
   // bokan
-  f := hi_str(nako_getVariable('母艦パス'));
+  f := hi_strU(nako_getVariable('母艦パス'));
   if chk(f + fname) then Exit;
   // bokan + lib
   if chk(f + 'lib\' + fname) then Exit;
@@ -307,6 +302,7 @@ begin
   Result.X := x;
   Result.Y := y;
 end;
+
 
 
 procedure THiEditor.GotoMark(tag: Integer);
@@ -350,16 +346,15 @@ begin
   self.SetFocus;
 end;
 
-
 procedure THiEditor.ShowCaret;
 begin
   ScrollCaret;
 end;
 
-procedure THiEditor.ViewFlag(s: string);
-var
-  i:Integer;
+procedure THiEditor.ViewFlag(s: AnsiString);
+//var i:Integer;
 begin
+  (*
   ExMarks.TabMark.Visible := (Pos('タブ',s) > 0);
 
   ExMarks.DBSpaceMark.Visible := (Pos('全角スペース',s) > 0);
@@ -373,8 +368,8 @@ begin
       ExMarks.DBSpaceMark.Visible := True;
       break;
     end;
-    if  (not CompareMem(PChar('全角'),PChar(s)+i-5,4))
-      and (not CompareMem(PChar('半角'),PChar(s)+i-5,4)) then
+    if  (not CompareMem(PAnsiChar('全角'),PAnsiChar(s)+i-5,4))
+      and (not CompareMem(PAnsiChar('半角'),PAnsiChar(s)+i-5,4)) then
     begin
       ExMarks.SpaceMark.Visible := True;
       ExMarks.DBSpaceMark.Visible := True;
@@ -385,6 +380,7 @@ begin
 
   Marks.EofMark.Visible := (Pos('EOF',s) > 0);
   Marks.RetMark.Visible := (Pos('改行',s) > 0);
+  *)
 end;
 
 procedure THiEditor.WMMousewheel(var Msg: TMessage);
@@ -444,7 +440,7 @@ var
 begin
   //----------------------------------------------------------------------------
   // Windows Vista ALT キーの問題
-  TVistaAltFix.Create(Self);
+  // TVistaAltFix.Create(Self);
   //----------------------------------------------------------------------------
   // 初期化処理
   ClientWidth  := 640;
@@ -556,7 +552,7 @@ end;
 
 function TfrmNako.Nadesiko_Load: Boolean;
 var
-  s, err   : string;
+  s, err   : AnsiString;
   res, len : Integer;
   flag_out_error : Boolean;
 
@@ -573,7 +569,7 @@ var
             '「> ナデシコバージョン = {ナデシコバージョン}」と表示。'#13#10+
             '「> ナデシコ最終更新日 = {ナデシコ最終更新日}」と表示。'#13#10;
       try
-        nako_eval_str2(s);
+        nako_eval_str2(AnsiString(s));
       except
         ShowWarn(s);
       end;
@@ -583,6 +579,7 @@ var
   function _checkArg: Integer;
   var
     fname  : string;
+    fnamea : AnsiString;
     i      : Integer;
     s, path: string;
     params : string;
@@ -593,7 +590,7 @@ var
     fname := ''; params := ''; UseLineNo := False;
     while (ParamCount >= i) do
     begin
-      s := ParamStr(i);
+      s := (ParamStr(i));
       {$IFDEF FMPMODE}
       if s = '-setkey' then begin
         Inc(i);
@@ -650,7 +647,7 @@ var
       sl.Text := Trim(params);
       for i := 0 to sl.Count - 1 do
       begin
-        nako_ary_add(p, hi_newStr(sl.Strings[i]));
+        nako_ary_add(p, hi_newStrU(sl.Strings[i]));
       end;
     finally
       sl.Free;
@@ -661,7 +658,7 @@ var
     if p = nil then p := hi_var_new('母艦パス');
     path := ExtractFilePath(fname);
     if path = '' then path := ExtractFilePath(ParamStr(0));
-    hi_setStr(p, path);
+    hi_setStrU(p, path);
 
     // debugEditorHandle
     p := nako_getVariable('デバッグエディタハンドル');
@@ -669,25 +666,27 @@ var
 
     // load
     fname := Trim(fname);
-    if fname <> '' then Result := nako_load(PChar(fname)) else Result := 0;
-    FMainFile := fname;
+    fnamea := AnsiString(fname);
+    if fname <> '' then Result := nako_load(PAnsiChar(fnamea))
+                   else Result := 0;
+    FMainFile := fnamea;
   end;
 
-  function _runDefaultFile(fname: string): DWORD;
-  var p: PHiValue; path: string;
+  function _runDefaultFile(fname: AnsiString): DWORD;
+  var p: PHiValue; path: AnsiString;
   begin
     // (ExeName).nako での起動
     p := nako_getVariable('母艦パス');
     if p = nil then p := hi_var_new('母艦パス');
-    path := ExtractFilePath(fname);
-    if path = '' then path := ExtractFilePath(ParamStr(0));
+    path := AnsiString(ExtractFilePath(string(fname)));
+    if path = '' then path := AnsiString(ExtractFilePath(ParamStr(0)));
     hi_setStr(p, path);
     //
-    Result := nako_load(PChar(fname));
+    Result := nako_load(PAnsiChar(fname));
     FMainFile := fname;
   end;
 
-  procedure msg(s: string); // for DEBUG
+  procedure msg(s: AnsiString); // for DEBUG
   begin
   end;
 
@@ -715,7 +714,7 @@ var
           '開発者または製造元へ連絡してください。'#13#10 + '--------------'#13#10 + e.Message);
       end;
     end;
-    FMainFile := ParamStr(0);
+    FMainFile := AnsiString(ParamStr(0));
   end;
 
   procedure __runFromCommandLine;
@@ -723,8 +722,8 @@ var
     // --- コマンドラインからの実行 --------------------------------------------
     if ParamCount = 0 then
     begin
-      s := ExtractFilePath(ParamStr(0)) + 'default.nako';
-      if FileExists(s) then
+      s := AnsiString(ExtractFilePath(ParamStr(0)) + 'default.nako');
+      if FileExists(string(s)) then
       begin
         _dnako_loader.includeLib('vnako.nako');
         setBokanHensu;
@@ -798,10 +797,10 @@ begin
     begin
       // エラーの取得
       SetLength(err, len);
-      nako_getError(PChar(err), len);
-      // MessageBox(Self.Handle, PChar(err), '文法エラー', MB_OK or MB_ICONERROR);
+      nako_getError(PAnsiChar(err), len);
+      // MessageBox(Self.Handle, PAnsiChar(err), '文法エラー', MB_OK or MB_ICONERROR);
       with frmError do begin
-        edtMain.Lines.Text  := ERRMSG_HEADER + PChar(err);
+        edtMain.Lines.Text  := ERRMSG_HEADER + PAnsiChar(err);
         btnDebug.Visible    := False;
         btnContinue.Visible := False;
         btnClose.Visible    := True;
@@ -849,19 +848,19 @@ end;
 
 procedure TfrmNako.timerRunScriptTimer(Sender: TObject);
 var
-  len: Integer; s: string;
+  len: Integer; s: AnsiString;
 
   procedure err;
   var b: DWORD;
   begin
     len := nako_getError(nil,0);
     SetLength(s, len + 1);
-    nako_getError(PChar(s), len);
+    nako_getError(PAnsiChar(s), len);
 
     with frmError do
     begin
-      Caption := hi_str(nako_getVariable('エラーダイアログタイトル'));
-      edtMain.Lines.Text  := PChar(s);
+      Caption := string(hi_str(nako_getVariable('エラーダイアログタイトル')));
+      edtMain.Lines.Text  := string(PAnsiChar(s));
       btnDebug.Visible    := True;
       btnContinue.Visible := True;
       btnClose.Visible    := True;
@@ -996,7 +995,7 @@ begin
     nako_continue;
     doEvent(ginfo, EVENT_CLOSE);
 
-    p := nako_getGroupMember(PChar(ginfo.name), '終了可能');
+    p := nako_getGroupMember(PAnsiChar(ginfo.name), '終了可能');
     if (p<>nil)and(hi_int(p) = 0) then
     begin
       nako_continue;
@@ -1048,9 +1047,9 @@ begin
 end;
 
 procedure setShift(pinfo: PGuiInfo; Shift: TShiftState);
-var p: PHiValue; s: string;
+var p: PHiValue; s: AnsiString;
 begin
-  p := nako_getGroupMember(PChar(pinfo^.name), 'シフトキー');
+  p := nako_getGroupMember(PAnsiChar(pinfo^.name), 'シフトキー');
   if p <> nil then
   begin
     s := '';
@@ -1072,18 +1071,18 @@ begin
   if FFlagFree then Exit;
   //
   ginfo := GuiInfos[ TControl(Sender).Tag ];
-  p := nako_getGroupMember(PChar(ginfo.name), EVENT_MOUSEDOWN);
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), EVENT_MOUSEDOWN);
   if (p=nil)or(p.ptr=nil) then Exit; //
 
-  p := nako_getGroupMember(PChar(ginfo.name), '押されたボタン');
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), '押されたボタン');
   if p <> nil then begin
     if Button = mbLeft   then hi_setStr(p, '左') else
     if Button = mbRight  then hi_setStr(p, '右') else
     if Button = mbMiddle then hi_setStr(p, '中央');
   end;
-  p := nako_getGroupMember(PChar(ginfo.name), 'マウスX');
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), 'マウスX');
   if p <> nil then hi_setInt(p, X);
-  p := nako_getGroupMember(PChar(ginfo.name), 'マウスY');
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), 'マウスY');
   if p <> nil then hi_setInt(p, Y);
   setShift(@ginfo, Shift);
 
@@ -1100,12 +1099,12 @@ begin
   //
   ginfo := GuiInfos[ TControl(Sender).Tag ];
 
-  pe := nako_getGroupMember(PChar(ginfo.name), EVENT_MOUSEMOVE);
+  pe := nako_getGroupMember(PAnsiChar(ginfo.name), EVENT_MOUSEMOVE);
   if (pe = nil)or(pe.ptr = nil) then Exit;
 
-  p := nako_getGroupMember(PChar(ginfo.name), 'マウスX');
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), 'マウスX');
   if p <> nil then hi_setInt(p, X);
-  p := nako_getGroupMember(PChar(ginfo.name), 'マウスY');
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), 'マウスY');
   if p <> nil then hi_setInt(p, Y);
   setShift(@ginfo, Shift);
 
@@ -1123,18 +1122,18 @@ begin
   //
   ginfo := GuiInfos[ TControl(Sender).Tag ];
 
-  p := nako_getGroupMember(PChar(ginfo.name), EVENT_MOUSEUP);
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), EVENT_MOUSEUP);
   if (p=nil)or(p.ptr=nil) then Exit;
 
-  p := nako_getGroupMember(PChar(ginfo.name), '押されたボタン');
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), '押されたボタン');
   if p <> nil then begin
     if Button = mbLeft   then hi_setStr(p, '左') else
     if Button = mbRight  then hi_setStr(p, '右') else
     if Button = mbMiddle then hi_setStr(p, '中央');
   end;
-  p := nako_getGroupMember(PChar(ginfo.name), 'マウスX');
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), 'マウスX');
   if p <> nil then hi_setInt(p, X);
-  p := nako_getGroupMember(PChar(ginfo.name), 'マウスY');
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), 'マウスY');
   if p <> nil then hi_setInt(p, Y);
 
   setShift(@ginfo, Shift);
@@ -1182,10 +1181,10 @@ begin
   doEvent(@ginfo, EVENT_LISTSELECT);
 end;
 
-procedure TfrmNako.doEvent(group: PGuiInfo; eventName: string);
+procedure TfrmNako.doEvent(group: PGuiInfo; eventName: AnsiString);
 var
   p, p2: PHiValue;
-  n: string;
+  n: AnsiString;
 begin
   if FFlagFree then Exit;
   if not _dnako_success then Exit;
@@ -1194,7 +1193,7 @@ begin
   // グループにメンバが存在するか？
   try
     // Check Group
-    p := nako_group_findMember(group.pgroup, PChar(eventName));
+    p := nako_group_findMember(group.pgroup, PAnsiChar(eventName));
     if (p = nil)or(p.VType = varNil) then
     begin
       if group.name_id = 0 then
@@ -1202,7 +1201,7 @@ begin
         group.name_id := nako_tango2id(PAnsiChar(group.name));
       end;
       group.pgroup := nako_getVariableFromId(group.name_id);
-      p := nako_group_findMember(group.pgroup, PChar(eventName));
+      p := nako_group_findMember(group.pgroup, PAnsiChar(eventName));
     end;
   except
     Exit;
@@ -1222,7 +1221,7 @@ begin
       nako_eval_str2(n);
     end else
     begin
-      p2 := nako_group_exec(group.pgroup, PChar(eventName));
+      p2 := nako_group_exec(group.pgroup, PAnsiChar(eventName));
       nako_var_free(p2);
     end;
     UpdateAfterEvent(group.obj);
@@ -1230,10 +1229,10 @@ begin
     on e: Exception do
     begin
       // --- デバッグダイアログの起動
-      frmError.Caption := hi_str(nako_getVariable('エラーダイアログタイトル'));
+      frmError.Caption := hi_strU(nako_getVariable('エラーダイアログタイトル'));
       frmError.edtMain.Lines.Text := '' +
-        '[' + group.name + 'の' + eventName + 'を実行中のエラー]'#13#10 +
-        nako_getErrorStr;
+        '[' + string(group.name) + 'の' + string(eventName) + 'を実行中のエラー]'#13#10 +
+        string(nako_getErrorStr);
         ;
       ShowModalCheck(frmError, Bokan);
     end;
@@ -1249,12 +1248,12 @@ var
 begin
   ginfo := GuiInfos[ TControl(Sender).Tag ];
 
-  p := nako_getGroupMember(PChar(ginfo.name), '移動先URL');
-  if p <> nil then hi_setStr(p, URL);
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), '移動先URL');
+  if p <> nil then hi_setStrU(p, URL);
 
   doEvent(@ginfo, EVENT_CLICK);
 
-  p := nako_getGroupMember(PChar(ginfo.name), '移動許可');
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), '移動許可');
   if (p <> nil)and(hi_int(p) = 0) then begin
     Cancel := True;
   end;
@@ -1272,7 +1271,7 @@ begin
 
   ginfo := GuiInfos[ TControl(Sender).Tag ];
 
-  p := nako_getGroupMember(PChar(ginfo.name), EVENT_KEYDOWN);
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), EVENT_KEYDOWN);
   if (p=nil)or(p.ptr=nil) then Exit; // イベントはなし
 
   // 変数の設定
@@ -1280,7 +1279,7 @@ begin
   // シフト
   setShift(@ginfo, Shift);
   // キー
-  p := nako_getGroupMember(PChar(ginfo.name), '押された仮想キー');
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), '押された仮想キー');
   hi_setInt(p, Key);
 
   // イベント
@@ -1294,27 +1293,27 @@ procedure TfrmNako.eventKeyPress(Sender: TObject; var Key: Char);
 var
   ginfo: TGuiInfo;
   p: PHiValue;
-  s: string;
+  s: AnsiString;
 begin
   if not _dnako_success then Exit;
   if FFlagFree then Exit;
   //
   ginfo := GuiInfos[ TControl(Sender).Tag ];
 
-  p := nako_getGroupMember(PChar(ginfo.name), EVENT_KEYPRESS);
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), EVENT_KEYPRESS);
   if (p=nil)or(p.ptr=nil) then Exit; // イベントはなし
 
   // 変数の設定
   // キー
-  p := nako_getGroupMember(PChar(ginfo.name), '押されたキー');
-  hi_setStr(p, Key);
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), '押されたキー');
+  hi_setStrU(p, Key);
 
   // イベント
   doEvent(@ginfo, EVENT_KEYPRESS);
 
   // キーの変更を反映
   s := hi_str(p);
-  if s = '' then Key := #0 else Key := s[1];
+  if s = '' then Key := #0 else Key := Char(s[1]);
 end;
 
 procedure TfrmNako.eventKeyUp(Sender: TObject; var Key: Word;
@@ -1328,12 +1327,12 @@ begin
   //
   ginfo := GuiInfos[ TControl(Sender).Tag ];
 
-  p := nako_getGroupMember(PChar(ginfo.name), EVENT_KEYUP);
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), EVENT_KEYUP);
   if (p=nil)or(p.ptr=nil) then Exit; // イベントはなし
 
   // 変数の設定
   // キー
-  p := nako_getGroupMember(PChar(ginfo.name), '押された仮想キー');
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), '押された仮想キー');
   hi_setInt(p, Key);
   // シフト
   setShift(@ginfo, Shift);
@@ -1342,7 +1341,7 @@ begin
   doEvent(@ginfo, EVENT_KEYUP);
 end;
 
-procedure TfrmNako.setStyle(s: string);
+procedure TfrmNako.setStyle(s: AnsiString);
 begin
   if s = '枠なし' then self.BorderStyle := bsNone else
   if s = '枠固定' then self.BorderStyle := bsSingle else
@@ -1364,14 +1363,14 @@ var
 begin
   ginfo := GuiInfos[ TControl(Sender).Tag ];
 
-  p := nako_getGroupMember(PChar(ginfo.name), EVENT_DRAGOVER);
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), EVENT_DRAGOVER);
   if (p=nil)or(p.ptr=nil) then Exit; // イベントはなし
 
   // イベント
   doEvent(@ginfo, EVENT_DRAGOVER);
 
   // 変数の設定
-  p := nako_getGroupMember(PChar(ginfo.name), 'ドロップ許可');
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), 'ドロップ許可');
   if (p<>nil) then Accept := (hi_int(p) <> 0);
 end;
 
@@ -1383,13 +1382,13 @@ var
 begin
   ginfo := GuiInfos[ TControl(Sender).Tag ];
 
-  p := nako_getGroupMember(PChar(ginfo.name), EVENT_DRAGDROP);
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), EVENT_DRAGDROP);
   if (p=nil)or(p.ptr=nil) then Exit; // イベントはなし
 
   // 変数の設定
-  p := nako_getGroupMember(PChar(ginfo.name), 'マウスX');
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), 'マウスX');
   if (p<>nil) then hi_setInt(p, X);
-  p := nako_getGroupMember(PChar(ginfo.name), 'マウスY');
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), 'マウスY');
   if (p<>nil) then hi_setInt(p, Y);
   if ginfo.obj is THiTreeView then
   begin
@@ -1415,11 +1414,11 @@ var
 begin
   ginfo := GuiInfos[ TControl(Sender).Tag ];
 
-  p := nako_getGroupMember(PChar(ginfo.name), EVENT_MOUSEWHEEL);
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), EVENT_MOUSEWHEEL);
   if (p=nil)or(p.ptr=nil) then Exit; // イベントはなし
 
   // 変数の設定
-  p := nako_getGroupMember(PChar(ginfo.name), 'ホイール値');
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), 'ホイール値');
   if (p<>nil) then hi_setInt(p, WheelDelta);
 
   // イベント
@@ -1434,12 +1433,12 @@ var
 begin
   ginfo := GuiInfos[ TControl(TFileDrop(Sender).Control).Tag ];
 
-  p := nako_getGroupMember(PChar(ginfo.name), EVENT_FILEDROP);
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), EVENT_FILEDROP);
   if (p=nil)or(p.ptr=nil) then Exit; // イベントはなし
 
   // 変数の設定
-  p := nako_getGroupMember(PChar(ginfo.name), 'ドロップファイル');
-  if (p<>nil) then hi_setStr(p, Trim(Files.Text));
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), 'ドロップファイル');
+  if (p<>nil) then hi_setStrU(p, Trim(Files.Text));
 
   // イベント
   doEvent(@ginfo, EVENT_FILEDROP);
@@ -1447,14 +1446,14 @@ end;
 
 procedure TfrmNako.CopyDataMessage(var WMCopyData: TWMCopyData);
 var
-  msg: string;
+  msg: AnsiString;
   ginfo: TGuiInfo;
   p: PHiValue;
   tm: TMessage;
 begin
   ginfo := GuiInfos[ self.Tag ];
 
-  msg := PChar( WMCopyData.CopyDataStruct.lpData );
+  msg := PAnsiChar( WMCopyData.CopyDataStruct.lpData );
 
   // マクロの実行など
   if (msg = 'break')and(WMCopyData.CopyDataStruct.dwData = 1001) then //エディタから強制ストップを受けた
@@ -1474,9 +1473,9 @@ begin
   end else
   begin
     // ユーザーの定義イベント
-    p := nako_getGroupMember(PChar(ginfo.name), 'CD文字列');
+    p := nako_getGroupMember(PAnsiChar(ginfo.name), 'CD文字列');
     if (p<>nil) then hi_setStr(p, msg);
-    p := nako_getGroupMember(PChar(ginfo.name), 'CD_ID');
+    p := nako_getGroupMember(PAnsiChar(ginfo.name), 'CD_ID');
     if (p<>nil) then hi_setInt(p, WMCopyData.CopyDataStruct.dwData);
     //
     doEvent(@ginfo, EVENT_COPYDATA);
@@ -1750,17 +1749,18 @@ procedure TfrmNako.eventTEditorDropFile(Sender: TObject; Drop,
 var
   ginfo: PGuiInfo;
   p: PHiValue;
-  s: string;
+  s: AnsiString;
 begin
-  ginfo := @GuiInfos[ TEditorEx(Sender).Tag ];
+  ginfo := @GuiInfos[ TMemo(Sender).Tag ];
 
-  p := nako_getGroupMember(PChar(ginfo.name), EVENT_FILEDROP);
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), EVENT_FILEDROP);
   if (p=nil)or(p.ptr=nil) then Exit; // イベントはなし
 
-  // 変数の設定
-  s := TEditorEx(ginfo.obj).DropFileNames.Text;
-  p := nako_getGroupMember(PChar(ginfo.name), 'ドロップファイル');
-  if (p<>nil) then hi_setStr(p, Trim(s));
+  // TODO:変数の設定
+  //s := THiEditor(ginfo.obj).DropFileNames.Text;
+  s := 'NOT SIUPPORTED';
+  p := nako_getGroupMember(PAnsiChar(ginfo.name), 'ドロップファイル');
+  if (p<>nil) then hi_setStr(p, TrimA(s));
 
   // イベント
   doEvent(ginfo, EVENT_FILEDROP);
@@ -1784,7 +1784,7 @@ end;
 
 procedure TfrmNako.wmDevChange(var Msg: TMessage);
 var
-  //buf: string;
+  //buf: AnsiString;
   dev: PDEV_BROADCAST_HDR;
   vol: PDEV_BROADCAST_VOLUME;
   drive: Char;
@@ -1800,7 +1800,7 @@ begin
           //if (vol.dbcv_flags and DBTF_MEDIA) > 0 then
           begin
             drive := FirstDriveFromMask(vol.dbcv_unitmask);
-            hi_setStr(nako_getSore, string(drive));
+            hi_setStrU(nako_getSore, string(drive));
             doEvent(@GuiInfos[0], 'デバイス挿入した時');
           end;
         end;
@@ -1813,7 +1813,7 @@ begin
           //if (vol.dbcv_flags and DBTF_MEDIA) > 0 then
           begin
             drive := FirstDriveFromMask(vol.dbcv_unitmask);
-            hi_setStr(nako_getSore, string(drive));
+            hi_setStrU(nako_getSore, string(drive));
             doEvent(@GuiInfos[0], 'デバイス削除した時');
           end;
         end;
@@ -1897,12 +1897,12 @@ end;
 
 { THiWinControl }
 
-function THiWinControl.hi_getDragMode: string;
+function THiWinControl.hi_getDragMode: AnsiString;
 begin
   if Self.DragMode = dmManual then Result := '0' else Result := '1';
 end;
 
-procedure THiWinControl.hi_setDragMode(s: string);
+procedure THiWinControl.hi_setDragMode(s: AnsiString);
 begin
   if (s = 'オフ')or(s = '0') then Self.DragMode := dmManual else
                                   Self.DragMode := dmAutomatic;
@@ -1983,7 +1983,7 @@ end;
 
 procedure TfrmNako.FormClose(Sender: TObject; var Action: TCloseAction);
 var
-  s: string;
+  s: AnsiString;
 begin
   if not _dnako_success then Exit;
   if FFlagFree then Exit;
@@ -1994,9 +1994,9 @@ begin
   // ---------------------------------------
   if UseDebug then
   begin
-    s := ExtractFilePath(ParamStr(0)) + 'report.txt';
+    s := AnsiString(ExtractFilePath(ParamStr(0)) + 'report.txt');
     try
-      nako_makeReport(PChar(s));
+      nako_makeReport(PAnsiChar(s));
     except
       MessageBox(Self.Handle,'report.txtの作成に失敗しました。','なでしこ',MB_OK or MB_ICONERROR);
     end;

@@ -34,8 +34,10 @@ uses
   BlowFish in 'hi_unit\BlowFish.pas',
   CryptUtils in 'hi_unit\CryptUtils.pas',
   unit_file in 'hi_unit\unit_file.pas',
-  EasyMasks in 'hi_unit\EasyMasks.pas' {$IFDEF DELUX_VERSION},
-  unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas' {$ENDIF},
+  EasyMasks in 'hi_unit\EasyMasks.pas',
+  {$IFDEF DELUX_VERSION}
+  unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas',
+  {$ENDIF}
   unit_date in 'hi_unit\unit_date.pas';
 
 const
@@ -58,7 +60,7 @@ function nako_load(sourceFile: PAnsiChar): DWORD; stdcall;// w‚È‚Å‚µ‚±x‚Ìƒ\[ƒ
 begin
   try
     HiSystem.FIncludeBasePath := '';
-    HiSystem.MainFileNo := HiSystem.LoadFromFile(SourceFile);
+    HiSystem.MainFileNo := HiSystem.LoadFromFile(string(SourceFile));
   except
     Result := nako_NG; Exit;
   end;
@@ -180,24 +182,8 @@ begin
 end;
 
 function nako_getFuncArg(handle: DWORD; index: Integer): PHiValue; stdcall; // nako_addFunction ‚Å“o˜^‚µ‚½ƒR[ƒ‹ƒoƒbƒNŠÖ”‚©‚çˆø”‚ğæ‚èo‚·‚Ì‚Ég‚¤
-var
-  a: THiArray;
 begin
-  a := THiArray(handle);    // handle = THiArray ‚Ö‚ÌƒAƒhƒŒƒX
-
-  Assert((a is THiArray), 'nako_getFuncArg‚É•s³‚Èƒnƒ“ƒhƒ‹‚ª“n‚³‚ê‚Ü‚µ‚½B');
-
-  if a.Count > index then
-  begin
-    Result := a.Items[index]; // nil ‚Í nil ‚Æ‚µ‚Ä•Ô‚·
-  end else
-  begin
-    Result := nil;
-  end;
-  if (Result <> nil) then
-  begin
-    if Result.VType = varLink then Result := hi_getLink(Result);
-  end;
+  Result := hima_system.nako_getFuncArg(handle, index);
 end;
 
 function nako_getSore: PHiValue; stdcall; // •Ï”w‚»‚êx‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğæ“¾‚·‚é
@@ -367,12 +353,7 @@ end;
 
 procedure nako_var_free(value: PHiValue); stdcall; // •Ï” value ‚Ì’l‚ğ‰ğ•ú‚·‚é
 begin
-  if value = nil then Exit;
-
-  if value.Registered = 1 then
-    hi_var_clear(value)  // ƒ†[ƒU[íœ•t‰Á
-  else
-    hi_var_free(value);  // ƒ†[ƒU[íœ‰Â
+  hima_system.nako_var_free(value);
 end;
 
 function nako_ary_get(v: PHiValue; index: Integer): PHiValue; stdcall; // v ‚ğ”z—ñ‚Æ‚µ‚Ä v[index]‚Ì’l‚ğ“¾‚é
@@ -516,7 +497,7 @@ end;
 function nako_openPackfile(fname: PAnsiChar): Integer; stdcall; // Àsƒtƒ@ƒCƒ‹ fname ‚ÌƒpƒbƒNƒtƒ@ƒCƒ‹‚ğŠJ‚­B¸”s‚È‚çA0‚ğ•Ô‚·B
 begin
   errLog('nako_openPackfile:' + AnsiString(fname));
-  if OpenPackFile(AnsiString(fname)) then
+  if OpenPackFile(string(AnsiString(fname))) then
   begin
     FileMixReader.autoDelete := True;
     Result := Integer(FileMixReader);
@@ -557,7 +538,7 @@ begin
   errLog('nako_openPackfileBin:' + AnsiString(packname));
 
   try
-    unit_pack_files.FileMixReader := TFileMixReader.Create(AnsiString(packname));
+    unit_pack_files.FileMixReader := TFileMixReader.Create(string(AnsiString(packname)));
     unit_pack_files.FileMixReader.autoDelete := True;
     unit_pack_files.FileMixReaderSelfCreate := True;
     Result := Integer(unit_pack_files.FileMixReader);
@@ -571,7 +552,7 @@ function nako_closePackfile(dummy: PAnsiChar): Integer; stdcall; // Àsƒtƒ@ƒCƒ‹
 begin
   if FileMixReader <> nil then
   begin
-    errLog('nako_closePackfile:' + FileMixReader.TempFile);
+    errLog('nako_closePackfile:' + AnsiString(FileMixReader.TempFile));
     try
       FreeAndNil(FileMixReader);
     except
@@ -601,13 +582,14 @@ end;
 
 procedure nako_reportDLL(fname: PAnsiChar); stdcall; // DLL‚ğ—˜—p‚µ‚½‚±‚Æ‚ğ–¾¦‚·‚é..ƒŒƒ|[ƒg‚É‰Á‚¦‚é
 begin
-  HiSystem.plugins.addDll(fname);
+  HiSystem.plugins.addDll(string(AnsiString(fname)));
 end;
 
 function nako_hasPlugins(dllName: PAnsiChar): BOOL; stdcall; // w’è‚µ‚½ƒvƒ‰ƒOƒCƒ“‚ªg‚í‚ê‚Ä‚¢‚é‚©H
 var
   i: Integer;
   f: AnsiString;
+  s: string;
   dll: AnsiString;
 begin
   Result := False;
@@ -616,9 +598,9 @@ begin
 
   for i := 0 to HiSystem.plugins.Count - 1 do
   begin
-    f := THiPlugin(HiSystem.plugins.Items[i]).FullPath;
-    f := AnsiString(ExtractFileName(string(f)));
-    f := UpperCaseEx((f));
+    s := THiPlugin(HiSystem.plugins.Items[i]).FullPath;
+    s := (ExtractFileName(s));
+    f := UpperCaseEx(AnsiString(s));
     if f = dll then
     begin
       Result := True;
@@ -674,7 +656,7 @@ var
   s: AnsiString;
 begin
   f := HiSystem.TokenFiles.FindFileNo(fileNo);
-  s := f.Path + f.Filename;
+  s := AnsiString(f.Path + f.Filename);
   if len > 0 then StrLCopy(outstr, PAnsiChar(s), len);
   Result := nako_OK;
 end;
@@ -722,12 +704,12 @@ end;
 
 procedure nako_setPluginsDir(path: PAnsiChar); stdcall; // plug-ins ƒtƒHƒ‹ƒ_‚ğw’è‚·‚é
 begin
-  HiSystem.PluginsDir := path;
+  HiSystem.PluginsDir := string(path);
 end;
 
 function nako_getPluginsDir(): PAnsiChar; stdcall; // plug-ins ƒtƒHƒ‹ƒ_‚ğæ“¾‚·‚é
 begin
-  Result := PAnsiChar(HiSystem.PluginsDir);
+  Result := PAnsiChar(AnsiString(HiSystem.PluginsDir));
 end;
 
 procedure test; stdcall; // ƒeƒXƒg
@@ -775,7 +757,7 @@ var
   code: AnsiString;
 begin
   Result := nako_NG;
-  path := AppDataDir + 'com.nadesi.dll.dnako\license\';
+  path := AnsiString(AppDataDir) + 'com.nadesi.dll.dnako\license\';
   path := path + AnsiString(license_name);
   if not FileExists(string(path)) then Exit;
   code := FileLoadAll(path);
@@ -791,7 +773,7 @@ var
 begin
   Result := nako_NG;
   try
-    path := AppDataDir + 'com.nadesi.dll.dnako\license\';
+    path := AnsiString(AppDataDir) + 'com.nadesi.dll.dnako\license\';
     ForceDirectories(string(path));
     path := path + AnsiString(license_name);
     FileSaveAll(AnsiString(license_code), path);

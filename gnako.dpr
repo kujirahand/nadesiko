@@ -26,9 +26,9 @@ uses
 
 {$R gnako.res}
 
-procedure debug(s: string);
+procedure debug(s: AnsiString);
 begin
-  MessageBox(0, PChar(s), 'debug', MB_OK);
+  MessageBoxA(0, PAnsiChar(s), 'debug', MB_OK);
 end;
 
 var

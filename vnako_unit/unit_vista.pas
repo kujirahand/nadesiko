@@ -155,7 +155,7 @@ begin
     if (InitialDir <> '') then
       lpstrInitialDir := PChar(InitialDir);
     StrPCopy(lpstrFile, FileName);
-    lpstrFilter := PChar(JReplace(Filter, '|', #0, True)+#0#0);
+    lpstrFilter := PChar(JReplaceU(Filter, '|', #0, True)+#0#0);
     if DefExt <> '' then
       lpstrDefExt := PChar(DefExt);
   end;

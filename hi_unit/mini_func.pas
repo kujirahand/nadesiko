@@ -18,7 +18,7 @@ function MsgInput(msg: AnsiString; caption: AnsiString = ''; InitValue: AnsiStri
 
 //==============================================================================
 // パス操作
-function AppPath: AnsiString;
+function AppPath: string;
 
 //==============================================================================
 // その他
@@ -88,7 +88,7 @@ function MsgInputDialogFunc(hDlg: HWND; Msg: UINT; wParam: WPARAM;
   lParam: LPARAM): BOOL; stdcall;
 var
   ID: Integer;
-  p: PChar;
+  p: PAnsiChar;
 begin
   Result := False;
   case Msg of
@@ -96,11 +96,11 @@ begin
     begin
       // Caption
       if MsgInputOpt.Caption <> '' then
-        SetWindowText(hDlg, PChar(MsgInputOpt.Caption));
+        SetWindowTextA(hDlg, PAnsiChar(MsgInputOpt.Caption));
       // Text
-      SendMessage(GetDlgItem(hDlg,4), WM_SETTEXT, 4, Integer(PChar(MsgInputOpt.Text)));
+      SendMessage(GetDlgItem(hDlg,4), WM_SETTEXT, 4, Integer(PAnsiChar(MsgInputOpt.Text)));
       // InitValue
-      SendMessage(GetDlgItem(hDlg,3), WM_SETTEXT, 4, Integer(PChar(MsgInputOpt.InitValue)));
+      SendMessage(GetDlgItem(hDlg,3), WM_SETTEXT, 4, Integer(PAnsiChar(MsgInputOpt.InitValue)));
       // IME MODE
       if MsgInputOpt.ImeMode > 0 then
       begin
@@ -125,7 +125,7 @@ begin
           GetMem(p, 1024);
           try
             SendMessage(GetDlgItem(hDlg,3), WM_GETTEXT, 1024, Integer(p));
-            MsgInputOpt.Result := string( p );
+            MsgInputOpt.Result := AnsiString( p );
           finally
             FreeMem(p);
           end;
@@ -159,7 +159,7 @@ end;
 
 //==============================================================================
 // パスなど
-function AppPath: AnsiString;
+function AppPath: string;
 begin
   Result := ExtractFilePath(ParamStr(0));
 end;

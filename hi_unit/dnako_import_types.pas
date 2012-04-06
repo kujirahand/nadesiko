@@ -45,6 +45,7 @@ function hi_var_new(name: AnsiString = ''): PHiValue;
 function hi_clone(v: PHiValue): PHiValue; // 関数とまったく同じものを生成する
 function hi_newInt(value: Integer): PHiValue; // 新規整数
 function hi_newStr(value: AnsiString): PHiValue;  // 新規文字列
+function hi_newStrU(value: string): PHiValue;  // 新規文字列
 function hi_newFloat(value: HFloat): PHiValue;// 新規文字列
 function hi_newBool(value: Bool): PHiValue;// 新規BOOL
 // 整数をセットする
@@ -54,17 +55,19 @@ procedure hi_setFloat(v: PHiValue; num: HFloat);
 procedure hi_setBool (v: PHiValue; b: Boolean);
 // 文字列をセットする
 procedure hi_setStr  (v: PHiValue; s: AnsiString);
+procedure hi_setStrU (v: PHiValue; s: string);
 // キャストして使えるように
 function hi_bool (value: PHiValue): Boolean;
 function hi_int  (value: PHiValue): Integer;
 function hi_float(value: PHiValue): HFloat;
 function hi_str  (p: PHiValue): AnsiString;
+function hi_strU (p: PHiValue): string;
 function hi_hashKeys(p: PHiValue): AnsiString;
 
 implementation
 
 uses
-  dnako_import, SysUtils;
+  dnako_import, SysUtils, unit_string;
 
 
 function var2str(p: PHiValue): AnsiString;
@@ -100,13 +103,18 @@ begin
   end;
 end;
 
+function hi_strU(p: PHiValue): string;
+begin
+  Result := string(AnsiString(hi_str(p)));
+end;
+
 function hi_hashKeys(p: PHiValue): AnsiString;
 var
   s: AnsiString;
 begin
   SetLength(s, 1024 * 16);
   nako_hash_keys(p, PAnsiChar(s), Length(s));
-  Result := AnsiString(Trim(s));
+  Result := AnsiString(TrimA(s));
 end;
 
 function hi_var_new(name: AnsiString = ''): PHiValue;
@@ -133,6 +141,11 @@ function hi_newStr(value: AnsiString): PHiValue;
 begin
   Result := hi_var_new;
   hi_setStr(Result, value);
+end;
+
+function hi_newStrU(value: string): PHiValue;  // 新規文字列
+begin
+  Result := hi_newStr(AnsiString(value));
 end;
 
 function hi_newFloat(value: HFloat): PHiValue;// 新規文字列
@@ -191,5 +204,9 @@ begin
   end;
 end;
 
+procedure hi_setStrU (v: PHiValue; s: string);
+begin
+  hi_setStr(v, AnsiString(s));
+end;
 
 end.

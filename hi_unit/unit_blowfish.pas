@@ -14,7 +14,7 @@ implementation
 function BlowfishKeyCheck(Key: AnsiString): AnsiString;
 begin
   // キーの長さを補完する(短いキーに対する修正)
-  Result := 'com.nadesi::' + Trim(Key) + ':nadesiko:pKUkh9Dhgj8m5KZTbkv:';
+  Result := 'com.nadesi::' + AnsiString(Trim(string(Key))) + ':nadesiko:pKUkh9Dhgj8m5KZTbkv:';
 end;
 
 function BlowfishEnc(s, Key: AnsiString): AnsiString;

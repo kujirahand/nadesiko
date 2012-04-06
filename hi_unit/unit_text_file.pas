@@ -25,7 +25,6 @@ type
   private
     fh: TextFile;
     function GetEOF: Boolean;
-  published
   public
     constructor Create(const FileName: AnsiString; Mode: Word);
     destructor Destroy; override;
@@ -39,7 +38,7 @@ implementation
 
 constructor TKTextFileStream.Create(const FileName: AnsiString; Mode: Word);
 begin
-  inherited Create(FileName, Mode);
+  inherited Create(string(FileName), Mode);
   FReadBufSize := 4096 * 2; // 適当
   FBuf := ''; // バッファなし
   FEOF := False;
@@ -160,7 +159,7 @@ end;
 
 constructor TKTextFileE.Create(const FileName: AnsiString; Mode: Word);
 begin
-  Assign(fh, FileName);
+  Assign(fh, string(FileName));
   if (Mode = fmCreate)or(Mode = fmOpenWrite) then
   begin
     Rewrite(fh);

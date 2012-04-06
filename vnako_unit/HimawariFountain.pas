@@ -405,8 +405,6 @@ begin
   FInt.Free;
   FStr.Free;
   FSymbol.Free;
-  FDefLine.Free;
-  FMember.Free;
   inherited Destroy;
 end;
 

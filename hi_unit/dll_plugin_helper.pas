@@ -35,19 +35,19 @@ function getArgFloat(h: DWORD; Index: Integer; UseHokan: Boolean = False): HFloa
 // 動詞の語尾変化を削除
 function DeleteGobi(key: AnsiString): AnsiString;
 // 実行ファイルに埋め込まれたファイルを取りだす
-function _getEmbedFile(var f:string): Boolean;
+function _getEmbedFile(var f: AnsiString): Boolean;
 
 
 implementation
 
-function _getEmbedFile(var f:string): Boolean;
+function _getEmbedFile(var f: AnsiString): Boolean;
 var
   path: AnsiString;
 begin
   SetLength(path, 4096);
   if (nako_getEmbedFile(PAnsiChar(f), PAnsiChar(path), 4095)) then
   begin
-    f := string(path);
+    f := AnsiString(path);
     Result := True;
   end else
   begin
@@ -219,18 +219,18 @@ var
 
   function chk(f: AnsiString): Boolean;
   begin
-    Result := FileExists(f);
+    Result := FileExists(string(f));
     if Result then
     begin
-      fname := f;
+      fname := AnsiString(f);
     end;
   end;
 
-  function path(f: AnsiString): AnsiString;
+  function path(f: string): AnsiString;
   begin
     if Copy(f,Length(f),1) <> '\' then
     begin
-      Result := f + '\';
+      Result := AnsiString(f + '\');
     end;
   end;
 
@@ -238,9 +238,9 @@ begin
   Result := True;
 
   // 絶対パス指定なら抜ける
-  if (Pos(':\', fname) > 0)or(Pos('\\', fname) > 0) then
+  if (Pos(':\', string(fname)) > 0)or(Pos('\\', string(fname)) > 0) then
   begin
-    Result := FileExists(fname);
+    Result := FileExists(string(fname));
     Exit;
   end;
 
@@ -252,9 +252,9 @@ begin
   // bokan + lib
   if chk(f + 'lib\' + fname) then Exit;
   // apppath
-  if chk(ExtractFilePath(ParamStr(0)) + fname) then Exit;
+  if chk(AnsiString(ExtractFilePath(ParamStr(0))) + fname) then Exit;
   // apppath + lib
-  if chk(ExtractFilePath(ParamStr(0)) + 'lib\' + fname) then Exit;
+  if chk(AnsiString(ExtractFilePath(ParamStr(0))) + 'lib\' + fname) then Exit;
   // plug-ins
   f := nako_getPluginsDir;
   if chk(f + fname) then Exit;

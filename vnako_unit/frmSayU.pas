@@ -61,20 +61,20 @@ end;
 procedure TfrmSay.SetText(const Value: string);
 var
   i, ww, hh, mw, w, h, x, y, len: Integer;
-  str, s: string;
+  str: AnsiString;
   ss: TStringList;
 const
   MAXLEN = 80 * 12;
 begin
   FMemo := Value;
-  str   := FMemo;
+  str   := AnsiString(FMemo);
 
   // 表示用に文字数オーバーなら切捨て
   len := Length(Value);
   btnMore.Visible := (len > MAXLEN);
   if btnMore.Visible then
   begin
-    str := sjis_copyByte(PChar(str), MAXLEN);
+    str := sjis_copyByte(PAnsiChar(str), MAXLEN);
   end;
   // タブを展開
   str := ExpandTab(str, hi_int(nako_getVariable('タブ数')));
@@ -82,7 +82,7 @@ begin
   str := CutLine(str, 120, 4, '');
   //
   ss := TStringList.Create;
-  ss.Text := str;
+  ss.Text := string(str);
   if ss.Count > 20 then
   begin
     btnMore.Visible := True;
@@ -142,8 +142,7 @@ begin
 
     for i := 0 to ss.Count - 1 do
     begin
-      s := ss.Strings[i];
-      TextOut(x, y + i * TextHeight('A'), s);
+      TextOut(x, y + i * TextHeight('A'), ss.Strings[i]);
     end;
   end;
   ss.Free;

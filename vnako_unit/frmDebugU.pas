@@ -4,8 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Grids, ExtCtrls, Menus, CsvUtils2, ComCtrls, HEditor,
-  hOleddEditor, EditorEx;
+  Dialogs, StdCtrls, Grids, ExtCtrls, Menus, CsvUtils2, ComCtrls;
 
 type
   TfrmDebug = class(TForm)
@@ -64,7 +63,7 @@ type
     scope: string;
   public
     { Public 宣言 }
-    edtMain:TEditorEx;
+    edtMain:TMemo;
     procedure EnumVar;
     procedure data2grid;
     procedure getSource;
@@ -78,7 +77,7 @@ function frmDebug(Parent: TForm) : TfrmDebug;
 implementation
 
 uses frmNakoU, dnako_import, dnako_import_types, unit_string, frmMemoU,
-  vnako_function, NadesikoFountain;
+  vnako_function;
 
 {$R *.dfm}
 
@@ -104,11 +103,11 @@ var
   p: PHiValue;
   sl: TStringList;
   i, j: Integer;
-  s, cmd, e, txt: string;
+  s, cmd, e, txt: AnsiString;
 begin
-  s := '『'+scope+'』の変数列挙。';
+  s := '『'+AnsiString(scope)+'』の変数列挙。';
   try
-    p := nako_eval(PChar(s));
+    p := nako_eval(PAnsiChar(s));
     txt := hi_str(p);
     if (p <> nil)and(p.Registered = 0) then nako_var_free(p);
   except
@@ -117,14 +116,14 @@ begin
   csvCmd.Clear;
   sl := TStringList.Create;
   try
-    sl.Text := txt;
+    sl.Text := string(txt);
     for i := 0 to sl.Count - 1 do
     begin
-      s := sl.Strings[i];
-      if Pos('=', s) > 0 then
+      s := AnsiString(sl.Strings[i]);
+      if PosA('=', s) > 0 then
       begin
         cmd := getToken_s(s, '=');
-        e   := getToken_s(s, ')'); e := JReplace(e, '(', '');
+        e   := getToken_s(s, ')'); e := JReplaceA(e, '(', '');
         j := csvCmd.Count;
         if (e='関数') then
         begin
@@ -139,7 +138,7 @@ begin
         end;
         csvCmd.Cells[0, j] := cmd;
         csvCmd.Cells[1, j] := e;
-        csvCmd.Cells[2, j] := Trim(s);
+        csvCmd.Cells[2, j] := TrimA(s);
       end;
     end;
 
@@ -154,17 +153,17 @@ procedure TfrmDebug.FormCreate(Sender: TObject);
 begin
   csvCmd := TCsvSheet.Create;
   scope := 'グローバルローカルユーザー';
-  edtMain := TEditorEx.Create(panelSrcEdit);
+  edtMain := TMemo.Create(panelSrcEdit);
   edtMain.Parent := panelSrcEdit;
   edtMain.Align := alClient;
-  edtMain.Caret.TabSpaceCount := 4;
-  edtMain.Marks.Underline.Visible := True;
-  edtMain.Leftbar.Visible := False;
-  edtMain.Margin.Left := 4;
+  //edtMain.Caret.TabSpaceCount := 4;
+  //edtMain.Marks.Underline.Visible := True;
+  //edtMain.Leftbar.Visible := False;
+  //edtMain.Margin.Left := 4;
   edtMain.ReadOnly := True;
   edtMain.Font.Size := 8;
   edtMain.Font.Name := 'ＭＳ ゴシック';
-  edtMain.Fountain := TNadesikoFountain.Create(Self);
+  //edtMain.Fountain := TNadesikoFountain.Create(Self);
 end;
 
 procedure TfrmDebug.FormDestroy(Sender: TObject);
@@ -185,7 +184,7 @@ begin
     // csvCmd
     for i := 0 to csvCmd.Count - 1 do
     begin
-      s := csvCmd.Cells[0, i];
+      s := string(csvCmd.Cells[0, i]);
       if (Pos(key, s) > 0)or(key='') then
       begin
         j := c.Count;
@@ -212,13 +211,13 @@ end;
 
 procedure TfrmDebug.mnuEvalClick(Sender: TObject);
 var
-  s: string;
+  s: AnsiString;
   p: PHiValue;
 begin
-  s := InputBox('評価','評価したい式を入力してください。', '');
+  s := AnsiString(InputBox('評価','評価したい式を入力してください。', ''));
   if s='' then Exit;
-  p := nako_eval(PChar(s));
-  ShowMessage('評価した結果:'#13#10+hi_str(p));
+  p := nako_eval(PAnsiChar(s));
+  ShowMessage('評価した結果:'#13#10+hi_strU(p));
 end;
 
 procedure TfrmDebug.mnuScopeLocalClick(Sender: TObject);
@@ -290,7 +289,7 @@ begin
   begin
     for j := 0 to 2 do
     begin
-      grdVar.Cells[j, i + 1] := csvCmd.Cells[j, i];
+      grdVar.Cells[j, i + 1] := string(csvCmd.Cells[j, i]);
     end;
   end;
   // 空行を入れる
@@ -319,7 +318,7 @@ end;
 procedure TfrmDebug.getSource;
 var
   fileNo, lineNo: Integer;
-  txt: string;
+  txt: AnsiString;
 begin
   // 実行行の取得
   try
@@ -337,11 +336,12 @@ begin
   lblInfo.Caption := 'file:' + IntToStr(fileNo) + ' line:' + IntToStr(lineNo);
   // ソースの取得
   SetLength(txt, 65535);
-  nako_getSourceText(fileNo, PChar(txt), Length(txt));
+  nako_getSourceText(fileNo, PAnsiChar(txt), Length(txt));
   //
-  edtMain.Lines.Text := txt;
+  edtMain.Lines.Text := string(txt);
   edtMain.SetFocus;
-  edtMain.SelStart := Pos(IntToStr(lineNo)+':', txt) - 1;
+  edtMain.SelStart := Pos(IntToStr(lineNo)+':', string(txt)) - 1;
+  edtMain.SelLength := Length(IntToStr(lineNo)) + 1;
 end;
 
 procedure TfrmDebug.lblInfoClick(Sender: TObject);

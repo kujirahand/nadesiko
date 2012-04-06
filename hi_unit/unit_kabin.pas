@@ -76,7 +76,8 @@ begin
   begin
     Result := '';
     SetLength(s, 1024 * 16);
-    nako_hash_keys(p, PAnsiChar(s), 1024 * 16);
+    i := nako_hash_keys(p, PAnsiChar(s), 1024 * 16);
+    SetLength(s, i);
     while s <> '' do
     begin
       key := getToken_s(s, #13#10);
@@ -109,7 +110,7 @@ var
 begin
   if obj = nil then
   begin
-    Result := nil;
+    Result := hi_var_new;
     Exit;
   end;
   case obj.JsonType of

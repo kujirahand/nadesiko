@@ -496,7 +496,7 @@ begin
   begin
     if hi_id2tango(v.VarID) <> '' then
     begin
-      raise Exception.Create(hi_id2tango(v.VarID)+'はグループではありません。');
+      raise HException.Create(hi_id2tango(v.VarID)+'はグループではありません。');
     end else begin
       raise Exception.Create('グループへのキャストに失敗しました。');
     end;
@@ -901,9 +901,9 @@ begin
   for i := 1 to Length(v) do
   begin
     if ((i-1) mod 10) = 0 then Result := Result + #13#10;
-    Result := Result + IntToHex(Ord(v[i]),2) + ',';
+    Result := Result + IntToHexA(Ord(v[i]),2) + ',';
   end;
-  Result := Trim(Result);
+  Result := TrimA(Result);
 end;
 
 function THimaRecord.SetBuffer(ptr: Pointer;src:PHiValue;dtype:AnsiChar):Pointer;
@@ -1046,7 +1046,7 @@ var
       begin
         str:=r.DType;
         getToken_s(str,'(');
-        size := StrToIntDef(getToken_s(str,')'), 0);
+        size := StrToIntDefA(getToken_s(str,')'), 0);
         SetLength(str,size);
         Move(ptr^,PAnsiChar(str)^,size);
         hi_setStr(Res,str)
@@ -1274,10 +1274,10 @@ var
       REC_DTYPE__EXT:
       begin
         getToken_s(s,'('); a := getToken_s(s,')');
-        Result := StrToIntDef(a, -1);
+        Result := StrToIntDefA(a, -1);
       end;
     end;
-    if Result < 0 then raise Exception.Create('構造体の定義エラー「' + s + '」は未定義');
+    if Result < 0 then raise HException.Create('構造体の定義エラー「' + s + '」は未定義');
   end;
 
 begin
@@ -1292,17 +1292,17 @@ begin
     total := 0;
     for i := 0 to sl.Count - 1 do
     begin
-      sname := Trim(sl.Strings[i]);
-      stype := Trim(getToken_s(sname, ' '));
+      sname := TrimA(sl.Strings[i]);
+      stype := TrimA(getToken_s(sname, ' '));
       if (sname<>'')and(stype='') then
       begin
         stype := sname; //sname := stype;
       end;
-      stype := UpperCase(stype);
+      stype := UpperCaseA(stype);
       _stype := stype;
 
       replace_dll_types(stype);
-      if stype = '' then raise Exception.Create('構造体の定義エラー「' + _stype + '」は未定義');
+      if stype = '' then raise HException.Create('構造体の定義エラー「' + _stype + '」は未定義');
 
       FDataTypes[i].VName := sname;
       FDataTypes[i].DType := stype;
@@ -1355,7 +1355,7 @@ begin
   i := FindVarIndex(name);
   if i < -1 then
   begin
-    raise Exception.Create('構造体への代入でメンバ「'+name+'」が見つかりません');
+    raise HException.Create('構造体への代入でメンバ「'+name+'」が見つかりません');
   end;
   SetValueIndex(i,value);
 end;
@@ -1810,17 +1810,17 @@ begin
   p := Values[0];
   str := hi_str(p);
   // check sequence
-  if Pos('"', str) > 0 then begin
+  if PosA('"', str) > 0 then begin
     str := JReplace(str, '"', '""');
     seq := True;
   end else
-  if Pos(splitter, str) > 0 then begin
+  if PosA(splitter, str) > 0 then begin
     seq := True;
   end else
-  if Pos(#13#10, str) > 0 then begin
+  if PosA(#13#10, str) > 0 then begin
     seq := True
   end else
-  if Pos(' ', str) > 0 then begin
+  if PosA(' ', str) > 0 then begin
     seq := True
   end;
 
@@ -1836,17 +1836,17 @@ begin
     str := hi_str(p);
 
     // check sequence
-    if Pos('"', str) > 0 then begin
+    if PosA('"', str) > 0 then begin
       str := JReplace(str, '"', '""');
       seq := True;
     end else
-    if Pos(splitter, str) > 0 then begin
+    if PosA(splitter, str) > 0 then begin
       seq := True;
     end else
-    if Pos(#13#10, str) > 0 then begin
+    if PosA(#13#10, str) > 0 then begin
       seq := True
     end else
-    if Pos(' ', str) > 0 then begin
+    if PosA(' ', str) > 0 then begin
       seq := True
     end;
 
@@ -2120,14 +2120,14 @@ begin
   Result := False;
   if param < 0 then
   begin
-    if JPos(_pickup_key, hi_str(v)) > 0 then
+    if PosA(_pickup_key, hi_str(v)) > 0 then
     begin
       Result := True;
     end;
   end else
   begin
     hi_ary_create(v);
-    if JPos(_pickup_key, hi_str( hi_ary(v).GetValue(param) )) > 0 then
+    if PosA(_pickup_key, hi_str( hi_ary(v).GetValue(param) )) > 0 then
     begin
       Result := True;
     end;
@@ -2187,13 +2187,13 @@ end;
 function pickup_regexp(v: PHiValue; param: Integer): Boolean; // ピックアップする場合は TRUE を返す
 var
   i: Integer;
-  opt: string;
+  opt: AnsiString;
 begin
   Result := False;
   if param < 0 then
   begin
     hi_ary_create(v);
-    opt := Trim(hi_str(HiSystem.GetVariableS('正規表現修飾子')));
+    opt := TrimA(hi_str(HiSystem.GetVariableS('正規表現修飾子')));
     for i := 0 to hi_ary(v).Count - 1 do
     begin
       if bregMatch(hi_str(hi_ary(v).GetValue(i)), _pickup_key, opt, nil) then
@@ -2745,7 +2745,7 @@ begin
     end else
     if p^.VType = varStr then
     begin
-      s := SysUtils.Trim(hi_str(p));
+      s := TrimA(hi_str(p));
       if s = '' then
       begin
         Delete(i); Continue;
@@ -2784,7 +2784,7 @@ begin
     end else
     if p^.VType = varStr then
     begin
-      s := SysUtils.Trim(hi_str(p));
+      s := TrimA(hi_str(p));
       if s = '' then
       begin
         Delete(i); Dec(i); Continue;
@@ -2883,14 +2883,14 @@ function THiHash.EnumKeys: AnsiString;
 begin
   temp.Clear;
   Each(subEnumKey);
-  Result := temp.Text;
+  Result := AnsiString(temp.Text);
 end;
 
 function THiHash.EnumValues: AnsiString;
 begin
   temp.Clear;
   Each(subEnumValue);
-  Result := temp.Text;
+  Result := AnsiString(temp.Text);
 end;
 
 function THiHash.FreeItem(item: THHashItem): Boolean;
@@ -2912,7 +2912,7 @@ function THiHash.GetAsString: AnsiString;
 begin
   temp.Clear;
   Each(subGetAsString);
-  Result := temp.text; //trimは危険
+  Result := AnsiString(temp.text); //trimは危険
 end;
 
 function THiHash.GetValue(key: AnsiString): PHiValue;
@@ -2950,7 +2950,7 @@ begin
     if p^ = #13 then Inc(p);
     if p^ = #10 then Inc(p);
     n := getToken_s(v, '=');
-    if (Trim(v) = '')and(Trim(n) = '') then Continue; // 不要なキーは作らない
+    if (TrimA(v) = '')and(TrimA(n) = '') then Continue; // 不要なキーは作らない
     // key = n , value = v
     hv := hi_var_new;
     hi_setStr(hv, v);
@@ -3002,19 +3002,19 @@ end;
 function THiHash.subEnumKey(item: THHashItem): Boolean;
 begin
   Result := True;
-  temp.add(item.Key);
+  temp.add(string(item.Key));
 end;
 
 function THiHash.subEnumValue(item: THHashItem): Boolean;
 begin
   Result := True;
-  temp.add(hi_str(THiHashItem(item).value));
+  temp.add(string(hi_str(THiHashItem(item).value)));
 end;
 
 function THiHash.subGetAsString(item: THHashItem): Boolean;
 begin
   Result := True;
-  temp.add(item.Key + '=' + hi_str(THiHashItem(item).value));
+  temp.add(string(item.Key + '=' + hi_str(THiHashItem(item).value)));
 end;
 
 { THiGroup }

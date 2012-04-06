@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, HEditor;
+  Dialogs, StdCtrls, ExtCtrls;
 
 const
   ERRMSG_HEADER = '‘å•Ï\‚µ–ó‚ ‚è‚Ü‚¹‚ñB' +

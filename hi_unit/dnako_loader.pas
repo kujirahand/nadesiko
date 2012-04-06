@@ -19,8 +19,8 @@ type
   public
     constructor Create(MainWinHandle: THandle);
     destructor Destroy; override;
-    procedure includeLib(nakofile: string);
-    procedure eval(src: string);
+    procedure includeLib(nakofile: AnsiString);
+    procedure eval(src: AnsiString);
     procedure checkBokanPath;
   public
     function load_DNAKO_DLL: Boolean;
@@ -53,7 +53,7 @@ constructor TDnakoLoader.Create(MainWinHandle: THandle);
       if ParamStr(i) = '-pack' then
       begin
         Inc(i);
-        FPackfile := mini_file_utils.FindDLLFile(ParamStr(i));
+        FPackfile := mini_file_utils.FindDLLFile((ParamStr(i)));
         if not FileExists(FPackfile) then
         begin
           FPackfile := '';
@@ -138,28 +138,30 @@ begin
     p := nako_getVariable('母艦パス');
     if p = nil then p := hi_var_new('母艦パス');
     path := AppPath;
-    hi_setStr(p, path);
+    hi_setStr(p, AnsiString(path));
     chdir(path);
   end;
 end;
 
-procedure TDnakoLoader.includeLib(nakofile: string);
+procedure TDnakoLoader.includeLib(nakofile: AnsiString);
 begin
   eval('!"'+nakofile+'"を取り込む。'#13#10+
        '!変数宣言が不要'#13#10);
 end;
 
-procedure TDnakoLoader.eval(src: string);
+procedure TDnakoLoader.eval(src: AnsiString);
 var
   p: PHiValue;
 begin
-  p := nako_eval(PChar(src));
+  p := nako_eval(PAnsiChar(src));
   nako_var_free(p);
 end;
 
 function TDnakoLoader.load_DNAKO_DLL: Boolean;
 var
-  ver: string;
+  ver: AnsiString;
+  pack_a: AnsiString;
+  dir_a: AnsiString;
 begin
   Result := True;
   FDnakoHandle := dnako_import.dnako_import_init(FPluginsDir + DNAKO_DLL);
@@ -176,13 +178,19 @@ begin
   // set Handle
   if FhasPackfile then
   begin
-    unit_pack_files.FileMixReader := TFileMixReader(dnako_import.nako_openPackfileBin(PChar(FPackfile)));
+    pack_a := AnsiString(FPackFile);
+    unit_pack_files.FileMixReader := TFileMixReader(
+      dnako_import.nako_openPackfileBin(
+        PAnsiChar(pack_a)
+      )
+    );
     reader := unit_pack_files.FileMixReader;
     if FPackfile <> '' then reader.autoDelete := False;
   end;
+  dir_a := AnsiString(FPluginsDir);
   dnako_import.nako_setMainWindowHandle(FMainWinHandle);
   dnako_import.nako_setDNAKO_DLL_handle(FDnakoHandle);
-  dnako_import.nako_setPluginsDir(PChar(FPluginsDir));
+  dnako_import.nako_setPluginsDir(PAnsiChar(dir_a));
 end;
 
 end.

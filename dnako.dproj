@@ -66,7 +66,6 @@
 			<DCCReference Include="hi_unit\mini_file_utils.pas"/>
 			<DCCReference Include="hi_unit\hima_stream.pas"/>
 			<DCCReference Include="hi_unit\unit_pack_files.pas"/>
-			<DCCReference Include="hi_unit\unit_date.pas"/>
 			<DCCReference Include="hi_unit\nako_dialog_const.pas"/>
 			<DCCReference Include="hi_unit\nako_dialog_function2.pas"/>
 			<DCCReference Include="hi_unit\common_function.pas"/>
@@ -77,7 +76,10 @@
 			<DCCReference Include="hi_unit\BlowFish.pas"/>
 			<DCCReference Include="hi_unit\CryptUtils.pas"/>
 			<DCCReference Include="hi_unit\unit_file.pas"/>
-			<DCCReference Include="hi_unit\EasyMasks.pas"/>
+			<DCCReference Include="hi_unit\EasyMasks.pas">
+				<Form>$ENDIF</Form>
+			</DCCReference>
+			<DCCReference Include="hi_unit\unit_date.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

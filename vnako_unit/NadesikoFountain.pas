@@ -108,15 +108,26 @@ procedure TNadesikoFountainParser.InitMethodTable;
 begin
   inherited InitMethodTable;
   // FMethodTable
-  FMethodTable['#'] := CommenterProc;
-  FMethodTable['$'] := HexPrefixProc;
-  FMethodTable[';'] := PropertyCancelProc;
-  FMethodTable[#39] := CommenterProc;//SingleQuotationProc;
-  FMethodTable['/'] := SlashProc;
+  SetMethodTable('#', CommenterProc);
+  SetMethodTable('$', HexPrefixProc);
+  SetMethodTable(';', PropertyCancelProc);
+  SetMethodTable(#39, CommenterProc);
+  SetMethodTable('/', SlashProc);
+
+  //FMethodTable['#'] := CommenterProc;
+  //FMethodTable['$'] := HexPrefixProc;
+  //FMethodTable[';'] := PropertyCancelProc;
+  //FMethodTable[#39] := CommenterProc;//SingleQuotationProc;
+  //FMethodTable['/'] := SlashProc;
+
   // FTokenMethodTable
-  FTokenMethodTable[toControlCode] := ControlCodeProc;
-  FTokenMethodTable[toControlCodeHex] := ControlCodeHexProc;
-  FTokenMethodTable[toAsm] := AnkProc;
+  SetMethodTable(toControlCode, ControlCodeProc);
+  SetMethodTable(toControlCodeHex, ControlCodeHexProc);
+  SetMethodTable(toAsm, AnkProc);
+
+  //FTokenMethodTable[toControlCode] := ControlCodeProc;
+  //FTokenMethodTable[toControlCodeHex] := ControlCodeHexProc;
+  //FTokenMethodTable[toAsm] := AnkProc;
 end;
 
 procedure TNadesikoFountainParser.CharCodeProc;
@@ -134,17 +145,22 @@ end;
 
 procedure TNadesikoFountainParser.ControlCodeHexProc;
 // '#$'
+const
+  HEX_CHARS = ['0'..'9', 'A'..'F', 'a'..'f'];
 begin
   FToken := toControlCodeHex;
-  while FP^ in ['0'..'9', 'A'..'F', 'a'..'f'] do
+
+  while CharInSet(FP^, HEX_CHARS) do
     Inc(FP);
 end;
 
 procedure TNadesikoFountainParser.ControlCodeProc;
 // '#'
+const
+  NUM_CHARS = ['0'..'9'];
 begin
   FToken := toControlCode;
-  while FP^ in ['0'..'9'] do
+  while CharInSet(FP^, NUM_CHARS) do
     Inc(FP);
 end;
 
@@ -362,7 +378,7 @@ end;
 procedure TNadesikoFountainParser.DBProc;
 var
   FlagIncPtr: Boolean;
-
+  
   function IsKeyword( p: PChar ): Boolean;
   var len: Integer;
   begin
@@ -390,70 +406,80 @@ var
     end;
   end;
 
+  procedure _dbyte;
+  begin
+    Inc(FP);
+    case LongWord(FP^) of
+      $40..$4E,
+      $59..$5F,
+      $7A..$80,
+      $9B..$9E,
+      $F2..$FF:
+        begin
+          Inc(FP);
+          FToken := toDBSymbol;
+        end;
+      $4F..$58:
+        begin
+          Inc(FP);
+          while ((FP^ in [#$82]) and ((FP + 1)^ in [#$4F..#$58])) or
+                ((FP^ in [#$81]) and ((FP + 1)^ in [#$43..#$44])) do // '，', ' ．'
+            Inc(FP, 2);
+          FToken := toDBInt;
+        end;
+      $60..$79, $81..$9A:
+        begin
+          Inc(FP);
+          while (FP^ in [#$82]) and ((FP + 1)^ in [#$60..#$79, #$81..#$9A]) do
+            Inc(FP, 2);
+          // アルファベットに続く数字
+          while (FP^ in [#$82]) and ((FP+1)^ in [#$4F..#$58]) do Inc(FP, 2);
+          // 数字
+          while (FP^ in ['0'..'9']) do Inc(FP);
+          FToken := toDBAlph;
+        end;
+      $9F, $F0, $F1: // ひらがなの処理
+        begin
+          Dec(FP);
+
+          // 例外語句
+          FlagIncPtr := True;
+          if IsKeyword('はい') or IsKeyword('ここまで') then
+          begin
+            FToken := toReserve; Exit;
+          end;
+
+          // 助詞か？
+          if IsJosi(True) then
+          begin
+            FToken := toJosi;
+          end else
+          begin
+            while ((FP^ in [#$82]) and ((FP + 1)^ in [#$9F..#$F1])) or
+                  ((FP^ in [#$81]) and ((FP + 1)^ in [#$5B, #$7C])) do // 'ー', '－'
+            begin
+              if IsJosi(False) then Break;
+              Inc(FP, 2);
+            end;
+            FToken := toDBHira;
+          end;
+        end;
+    end;
+  end;
+
+
 begin
 //------------------------------------------------------------------------------
-  case FP^ of
-    #$82:
+  case LongWord(FP^) of
+    $82:
       begin
-        Inc(FP);
-        case FP^ of
-          #$40..#$4E, #$59..#$5F, #$7A..#$80, #$9B..#$9E, #$F2..#$FF:
-            begin
-              Inc(FP);
-              FToken := toDBSymbol;
-            end;
-          #$4F..#$58:
-            begin
-              Inc(FP);
-              while ((FP^ in [#$82]) and ((FP + 1)^ in [#$4F..#$58])) or
-                    ((FP^ in [#$81]) and ((FP + 1)^ in [#$43..#$44])) do // '，', ' ．'
-                Inc(FP, 2);
-              FToken := toDBInt;
-            end;
-          #$60..#$79, #$81..#$9A:
-            begin
-              Inc(FP);
-              while (FP^ in [#$82]) and ((FP + 1)^ in [#$60..#$79, #$81..#$9A]) do
-                Inc(FP, 2);
-              // アルファベットに続く数字
-              while (FP^ in [#$82]) and ((FP+1)^ in [#$4F..#$58]) do Inc(FP, 2);
-              // 数字
-              while (FP^ in ['0'..'9']) do Inc(FP);
-              FToken := toDBAlph;
-            end;
-          #$9F..#$F1: // ひらがなの処理
-            begin
-              Dec(FP);
-              
-              // 例外語句
-              FlagIncPtr := True;
-              if IsKeyword('はい') or IsKeyword('ここまで') then
-              begin
-                FToken := toReserve; Exit;
-              end;
-
-              // 助詞か？
-              if IsJosi(True) then
-              begin
-                FToken := toJosi;
-              end else
-              begin
-                while ((FP^ in [#$82]) and ((FP + 1)^ in [#$9F..#$F1])) or
-                      ((FP^ in [#$81]) and ((FP + 1)^ in [#$5B, #$7C])) do // 'ー', '－'
-                begin
-                  if IsJosi(False) then Break;
-                  Inc(FP, 2);
-                end;
-                FToken := toDBHira;
-              end;
-            end;
-        end;
+        _dbyte;
       end;
-    #$83:
+    $83:
       begin
         Inc(FP);
-        case FP^ of
-          #$40..#$96:
+        case LongWord(FP^) of
+          $40..$96:
             begin
               Inc(FP);
               while ((FP^ in [#$83]) and ((FP + 1)^ in [#$40..#$96])) or
@@ -461,7 +487,7 @@ begin
                 Inc(FP, 2);
               FToken := toDBKana;
             end;
-          #$97..#$F0:
+          $97..$F0:
             begin
               Inc(FP);
               FToken := toDBSymbol;
@@ -522,9 +548,6 @@ begin
   FInt.Free;
   FStr.Free;
   FSymbol.Free;
-  FJosi.Free;
-  FDefLine.Free;
-  FMember.Free;
   inherited Destroy;
 end;
 
@@ -533,31 +556,32 @@ begin
   inherited CreateFountainColors;
 
   // 色分けの生成
-  FAnk := CreateFountainColor;
-  FAsmBlock := CreateFountainColor;
-  FComment := CreateFountainColor;
-  FDBCS := CreateFountainColor;
-  FInt := CreateFountainColor;
-  FStr := CreateFountainColor;
-  FSymbol := CreateFountainColor;
-  FJosi := CreateFountainColor;
-  FDefLine := CreateFountainColor;
-  FMember := CreateFountainColor;
+  FAnk        := CreateFountainColor;
+  FAsmBlock   := CreateFountainColor;
+  FComment    := CreateFountainColor;
+  FDBCS       := CreateFountainColor;
+  FInt        := CreateFountainColor;
+  FStr        := CreateFountainColor;
+  FSymbol     := CreateFountainColor;
+  FJosi       := CreateFountainColor;
+  FDefLine    := CreateFountainColor;
+  FMember     := CreateFountainColor;
 
   // デフォルト配色の決定
-  FInt.Color      := clGreen;
-  FComment.Color  := clMaroon;
+  FInt.Color      := clNavy;
   FStr.Color      := clNavy;
-  FSymbol.Color   := clBlue;
+  FComment.Color  := clGreen;
+  FSymbol.Color   := clTeal;
   FJosi.Color     := clMaroon;
 
-  FDefLine.Color  := clRed;
+  FDefLine.Color  := clFuchsia;
   FDefLine.Style  := [fsBold];
 
   FMember.Color   := clBlue;
   //FMember.Style   := [fsBold];
 
-  Reserve.Style   := [fsBold];
+  Reserve.Color   := clNavy;
+  Reserve.Style   := [];
 
 end;
 
@@ -635,7 +659,7 @@ begin
   Item := Brackets.Add;
   Item.LeftBracket := '/*';
   Item.RightBracket := '*/';
-  Item.ItemColor.Color := clMaroon;
+  Item.ItemColor.Color := clGreen;
 
 end;
 

@@ -5,7 +5,7 @@ interface
 
 
 uses
-  Windows, SysUtils, hima_types, mmsystem;
+  Windows, SysUtils, Classes, hima_types, mmsystem;
 
 type
   // デバッグ.ソースコード情報 32 bit
@@ -65,9 +65,9 @@ const
 
 var
   HimaErrorMessage: AnsiString;
-  HimaFileList: THStringList; // ひまわりで使うファイルの管理用
+  HimaFileList: TStringList; // ひまわりで使うファイルの管理用
 
-function setSourceFileName(fname: AnsiString): Integer; // ソースファイルを登録する
+function setSourceFileName(fname: string): Integer; // ソースファイルを登録する
 function ErrFmt(FileNo, LineNo: Integer; Msg: AnsiString; Args: array of const): AnsiString;
 
 procedure debugi(i:Integer);
@@ -87,7 +87,7 @@ var
 procedure debugi(i:Integer);
 var s: AnsiString;
 begin
-  s := IntToStr(i);
+  s := IntToStrA(i);
   MessageBoxA(0, PAnsiChar(s), 'debug', MB_OK);
 end;
 procedure debugs(s: AnsiString);
@@ -95,7 +95,7 @@ begin
   MessageBoxA(0, PAnsiChar(s), 'debug', MB_OK);
 end;
 
-function setSourceFileName(fname: AnsiString): Integer;
+function setSourceFileName(fname: string): Integer;
 begin
   Result := HimaFileList.IndexOf(fname);
   if Result < 0 then
@@ -124,7 +124,7 @@ begin
     if FileNo < HimaFileList.Count then
     begin
       try
-        fname := ExtractFileName(HimaFileList.Strings[FileNo]);
+        fname := AnsiString(ExtractFileName(HimaFileList.Strings[FileNo]));
       except fname := ''; end;
     end else
     begin
@@ -133,19 +133,19 @@ begin
   end;
   //=== エラーメッセージと引数を組み合わせる
   try
-    s := Format(Msg, Args);
+    s := FormatA(Msg, Args);
   except
     s := Msg;
   end;
 
   //=== ファイル番号とエラーメッセージを組み立てる
-  file_info := fname + '(' + IntToStr(LineNo) + '): ';
+  file_info := fname + '(' + IntToStrA(LineNo) + '): ';
 
   // 重複する部分を削除
 
   if last_err_result <> '' then // 前回との完全重複を削除
   begin
-    s := JReplace(s, last_err_result, '');
+    s := JReplaceA(s, last_err_result, '');
   end;
 
   if (Copy(s, 1, Length(err_h))=err_h) then // head
@@ -153,7 +153,7 @@ begin
     getToken_s(s, ':'); // ヘッダをばっさり切り取る
   end;
 
-  s := Trim(s);
+  s := TrimA(s);
   if (s = '')and(HimaErrorMessage <> '') then
   begin
     s := err_same;
@@ -167,7 +167,7 @@ begin
   // もしエラーメッセージ中で重複がなければ追加
   if (Pos(Result, HimaErrorMessage) = 0) then
   begin
-    if Pos(err_same, Result) > 0 then // 同じだが前回と違う行なら出力
+    if PosA(err_same, Result) > 0 then // 同じだが前回と違う行なら出力
     begin
       if last_err_file = file_info then Exit;
     end;
@@ -181,23 +181,23 @@ var
   LogTime: DWORD;
   fOpen: Boolean = False;
 
-function TempDir: AnsiString;
+function TempDir: string;
 var
- TempTmp:array[0..MAX_PATH] of Char;
+ TempTmp: Array [0..MAX_PATH] of Char;
 begin
- GetTemppath(MAX_PATH,TempTmp);
- Result:=StrPas(TempTmp);
+ GetTempPathW(MAX_PATH, TempTmp);
+ Result:= string(TempTmp);
  if Copy(Result,Length(Result),1)<>'\' then Result := Result + '\';
 end;
 
 procedure errLog(s: AnsiString);
 var
-  logname: AnsiString;
+  logname: string;
 begin
   if not useErrorLog then Exit;
   if not fOpen then
   begin
-    logname := TempDir + 'nakolog_' + FormatDateTime('hhnnss',Now) + '.txt';
+    logname := string(TempDir + 'nakolog_' + FormatDateTime('hhnnss',Now) + '.txt');
     AssignFile(FileErrLog, logname);
     Rewrite(FileErrLog);
     LogTime := timeGetTime;
@@ -205,7 +205,7 @@ begin
   end;
   Writeln(
     FileErrLog,
-    Format('%0.5d',[(timeGetTime-LogTime)]) + ':' + s
+    Format('%0.5d',[(timeGetTime-LogTime)]) + ':' + string(s)
   );
 end;
 
@@ -214,19 +214,21 @@ end;
 constructor EHimaSyntax.Create(FileNo, LineNo: Integer; Msg: AnsiString;
   Args: array of const);
 begin
-  inherited Create( ErrFmt(FileNo, LineNo, Msg, Args) );
+  inherited Create(
+    string(ErrFmt(FileNo, LineNo, (Msg), Args))
+  );
   hi_setStr(HiSystem.ErrMsg, HimaErrorMessage);
 end;
 
 constructor EHimaSyntax.Create(DInfo: TDebugInfo; Msg: AnsiString;
   Args: array of const);
 begin
-  inherited Create( ErrFmt(DInfo.FileNo, DInfo.LineNo, Msg, Args) );
+  inherited Create(string(ErrFmt(DInfo.FileNo, DInfo.LineNo, Msg, Args)));
   hi_setStr(HiSystem.ErrMsg, HimaErrorMessage);
 end;
 
 initialization
-  HimaFileList := THStringList.Create;
+  HimaFileList := TStringList.Create;
 
 finalization
   FreeAndNil(HimaFileList);
