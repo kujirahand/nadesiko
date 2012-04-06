@@ -6,8 +6,8 @@ uses
   Windows, SysUtils, messages;
 
 // エラーメッセージを取得する
-function GetLastErrorStr: AnsiString;
-function GetLastErrorMessage(ErrorCode: Integer): AnsiString;
+function GetLastErrorStr: string;
+function GetLastErrorMessage(ErrorCode: Integer): string;
 
 function ClipbrdGetAsText: AnsiString;
 function ClipbrdSetAsText(s: AnsiString): AnsiString;
@@ -26,11 +26,15 @@ var
 begin
   i.dwOSVersionInfoSize := SizeOf(i);
   GetVersionEx(i);
-  Result := Format('%d.%d(%d:%d)',[
-    i.dwMajorVersion,
-    i.dwMinorVersion,
-    i.dwBuildNumber,
-    i.dwPlatformId]);
+  Result :=
+    AnsiString(Format(
+      '%d.%d(%d:%d)',
+      [
+        i.dwMajorVersion,
+        i.dwMinorVersion,
+        i.dwBuildNumber,
+        i.dwPlatformId
+      ]));
 end;
 
 
@@ -44,7 +48,10 @@ begin
   GetVersionEx(Info);
   Major := Info.dwMajorVersion ;
   Minor := Info.dwMinorVersion ;
-  Result := '不明:' + AnsiString(Format('%d.%d',[Major, Minor])) + ')';
+  Result := '不明:' +
+    AnsiString(
+      Format('%d.%d',[Major, Minor]) + ')'
+    );
   case major of
       3://NT 3.51
           begin
@@ -172,24 +179,29 @@ begin
 end;
 
 
-function GetLastErrorMessage(ErrorCode: Integer): AnsiString;
+function GetLastErrorMessage(ErrorCode: Integer): string;
 const
   MAX_MES = 512;
 var
-  Buf: PAnsiChar;
+  Buf: PWideChar;
 begin
   Buf := AllocMem(MAX_MES);
   try
-    FormatMessageA(Format_Message_From_System, Nil, ErrorCode,
-                  (SubLang_Default shl 10) + Lang_Neutral,
-                  Buf, MAX_MES, Nil);
+    FormatMessageW(
+      Format_Message_From_System,
+      Nil,
+      ErrorCode,
+      (SubLang_Default shl 10) + Lang_Neutral,
+      Buf,
+      MAX_MES,
+      Nil);
   finally
-    Result := Buf;
+    Result := string(Buf);
     FreeMem(Buf);
   end;
 end;
 
-function GetLastErrorStr: AnsiString;
+function GetLastErrorStr: string;
 begin
   Result := GetLastErrorMessage(GetLastError);
 end;

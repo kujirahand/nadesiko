@@ -15,7 +15,7 @@ object frmSay: TfrmSay
   Font.Style = []
   OldCreateOrder = False
   PopupMenu = popSay
-  Position = poMainFormCenter
+  Position = poDefault
   ShowHint = True
   OnCreate = FormCreate
   OnDblClick = FormDblClick

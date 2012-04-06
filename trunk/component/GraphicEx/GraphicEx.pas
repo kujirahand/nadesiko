@@ -364,7 +364,7 @@ type
 
   {$ifdef PortableNetworkGraphic}
   // *.png images
-  TChunkType = array[0..3] of Char;
+  TChunkType = array[0..3] of AnsiChar;
 
   // This header is followed by a variable number of data bytes, which are followed by the CRC for this data.
   // The actual size of this data is given by field length in the chunk header.
@@ -4294,7 +4294,7 @@ end;
 class function TPPMGraphic.CanLoad(Stream: TStream): Boolean;
 
 var
-  Buffer: array[0..9] of Char;
+  Buffer: array[0..9] of AnsiChar;
   LastPosition: Cardinal;
 
 begin

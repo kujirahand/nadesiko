@@ -17,7 +17,7 @@ const
   HimaMark:       TChars   = ['@','~','.',':','?',',','\'];
 
   // 文字数の多い順に並べること
-  HimaJosuusi: Array [0..17] of string = (
+  HimaJosuusi: Array [0..17] of AnsiString = (
     //<単位>
     'メートル','ドット','つ目','つめ','個目','個','円','つ','本','冊','人','px','pt','cm','mm','m','kg','g'
     //</単位>
@@ -81,7 +81,7 @@ type
     procedure Analize(src: AnsiString); //<--- トークンを区切る関数 ---------------- ***
   public
     Parent    : THimaFiles;
-    Path, Filename : AnsiString;
+    Path, Filename : string;
     Fileno    : Integer;
     TopBlock,
     CurBlock  : THimaBlock;
@@ -90,15 +90,15 @@ type
     function TopToken: THimaToken;
     procedure Add(item: THimaBlock);
     //
-    procedure LoadFromFile(Filename: AnsiString);
+    procedure LoadFromFile(Filename: string);
     procedure SetSource(src: AnsiString);
   end;
 
   THimaFiles = class(THObjectList)
   public
-    function FindFile(Filename: AnsiString): THimaFile;
-    function LoadAndAdd(Filename: AnsiString): THimaFile;
-    function LoadSourceAdd(SourceText: AnsiString; Filename: AnsiString): THimaFile;
+    function FindFile(Filename: string): THimaFile;
+    function LoadAndAdd(Filename: string): THimaFile;
+    function LoadSourceAdd(SourceText: AnsiString; Filename: string): THimaFile;
     function FindFileNo(no: Integer): THimaFile;
   end;
 
@@ -170,7 +170,7 @@ procedure setTokenList(sys: TObject);
 procedure setJosiList(sys: TObject);
 
 // ファイルの検索
-function HiFindFile(var fname: AnsiString): Boolean;
+function HiFindFile(var fname: string): Boolean;
 
 
 const
@@ -308,15 +308,15 @@ var
   KuraidoriList: THiKuraidoriList;
 
 
-function HiFindFile(var fname: AnsiString): Boolean;
+function HiFindFile(var fname: string): Boolean;
 var
-  rawpath, path: AnsiString;
-  name: AnsiString;
+  rawpath, path: string;
+  name: string;
 
-  function check(testpath: AnsiString): Boolean;
+  function check(testpath: string): Boolean;
   begin
     Result := False;
-    if FileExists(testpath + name) then
+    if FileExists(string(testpath + name)) then
     begin
       Result := True;
       fname := testpath + name;
@@ -326,7 +326,7 @@ var
 begin
   Result := True;
 
-  rawpath := ExtractFilePath(fname);
+  rawpath := (ExtractFilePath(string(fname)));
   name := ExtractFileName(fname);
 
   // 絶対指定か？
@@ -338,19 +338,22 @@ begin
   // 大体が相対指定のはず
   //-------------------------------------
   // includeの基本パス
-  path := CheckPathYen( GetAbsolutePath(rawpath, HiSystem.FIncludeBasePath, '\') );
+  path := CheckPathYen(
+    string(GetAbsolutePath(
+      (rawpath),
+      string(HiSystem.FIncludeBasePath), '\')) );
   if check(path) then Exit;
   // includeの基本パス\lib
   path := path + 'lib\';
   if check(path) then Exit;
   // runtimeパス
-  path := CheckPathYen( GetAbsolutePath(rawpath, ExtractFilePath(ParamStr(0)), '\') );
+  path := CheckPathYen( string(GetAbsolutePath(string(rawpath), ExtractFilePath(ParamStr(0)), '\')) );
   if check(path) then Exit;
   // runtimeパス\lib
   path := path + 'lib\';
   if check(path) then Exit;
   // bokanパス
-  path := CheckPathYen( GetAbsolutePath(rawpath, HiSystem.BokanPath, '\') );
+  path := CheckPathYen( GetAbsolutePath(rawpath, string(HiSystem.BokanPath), '\') );
   if check(path) then Exit;
   // bokan\lib
   path := path + 'lib\';
@@ -491,7 +494,7 @@ var
       res := res + p^;
       Inc(p);
     end;
-    Result := StrToIntDef(res,0);
+    Result := StrToIntDefA(res,0);
   end;
 
   procedure get10sin;
@@ -517,10 +520,10 @@ var
           res := res + p^;
           Inc(p);
         end;
-        Result := StrToFloat(res);
+        Result := StrToFloatA(res);
       end else
       begin
-        Result := StrToFloat(res);
+        Result := StrToFloatA(res);
       end;
       Exit;
     end;
@@ -541,7 +544,7 @@ var
       end;
     end;
 
-    Result := StrToFloat(res);
+    Result := StrToFloatA(res);
   end;
 
   procedure getJosuusi;
@@ -788,7 +791,7 @@ var
 
   function _chkContinueNextLine:Boolean;
 
-    function chkWord(word:string): Boolean;
+    function chkWord(word: AnsiString): Boolean;
     var
       pp: PAnsiChar;
     begin
@@ -1006,7 +1009,7 @@ begin
     end;
     // 解析不明な記号
     s := getOneChar(p);
-    if Pos(s, '■・←→▲') > 0 then
+    if PosA(s, '■・←→▲') > 0 then
     begin
       token := THimaToken.Create(block); block.Add(token);
       token.Token := s;
@@ -1014,7 +1017,10 @@ begin
       token.TokenType := tokenMark;
       Continue;
     end;
-    raise EHimaSyntax.Create(FileNo, lineNo, ERR_S_SOURCE_DUST+'(文字コード='+IntToStr(Ord(p^))+')', [s]);
+    raise EHimaSyntax.Create(
+            FileNo,
+            lineNo,
+            ERR_S_SOURCE_DUST+'(文字コード='+IntToStrA(Ord(p^))+')', [s]);
   end;
 
   if block.Count = 0 then // 最後の余分なブロックを削除
@@ -1048,7 +1054,7 @@ begin
   begin
     block := Items[i];
     // lineNo
-    Result := Result + IntToStr(block.LineNo) + ':';
+    Result := Result + IntToStrA(block.LineNo) + ':';
     // indent
     for j := 1 to block.Indent do Result := Result + ' ';
     // text
@@ -1059,9 +1065,10 @@ end;
 
 
 
-procedure THimaFile.LoadFromFile(Filename: AnsiString);
+procedure THimaFile.LoadFromFile(Filename: string);
 var
-  src, fname, path: AnsiString;
+  src: AnsiString;
+  fname, path: string;
 
 begin
   // パスとファイル名を分解
@@ -1074,7 +1081,7 @@ begin
 
   // ファイル名を検索
   if (unit_pack_files.FileMixReader = nil) or
-     (not unit_pack_files.FileMixReader.ReadFileAsString(fname, src)) then
+     (not unit_pack_files.FileMixReader.ReadFileAsString(string(fname), src)) then
   begin
     //--------------------------------------------------------------------------
     // ローカルをチェック
@@ -1115,12 +1122,12 @@ end;
 
 { THimaFiles }
 
-function THimaFiles.FindFile(Filename: AnsiString): THimaFile;
+function THimaFiles.FindFile(Filename: string): THimaFile;
 var
   i: Integer;
   h: THimaFile;
 
-  function fp(s: AnsiString): AnsiString;
+  function fp(s: string): string;
   begin
     s := ExtractFileName(s);
     s := getToken_s(s, '.'); // 拡張子の前だけが有効
@@ -1158,7 +1165,7 @@ begin
   end;
 end;
 
-function THimaFiles.LoadAndAdd(Filename: AnsiString):THimaFile;
+function THimaFiles.LoadAndAdd(Filename: string):THimaFile;
 var
   himaFile: THimaFile;
 begin
@@ -1173,7 +1180,7 @@ begin
   end;
 end;
 
-function THimaFiles.LoadSourceAdd(SourceText, Filename: AnsiString): THimaFile;
+function THimaFiles.LoadSourceAdd(SourceText: AnsiString; Filename: string): THimaFile;
 var
   himaFile: THimaFile;
   src: AnsiString;
@@ -1236,7 +1243,7 @@ function THimaToken.GetAsText: AnsiString;
 begin
   if Self.TokenType = tokenNumber then
   begin
-    Result := FloatToStr(Self.NumberToken);
+    Result := FloatToStrA(Self.NumberToken);
   end else
   begin
     Result := Self.Token;
@@ -1395,7 +1402,7 @@ var
   p: THimaTango;
 begin
   p := THimaTango(item);
-  FFindKey := FFindKey + inttostr(p.ID) + ':' + item.Key + #13#10;
+  FFindKey := FFindKey + IntToStrA(p.ID) + ':' + item.Key + #13#10;
   Result := True;
 end;
 
@@ -1435,7 +1442,7 @@ begin
     w := Items[i];
     Result := Result + w.Key + #13#10;
   end;
-  Result := Trim(Result);
+  Result := TrimA(Result);
 end;
 
 function THimaJosiList.Find(var p: PAnsiChar): AnsiString;

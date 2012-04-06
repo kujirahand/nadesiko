@@ -180,7 +180,7 @@ end;
 
 //=====================================================================
 
-var PATH_BREGEXP_DLL: AnsiString = DLL_BREGEXP;
+var PATH_BREGEXP_DLL: string = DLL_BREGEXP;
 
 function bregMatch(s, pat, opt: AnsiString; matches: TStringList = nil): Boolean;
 
@@ -202,7 +202,7 @@ begin
   try
     if Copy(pat,1,1) <> 'm' then
     begin
-      pat := JReplace(pat, '#', '\#');
+      pat := JReplaceA(pat, '#', '\#');
       if s =''then //空文字マッチのゴミ対策
       begin
         if (Length(pat) > 0)and(pat[1] = '^') then
@@ -225,7 +225,7 @@ begin
     if matches = nil then Exit;
     for i := 0 to re.GetCount - 1 do
     begin
-      matches.Add(re.GetStrings(i));
+      matches.Add(string(re.GetStrings(i)));
     end;
   finally
     re.Free;
@@ -304,7 +304,7 @@ begin
     end;
     SetLength(ErrorString, StrLen(PAnsiChar(ErrorString)));
     if ErrorString<>'' then
-        raise EBRegExpError.Create(ErrorString);
+        raise EBRegExpError.Create(string(ErrorString));
     if Result then Mode:= brxMatch;
     pTargetString:= PAnsiChar(TargetString);
 end;
@@ -334,7 +334,7 @@ begin
         PAnsiChar(ErrorString));
     SetLength(ErrorString,StrLen(PAnsiChar(ErrorString)));
     if ErrorString<>'' then 
-        raise EBRegExpError.Create(ErrorString);
+        raise EBRegExpError.Create(string(ErrorString));
 
     if Result then begin // ( ) の結果を正しく返すため
         sp:=pBRegExp^.startp;
@@ -369,7 +369,7 @@ begin
         PAnsiChar(ErrorString));
     SetLength(ErrorString,StrLen(PAnsiChar(ErrorString)));
     if ErrorString<>'' then
-        raise EBRegExpError.Create(ErrorString);
+        raise EBRegExpError.Create(string(ErrorString));
     if Result then TargetString:=pBRegExp^.outp;
 end;
 
@@ -403,7 +403,7 @@ begin
     end;
     SetLength(ErrorString,StrLen(PAnsiChar(ErrorString)));
     if ErrorString<>'' then
-        raise EBRegExpError.Create(ErrorString);
+        raise EBRegExpError.Create(string(ErrorString));
     Mode:=brxSplit;
 end;
 
@@ -506,7 +506,7 @@ var
 begin
   { DLL の動的呼び出し }
   PATH_BREGEXP_DLL := FindDLLFile(DLL_BREGEXP);
-  hDll := LoadLibraryA(PAnsiChar(PATH_BREGEXP_DLL));
+  hDll := LoadLibraryW(PChar(PATH_BREGEXP_DLL));
   if hDll <= 0 then
   begin
     hDll := LoadLibrary(DLL_BREGEXP);

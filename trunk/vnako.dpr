@@ -1,9 +1,10 @@
 program vnako;
 
-{%File 'component\hedit251\heverdef.inc'}
-{%File 'vnako.bdsproj'}
+
 
 {$UNDEF FMPMODE}
+
+
 
 uses
   SysUtils,
@@ -66,55 +67,16 @@ uses
   unit_vista in 'vnako_unit\unit_vista.pas',
   MSHTML_TLB in 'vnako_unit\UIWebBrowser\MSHTML_TLB.pas',
   TrackBox in 'component\TrackBox.pas',
-  HEditor in 'component\hedit251\HEditor.pas',
-  TntStdCtrls in 'component\TntUnicodeControls\TntStdCtrls.pas',
-  TntControls in 'component\TntUnicodeControls\TntControls.pas',
   frmListU in 'vnako_unit\frmListU.pas' {frmList},
   dnako_loader in 'hi_unit\dnako_loader.pas',
   nadesiko_version in 'nadesiko_version.pas',
   unit_nakopanel in 'vnako_unit\unit_nakopanel.pas',
-  HViewEdt in 'component\hedit251\HViewEdt.pas' {FormViewEditor},
-  HEdtProp in 'component\hedit251\HEdtProp.pas',
-  CppFountain in 'component\hedit251\CppFountain.pas',
-  DelphiFountain in 'component\hedit251\DelphiFountain.pas',
-  EditorExProp in 'component\hedit251\EditorExProp.pas',
-  EditorFountain in 'component\hedit251\EditorFountain.pas',
-  FountainEditor in 'component\hedit251\FountainEditor.pas' {FormFountainEditor},
-  heClasses in 'component\hedit251\heClasses.pas',
-  heColorManager in 'component\hedit251\heColorManager.pas',
-  heFountain in 'component\hedit251\heFountain.pas',
-  heRaStrings in 'component\hedit251\heRaStrings.pas',
-  heStrConsts in 'component\hedit251\heStrConsts.pas',
-  heStringList in 'component\hedit251\heStringList.pas',
-  heUtils in 'component\hedit251\heUtils.pas',
-  HimawariFountain in 'component\hedit251\HimawariFountain.pas',
-  HPropUtils in 'component\hedit251\HPropUtils.pas',
-  Hreplfm in 'component\hedit251\Hreplfm.pas' {FormReplace},
-  Hschfm in 'component\hedit251\Hschfm.pas' {FormSearch},
-  HStreamUtils in 'component\hedit251\HStreamUtils.pas',
-  HStrProp in 'component\hedit251\HStrProp.pas' {FormStringsEditor},
-  HTMLFountain in 'component\hedit251\HTMLFountain.pas',
-  HtSearch in 'component\hedit251\HtSearch.pas',
-  JavaFountain in 'component\hedit251\JavaFountain.pas',
-  JSPFountain in 'component\hedit251\JSPFountain.pas',
-  NadesikoFountain in 'component\hedit251\NadesikoFountain.pas',
-  PerlFountain in 'component\hedit251\PerlFountain.pas',
-  gldpng in 'component\gldpng\gldpng.pas',
-  GLDPNGStream in 'component\gldpng\GLDPNGStream.pas',
-  GLDStream in 'component\gldpng\GLDStream.pas',
-  gldzlib in 'component\gldpng\gldzlib.pas',
-  SFunc in 'component\gldpng\SFunc.pas',
-  TKZLIB in 'component\gldpng\TKZLIB.pas',
-  hOleddUtils in 'component\hedit251\hOleddUtils.pas',
-  hOledd in 'component\hedit251\hOledd.pas',
-  VistaAltFixUnit in 'component\VistaAltFixUnit.pas',
   GraphicEx in 'component\GraphicEx\GraphicEx.pas',
   vnako_message in 'vnako_unit\vnako_message.pas',
-  frmCalendarU in 'vnako_unit\frmCalendarU.pas' {frmCalendar}
-  {$IFDEF DELUX_VERSION}
-  , unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas'
-  {$ENDIF}
-  ;
+  frmCalendarU in 'vnako_unit\frmCalendarU.pas' {frmCalendar},
+  NadesikoFountain in 'vnako_unit\NadesikoFountain.pas',
+  DelphiFountain in 'component\hedit248U\DelphiFountain.pas',
+  HTMLFountain in 'component\hedit248U\HTMLFountain.pas';
 
 {$R *.res}
 

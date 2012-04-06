@@ -629,7 +629,7 @@ BEGIN
 	FBitmap.Palette := CopyPalette(FPalette);
 
 	(* init *)
-	pA := PBYTE( StrEnd(FImage.FData.Memory) );
+	pA := PBYTE( StrEnd(PAnsiChar(FImage.FData.Memory)) );
 	pB := pA;
 	pP := PWORD(pA);
 	INC(pA, FImage.FHeader.FlagAOfs );

@@ -78,7 +78,7 @@ unit unit_file;
 interface
 
 uses
-  Windows, SysUtils, hima_types, ShellApi, comobj, shlobj, activex;
+  Windows, SysUtils, Classes, hima_types, ShellApi, comobj, shlobj, activex;
 
 type
   TWindowState2 = (ws2Normal, ws2Minimized, ws2Maximized);
@@ -100,11 +100,11 @@ function SHFileMove(const Source, Dest: AnsiString): Boolean;
 function SHFileRename(const Source, Dest: AnsiString): Boolean;
 
 //EnumFile
-function EnumFiles(path: AnsiString): THStringList;
-function EnumAllFiles(path: AnsiString; out basePath: AnsiString): THStringList; overload;
-function EnumAllFiles(path: AnsiString): THStringList; overload;
-function EnumAllDirs(path: AnsiString): THStringList;
-function EnumDirs(const path: AnsiString): THStringList;
+function EnumFiles(path: string): TStringList;
+function EnumAllFiles(path: string; out basePath: string): TStringList; overload;
+function EnumAllFiles(path: string): TStringList; overload;
+function EnumAllDirs(path: string): TStringList;
+function EnumDirs(const path: string): TStringList;
 function CreateShortCut(SavePath, TargetApp, Arg, WorkDir: AnsiString; State: TWindowState2): Boolean;
 function CreateShortCutEx(SavePath, TargetApp, Arg, WorkDir, IconPath: AnsiString;
     IconNo:Integer;Comment: AnsiString;Hotkey:Word; State: TWindowState2): Boolean;
@@ -118,12 +118,12 @@ function DateTimeToFileTimeEx(dt: TDateTime):TFileTime;
 // ファイルタイムをローカルなTTimeDateに変換する
 function FileTimeToDateTimeEx(const ft:TFileTime):TDateTime;
 
-function getVolumeName(drive: AnsiString): AnsiString;
+function getVolumeName(drive: string): string;
 function getSerialNo(drive: AnsiString): DWORD;
-function getFileSystemName(drive: AnsiString): AnsiString;
+function getFileSystemName(drive: string): string;
 
-function ShortToLongFileName(ShortName: AnsiString):String;
-function LongToShortFileName(LongName: AnsiString):String;
+function ShortToLongFileName(ShortName: string):string;
+function LongToShortFileName(LongName: string):string;
 procedure RunAsAdmin(hWnd: THandle; aFile: AnsiString; aParameters: AnsiString);
 
 var MainWindowHandle: THandle = 0;
@@ -162,10 +162,10 @@ begin
   sei.lpParameters := PAnsiChar(aParameters);
   sei.nShow := SW_SHOWNORMAL;
   if not ShellExecuteEx(@sei) then
-    raise Exception.Create('起動に失敗しました。(' + aFile + ')');
+    raise Exception.Create('起動に失敗しました。(' + string(aFile) + ')');
 end;
 
-function ShortToLongFileName(ShortName: AnsiString):String;
+function ShortToLongFileName(ShortName: string):string;
 var
   SearchRec: TSearchRec;
 begin
@@ -190,36 +190,41 @@ begin
   result := ShortName + result;
 end;
 
-function LongToShortFileName(LongName: AnsiString):String;
+function LongToShortFileName(LongName: string):string;
 var
-  tmp: AnsiString;
+  tmp: string;
 begin
   SetLength(tmp, MAX_PATH + 1);
-  GetShortPathNameA(PAnsiChar(LongName), PAnsiChar(tmp), MAX_PATH);
-  Result := string(PAnsiChar(tmp));
+  GetShortPathNameW(PWideChar(LongName), PWideChar(tmp), MAX_PATH);
+  Result := string(PWideChar(tmp));
 end;
 
-function getVolumeName(drive: AnsiString): AnsiString;
+function getVolumeName(drive: string): string;
 var
-  fi: SHFILEINFOA;
+  fi: SHFILEINFOW;
 begin
   if Length(drive) = 1 then drive := drive + ':\';
   //
-  SHGetFileInfoA(PAnsiChar(drive), 0, fi, sizeof(SHFILEINFO), SHGFI_DISPLAYNAME);
+  SHGetFileInfoW(
+    PWideChar(drive),
+    0,
+    fi,
+    sizeof(SHFILEINFO),
+    SHGFI_DISPLAYNAME);
   Result := string(fi.szDisplayName);
 end;
 
-function getFileSystemName(drive: AnsiString): AnsiString;
+function getFileSystemName(drive: string): string;
 var
-	SystemName: array [0..1000] of Char;
+	SystemName: array [0..1000] of WideChar;
 	SerialNumber: DWORD;
 	FileNameLength: DWORD;
   Flags: DWORD;
 begin
   if Length(drive) = 1 then drive := drive + ':\';
   //
-	GetVolumeInformationA(
-		PAnsiChar(drive),
+	GetVolumeInformationW(
+		PWideChar(drive),
     nil,
 		0,
 		@SerialNumber,
@@ -228,7 +233,7 @@ begin
 		@SystemName[0],
 		1000);
   //
-  Result := string(PAnsiChar(@SystemName[0]));
+  Result := string(PWideChar(@SystemName[0]));
 end;
 
 
@@ -287,11 +292,11 @@ end;
 //ファイルの作成・更新・最終書込日時を得る
 function GetFileTimeEx(fname:string; var tCreation, tLastAccess, tLastWrite:TDateTime):boolean;
 var
-  F: TWin32FindDataA;
+  F: TWin32FindData;
   h:THandle;
 begin
   Result:=False;
-  h := FindFirstFileA(PAnsiChar(fname),F);
+  h := FindFirstFile(PChar(fname),F);
   if h <> INVALID_HANDLE_VALUE then
   begin
     tCreation   :=  FileTimeToDateTimeEx( F. ftCreationTime   );
@@ -314,7 +319,7 @@ begin
   fLastWrite  := DateTimeToFileTimeEx(tLastWrite  );
 
   // 日時の変更
-	hFile := CreateFileA(PAnsiChar(fname), GENERIC_WRITE, 0, nil, OPEN_EXISTING,
+	hFile := CreateFile(PChar(fname), GENERIC_WRITE, 0, nil, OPEN_EXISTING,
     FILE_ATTRIBUTE_NORMAL, 0);
   if hFile <> INVALID_HANDLE_VALUE then
   begin
@@ -338,7 +343,8 @@ begin
   f := CreateFileA(PAnsiChar(Filename), GENERIC_READ, FILE_SHARE_READ, nil,
     OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN,0);
   if f = INVALID_HANDLE_VALUE then
-    raise EInOutError.Create('ファイル"' + Filename + '"が開けません。' + GetLastErrorStr);
+    raise EInOutError.Create(
+      string('ファイル"' + Filename + '"が開けません。') + GetLastErrorStr);
   try
     // set pointer
     SetFilePointer(f, 0, nil, FILE_BEGIN); // 初めからゼロの位置に
@@ -348,7 +354,8 @@ begin
     SetLength(Result, size);
     if not ReadFile(f, Result[1], size, rsize, nil) then
     begin // 失敗
-      raise EInOutError.Create('ファイル"' + Filename + '"の読み取りに失敗しました。' + GetLastErrorStr);
+      raise EInOutError.Create(
+        string('ファイル"' + Filename + '"の読み取りに失敗しました。') + GetLastErrorStr);
     end;
   finally
     // close
@@ -366,7 +373,7 @@ begin
   f := CreateFileA(PAnsiChar(Filename), GENERIC_WRITE, 0, nil,
     CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN,0);
   if f = INVALID_HANDLE_VALUE then
-    raise EInOutError.Create('ファイル"' + Filename + '"が開けません。' + GetLastErrorStr);
+    raise EInOutError.Create(string('ファイル"' + Filename + '"が開けません。') + GetLastErrorStr);
   try
     // set pointer
     SetFilePointer(f, 0, nil, FILE_BEGIN); // 初めからゼロの位置に
@@ -377,7 +384,7 @@ begin
     begin
       if not WriteFile(f, s[1], size, rsize, nil) then
       begin // 失敗
-        raise EInOutError.Create('ファイル"' + Filename + '"の読み取りに失敗しました。' + GetLastErrorStr);
+        raise EInOutError.Create(string('ファイル"' + Filename + '"の読み取りに失敗しました。') + GetLastErrorStr);
       end;
     end;
   finally
@@ -468,16 +475,16 @@ begin
   Result := SHFileMove(Source, Dest);
 end;
 
-function EnumFiles(path: AnsiString): THStringList;
+function EnumFiles(path: string): TStringList;
 var
   rec: TSearchRec;
-  basePath: AnsiString;
-  s: AnsiString;
+  basePath: string;
+  s: string;
 
-  procedure _enum(path: AnsiString);
+  procedure _enum(path: string);
   begin
     // ファイルの検索
-    if FindFirst(path, FaAnyFile, rec) = 0 then
+    if FindFirst(string(path), FaAnyFile, rec) = 0 then
     begin
       repeat
         if not ((rec.Attr and FaDirectory)>0) then
@@ -490,16 +497,16 @@ var
   end;
 
 begin
-  Result := THStringList.Create;
+  Result := TStringList.Create;
 
   // path がフォルダか？
-  if DirectoryExists(path) then
+  if DirectoryExists(string(path)) then
   begin
     path := CheckPathYen(path);
   end;
 
   // 基本パスの抜き出し
-  basePath := ExtractFilePath(path);
+  basePath := (ExtractFilePath(string(path)));
   if basePath <> '' then
   begin
     System.Delete(path, 1, Length(basePath));
@@ -523,25 +530,25 @@ begin
 
 end;
 
-function EnumAllFiles(path: AnsiString): THStringList; overload;
+function EnumAllFiles(path: string): TStringList; overload;
 var
-  temp: AnsiString;
+  temp: string;
 begin
   Result := EnumAllFiles(path, temp);
 end;
 
 /// 全ファイル列挙、引数 path には、基本となるパスを返す
-function EnumAllFiles(path: AnsiString; out basePath: AnsiString): THStringList; overload;
+function EnumAllFiles(path: string; out basePath: string): TStringList; overload;
 var
-  s: AnsiString;
+  s: string;
   hmain: THandle;
-  smain: AnsiString;
+  smain: string;
 
-  procedure _enum(path: AnsiString);
+  procedure _enum(path: string);
   var
-    base, ext, s, title: AnsiString;
-    dirs: THStringList;
-    files: THStringList;
+    base, ext, s, title: string;
+    dirs: TStringList;
+    files: TStringList;
     i: Integer;
   begin
     // 基本パスを取得
@@ -551,7 +558,7 @@ var
     if hmain > 0 then
     begin
       title := 'パス検索中:' + base;
-      SetWindowText(hmain, PAnsiChar(title));
+      SetWindowText(hmain, PChar(title));
     end;
 
     // ファイルを列挙
@@ -573,7 +580,7 @@ var
   end;
 
 begin
-  Result := THStringList.Create;
+  Result := TStringList.Create;
 
   // path がフォルダか？
   if DirectoryExists(path) then
@@ -599,7 +606,7 @@ begin
   if hmain > 0 then
   begin
     SetLength(smain, 1024);
-    GetWindowTextA(hmain, PAnsiChar(smain), 1023);
+    GetWindowText(hmain, PChar(smain), 1023);
   end;
 
   // 拡張子が;で区切られているので;までを切り出してそれぞれ列挙
@@ -620,21 +627,21 @@ begin
 
   if hmain > 0 then
   begin
-    SetWindowText(hmain, PAnsiChar(smain));
+    SetWindowText(hmain, PChar(smain));
   end;
 
 end;
 
-function EnumAllDirs(path: AnsiString): THStringList;
+function EnumAllDirs(path: string): TStringList;
 var
   hmain: THandle;
-  smain: AnsiString;
+  smain: string;
 
-  procedure _enum(path: AnsiString);
+  procedure _enum(path: string);
   var
-    title: AnsiString;
-    dirs: THStringList;
-    base, f, n: AnsiString;
+    title: string;
+    dirs: TStringList;
+    base, f, n: string;
     i: Integer;
   begin
     base := ExtractFilePath(path);
@@ -642,7 +649,7 @@ var
     if hmain > 0 then
     begin
       title := '検索中:' + path;
-      SetWindowText(hmain, PAnsiChar(title));
+      SetWindowText(hmain, PChar(title));
     end;
 
     // フォルダを列挙
@@ -657,7 +664,7 @@ var
   end;
 
 begin
-  Result := THStringList.Create;
+  Result := TStringList.Create;
 
   // path がフォルダか？
   if DirectoryExists(path) then
@@ -673,25 +680,25 @@ begin
   if hmain > 0 then
   begin
     SetLength(smain, 1024);
-    GetWindowTextA(hmain, PAnsiChar(smain), 1023);
+    GetWindowText(hmain, PChar(smain), 1023);
   end;
 
   _enum(path+'*');
 
   if hmain > 0 then
   begin
-    SetWindowText(hmain, PAnsiChar(smain));
+    SetWindowText(hmain, PChar(smain));
   end;
 
 end;
 
 
-function EnumDirs(const path: AnsiString): THStringList;
+function EnumDirs(const path: string): TStringList;
 var
   rec: TSearchRec;
-  s: AnsiString;
+  s: string;
 begin
-  Result := THStringList.Create;
+  Result := TStringList.Create;
   //
   s := path;
   if DirectoryExists(s) then

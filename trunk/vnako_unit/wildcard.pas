@@ -208,7 +208,7 @@ begin
     sw := TWString.Create ;
     try
         pw.AsString := pattern;
-        sw.AsString := JReplace(str,'\','\\',True);// \ はシーケンスと認識されるので。
+        sw.AsString := JReplaceU(str,'\','\\',True);// \ はシーケンスと認識されるので。
         if pw.Match(sw) then
         begin
             str := sw.Mid(sw.Index+1, sw.GetLength - sw.Index);
@@ -234,7 +234,7 @@ begin
     sw := TWString.Create ;
     try
         pw.AsString := pattern;
-        sw.AsString := JReplace(str,'\','\\',True);// \ はシーケンスと認識されるので。
+        sw.AsString := JReplaceU(str,'\','\\',True);// \ はシーケンスと認識されるので。
         Result := pw.Match(sw);
         if CompleteCheck=True then
         begin
@@ -707,7 +707,7 @@ var
         s := c.GetAsString ; // 比較対象文字
         if s='' then Exit;
 
-        code := Asc(s);
+        code := AscW(s);
         for i:=0 to RangeList.Count -1 do
         begin
             pr := RangeList.Items[i];

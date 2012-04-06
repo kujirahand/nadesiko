@@ -12,7 +12,7 @@ object frmCalendar: TfrmCalendar
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  Position = poMainFormCenter
+  Position = poDefault
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
@@ -24,13 +24,9 @@ object frmCalendar: TfrmCalendar
     Height = 266
     Align = alClient
     AutoSize = True
-    Date = 0.556875682872487200
+    Date = 0.897526979169924700
     TabOrder = 0
     OnClick = grdCalClick
-    ExplicitLeft = 8
-    ExplicitTop = 35
-    ExplicitWidth = 134
-    ExplicitHeight = 153
   end
   object edtDate: TDateTimePicker
     Left = 8

@@ -3,8 +3,15 @@ unit cnako_function;
 interface
 
 uses
-  Windows,
-  dnako_import, dnako_import_types;
+  Windows
+  {$IFDEF CNAKOEX}
+  ,hima_variable
+  ,hima_system
+  {$ELSE}
+  ,dnako_import
+  ,dnako_import_types
+  {$ENDIF}
+  ;
 
 const
   CNAKO_MODE_EXE = 0;
@@ -13,16 +20,22 @@ const
 
 procedure console_addCommand;
 
-function nako_eval_str(src: string): PHiValue;
-procedure nako_eval_str2(src: string);
+function nako_eval_str(src: AnsiString): PHiValue;
+procedure nako_eval_str2(src: AnsiString);
 
 function getMode: Integer;
 procedure setMode(mode: Integer);
-procedure cout(s: string);
+procedure cout(s: AnsiString);
 
 implementation
 
-uses dll_plugin_helper, SysUtils;
+uses
+  {$IFDEF CNAKOEX}
+  SysUtils;
+  {$ELSE}
+  dll_plugin_helper
+  ,SysUtils;
+  {$ENDIF}
 
 type
   TRingBufferString = class
@@ -31,12 +44,12 @@ type
       FFront: integer;
       FBack: integer;
       FBuffer: array of char;
-      procedure SetText(const str:string);
-      function GetText:string;
+      procedure SetText(const str: AnsiString);
+      function GetText: AnsiString;
     public
-      procedure Add(const str:string);
+      procedure Add(const str: AnsiString);
       property Capacity:integer read FCapacity;
-      property Text:string read GetText write SetText;
+      property Text: AnsiString read GetText write SetText;
       constructor Create(maxsize:integer);
   end;
 
@@ -56,7 +69,7 @@ begin
   FBack := 0;
 end;
 
-function TRingBufferString.GetText:string;
+function TRingBufferString.GetText: AnsiString;
 begin
   if FFront = FBack then
     Result := ''
@@ -72,7 +85,7 @@ begin
   end;
 end;
 
-procedure TRingBufferString.SetText(const str:string);
+procedure TRingBufferString.SetText(const str: AnsiString);
 begin
   FFront := 0;
   if Length(str) < FCapacity then
@@ -87,7 +100,7 @@ begin
   end;
 end;
 
-procedure TRingBufferString.Add(const str:string);
+procedure TRingBufferString.Add(const str: AnsiString);
 var
   len,front:Integer;
 begin
@@ -133,7 +146,7 @@ begin
 end;
 
 function getMode: Integer;
-var s: string;
+var s: AnsiString;
 begin
   s := hi_str(cnakomode) + 'EXE';
 
@@ -163,7 +176,7 @@ begin
   end;
 end;
 
-procedure cout(s: string);
+procedure cout(s: AnsiString);
 begin
   case getMode of
   CNAKO_MODE_EXE:
@@ -182,21 +195,23 @@ begin
 end;
 
 
-function nako_eval_str(src: string): PHiValue;
+function nako_eval_str(src: AnsiString): PHiValue;
+{$IFNDEF CNAKOEX}
 var
   len: Integer;
-  s: string;
+  s: AnsiString;
+{$ENDIF}
 begin
+  {$IFNDEF CNAKOEX}
   Result := nil;
-
-  if nako_evalEx(PChar(src), Result) = False then
+  if nako_evalEx(PAnsiChar(src), Result) = False then
   begin
     len := nako_getError(nil, 0);
     if len > 0 then
     begin
       SetLength(s, len + 1);
-      nako_getError(PChar(s), len);
-      //writeln(0, PChar(s), 'なでしこ実行エラー', MB_OK or MB_ICONWARNING);
+      nako_getError(PAnsiChar(s), len);
+      //writeln(0, PAnsiChar(s), 'なでしこ実行エラー', MB_OK or MB_ICONWARNING);
       cout(s);
     end else
     begin
@@ -205,10 +220,16 @@ begin
     end;
     //nako_continue;
   end;
-
+  {$ELSE}
+  try
+    Result := HiSystem.Eval(src);
+  except
+    Result := nil;
+  end;
+  {$ENDIF}
 end;
 
-procedure nako_eval_str2(src: string);
+procedure nako_eval_str2(src: AnsiString);
 var
   v: PHiValue;
 begin
@@ -230,7 +251,7 @@ begin
   hi_setStr(printLog, printLogBuf.Text);
 
   // (2) 命令の処理
-  writeln(hi_str(s));
+  writeln(string(hi_str(s)));
 
   // (3) 結果の設定
   Result := nil;
@@ -238,7 +259,7 @@ end;
 
 function con_out(arg: DWORD): PHiValue; stdcall;
 var
-  s: string;
+  s: AnsiString;
 begin
   // (1) 引数の取得
   s := getArgStr(arg, 0, True);
@@ -262,14 +283,12 @@ end;
 
 function con_input(arg: DWORD): PHiValue; stdcall;
 var
-  cnt: PHiValue;
   len: DWORD;
-  s: string;
+  s: AnsiString;
   h: THandle;
 begin
   // (1) 引数の取得
-  cnt := nako_getFuncArg(arg, 0); // 0 番目の引数を得る
-  len := nako_var2int(cnt);
+  len := getArgInt(arg, 0);
   // (2) 命令の処理
   if len > 0 then
   begin
@@ -293,7 +312,7 @@ end;
 function con_readln(arg: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
-  a: string;
+  a: AnsiString;
 begin
   // (1) 引数の取得
   s := nako_getFuncArg(arg, 0); // 0 番目の引数を得る

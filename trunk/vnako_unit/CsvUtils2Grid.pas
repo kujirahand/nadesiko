@@ -2,7 +2,7 @@ unit CsvUtils2Grid;
 
 interface
 uses
-  CsvUtils2, Grids, TntGrids;
+  CsvUtils2, Grids;
 
 // グリッド列幅の自動調整
 procedure CsvGridAutoColWidth(grid: TDrawGrid; csv: TCsvSheet);
@@ -14,13 +14,13 @@ procedure CsvGridGetData(grid: TStringGrid; csv: TCsvSheet);
 procedure CsvGridSetData(grid: TStringGrid; csv: TCsvSheet);
 
 // グリッド列幅の自動調整
-procedure CsvGridAutoColWidthUni(grid: TTntDrawGrid; csv: TCsvSheet);
+procedure CsvGridAutoColWidthUni(grid: TDrawGrid; csv: TCsvSheet);
 // グリッドを空にする
-procedure CsvGridClearGridUni(grid: TTntStringGrid);
+procedure CsvGridClearGridUni(grid: TStringGrid);
 // グリッドからデータを得る
-procedure CsvGridGetDataUni(grid: TTntStringGrid; csv: TCsvSheet);
+procedure CsvGridGetDataUni(grid: TStringGrid; csv: TCsvSheet);
 // グリッドにデータを注入
-procedure CsvGridSetDataUni(grid: TTntStringGrid; csv: TCsvSheet);
+procedure CsvGridSetDataUni(grid: TStringGrid; csv: TCsvSheet);
 
 implementation
 
@@ -42,7 +42,7 @@ begin
 end;
 
 // グリッドからデータを得る
-procedure CsvGridGetDataUni(grid: TTntStringGrid; csv: TCsvSheet);
+procedure CsvGridGetDataUni(grid: TStringGrid; csv: TCsvSheet);
 var
   c, r: Integer;
 begin
@@ -106,7 +106,7 @@ begin
 end;
 
 // グリッド列幅の自動調整
-procedure CsvGridAutoColWidthUni(grid: TTntDrawGrid; csv: TCsvSheet);
+procedure CsvGridAutoColWidthUni(grid: TDrawGrid; csv: TCsvSheet);
 var
   cols, rows: Integer;
 
@@ -171,7 +171,7 @@ end;
 
 
 // グリッドを空にする
-procedure CsvGridClearGridUni(grid: TTntStringGrid);
+procedure CsvGridClearGridUni(grid: TStringGrid);
 var
   x, y: Integer;
 begin
@@ -214,7 +214,7 @@ begin
 end;
 
 // グリッドにデータを注入
-procedure CsvGridSetDataUni(grid: TTntStringGrid; csv: TCsvSheet);
+procedure CsvGridSetDataUni(grid: TStringGrid; csv: TCsvSheet);
 var
   x, y, cols: Integer;
 begin

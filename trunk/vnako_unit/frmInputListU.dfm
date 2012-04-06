@@ -12,7 +12,7 @@ object frmInputList: TfrmInputList
   Font.Style = []
   Menu = MainMenu1
   OldCreateOrder = False
-  Position = poMainFormCenter
+  Position = poDefault
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -26,7 +26,6 @@ object frmInputList: TfrmInputList
     Align = alBottom
     TabOrder = 0
     OnResize = panelBaseResize
-    ExplicitTop = 229
     object panelBtn: TPanel
       Left = 280
       Top = 5
@@ -75,7 +74,6 @@ object frmInputList: TfrmInputList
     OnKeyUp = veListKeyUp
     OnMouseDown = veListMouseDown
     OnSelectCell = veListSelectCell
-    ExplicitHeight = 229
     ColWidths = (
       150
       295)

@@ -12,7 +12,7 @@ object frmPassword: TfrmPassword
   Font.Name = #65325#65331' '#65328#12468#12471#12483#12463
   Font.Style = []
   OldCreateOrder = False
-  Position = poMainFormCenter
+  Position = poDefault
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96

@@ -12,12 +12,12 @@ procedure RegistCallbackFunction(bokanHandle: Integer);
 procedure EZ_Rectangle(dc: HDC; x1, y1, x2, y2: Integer; penWidth, penColor, brushColor: Integer);
 procedure EZ_Line(dc: HDC; x1,y1, x2, y2: Integer; penWidth, penColor: Integer);
 procedure EZ_Circle(dc: HDC; x1,y1,x2,y2: Integer; penWidth, penColor: Integer; brushColor: Integer);
-procedure EZ_TextOut(dc: HDC; x, y: Integer; text: string; face: string; height: Integer);
+procedure EZ_TextOut(dc: HDC; x, y: Integer; text: AnsiString; face: AnsiString; height: Integer);
 //
-function EZ_SetWindowText(h: HWND; txt: string): Boolean;
+function EZ_SetWindowText(h: HWND; txt: AnsiString): Boolean;
 procedure getPenBrush;
 procedure getFont;
-function nako_eval_str(src: string): PHiValue;
+function nako_eval_str(src: AnsiString): PHiValue;
 
 var
   pLPARAM       : PHiValue = nil;
@@ -36,7 +36,7 @@ type
       FCapacity: integer;
       FFront: integer;
       FBack: integer;
-      FBuffer: array of char;
+      FBuffer: array of AnsiChar;
       procedure SetText(const str:string);
       function GetText:string;
     public
@@ -146,21 +146,21 @@ begin
   end;
 end;
 
-function nako_eval_str(src: string): PHiValue;
+function nako_eval_str(src: AnsiString): PHiValue;
 var
   len: Integer;
-  s: string;
+  s: AnsiString;
 begin
   Result := nil;
 
-  if nako_evalEx(PChar(src), Result) = False then
+  if nako_evalEx(PAnsiChar(src), Result) = False then
   begin
     len := nako_getError(nil, 0);
     if len > 0 then
     begin
       SetLength(s, len + 1);
-      nako_getError(PChar(s), len);
-      MessageBox(0, PChar(s), 'なでしこ実行エラー', MB_OK or MB_ICONWARNING);
+      nako_getError(PAnsiChar(s), len);
+      MessageBoxA(0, PAnsiChar(s), 'なでしこ実行エラー', MB_OK or MB_ICONWARNING);
     end else
     begin
       //
@@ -236,9 +236,9 @@ begin
   DeleteObject(hb);
 end;
 
-function EZ_CreateFont(face: string; height: Integer): HFONT;
+function EZ_CreateFont(face: AnsiString; height: Integer): HFONT;
 begin
-  Result := CreateFont(
+  Result := CreateFontA(
     height,     // フォントの高さ
     0,          // 文字幅
     0,          // 角度
@@ -252,28 +252,28 @@ begin
     CLIP_DEFAULT_PRECIS,      // クリッピング精度
     PROOF_QUALITY,            // 出力品質
     FIXED_PITCH or FF_MODERN, // ピッチとファミリー
-    PChar(face)               // 書体名
+    PAnsiChar(face)               // 書体名
   );
 end;
 
-procedure EZ_TextOut(dc: HDC; x, y: Integer; text: string; face: string; height: Integer);
+procedure EZ_TextOut(dc: HDC; x, y: Integer; text: AnsiString; face: AnsiString; height: Integer);
 var
   hf, hf_old: HFONT;
 begin
   hf := EZ_CreateFont(face, height);
   hf_old := SelectObject(dc, hf);
-  TextOut(dc, x, y, PChar(text), Length(text));
+  TextOutA(dc, x, y, PAnsiChar(text), Length(text));
   SelectObject(dc, hf_old);
   DeleteObject(hf);
 end;
 
-function EZ_SetWindowText(h: HWND; txt: string): Boolean;
+function EZ_SetWindowText(h: HWND; txt: AnsiString): Boolean;
 var
-  p: PChar;
+  p: PAnsiChar;
 begin
   GetMem(p, Length(txt)+1);
   try
-    StrLCopy(p, PChar(txt), Length(txt));
+    StrLCopy(p, PAnsiChar(txt), Length(txt));
     Result := SetWindowText(h, p);
   finally
     FreeMem(p);
@@ -289,7 +289,7 @@ function cmd_print(h: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
   y: Integer;
-  str: string;
+  str: AnsiString;
   r: TRect;
 begin
   // (1) 引数の取得
@@ -312,7 +312,7 @@ begin
   str := hi_str(p);
   y := y + DrawText(
     Bokan.Canvas.Handle,
-    PChar(str),
+    PAnsiChar(str),
     Length(str),
     r,
     DT_LEFT or DT_NOPREFIX or DT_WORDBREAK
@@ -548,7 +548,7 @@ end;
 function cmd_poly(h: DWORD): PHiValue; stdcall;
 var
   ps: PHiValue;
-  s: string;
+  s: AnsiString;
   x, y, cnt: Integer;
   pts: Array [0..63] of TPoint;
 begin
@@ -579,7 +579,7 @@ function cmd_loadPic(h: DWORD): PHiValue; stdcall;
 var
   s, x, y: PHiValue;
   xx, yy: Integer;
-  ss: string;
+  ss: AnsiString;
 
   hBmp: HBITMAP;
   bitmap: tagBITMAP;
@@ -613,7 +613,7 @@ HBITMAP holdbmp = (HBITMAP)SelectObject( hdcbmp, hbmp );
 BitBlt( hdc, 0, 0, bitmap.bmWidth, bitmap.bmHeight, hdcbmp, 0, 0, SRCCOPY );
 SelectObject( hdcbmp, holdbmp );
 }
-  hBmp := LoadImage(0, PChar(ss), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+  hBmp := LoadImageA(0, PAnsiChar(ss), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
   GetObject(hBmp, sizeof(bitmap), @bitmap);
   hdcbmp := CreateCompatibleDC(Bokan.Canvas.Handle);
   holdbmp := SelectObject(hdcbmp, hbmp);
@@ -688,31 +688,31 @@ procedure RegistCallbackFunction(bokanHandle: Integer);
     for i := low(ctag) to high(ctag) do ctag[i] := 0;
   end;
 
-  procedure _checkTag(tag: Integer; name: string);
+  procedure _checkTag(tag: Integer; name: AnsiString);
   begin
     if ctag[tag] <> 0 then raise Exception.CreateFmt('[システム命令追加でタグの重複] tag=%d name=%s',[tag, name]);
     ctag[tag] := 1;
   end;
 
-  procedure AddFunc(name, argStr: string; tag: Integer; func: THimaSysFunction;
-    kaisetu, yomigana: string);
+  procedure AddFunc(name, argStr: AnsiString; tag: Integer; func: THimaSysFunction;
+    kaisetu, yomigana: AnsiString);
   begin
     _checkTag(tag, name);
-    nako_addFunction(PChar(name), PChar(argStr), func, tag);
+    nako_addFunction(PAnsiChar(name), PAnsiChar(argStr), func, tag);
   end;
 
-  procedure AddStrVar(name, value: string; tag: Integer; kaisetu,
-    yomigana: string);
+  procedure AddStrVar(name, value: AnsiString; tag: Integer; kaisetu,
+    yomigana: AnsiString);
   begin
     _checkTag(tag, name);
-    nako_addStrVar(PChar(name), PChar(value), tag);
+    nako_addStrVar(PAnsiChar(name), PAnsiChar(value), tag);
   end;
 
-  procedure AddIntVar(name: string; value, tag: Integer; kaisetu,
-    yomigana: string);
+  procedure AddIntVar(name: AnsiString; value, tag: Integer; kaisetu,
+    yomigana: AnsiString);
   begin
     _checkTag(tag, name);
-    nako_addIntVar(PChar(name), value, tag);
+    nako_addIntVar(PAnsiChar(name), value, tag);
   end;
 
 begin

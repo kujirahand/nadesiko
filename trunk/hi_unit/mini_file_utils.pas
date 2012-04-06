@@ -21,32 +21,32 @@ type
   end;
 
 var
-  DIR_PLUGINS: AnsiString = 'plug-ins\';
+  DIR_PLUGINS: string = 'plug-ins\';
 
 // Open / Save Dialog
 function ShowOpenDialog(hOwner:HWND; Filter, InitDir: AnsiString; InitFile: AnsiString=''): AnsiString;
 function ShowSaveDialog(hOwner:HWND; Filter, InitDir: AnsiString; InitFile: AnsiString=''): AnsiString;
 function OpenFolderDialog(var FolderPath: AnsiString; msg: AnsiString = ''): boolean;
 
-function GetSpecialFolder(id: DWORD): AnsiString;
+function GetSpecialFolder(id: DWORD): string;
 
-function WinDir: AnsiString;
-function SysDir: AnsiString;
-function TempDir: AnsiString;
-function DesktopDir: AnsiString;
-function SendToDir: AnsiString;
-function StartUpDir: AnsiString;
-function RecentDir: AnsiString;
-function ProgramsDir: AnsiString;
-function StartMenuDir: AnsiString;
-function MyDocumentDir: AnsiString;
-function FavoritesDir: AnsiString;
-function MyMusicDir: AnsiString;
-function MyPictureDir: AnsiString;
-function FontsDir: AnsiString;
-function ProgramFilesDir: AnsiString;
-function QuickLaunchDir: AnsiString;
-function AppDataDir: AnsiString;
+function WinDir: string;
+function SysDir: string;
+function TempDir: string;
+function DesktopDir: string;
+function SendToDir: string;
+function StartUpDir: string;
+function RecentDir: string;
+function ProgramsDir: string;
+function StartMenuDir: string;
+function MyDocumentDir: string;
+function FavoritesDir: string;
+function MyMusicDir: string;
+function MyPictureDir: string;
+function FontsDir: string;
+function ProgramFilesDir: string;
+function QuickLaunchDir: string;
+function AppDataDir: string;
 
 function RunAndWait(path: AnsiString; Hide: Boolean=False; sec:Integer = 0): Boolean;
 function OpenApp(path: AnsiString; Hide: Boolean=False): Boolean;
@@ -106,35 +106,41 @@ CSIDL_TEMPLATES = $0015;//The file system directory that serves as a common repo
 CSIDL_WINDOWS = $0024;//Version 5.0. The Windows directory or SYSROOT. This corresponds to the %windir% or %SYSTEMROOT% environment variables. A typical path is C:\Windows.
 
 function SHFileDeleteComplete(const Source: AnsiString): Boolean;
-function FindDLLFile(fname: AnsiString): AnsiString;
-function AppPath: AnsiString;
-function getUniqFilename(const dir: AnsiString; basename: AnsiString): AnsiString;
-function CheckPathYen(const path: AnsiString): AnsiString;
+function FindDLLFile(fname: string): string;
+function AppPath: string;
+function getUniqFilename(const dir: string; basename: string): string;
+function CheckPathYen(const path: string): string;
+function ExtractFilePathA(const FileName: AnsiString): AnsiString;
 
 implementation
 
 uses unit_string, hima_types;
 
-
-function CheckPathYen(const path: AnsiString): AnsiString;
+function ExtractFilePathA(const FileName: AnsiString): AnsiString;
 begin
-  Result := IncludeTrailingPathDelimiter(path);
+  Result := AnsiString(ExtractFilePath(string(FileName)));
 end;
 
-function AppPath: AnsiString;
+
+function CheckPathYen(const path: string): string;
+begin
+  Result := IncludeTrailingPathDelimiter(string(path));
+end;
+
+function AppPath: string;
 begin
   Result := ExtractFilePath(ParamStr(0));
 end;
 
-function FindDLLFile(fname: AnsiString): AnsiString;
+function FindDLLFile(fname: string): string;
 
-  procedure _ok(dll: AnsiString);
+  procedure _ok(dll: string);
   begin
     Result := dll;
   end;
 
 var
-  f: AnsiString;
+  f: string;
 begin
   Result := '';
   // 絶対パス？
@@ -143,7 +149,7 @@ begin
     _ok(fname); Exit;
   end;
   // 同じフォルダをチェック
-  f := AppPath + fname;
+  f := string(AppPath) + fname;
   if FileExists(f) then
   begin
     _ok(f); Exit;
@@ -176,16 +182,16 @@ end;
 
 var uniq_value: Word = 0;
 
-function getUniqFilename(const dir: AnsiString; basename: AnsiString): AnsiString;
+function getUniqFilename(const dir: string; basename: string): string;
 var
-  ext, fdir: AnsiString;
-  name: AnsiString;
+  ext, fdir: string;
+  name: string;
   i: Integer;
   guid: TGUID;
 begin
-  ext  := ExtractFileExt(basename);
+  ext  := ExtractFileExt(string(basename));
   name := ChangeFileExt(ExtractFileName(basename), '');
-  fdir := CheckPathYen(dir);
+  fdir := string(CheckPathYen(dir));
   Inc(uniq_value);
 
   // [ファイル名]~[数字] の生成
@@ -203,8 +209,8 @@ begin
 
   // Windows の API を使う方法 .. 一番早いがランダム
   SetLength(Result, MAX_PATH);
-  GetTempFileNameA(PAnsiChar(fdir), PAnsiChar(name), 0, PAnsiChar(Result));
-  Result := string(PAnsiChar(Result));
+  GetTempFileNameW(PWideChar(fdir), PWideChar(name), 0, PWideChar(Result));
+  Result := string(PWideChar(Result));
 end;
 
 {
@@ -272,13 +278,13 @@ begin
   Result := (SHFileOperationA(foStruct)=0);
 end;
 
-function GetSpecialFolder(id: DWORD): AnsiString;
+function GetSpecialFolder(id: DWORD): string;
 var
   PID: PItemIDList;
-  Path: array [0..MAX_PATH-1] of AnsiChar;
+  Path: array [0..MAX_PATH-1] of WideChar;
 begin
   SHGetSpecialFolderLocation(GetDesktopWindow, id, PID);
-  SHGetPathFromIDListA(PID, Path);
+  SHGetPathFromIDListW(PID, Path);
   Result := Path;
   if Copy(Result, Length(Result),1)<>'\' then Result := Result + '\';
 end;
@@ -286,7 +292,7 @@ end;
 
 
 {Windowsフォルダを得る}
-function WinDir: AnsiString;
+function WinDir: string;
 var
  TempWin:array[0..MAX_PATH] of Char;
 begin
@@ -296,7 +302,7 @@ begin
 end;
 
 {Systemフォルダを得る}
-function SysDir: AnsiString;
+function SysDir: string;
 var
  TempSys:array[0..MAX_PATH] of Char;
 begin
@@ -306,7 +312,7 @@ begin
 end;
 
 {Tempフォルダを得る}
-function TempDir: AnsiString;
+function TempDir: string;
 var
  TempTmp:array[0..MAX_PATH] of Char;
 begin
@@ -315,67 +321,67 @@ begin
  if Copy(Result,Length(Result),1)<>'\' then Result := Result + '\';
 end;
 
-function DesktopDir: AnsiString;
+function DesktopDir: string;
 begin
    Result := GetSpecialFolder(CSIDL_DESKTOPDIRECTORY);
 end;
-function SendToDir: AnsiString;
+function SendToDir: string;
 begin
    Result := GetSpecialFolder(CSIDL_SENDTO);
 end;
-function StartUpDir: AnsiString;
+function StartUpDir: string;
 begin
    Result := GetSpecialFolder(CSIDL_STARTUP);
 end;
-function RecentDir: AnsiString;
+function RecentDir: string;
 begin
    Result := GetSpecialFolder(CSIDL_RECENT);
 end;
-function ProgramsDir: AnsiString;
+function ProgramsDir: string;
 begin
    Result := GetSpecialFolder(CSIDL_PROGRAMS);
 end;
-function StartMenuDir: AnsiString;
+function StartMenuDir: string;
 begin
    Result := GetSpecialFolder(CSIDL_STARTMENU);
 end;
-function MyDocumentDir: AnsiString;
+function MyDocumentDir: string;
 begin
    Result := GetSpecialFolder(CSIDL_PERSONAL);
 end;
-function FavoritesDir: AnsiString;
+function FavoritesDir: string;
 begin
    Result := GetSpecialFolder(CSIDL_FAVORITES);
 end;
-function MyMusicDir: AnsiString;
+function MyMusicDir: string;
 begin
    Result := GetSpecialFolder(CSIDL_MYMUSIC);
 end;
-function MyPictureDir: AnsiString;
+function MyPictureDir: string;
 begin
    Result := GetSpecialFolder(CSIDL_MYPICTURES);
 end;
-function FontsDir: AnsiString;
+function FontsDir: string;
 begin
    Result := GetSpecialFolder(CSIDL_FONTS);
 end;
-function ProgramFilesDir: AnsiString;
+function ProgramFilesDir: string;
 begin
    Result := GetSpecialFolder(CSIDL_PROGRAM_FILES);
 end;
 
-function QuickLaunchDir: AnsiString;
+function QuickLaunchDir: string;
 begin
    Result := GetSpecialFolder(CSIDL_APPDATA) + 'Microsoft\Internet Explorer\Quick Launch\';
 end;
 
-function AppDataDir: AnsiString;
+function AppDataDir: string;
 begin
    Result := GetSpecialFolder(CSIDL_APPDATA);
 end;
 
 //-------------------------------------------------------------------------
-function CheckFilter(Filter: AnsiString): AnsiString;
+function CheckFilter(Filter: string): string;
 begin
   if Pos('|', Filter) = 0 then
   begin
@@ -418,7 +424,7 @@ begin
   SetLength(PATH,MAX_PATH+5);
   //----------------------------------------------------------------------------
   // FILTER
-  Filter := CheckFilter(Filter);
+  Filter := AnsiString(CheckFilter(string(Filter)));
   Filter := ReplaceChar(Filter, '|', #0)+#0;
 
   // OpenFileName 構造体にセット
@@ -448,7 +454,7 @@ begin
     Inc(p); // skip #0
     if p^ = #0 then
     begin
-      Result := Trim(PATH); Exit;
+      Result := AnsiString(Trim(string(PATH))); Exit;
     end;
 
     while p^ <> #0 do
@@ -458,7 +464,7 @@ begin
       Inc(p); // skip #0
     end;
 
-    Result := Trim(Result);
+    Result := AnsiString(Trim(string(Result)));
   end else
   begin
     Result := '';
@@ -477,7 +483,8 @@ begin
   SetLength(PATH,MAX_PATH+5);
   //----------------------------------------------------------------------------
   // FILTER
-  Filter := CheckFilter(Filter);
+  // Filter := CheckFilter(Filter);
+  Filter := AnsiString(CheckFilter(string(Filter)));
   extList := THStringList.Create;
   extList.SplitText(Filter, '|');
   Filter := ReplaceChar(Filter, '|', #0)+#0;
@@ -503,14 +510,14 @@ begin
     ZeroMemory(PAnsiChar(Result), OFN.nMaxFile);
     StrMove(PAnsiChar(Result), OFN.lpstrFile, OFN.nMaxFile);
 
-    Result := Trim(string( PAnsiChar(Result) ));
-    if ExtractFileExt(Result) = '' then
+    Result := AnsiString(Trim(string(AnsiString( PAnsiChar(Result) ))));
+    if ExtractFileExt(string(Result)) = '' then
     begin
       ext := extList.Strings[ (OFN.nFilterIndex-1) * 2 + 1 ];
-      tmp := string(getToken_s(ext, ';'));
-      ext := ExtractFileExt(tmp);
-      if (Pos(string('*'), ext) > 0)or(Pos(string('?'), ext) > 0) then ext := '';
-      Result := ChangeFileExt(Result, ext);
+      tmp := getToken_s(ext, ';');
+      ext := AnsiString(ExtractFileExt(string(tmp)));
+      if (Pos(string('*'), string(ext)) > 0)or(Pos(string('?'), string(ext)) > 0) then ext := '';
+      Result := AnsiString(ChangeFileExt(string(Result), string(ext)));
     end;
 
   end else
@@ -576,7 +583,7 @@ begin
      Buffer:=Malloc.Alloc(MAX_PATH);        //フォルダパス取得用バッファ
      try
       SHGetPathFromIDListA(IDlist, Buffer);  //フォルダパスを取得
-      FolderPath:=string(Buffer);
+      FolderPath:=AnsiString(Buffer);
      finally
       Malloc.Free(Buffer);
      end;
@@ -673,7 +680,9 @@ begin
   // エラーチェック
   if not ret then
   begin
-    raise Exception.Create('『'+path+'』を実行できません。理由は、' + IntToStr(GetLastError) + '。');
+    raise Exception.Create(
+      '『'+string(path)+'』を実行できません。理由は、' +
+      IntToStr(GetLastError) + '。');
   end;
 
   // 終了待ち(10秒待つ)
@@ -769,7 +778,9 @@ begin
   // エラーチェック
   if not ret then
   begin
-    raise Exception.Create('『'+path+'』を実行できません。理由は、' + IntToStr(GetLastError) + '。');
+    raise Exception.Create('『'+
+      string(path)+'』を実行できません。理由は、' +
+      IntToStr(GetLastError) + '。');
   end;
 
   Result := ProcessInfo.hProcess;

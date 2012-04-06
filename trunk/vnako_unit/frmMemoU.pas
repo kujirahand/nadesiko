@@ -4,8 +4,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, Menus, ComCtrls, Clipbrd, HEditor,
-  hOleddEditor, EditorEx;
+  Dialogs, StdCtrls, ExtCtrls, Menus, ComCtrls, Clipbrd,
+  // TEditor Support
+  HEditor, heRaStrings, heClasses, HEdtProp,
+  frmNakoU
+  ;
 
 type
   TfrmMemo = class(TForm)
@@ -45,7 +48,6 @@ type
     N7: TMenuItem;
     mnuFind: TMenuItem;
     dlgFind: TFindDialog;
-    edtMain: TEditorEx;
     mnuOrikaesi: TMenuItem;
     N9: TMenuItem;
     mnuOpenApp: TMenuItem;
@@ -64,6 +66,7 @@ type
     N3: TMenuItem;
     mnuReplace: TMenuItem;
     dlgReplace: TReplaceDialog;
+    edtMain: TEditor;
     procedure mnuOpenClick(Sender: TObject);
     procedure mnuSaveClick(Sender: TObject);
     procedure btnOKClick(Sender: TObject);
@@ -102,6 +105,10 @@ type
   public
     { Public 宣言 }
     Res: Boolean;
+    edtMain_FindString: string;
+    function edtMain_FindNext: Boolean;
+    function edtMain_FindPrev: Boolean;
+    procedure edtMain_ReplaceAll(newText: String);
   end;
 
 var
@@ -110,7 +117,7 @@ var
 implementation
 
 uses unit_string, gui_benri, unit_base64, frmPasswordU,
-  dnako_import, dnako_import_types;
+  dnako_import, dnako_import_types, strunit;
 
 {$R *.dfm}
 
@@ -258,15 +265,15 @@ begin
 
   if Sender is TReplaceDialog then
   begin
-    edtMain.FindString := dlgReplace.FindText;
+    edtMain_FindString := dlgReplace.FindText;
   end else
   begin
-    edtMain.FindString := dlgFind.FindText;
+    edtMain_FindString := dlgFind.FindText;
   end;
-  if not edtMain.FindNext then
+  if not edtMain_FindNext then
   begin
     edtMain.SelStart := 0;
-    if not edtMain.FindNext then
+    if not edtMain_FindNext then
     begin
       ShowMessage('見つかりませんでした。');
     end;
@@ -282,7 +289,7 @@ procedure TfrmMemo.mnuOrikaesiClick(Sender: TObject);
 begin
   mnuOrikaesi.Checked := not mnuOrikaesi.Checked;
   edtMain.WordWrap := mnuOrikaesi.Checked;
-  edtMain.WrapOption.WrapByte := 72;
+  // edtMain.WrapOption.WrapByte := 72;
 end;
 
 procedure TfrmMemo.edtMainMouseWheel(Sender: TObject; Shift: TShiftState;
@@ -298,6 +305,40 @@ begin
     { ホイールを手前に動かした時の処理 }
     Sendmessage(edtMain.Handle, WM_VSCROLL, SB_LINEDOWN, 0);
   end;
+end;
+
+function TfrmMemo.edtMain_FindNext: Boolean;
+var
+  i: Integer;
+begin
+  i := edtMain.SelStart + edtMain.SelLength + 1;
+  i := PosExW(
+        UpperCase(string(edtMain_FindString)),
+        UpperCase(string(edtMain.Lines.Text)), i);
+  Result := (i > 0);
+  if Result then
+  begin
+    edtMain.SelStart := i - 1;
+    edtMain.SelLength := Length(edtMain_FindString);
+  end else begin
+    edtMain.SelLength := 0;
+  end;
+end;
+
+function TfrmMemo.edtMain_FindPrev: Boolean;
+begin
+  Result := False;
+end;
+
+procedure TfrmMemo.edtMain_ReplaceAll(newText: String);
+begin
+  edtMain.Lines.Text :=
+    StringReplace(
+      edtMain.Lines.Text,
+      edtMain_FindString,
+      newText,
+      [rfReplaceAll]
+      );
 end;
 
 procedure TfrmMemo.edtMainDblClick(Sender: TObject);
@@ -326,12 +367,12 @@ var
 begin
   edtMain.SetFocus;
 
-  edtMain.FindString := edtFind.Text;
-  bRes := edtMain.FindNext;
+  edtMain_FindString := edtFind.Text;
+  bRes := edtMain_FindNext;
   if bRes = False then
   begin
     edtMain.SelStart := 0;
-    bRes := edtMain.FindNext;
+    bRes := edtMain_FindNext;
   end;
 
   if bRes then
@@ -351,12 +392,12 @@ var
 begin
   edtMain.SetFocus;
 
-  edtMain.FindString := edtFind.Text;
-  bRes := edtMain.FindPrev;
+  edtMain_FindString := edtFind.Text;
+  bRes := edtMain_FindPrev;
   if not bRes then
   begin
     edtMain.SelStart := Length(edtMain.Lines.Text) - 1;
-    bRes := edtMain.FindPrev;
+    bRes := edtMain_FindPrev;
   end;
 
   if bRes then
@@ -387,7 +428,7 @@ procedure TfrmMemo.mnuFindGooleClick(Sender: TObject);
 begin
   if edtMain.SelLength = 0 then
   begin
-    edtMain.SelectWordFromCaret;
+    // edtMain.SelectWordFromCaret;
   end;
   OpenApp(
     'http://www.google.co.jp/search?start=0&hl=ja&lr=lang_ja&ie=shift_jis&q=' +
@@ -406,6 +447,7 @@ procedure TfrmMemo.edtFindKeyPress(Sender: TObject; var Key: Char);
 begin
   if Key = #13 then
   begin
+    Key := #0;
     btnFindNextClick(nil);
   end;
 end;
@@ -425,11 +467,11 @@ end;
 procedure TfrmMemo.dlgReplaceReplace(Sender: TObject);
 begin
   edtMain.SetFocus;
-  edtMain.FindString := dlgReplace.FindText;
+  edtMain_FindString := dlgReplace.FindText;
   
   if frReplaceAll in dlgReplace.Options then
   begin
-    edtMain.ReplaceAll(dlgReplace.ReplaceText, True);
+    edtMain_ReplaceAll(dlgReplace.ReplaceText);
     Exit;
   end;
 
@@ -438,10 +480,10 @@ begin
     edtMain.SelText := dlgReplace.ReplaceText;
   end;
 
-  if not edtMain.FindNext then
+  if not edtMain_FindNext then
   begin
     edtMain.SelStart := 0;
-    if not edtMain.FindNext then
+    if not edtMain_FindNext then
     begin
       ShowMessage('見つかりませんでした。');
     end;

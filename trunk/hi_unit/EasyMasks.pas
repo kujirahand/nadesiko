@@ -32,20 +32,20 @@ type
   end;
 
 // Delphi ‚Ì MatchesMask €‹’(‘å•¶š¬•¶š‚ğ‹æ•Ê‚µ‚È‚¢)
-function MatchesMask(const FileName, Masks: AnsiString) : Boolean;
+function MatchesMask(const FileName, Masks: string) : Boolean;
 //(‘å•¶š¬•¶š‚ğ‹æ•Ê‚·‚é)
-function MatchesMask2(const FileName, Masks: AnsiString) : Boolean;
+function MatchesMask2(const FileName, Masks: string) : Boolean;
 
 implementation
 
-function MatchesMask2(const FileName, Masks: AnsiString) : Boolean;
+function MatchesMask2(const FileName, Masks: string) : Boolean;
 var
   e: TEasyMask;
 begin
   e := TEasyMask.Create ;
   try
-    e.FStr  := FileName;
-    e.FMask := Masks;
+    e.FStr  := string(FileName);
+    e.FMask := string(Masks);
     Result := e.Match ;
   finally
     e.Free ;
@@ -144,7 +144,7 @@ begin
 end;
 
 
-function MatchesMask(const FileName, Masks: AnsiString) : Boolean;
+function MatchesMask(const FileName, Masks: string) : Boolean;
 var m: TEasyMask;
 begin
   m := TEasyMask.Create ;

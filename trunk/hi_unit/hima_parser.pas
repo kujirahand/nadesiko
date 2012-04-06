@@ -507,7 +507,7 @@ begin
   if name = 'TSyntaxSwitch' then Result := '条件分岐' else
   if name = 'TSyntaxWith' then Result := 'について' else
   if name = 'TSyntaxSentence' then Result := '文' else
-  Result := name;
+  Result := AnsiString(name);
   ;
 end;
 
@@ -782,8 +782,8 @@ begin
     ReadOneItem(token);
     if token = nil then NextBlock(token);
   end;
-  if (token = nil) then raise Exception.Create(ERR_NOPAIR_KAKKO);
-  if (token.TokenID <> token_kakko_end) then raise Exception.Create(ERR_NOPAIR_KAKKO);
+  if (token = nil) then raise HException.Create(ERR_NOPAIR_KAKKO);
+  if (token.TokenID <> token_kakko_end) then raise HException.Create(ERR_NOPAIR_KAKKO);
   josi := token.JosiID;
 
   FPrevToken := token;
@@ -825,7 +825,7 @@ begin
         token_mark_function:  begin ReadDefFunctionContents(token); Continue; end; // 関数の宣言
         token_mark_sikaku:    begin SkipDefFunction(token); Continue; end;         // グループの宣言
         token_mark_option:    begin ReadOption(token,False,cnode); Continue; end;  // インタプリタオプション
-        token_kakko_end:      raise Exception.Create(ERR_NOPAIR_KAKKO+'突然の『)』です。');
+        token_kakko_end:      raise HException.Create(ERR_NOPAIR_KAKKO+'突然の『)』です。');
       end;
 
       // 一行の終わりまで読む
@@ -833,12 +833,12 @@ begin
 
       if (token <> nil)and(pTemp = token) then // 同じところを何度もループしている
       begin
-        raise Exception.Create('パースエラー。「'+hi_id2tango(token.TokenID)+'」');
+        raise HException.Create('パースエラー。「'+hi_id2tango(token.TokenID)+'」');
       end;
 
     except
       on e: Exception do
-        raise EHimaSyntax.Create(pTemp.DebugInfo, e.Message,[]);
+        raise EHimaSyntax.Create(pTemp.DebugInfo, AnsiString(e.Message),[]);
     end;
 
     if token = nil then NextBlock(token);
@@ -864,7 +864,7 @@ var
     // skip '・'
     i := token.Indent;
     token := token.NextToken;
-    if token = nil then raise Exception.CreateFmt(ERR_S_DEF_GROUP+'メンバの名前がありません。',[hi_id2tango(group.VarID)]);
+    if token = nil then raise HException.CreateFmt(ERR_S_DEF_GROUP+'メンバの名前がありません。',[hi_id2tango(group.VarID)]);
 
     // メンバ変数の生成
     m := hi_var_new;
@@ -914,7 +914,7 @@ var
     begin // これ即ち関数
       hi_func_create(m);
       getDefArgs(token, hi_func(m).Args);
-      if token = nil then raise Exception.CreateFmt(ERR_S_DEF_GROUP+'関数宣言をしたら、～が必要です。',[hi_id2tango(group.VarID)]);
+      if token = nil then raise HException.CreateFmt(ERR_S_DEF_GROUP+'関数宣言をしたら、～が必要です。',[hi_id2tango(group.VarID)]);
     end;
     // 明示的な関数の指定があるか？
     if token.TokenID = token_tilde then
@@ -967,7 +967,7 @@ var
     vName := token.TokenID;
     token := token.NextToken; // skip NAME
     v := hi_group(group).FindMember(vName);
-    if v = nil then raise Exception.CreateFmt(ERR_S_DEF_GROUP+'メンバ『%s』の定義に誤りがあります。',[hi_id2tango(group.VarID),hi_id2tango(vName)]);
+    if v = nil then raise HException.CreateFmt(ERR_S_DEF_GROUP+'メンバ『%s』の定義に誤りがあります。',[hi_id2tango(group.VarID),hi_id2tango(vName)]);
 
     // 波カッコがあれば終わりまで飛ばす(2/2)
     if token = nil then Exit;
@@ -984,7 +984,7 @@ var
       token := token.NextToken; // SKIP <-
       if token = nil then Exit;
       fp := hi_group(group).FindMember(token.TokenID);
-      if (fp = nil)or(fp.VType <> varFunc) then raise Exception.CreateFmt(ERR_S_DEF_GROUP+'セッター『%s』の定義がないか関数ではありません。',[hi_id2tango(group.VarID),hi_id2tango(token.TokenID)]);
+      if (fp = nil)or(fp.VType <> varFunc) then raise HException.CreateFmt(ERR_S_DEF_GROUP+'セッター『%s』の定義がないか関数ではありません。',[hi_id2tango(group.VarID),hi_id2tango(token.TokenID)]);
       v.Setter := fp;
       token := token.NextToken; // SKIP FUNC NAME
       if token = nil then Exit;
@@ -995,7 +995,7 @@ var
       token := token.NextToken; // SKIP ->
       if token = nil then Exit;
       fp := hi_group(group).FindMember(token.TokenID);
-      if (fp = nil)or(fp.VType <> varFunc) then raise Exception.CreateFmt(ERR_S_DEF_GROUP+'ゲッター『%s』の定義がないか関数ではありません。',[hi_id2tango(group.VarID),hi_id2tango(token.TokenID)]);
+      if (fp = nil)or(fp.VType <> varFunc) then raise HException.CreateFmt(ERR_S_DEF_GROUP+'ゲッター『%s』の定義がないか関数ではありません。',[hi_id2tango(group.VarID),hi_id2tango(token.TokenID)]);
       v.Getter := fp;
       token := token.NextToken; // SKIP FUNC NAME
       if token = nil then Exit;
@@ -1019,7 +1019,7 @@ var
     // ここから先は関数である場合のみ（やっと関数内容の読み取り処理の開始）
 
     // ↓は確認のため
-    if v.VType <> varFunc then raise Exception.Create('関数のはずなのに関数ではない。');
+    if v.VType <> varFunc then raise HException.Create('関数のはずなのに関数ではない。');
 
     // 関数内容の取得
     node := TSyntaxDefFunction.Create(nil);
@@ -1036,7 +1036,7 @@ var
     if token.TokenID = token_tilde then
       token := token.NextToken // skip TILDE
     else
-      raise Exception.Create('グループのメソッドで～がありません。');
+      raise HException.Create('グループのメソッドで～がありません。');
 
     // ローカルに引数を登録しておく
     HiSystem.GroupScope.PushGroupScope(hi_group(group));
@@ -1057,7 +1057,7 @@ var
       try
         ReadSyntaxBlock(token, n, defIndent);
       except on e: Exception do
-        raise Exception.Create('グループメソッドでエラー。'+e.Message);
+        raise Exception.Create('グループメソッドでエラー。'+(e.Message));
       end;
       {
       if token = nil then
@@ -1088,11 +1088,11 @@ var
     for i := 0 to hi_func(v).Args.Count - 1 do
     begin
       arg := hi_func(v).Args.Items[i];
-      if arg = nil then raise Exception.Create('Argがnil');
+      if arg = nil then raise HException.Create('Argがnil');
     end;
     if hi_func(v).Args = nil then
     begin
-      raise Exception.Create(hi_id2tango(v.VarID)+'.Argsがnil');
+      raise HException.Create(hi_id2tango(v.VarID)+'.Argsがnil');
     end;
     }
     //
@@ -1111,13 +1111,13 @@ var
     begin
       if token.TokenID <> token_plus then
       begin
-        raise Exception.CreateFmt(ERR_S_DEF_GROUP+'『■グループ名　＋親グループ』と指定してください。',[hi_id2tango(group.VarID)]);
+        raise HException.CreateFmt(ERR_S_DEF_GROUP+'『■グループ名　＋親グループ』と指定してください。',[hi_id2tango(group.VarID)]);
       end;
       token := token.NextToken; // SKIP '+'
       // 継承元グループの取得
       super := HiSystem.Namespace.GetVar(token.TokenID);
       super := hi_getLink(super);
-      if (super = nil)or(super.VType <> varGroup) then raise Exception.CreateFmt(ERR_S_UNDEF_GROUP,[hi_id2tango(token.TokenID)]);
+      if (super = nil)or(super.VType <> varGroup) then raise HException.CreateFmt(ERR_S_UNDEF_GROUP,[hi_id2tango(token.TokenID)]);
       token := token.NextToken; // skip 'グループ名'
       hi_group(group).AddMembers(hi_group(super));
       // デフォルトの継承
@@ -1156,7 +1156,7 @@ begin
     // グループ名の違反をチェック
     if group.VType <> varGroup then
     begin
-      raise Exception.CreateFmt('グループの宣言で「%s」はグループ以外の変数として既に使われています。',[hi_id2tango(token.TokenID)]);
+      raise HException.CreateFmt('グループの宣言で「%s」はグループ以外の変数として既に使われています。',[hi_id2tango(token.TokenID)]);
     end;
     // それ以外ではメンバは[追記]される
     hi_group(group).HiClassDebug := token.Token; // デバッグ用に名前をセット
@@ -1180,7 +1180,7 @@ begin
   //メンバ定義の点の付け忘れをチェック
   if (token.Indent = 0)or(token.Indent <> 0)and(token.TokenID <> token_mark_nakaten) then
   begin
-    raise Exception.Create('グループの宣言で「・」がありません。・メンバ{～}・メンバ…を字下げして宣言してください。');
+    raise HException.Create('グループの宣言で「・」がありません。・メンバ{～}・メンバ…を字下げして宣言してください。');
   end;
   memberIndent := token.Indent;
 
@@ -1191,7 +1191,7 @@ begin
     begin
       if token.TokenID <> token_mark_nakaten then
       begin
-        raise Exception.Create('グループの宣言で「・」がありません。・メンバ{～}・メンバ…の書式で宣言してください。');
+        raise HException.Create('グループの宣言で「・」がありません。・メンバ{～}・メンバ…の書式で宣言してください。');
       end;
 
       _read_member;
@@ -1233,7 +1233,8 @@ var
   //const
   //  acceptTypes = '/CHAR/BYTE/SHORT/WORD/LONG/DWORD/POINTER/CHAR*/VOID/PAnsiChar/FLOAT/REAL/INT64/QWORD/';
   var
-    dllName, cDec: AnsiString;
+    dllName: string;
+    cDec: AnsiString;
     ret, funcName, sarg, argName, argType, res: AnsiString;
 
     h: HINST;
@@ -1270,17 +1271,17 @@ var
       //--------------
       // DLL関数名(Delphi風)を得る
       //funcName := getToken_s(cDec, '(');
-      if Pos('(',cDec) = 0 then begin//()を含んでいなければ
-        funcName := Trim(getToken_s(cDec, ':'));
+      if PosA('(',cDec) = 0 then begin//()を含んでいなければ
+        funcName := TrimA(getToken_s(cDec, ':'));
         cDec:=':'+cDec ;//戻り値読み取り用
         sarg := ''
       end else begin
         // DLL関数名(Delphi風)を得る
-        funcName := Trim(getToken_s(cDec, '('));
+        funcName := TrimA(getToken_s(cDec, '('));
         // 引数を得る
-        sarg := Trim(getToken_s(cDec, ')'));
+        sarg := TrimA(getToken_s(cDec, ')'));
         //if UpperCase(sarg) = 'VOID' then sarg := '';
-        if SameText(sarg,'VOID') then sarg := '';
+        if sarg = 'VOID' then sarg := '';
       end;
 
       //--------------
@@ -1298,7 +1299,7 @@ var
         if p^ = #0  then break;
         // GET NAME
         argName := getWord(p);
-        if SameText(argName,'var') then
+        if argName = 'var' then
         begin
           argName := getWord(p);
           res := res {+ argType} + 'POINTER ' + argName + ',';
@@ -1321,16 +1322,16 @@ var
           // GET TYPE
           argType := getWord(p);
           skipSpace(p);
-          argType := UpperCase(argType);
+          argType := UpperCaseA(argType);
           str := argType;
           replace_dll_types(argType); // DLLインポート型の単純置換
           //if Pos('/'+argType+'/',accepttypes) = 0 then
           if argType = '' then
-            raise Exception.Create('DLLの関数宣言で、関数の引数型「'+str+'」は未定義です。');
+            raise HException.Create('DLLの関数宣言で、関数の引数型「'+str+'」は未定義です。');
           for i := 0 to sl.Count - 1 do
           begin
             // stdcall の順番に並べる
-            res := res + argType + ' ' + Trim(sl.Strings[i]) + ',';
+            res := res + argType + ' ' + TrimA(sl.Strings[i]) + ',';
             Inc(cnt);
           end;
           sl.Clear;
@@ -1344,12 +1345,12 @@ var
       sl.Free;
       sarg := res;
       if node.HiFunc.Args.Count <> cnt then
-        raise Exception.CreateFmt('DLL「%s」の関数「%s」の宣言で定義している引数の数が一致しません。',[dllName, funcName]);
+        raise HException.CreateFmt('DLL「%s」の関数「%s」の宣言で定義している引数の数が一致しません。',[dllName, funcName]);
 
       // : Integer; stdcall;
       // 返値を得る
       getToken_s(cDec, ':');
-      ret := UpperCase(Trim(getToken_s(cDec,';')));
+      ret := UpperCaseA(TrimA(getToken_s(cDec,';')));
       //ret := Trim(UpperCase(ret));
       if ret = '' then
         ret := 'VOID'
@@ -1359,7 +1360,7 @@ var
       end;
       //if Pos('/'+ret+'/',acceptTypes) = 0 then
       if ret = '' then
-        raise Exception.Create('DLLの関数宣言で、関数の戻り型「'+str+'」は未定義です。');
+        raise HException.Create('DLLの関数宣言で、関数の戻り型「'+str+'」は未定義です。');
     end;
 
     procedure analizeCDec;
@@ -1369,9 +1370,9 @@ var
       str: AnsiString;//for debug
     begin
       // 返値を得る
-      ret := UpperCase(Trim(getToken_s(cDec,' ')));
+      ret := UpperCaseA(TrimA(getToken_s(cDec,' ')));
       if (ret = 'FUNCTION')or(ret = 'PROCEDURE') then begin analizeDelphiDoc; Exit; end;
-      if Pos('(', ret) > 0 then //カッコがあれば返値が省略されているということ
+      if PosA('(', ret) > 0 then //カッコがあれば返値が省略されているということ
       begin
         cDec := ret + ' ' + cDec; // 元に戻す
         ret  := 'VOID'; // VOID
@@ -1381,10 +1382,10 @@ var
       replace_dll_types(ret);
       //if Pos('/'+ret+'/',acceptTypes) = 0 then
       if ret = '' then
-        raise Exception.Create('DLLの関数宣言で、関数の戻り型「'+str+'」は未定義です。');
+        raise HException.Create('DLLの関数宣言で、関数の戻り型「'+str+'」は未定義です。');
 
       // DLL関数名(C風)を得る
-      funcName := Trim(getToken_s(cDec, '('));
+      funcName := TrimA(getToken_s(cDec, '('));
       if PAnsiChar(funcName)^ = '*' then
       begin
         ret := 'P' + ret;
@@ -1392,8 +1393,8 @@ var
       end;      
 
       // 引数を得る
-      sarg := Trim(getToken_s(cDec, ')'));
-      if SameText(sarg,'VOID') then sarg := '';
+      sarg := TrimA(getToken_s(cDec, ')'));
+      if sarg = 'VOID' then sarg := '';
 
       // 引数の正当性をチェック
       cnt := 0;
@@ -1404,8 +1405,8 @@ var
         while p^ in [' ',#9,#13,#10] do Inc(p);
         if p^ = '/' then getTokenStr(p, #13#10);
         while p^ in [' ',#9,#13,#10] do Inc(p);
-        argName := Trim(getTokenCh(p, [',',')','/']));
-        argType := Trim(getToken_s(argName, ' '));
+        argName := TrimA(getTokenCh(p, [',',')','/']));
+        argType := TrimA(getToken_s(argName, ' '));
         if argType = '' then begin argType := argName; argName := ''; end;
         if argType = '' then Continue;
         //if Copy(argName, 1, 1) = '*' then
@@ -1414,29 +1415,29 @@ var
           argType := argType + '*';
           System.Delete(argName, 1, 1);
         end;
-        argType := UpperCase(argType);
+        argType := UpperCaseA(argType);
         str:=argType;
         replace_dll_types(argType); // DLLインポート型の単純置換
         //if Pos('/'+argType+'/',acceptTypes) = 0 then
         if argType = '' then
-          raise Exception.Create('DLLの関数宣言で、関数の引数型「'+str+'」は未定義です。');
+          raise HException.Create('DLLの関数宣言で、関数の引数型「'+str+'」は未定義です。');
         // stdcall の順番に並べる
         res := res + argType + ' ' + argName + ',';
         Inc(cnt);
       end;
       sarg := res;
       if node.HiFunc.Args.Count <> cnt then
-        raise Exception.CreateFmt('DLL「%s」の関数「%s」の宣言で定義している引数の数が一致しません。',[dllName, funcName]);
+        raise HException.CreateFmt('DLL「%s」の関数「%s」の宣言で定義している引数の数が一致しません。',[dllName, funcName]);
     end;
 
   begin
     //----------------
     // 引数の取得
     // 名前
-    if (token = nil) then raise Exception.Create('DLL宣言が不完全です。');
-    dllName := Token.GetConstStr;
+    if (token = nil) then raise HException.Create('DLL宣言が不完全です。');
+    dllName := string(Token.GetConstStr);
     TokenNextToken(token);
-    if (token = nil)or(dllName='') then raise Exception.Create('DLL宣言が不完全です。');
+    if (token = nil)or(dllName='') then raise HException.Create('DLL宣言が不完全です。');
     // commma
     if (token <> nil) and (token.TokenID = token_comma) then
     begin
@@ -1452,13 +1453,13 @@ var
     i := HiSystem.DllNameList.IndexOf(dllName);
     if i < 0 then
     begin
-      h := LoadLibraryA(PAnsiChar(dllName));
+      h := LoadLibraryW(PChar(dllName));
       if h <= 0 then
       begin
         if Pos(':\', dllName) = 0 then
         begin
           dllName := ExtractFilePath(ParamStr(0)) + 'plug-ins\' + dllName;
-          h := LoadLibraryA(PAnsiChar(dllName));
+          h := LoadLibraryW(PChar(dllName));
         end;
         if h <= 0 then begin
           raise Exception.Create('DLL「'+dllName+'」が読み込めません。エラーコード:'+IntToStr(GetLastError));
@@ -1472,7 +1473,7 @@ var
     end;
     // DLL内の関数へのエントリポイントを取得
     proc := GetProcAddress( h, PAnsiChar(funcName) );
-    if proc = nil then raise Exception.CreateFmt('DLL「%s」に関数「%s」が見当たりません。',[dllName, funcName]);
+    if proc = nil then raise HException.CreateFmt('DLL「%s」に関数「%s」が見当たりません。',[dllName, funcName]);
 
     // 変数に設定
     node.HiFunc.PFunc       := proc;
@@ -1485,13 +1486,13 @@ var
   const ErrDll = 'DLLのインポートエラー。';
   begin
     Token := Token.NextToken; // skip '='
-    if Token = nil then raise Exception.Create(ErrDll);
-    if Token.UCToken <> 'DLL' then raise Exception.Create(ErrDll);
+    if Token = nil then raise HException.Create(ErrDll);
+    if Token.UCToken <> 'DLL' then raise HException.Create(ErrDll);
     Token := Token.NextToken; // skip 'DLL'
-    if (Token = nil) or (Token.Token <> '(') then raise Exception.Create(ErrDll);
+    if (Token = nil) or (Token.Token <> '(') then raise HException.Create(ErrDll);
     Token := Token.NextToken;
     {DLLのインポート} AnalizeDllImport;
-    if (Token = nil) or (Token.Token   <> ')') then raise Exception.Create(ErrDll);
+    if (Token = nil) or (Token.Token   <> ')') then raise HException.Create(ErrDll);
     Token := Token.NextToken;
   end;
 
@@ -1510,11 +1511,11 @@ var
     hi_group_create(oya);
     token := token.NextToken;
     try
-      if token = nil then raise Exception.Create('メンバ名がありません。');
+      if token = nil then raise HException.Create('メンバ名がありません。');
       while token <> nil do
       begin
         // エラーチェック
-        if token.JosiID = josi_wa then raise Exception.Create('関数宣言で「xxはxx」の形で初期値を代入することはできません。');
+        if token.JosiID = josi_wa then raise HException.Create('関数宣言で「xxはxx」の形で初期値を代入することはできません。');
         // →なら次を見る
         if token.TokenID = token_right then token := token.NextToken;
         // 子が定義されているか？
@@ -1538,10 +1539,14 @@ var
         // ( や ~ なら引数の指定なので終わる
         if token.TokenID = token_kakko_begin then Break;
         if token.TokenID = token_tilde then Break;
-        if token.TokenID = token_eq then raise Exception.Create('関数に＝で初期値を代入することはできません。');
+        if token.TokenID = token_eq then raise HException.Create('関数に＝で初期値を代入することはできません。');
       end;
     except on e:Exception do
-      raise Exception.Create('グループ付関数『'+hi_id2tango(funcNameToken.TokenID)+'』の定義に失敗。' + e.Message);
+      raise HException.Create(
+        'グループ付関数『'+
+        hi_id2tango(funcNameToken.TokenID)+
+        '』の定義に失敗。' +
+        AnsiString(e.Message));
     end;
     tango := ko;
   end;
@@ -1555,7 +1560,7 @@ begin
 
   // SKIP '*' MARK
   token := token.NextToken;
-  if token = nil then raise Exception.CreateFmt(ERR_S_SYNTAX,['*']);
+  if token = nil then raise HException.CreateFmt(ERR_S_SYNTAX,['*']);
 
   // READ NAME
   //-------------------------------
@@ -1580,7 +1585,7 @@ begin
   hi_func_create(tango);
   node.HiFunc := tango.ptr;
   node.HiFunc.FuncType := funcUser; // デフォルト ... 後で読んで宣言があればfuncDLLになる
-  // if (token = nil) then raise Exception.CreateFmt(ERR_S_DEF_FUNC,[hi_id2tango(fNameID)]);
+  // if (token = nil) then raise HException.CreateFmt(ERR_S_DEF_FUNC,[hi_id2tango(fNameID)]);
 
   // READ ARG
   if token <> nil then
@@ -1597,7 +1602,7 @@ begin
     end;
     {
     if token <> nil then
-      raise Exception.CreateFmt(ERR_S_DEF_FUNC+'関数名に助詞を含んでいる可能性があります。',[hi_id2tango(node.FuncID)]);
+      raise HException.CreateFmt(ERR_S_DEF_FUNC+'関数名に助詞を含んでいる可能性があります。',[hi_id2tango(node.FuncID)]);
     }
   end;
 
@@ -1605,7 +1610,7 @@ begin
   begin
     if not HiSystem.FlagSystemFile then
     begin
-      raise Exception.Create(ERR_SECURITY + '危険なファイルアクセスの他、DLLのインポートが許可されていません。');
+      raise HException.Create(ERR_SECURITY + '危険なファイルアクセスの他、DLLのインポートが許可されていません。');
     end;
     HiSystem.Global.RegistVar(tango);
     FreeAndNil(node);
@@ -1616,7 +1621,7 @@ begin
   // 二重定義の禁止
   if HiSystem.Namespace.CurSpace.GetVar(tango.VarID) <> nil then
   begin
-    raise Exception.CreateFmt('関数の宣言で「%s」は使われています。',[hi_id2tango( tango.VarID )]);
+    raise HException.CreateFmt('関数の宣言で「%s」は使われています。',[hi_id2tango( tango.VarID )]);
   end;
   if node.FlagGroupMember = False then
   begin
@@ -1677,7 +1682,7 @@ begin
     if n is TSyntaxValue then
       node.iVar := n as TSyntaxValue
     else
-      raise Exception.Create('『(変数)で(反復内容)を反復』の書式で指定してください。');
+      raise HException.Create('『(変数)で(反復内容)を反復』の書式で指定してください。');
   end;
 
   //-------------
@@ -1686,13 +1691,13 @@ begin
 
   // 反復するプログラムを取得
   token := token.NextToken; // skip 反復する
-  if (token <> nil)and(token.TokenID = token_kakko_begin)and(token.NextToken = nil) then raise Exception.Create('『反復』の直後に『(』は使えません。インデントで構造化を表現します。');
+  if (token <> nil)and(token.TokenID = token_kakko_begin)and(token.NextToken = nil) then raise HException.Create('『反復』の直後に『(』は使えません。インデントで構造化を表現します。');
 
   StackPush;
   try
     ReadSyntaxBlock(token, n, defIndent);
   except on e: Exception do
-    raise Exception.Create('『反復』構文内でエラーです。' + e.Message);
+    raise HException.Create('『反復』構文内でエラーです。' + AnsiString(e.Message));
   end;
   StackPop;
   {
@@ -1703,7 +1708,7 @@ begin
       if (token<>nil)and(token.Indent > defIndent) then
         ReadBlocks(token, n);
     except on e: Exception do
-      raise Exception.Create('反復構文でエラー。' + e.Message);
+      raise HException.Create('反復構文でエラー。' + e.Message);
     end;
   end else
   begin
@@ -1730,7 +1735,7 @@ begin
   // ～から～まで(を)
   node.VarTo   := FStack.Pop(josi_made);
   node.VarFrom := FStack.Pop(josi_kara);
-  if (node.VarFrom = nil)or(node.VarTo = nil) then raise Exception.Create(ERR_SYNTAX+'『(変数)で(開始値)から(終了値)まで繰り返す～』の書式で指定してください。');
+  if (node.VarFrom = nil)or(node.VarTo = nil) then raise HException.Create(ERR_SYNTAX+'『(変数)で(開始値)から(終了値)まで繰り返す～』の書式で指定してください。');
 
   // ループカウンタの取得
   // ～で｜～を
@@ -1759,7 +1764,7 @@ begin
       end;
     end else
     begin
-      if (token.TokenID = token_kakko_begin)and(token.NextToken = nil) then raise Exception.Create('『繰り返す』の直後に『(』は使えません。インデントで構造化を表現します。');
+      if (token.TokenID = token_kakko_begin)and(token.NextToken = nil) then raise HException.Create('『繰り返す』の直後に『(』は使えません。インデントで構造化を表現します。');
       ReadLineEx(token, n);
     end;
     }
@@ -1791,7 +1796,7 @@ var
         ReadArg(token, josiID);
         UseJosi := False;
       except on e: Exception do
-        raise Exception.CreateFmt(ERR_S_CALL_FUNC + e.Message,[hi_id2tango(v.VarID)]);
+        raise HException.CreateFmt(ERR_S_CALL_FUNC + e.Message,[hi_id2tango(v.VarID)]);
       end;
       SyntaxFunc.JosiId := josiID;
     end else
@@ -1802,7 +1807,7 @@ var
     // FStack から引数を取得して SyntaxFunc のスタックに乗せる
     if HiFunc.Args = nil then
     begin
-      raise Exception.Create(hi_id2tango(SyntaxFunc.FuncID));
+      raise HException.Create(hi_id2tango(SyntaxFunc.FuncID));
     end;
     for i := HiFunc.Args.Count - 1 downto 0 do
     begin
@@ -1838,10 +1843,10 @@ var
         if (arg.Needed) then
         begin
           if arg.JosiList.Count > 0 then
-            raise Exception.CreateFmt(
+            raise HException.CreateFmt(
               ERR_SS_FUNC_ARG,[hi_id2tango(v.VarID),hi_id2tango(arg.Name)+HiSystem.JosiList.ID2Str(arg.JosiList.GetAsNum(0))])
           else
-            raise Exception.CreateFmt(
+            raise HException.CreateFmt(
               ERR_SS_FUNC_ARG,[hi_id2tango(v.VarID),hi_id2tango(arg.Name)]);
         end else
         begin
@@ -1896,7 +1901,7 @@ begin
       SyntaxFunc.FuncID,
       SyntaxFunc.HiFunc.PluginID, True,
       '', //hi_id2tango(SyntaxFunc.FuncID) // 関数名をメモする
-      SyntaxFunc.HiFunc.IzonFiles
+      string(SyntaxFunc.HiFunc.IzonFiles)
     );
   end;
 
@@ -1938,7 +1943,7 @@ begin
         try
           ReadBlocks(token, n);
         except on e: Exception do
-          raise Exception.Create('『もし～ならば』構文のならばブロックでエラー。' + e.Message);
+          raise HException.Create('『もし～ならば』構文のならばブロックでエラー。' + e.Message);
         end;
       end;
     end;
@@ -1979,7 +1984,7 @@ begin
         try
           ReadBlocks(token, n);
         except on e: Exception do
-          raise Exception.Create('『もし～ならば』構文の違えばブロックでエラー。' + e.Message);
+          raise HException.Create('『もし～ならば』構文の違えばブロックでエラー。' + e.Message);
         end;
       end;
     end else
@@ -2002,7 +2007,7 @@ var
 begin
   if token.TokenID <> token_kakko_begin then
   begin
-    raise Exception.Create('『（』がありません。');
+    raise HException.Create('『（』がありません。');
   end;
 
   node := TSyntaxSentence.Create(nil);
@@ -2023,7 +2028,7 @@ begin
       if token = nil then NextBlock(token); // 改行を跨ぐ（）にも対応。
     end;
     if (token = nil)or(token.TokenID <> token_kakko_end) then
-      raise Exception.Create(ERR_NOPAIR_KAKKO);
+      raise HException.Create(ERR_NOPAIR_KAKKO);
     if (FStack.Count > 0) then;
 
     node.JosiId := token.JosiID;
@@ -2052,10 +2057,10 @@ begin
     // 何へ代入するのか
     n := FStack.Pop(josi_ni);
     if (n = nil) then n := FStack.Pop(josi_he);
-    if (n = nil) then raise Exception.Create(ERR_SYNTAX + '何に代入するのか指定されていません。');
-    if n.ClassType <> TSyntaxValue then raise Exception.Create(ERR_SYNTAX + '定数には代入できません。(変数名)に代入。の書式で記述してください。');
+    if (n = nil) then raise HException.Create(ERR_SYNTAX + '何に代入するのか指定されていません。');
+    if n.ClassType <> TSyntaxValue then raise HException.Create(ERR_SYNTAX + '定数には代入できません。(変数名)に代入。の書式で記述してください。');
     v := n as TSyntaxValue;
-    if v.ReadOnly then raise Exception.CreateFmt(ERR_SYNTAX + '定数"%s"には代入できません。',[hi_id2tango(v.VarID)]);
+    if v.ReadOnly then raise HException.CreateFmt(ERR_SYNTAX + '定数"%s"には代入できません。',[hi_id2tango(v.VarID)]);
 
     // "その"を更新
     if v.Element.NextElement <> nil then
@@ -2095,16 +2100,16 @@ begin
 
   //----------------------------------------------------------------------------
   // "=" "は" を用いた代入
-  if {(token = nil)or}(FStack.Count = 0) then raise Exception.Create(ERR_SYNTAX + '代入する値がありません。');
+  if {(token = nil)or}(FStack.Count = 0) then raise HException.Create(ERR_SYNTAX + '代入する値がありません。');
 
   // 代入すべき変数を取得
   n := FStack.Pop;
   if n.ClassType <> TSyntaxValue then
   begin
-    raise Exception.Create(ERR_SYNTAX + '"' + n.DebugStr + '"には代入できません。(変数名)は(値)。の書式で記述してください。');
+    raise HException.Create(ERR_SYNTAX + '"' + n.DebugStr + '"には代入できません。(変数名)は(値)。の書式で記述してください。');
   end;
   v := n as TSyntaxValue;
-  if v.ReadOnly then raise Exception.CreateFmt(ERR_SYNTAX + '定数"%s"には代入できません。',[hi_id2tango(v.VarID)]);
+  if v.ReadOnly then raise HException.CreateFmt(ERR_SYNTAX + '定数"%s"には代入できません。',[hi_id2tango(v.VarID)]);
 
   // "その"を更新
   if (v.Element.NextElement <> nil) then
@@ -2201,7 +2206,7 @@ var
       end;
       if (token <> nil)and(token.TokenID <> w) then
       begin
-        raise Exception.CreateFmt('『ここまで%s』で明示された構文は『ここまで%s』であるべきです。',
+        raise HException.CreateFmt('『ここまで%s』で明示された構文は『ここまで%s』であるべきです。',
           [hi_id2tango(token.TokenID), hi_id2tango(w)]);
       end else
       begin
@@ -2240,7 +2245,7 @@ begin
       begin
         if lastToken = token then
         begin
-          raise Exception.Create('パースエラー。単語「'+hi_id2tango(token.TokenID)+'」が読めません。');
+          raise HException.Create('パースエラー。単語「'+hi_id2tango(token.TokenID)+'」が読めません。');
         end;
       end;
       lastToken := token;
@@ -2293,7 +2298,7 @@ begin
       // 『ここまで』構文？
       if (token.TokenID = token_koko)and(token.JosiID = josi_made) then
       begin
-        raise Exception.Create('『ここまで』が制御構文と対になっていません。');
+        raise HException.Create('『ここまで』が制御構文と対になっていません。');
       end;
       // GOTO
       if token.TokenID = token_mark_sankaku then
@@ -2308,7 +2313,10 @@ begin
         if not ReadOneItem(token) then Continue;
       except
         on e: Exception do // 正確な行番号を返す
-          raise EHimaSyntax.Create(CheckToken.DebugInfo, '単語の読取に失敗。' + e.Message,[]);
+          raise EHimaSyntax.Create(
+            CheckToken.DebugInfo,
+            '単語の読取に失敗。' + AnsiString(e.Message),
+            []);
       end;
       //--------------------------------------
 
@@ -2330,7 +2338,7 @@ begin
       if (n.JosiId = josi_wa) then // 助詞「は」による代入
       begin
         // 警告
-        if (CanLet = False)or(flagMosi = True) then raise Exception.Create('(...)の中や「もし」構文では「は」を使った代入はできません。比較する場合は「=」を使います。');
+        if (CanLet = False)or(flagMosi = True) then raise HException.Create('(...)の中や「もし」構文では「は」を使った代入はできません。比較する場合は「=」を使います。');
         ReadLet(token);
         Break;
       end else
@@ -2397,7 +2405,7 @@ var
   n, c: TSyntaxNode;
 begin
   //Result := False;
-  if FStack.Count = 0 then raise Exception.Create(ERR_SYNTAX+'『(回数)回～』の書式で使います。');
+  if FStack.Count = 0 then raise HException.Create(ERR_SYNTAX+'『(回数)回～』の書式で使います。');
 
   n := FStack.Pop; // 回数
 
@@ -2420,7 +2428,7 @@ begin
       if (token <> nil)and(defIndent < token.Indent) then ReadBlocks(token, c);
     end else
     begin
-      if (token.TokenID = token_kakko_begin)and(token.NextToken = nil) then raise Exception.Create('『n回』の直後に『(』は使えません。インデントで構造化を表現します。');
+      if (token.TokenID = token_kakko_begin)and(token.NextToken = nil) then raise HException.Create('『n回』の直後に『(』は使えません。インデントで構造化を表現します。');
       ReadLineEx(token, c);
     end;
     }
@@ -2473,7 +2481,7 @@ begin
         Result := ReadKakko(token);
       end else
       begin
-        raise Exception.CreateFmt(ERR_S_UNDEFINED,[hi_id2tango(token.TokenID)]);
+        raise HException.CreateFmt(ERR_S_UNDEFINED,[hi_id2tango(token.TokenID)]);
       end;
     end;
   tokenString:
@@ -2505,11 +2513,11 @@ begin
         Result := ReadOneItem(token);
         Exit;
       end else
-      raise Exception.CreateFmt(ERR_S_UNDEF_MARK,[hi_id2tango(token.TokenID)]);
+      raise HException.CreateFmt(ERR_S_UNDEF_MARK,[hi_id2tango(token.TokenID)]);
     end;
   else
     begin
-      raise Exception.CreateFmt('不明な語句『%s』を見つけました。',[token.Token]);
+      raise HException.CreateFmt('不明な語句『%s』を見つけました。',[token.Token]);
     end;
   end;
 end;
@@ -2571,7 +2579,7 @@ begin
     FNextBlock := nil;
 
   except on e: Exception do
-    raise EHimaSyntax.Create(temp.DebugInfo, e.Message, []);
+    raise EHimaSyntax.Create(temp.DebugInfo, AnsiString(e.Message), []);
   end;
 
   HiSystem.FlagStrict := FStrict;
@@ -2624,7 +2632,7 @@ begin
     begin
       term := TSyntaxTerm.Create(nil);
       token := token.NextToken; // skip '-'
-      if not ReadOneItem(token) then raise Exception.Create('突然の"-"');
+      if not ReadOneItem(token) then raise HException.Create('突然の"-"');
       term.baseNode := FStack.Pop;
       term.mode := termMinus;
       term.JosiId := term.baseNode.JosiId;
@@ -2632,7 +2640,7 @@ begin
       Result := True;
     end else
     begin
-      raise Exception.Create('突然の演算子"'+ hi_id2tango(token.tokenID)+'"');
+      raise HException.Create('突然の演算子"'+ hi_id2tango(token.tokenID)+'"');
     end;
     Exit;
   end;
@@ -2672,7 +2680,7 @@ begin
       begin
         token := token.NextToken; // skip "-"
         term := TSyntaxTerm.Create(node);
-        if not ReadOneItem(token) then raise Exception.Create(ERR_INVALID_SIKI);
+        if not ReadOneItem(token) then raise HException.Create(ERR_INVALID_SIKI);
         term.baseNode := FStack.Pop;
         term.mode := termMinus;
         term.JosiId := term.baseNode.JosiId;
@@ -2681,7 +2689,7 @@ begin
       end;
 
       // 普通に値の読み取り
-      if not ReadOneItem(token) then raise Exception.Create(ERR_INVALID_SIKI);
+      if not ReadOneItem(token) then raise HException.Create(ERR_INVALID_SIKI);
       n := FStack.Pop;
       node.JosiId := n.JosiId;
       sikiStack.Push(n);
@@ -2859,17 +2867,17 @@ var
         TokenSkipComma(p);
       end;
     end;
-    if ko = nil then raise Exception.Create('変数宣言に失敗。');
+    if ko = nil then raise HException.Create('変数宣言に失敗。');
     if token.TokenID = token_comma then token := token.NextToken;
-    if token = nil then raise Exception.CreateFmt('変数宣言に失敗。『%sとはxxx』のxxx部分（変数の型）がありません。',[hi_id2tango(ko.VarID)]);
+    if token = nil then raise HException.CreateFmt('変数宣言に失敗。『%sとはxxx』のxxx部分（変数の型）がありません。',[hi_id2tango(ko.VarID)]);
     // xxxとはooo の ooo 部分
     def := nil;
     while token <> nil do
     begin
       if token.JosiID = -1 then Break;
       def := HiSystem.GetVariable(token.TokenID);
-      if def = nil then raise Exception.CreateFmt('変数『%s』の宣言で型が特定できません。',[hi_id2tango(ko.VarID)]);
-      if def.VType <> varGroup then raise Exception.CreateFmt('変数『%s』の宣言で型が特定できません。',[hi_id2tango(ko.VarID)]);
+      if def = nil then raise HException.CreateFmt('変数『%s』の宣言で型が特定できません。',[hi_id2tango(ko.VarID)]);
+      if def.VType <> varGroup then raise HException.CreateFmt('変数『%s』の宣言で型が特定できません。',[hi_id2tango(ko.VarID)]);
       TokenNextToken(token);
       TokenSkipComma(p);
       vType := varGroup;
@@ -2877,7 +2885,7 @@ var
     // 型の特定
     if def = nil then
     begin
-      if token = nil then raise Exception.CreateFmt('変数『%s』の宣言で型が特定できません。',[hi_id2tango(ko.VarID)]);
+      if token = nil then raise HException.CreateFmt('変数『%s』の宣言で型が特定できません。',[hi_id2tango(ko.VarID)]);
       case token.TokenID of
         token_hensuu: vType := varNil;
         token_seisu:  vType := varInt;
@@ -2891,7 +2899,7 @@ var
           begin
             vType := varGroup;
             def := HiSystem.GetVariable(token.TokenID);
-            if (def = nil)or(def.VType <> varGroup) then raise Exception.CreateFmt('変数『%s』の宣言で型が特定できません。',[hi_id2tango(ko.VarID)]);
+            if (def = nil)or(def.VType <> varGroup) then raise HException.CreateFmt('変数『%s』の宣言で型が特定できません。',[hi_id2tango(ko.VarID)]);
           end;
       end;
       TokenNextToken(token);
@@ -2930,9 +2938,9 @@ var
         // 初期値に計算を含んでいてもばっちり計算するように！
         StackPush;
         try
-          if ReadOneItem(token) = False then raise Exception.Create('変数宣言で初期値がありません。');
+          if ReadOneItem(token) = False then raise HException.Create('変数宣言で初期値がありません。');
           while (token <> nil) do ReadOneItem(token);
-          if FStack.Count > 1 then raise Exception.Create('変数宣言で初期化式で値が２つ以上存在します。');
+          if FStack.Count > 1 then raise HException.Create('変数宣言で初期化式で値が２つ以上存在します。');
           n := FStack.Pop;
           vv := n.getValue; // 変数名を壊してしまうので必ず vv へ値を得てそのあとコピーしなおす
           hi_var_copyGensi(vv, ko);
@@ -3006,7 +3014,7 @@ var
       flg := True; Break;
     end;
     // 一応確認
-    if flg = False then raise Exception.CreateFmt('グループ『%s』の後にメンバが見つかったのですが、式が複雑すぎてスタックへ積めませんでした。もう少し単純な式にしてください。',[hi_id2tango(group.VarID)]);
+    if flg = False then raise HException.CreateFmt('グループ『%s』の後にメンバが見つかったのですが、式が複雑すぎてスタックへ積めませんでした。もう少し単純な式にしてください。',[hi_id2tango(group.VarID)]);
     // あとは通常処理に戻る
     mv := p;
     Result := True;
@@ -3033,7 +3041,7 @@ begin
   // その？これ？
   if (token.TokenID = token_sono)or(token.TokenID = token_kore) then
   begin
-    if SonoTokenID = DWORD(-1) then raise Exception.Create('『その』『これ』の値が設定されていません。');
+    if SonoTokenID = DWORD(-1) then raise HException.Create('『その』『これ』の値が設定されていません。');
     token.TokenID := SonoTokenID;
   end;
 
@@ -3077,11 +3085,11 @@ begin
   if pv = nil then
   begin
     // 『変数宣言が必要』 ならエラーに。
-    if HiSystem.FlagStrict then raise Exception.CreateFmt(ERR_S_STRICT_UNDEF,[hi_id2tango(token.TokenID)]);
+    if HiSystem.FlagStrict then raise HException.CreateFmt(ERR_S_STRICT_UNDEF,[hi_id2tango(token.TokenID)]);
     // 『変数初期化が必要』なら代入文でなければエラーに。
     if HiSystem.FlagVarInit then
     begin
-      if (token.JosiID <> josi_wa)and((token.NextToken = nil)or(token.NextToken.TokenID <> token_Eq)) then raise Exception.CreateFmt(ERR_S_VARINIT_UNDEF,[hi_id2tango(token.TokenID)]);
+      if (token.JosiID <> josi_wa)and((token.NextToken = nil)or(token.NextToken.TokenID <> token_Eq)) then raise HException.CreateFmt(ERR_S_VARINIT_UNDEF,[hi_id2tango(token.TokenID)]);
     end;
     // 変数の登録(Globalとして)
     pv := HiSystem.CreateHiValue(token.TokenID);
@@ -3180,7 +3188,7 @@ begin
               Break;
             end;
             // カッコの中を読む
-            if not ReadOneItem(token) then raise Exception.CreateFmt(ERR_S_VAR_ELEMENT,[hi_id2tango(pv.VarID)]);
+            if not ReadOneItem(token) then raise HException.CreateFmt(ERR_S_VAR_ELEMENT,[hi_id2tango(pv.VarID)]);
             while (token<>nil)and(token.TokenType = tokenOperator) do
             begin
               ReadOneItem(token);
@@ -3194,7 +3202,7 @@ begin
           NextElementLink(pe);
         end;
         // 終端のカッコをチェック
-        if (token = nil)or(token.TokenID <> token_kaku_kakko_end) then raise Exception.Create(ERR_NOPAIR_KAKU);
+        if (token = nil)or(token.TokenID <> token_kaku_kakko_end) then raise HException.Create(ERR_NOPAIR_KAKU);
         node.JosiId := token.JosiId;  // "]"xx
         token := token.NextToken;     // skip "]"
         Continue;
@@ -3207,7 +3215,7 @@ begin
         pe := NewPe; //New(pe);
         pe.LinkType := svLinkArray;
         // 要素を読む
-        if not ReadOneItem(token) then raise Exception.CreateFmt(ERR_S_VAR_ELEMENT,[hi_id2tango(pv.VarID)]);
+        if not ReadOneItem(token) then raise HException.CreateFmt(ERR_S_VAR_ELEMENT,[hi_id2tango(pv.VarID)]);
         // 読んだ値をスタックから下ろしインデックスとする
         pe.aryIndex := FStack.Pop;
         node.JosiId := pe.aryIndex.JosiId;
@@ -3223,7 +3231,7 @@ begin
           pe := NewPe; //New(pe);
           pe.LinkType := svLinkArray;
           // 要素を読む
-          if not ReadOneItem(token) then raise Exception.CreateFmt(ERR_S_VAR_ELEMENT,[hi_id2tango(pv.VarID)]);
+          if not ReadOneItem(token) then raise HException.CreateFmt(ERR_S_VAR_ELEMENT,[hi_id2tango(pv.VarID)]);
           // 読んだ値をスタックから下ろしインデックスとする
           pe.aryIndex := FStack.Pop;
           node.JosiId := pe.aryIndex.JosiId;
@@ -3239,7 +3247,7 @@ begin
         pe := NewPe; //New(pe);
         pe.LinkType := svLinkHash;
         // ハッシュのメンバ名を１つ読む
-        if not ReadOneItem(token) then raise Exception.CreateFmt(ERR_S_VAR_ELEMENT,[hi_id2tango(pv.VarID)]);
+        if not ReadOneItem(token) then raise HException.CreateFmt(ERR_S_VAR_ELEMENT,[hi_id2tango(pv.VarID)]);
         // 読んだ値をスタックから下ろしメンバ名とする
         pe.aryIndex := FStack.Pop;
         node.JosiId := pe.aryIndex.JosiId;
@@ -3251,7 +3259,7 @@ begin
       token_right: 
       begin
         token := token.NextToken; // skip →
-        if token = nil then raise Exception.Create('グループへのアクセス子"→"があるがメンバ名がありません。');
+        if token = nil then raise HException.Create('グループへのアクセス子"→"があるがメンバ名がありません。');
         if pTop <> nil then
         begin
           pTop.LinkType := svLinkLocal;
@@ -3273,11 +3281,11 @@ begin
           while token <> nil do
           begin
             if token.TokenID = token_kakko_end then Break;
-            if not ReadOneItem(token) then raise Exception.CreateFmt(ERR_S_VAR_ELEMENT,[hi_id2tango(pv.VarID)]);
+            if not ReadOneItem(token) then raise HException.CreateFmt(ERR_S_VAR_ELEMENT,[hi_id2tango(pv.VarID)]);
             pe.Stack.Add(FStack.Pop);
             if (token <> nil) and (token.TokenID = token_comma) then Continue;
           end;
-          if (token = nil)or(token.TokenID <> token_kakko_end) then raise Exception.CreateFmt(ERR_NOPAIR_KAKKO,[]);
+          if (token = nil)or(token.TokenID <> token_kakko_end) then raise HException.CreateFmt(ERR_NOPAIR_KAKKO,[]);
           token := token.NextToken; // skip ')'
         end;
         //----------------------------------------------------------------------
@@ -3298,7 +3306,7 @@ begin
             // 暗黙のグループメンバ定義をするかどうか？
             if (token.JosiID = josi_wa) or ((token.NextToken <> nil)and(token.NextToken.TokenID = token_eq)) then
             begin
-              if HiSystem.FlagStrict then raise Exception.CreateFmt(ERR_S_STRICT_UNDEF,[hi_id2tango(token.TokenID)]);
+              if HiSystem.FlagStrict then raise HException.CreateFmt(ERR_S_STRICT_UNDEF,[hi_id2tango(token.TokenID)]);
               mv := hi_var_new;
               mv.VarID := token.TokenID;
               hi_group(pv).Add(mv);
@@ -3363,10 +3371,10 @@ begin
   while token <> nil do
   begin
     // 条件を１つ読む
-    if not ReadOneItem(token) then raise Exception.Create('『もし』の条件が読み取れませんでした。');
+    if not ReadOneItem(token) then raise HException.Create('『もし』の条件が読み取れませんでした。');
     if (token <> nil) and (token.TokenType = tokenOperator) then
     begin
-      if not ReadOneItem(token) then raise Exception.Create('『もし』の条件が読み取れませんでした。');
+      if not ReadOneItem(token) then raise HException.Create('『もし』の条件が読み取れませんでした。');
     end;
 
     A := FStack.GetLast;
@@ -3422,7 +3430,7 @@ begin
   A := FStack.GetLast;
   if (A.JosiId <> josi_naraba)and(A.JosiID <> josi_denakereba) then
   begin
-    raise Exception.Create(ERR_SYNTAX + '『もし...ならば』の書式に誤りがあるか式が複雑すぎます。');
+    raise HException.Create(ERR_SYNTAX + '『もし...ならば』の書式に誤りがあるか式が複雑すぎます。');
   end;
 
   // スタックを中間記法から逆ポーランドに並び替え
@@ -3481,7 +3489,7 @@ begin
   StackPop;
 
   if token = nil then NextBlock(token);
-  if (token = nil)or(token.TokenID <> token_err)or(token.JosiID <> josi_naraba) then raise Exception.Create(ERR_SYNTAX + '『エラー監視～エラーならば～』の書式で指定してください。');
+  if (token = nil)or(token.TokenID <> token_err)or(token.JosiID <> josi_naraba) then raise HException.Create(ERR_SYNTAX + '『エラー監視～エラーならば～』の書式で指定してください。');
 
   //エラートラップ部分を得る
   node.NodeExcept := TSyntaxSentence.Create(node);
@@ -3517,7 +3525,7 @@ var
   n: TSyntaxNode;
   node: TSyntaxWhile;
 begin
-  if FStack.Count = 0 then raise Exception.Create(ERR_SYNTAX+'『(条件)の間～』の書式で指定してください。');
+  if FStack.Count = 0 then raise HException.Create(ERR_SYNTAX+'『(条件)の間～』の書式で指定してください。');
 
   node := TSyntaxWhile.Create(nil);
   node.Jouken := FStack.pop;
@@ -3585,7 +3593,7 @@ begin
   FStack := THStack.Create;
   FPrevToken := nil;
 
-  if FStackStack.Count > MAX_STACK_COUNT then raise Exception.Create(ERR_STACK_OVERFLOW);
+  if FStackStack.Count > MAX_STACK_COUNT then raise HException.Create(ERR_STACK_OVERFLOW);
 end;
 
 procedure THiParser.StackToNode(var cnode: TSyntaxnode);
@@ -3698,7 +3706,7 @@ begin
           // グループか？
           g := HiSystem.Namespace.GetVar(token.TokenID);
           g := hi_getLink(g);
-          if (g = nil) or (g.VType <> varGroup) then raise Exception.CreateFmt(ERR_S_UNDEFINED,[hi_id2tango(token.TokenID)]);
+          if (g = nil) or (g.VType <> varGroup) then raise HException.CreateFmt(ERR_S_UNDEFINED,[hi_id2tango(token.TokenID)]);
           hi_group_create(v);
           hi_group(v).Assign(hi_group(g));
           argByRef := true;
@@ -3721,7 +3729,7 @@ begin
     hi_var_ChangeType(v, vType);
   end;
 
-  if token.TokenID <> token_nami_kakko_end then raise Exception.Create(ERR_NOPAIR_NAMI);
+  if token.TokenID <> token_nami_kakko_end then raise HException.Create(ERR_NOPAIR_NAMI);
   token := token.NextToken; // SKIP '}'
 end;
 
@@ -3762,7 +3770,7 @@ procedure THiParser.getDefArgs(var token: THimaToken; args: THimaArgs);
 
   procedure _def_args;
   var
-    tmp: string;
+    tmp: AnsiString;
   begin
     FPrevToken := token;
     token := token.NextToken; // SKIP '('
@@ -3779,11 +3787,11 @@ procedure THiParser.getDefArgs(var token: THimaToken; args: THimaArgs);
         try
           _read_arg;
         except
-          raise Exception.CreateFmt('関数の引数「%s」にエラーがあります。', [tmp]);
+          raise HException.CreateFmt('関数の引数「%s」にエラーがあります。', [tmp]);
         end;
       end;
     end;
-    if token.TokenID <> token_kakko_end then raise Exception.Create(ERR_NOPAIR_KAKKO);
+    if token.TokenID <> token_kakko_end then raise HException.Create(ERR_NOPAIR_KAKKO);
 
     FPrevToken := token;
     token := token.NextToken; // SKIP ')'
@@ -3832,7 +3840,7 @@ begin
       begin
         if (v.ReadOnly = 1) then
         begin
-          raise Exception.CreateFmt('変数の宣言で「%s」は既に定数として宣言されているので使えません。',[hi_id2tango(v.VarID)]);
+          raise HException.CreateFmt('変数の宣言で「%s」は既に定数として宣言されているので使えません。',[hi_id2tango(v.VarID)]);
         end else
         begin
           hi_var_free(v);
@@ -3862,7 +3870,7 @@ begin
   // 名前を飛ばす
   josiId := token.JosiID;
   token  := token.NextToken;
-  if (token = nil) then raise Exception.CreateFmt(ERR_S_DEF_VAR,[hi_id2tango(v.VarID)]);
+  if (token = nil) then raise HException.CreateFmt(ERR_S_DEF_VAR,[hi_id2tango(v.VarID)]);
   if token.TokenID = token_comma then token := token.NextToken;
 
   // タイプの取得
@@ -3883,7 +3891,7 @@ begin
         // グループか既存の変数か何か
         g := HiSystem.Namespace.GetVar(token.TokenID);
         g := hi_getLink(g);
-        if g = nil then raise Exception.CreateFmt(ERR_S_UNDEFINED,[ hi_id2tango(token.tokenID) ]);
+        if g = nil then raise HException.CreateFmt(ERR_S_UNDEFINED,[ hi_id2tango(token.tokenID) ]);
 
         if g.VType = varGroup then
         begin
@@ -3943,7 +3951,7 @@ begin
   if (token <> nil)and((token.TokenID = token_Eq)or(josiId = josi_wa)) then
   begin
     if token.TokenID = token_eq then token := token.NextToken; // skip "="
-    //if (token = nil)or(token.TokenType <> tokenTango) then raise Exception.CreateFmt(ERR_S_DEF_VAR,[hi_id2tango(v.VarID)]);
+    //if (token = nil)or(token.TokenType <> tokenTango) then raise HException.CreateFmt(ERR_S_DEF_VAR,[hi_id2tango(v.VarID)]);
 
     //--------------------------------------------------------------------------
     // 初期値の取得
@@ -3962,13 +3970,13 @@ begin
     // 初期値に計算を含んでいてもばっちり計算するように！
     StackPush;
     try
-      if ReadOneItem(token) = False then raise Exception.Create('変数宣言で初期値がありません。');
+      if ReadOneItem(token) = False then raise HException.Create('変数宣言で初期値がありません。');
       while (token <> nil) do // どんどん読む
       begin
         if (token.TokenID = token_Semicolon) then Break; // セミコロンなら抜ける
         ReadOneItem(token);
       end;
-      if FStack.Count > 1 then raise Exception.Create('変数宣言で初期化式で値が２つ以上存在します。');
+      if FStack.Count > 1 then raise HException.Create('変数宣言で初期化式で値が２つ以上存在します。');
       n := FStack.Pop;
       // グローバルなら、評価してから。ローカルなら構文を乗せる
       if IsGlobal then
@@ -4003,7 +4011,7 @@ begin
     if token <> nil then
     begin
       fp := HiSystem.Global.GetVar(token.TokenID);
-      if (fp = nil)or(fp.VType <> varFunc) then raise Exception.CreateFmt(ERR_S_DEF_VAR+'セッター『%s』の定義がないか関数ではありません。',[hi_id2tango(v.VarID),hi_id2tango(token.TokenID)]);
+      if (fp = nil)or(fp.VType <> varFunc) then raise HException.CreateFmt(ERR_S_DEF_VAR+'セッター『%s』の定義がないか関数ではありません。',[hi_id2tango(v.VarID),hi_id2tango(token.TokenID)]);
       v.Setter := fp;
       token := token.NextToken; // SKIP FUNC NAME
     end;
@@ -4016,7 +4024,7 @@ begin
     if token <> nil then
     begin
       fp := HiSystem.Global.GetVar(token.TokenID);
-      if (fp = nil)or(fp.VType <> varFunc) then raise Exception.CreateFmt(ERR_S_DEF_VAR+'セッター『%s』の定義がないか関数ではありません。',[hi_id2tango(v.VarID),hi_id2tango(token.TokenID)]);
+      if (fp = nil)or(fp.VType <> varFunc) then raise HException.CreateFmt(ERR_S_DEF_VAR+'セッター『%s』の定義がないか関数ではありません。',[hi_id2tango(v.VarID),hi_id2tango(token.TokenID)]);
       v.Getter := fp;
       token := token.NextToken; // SKIP FUNC NAME
     end;
@@ -4042,13 +4050,13 @@ begin
   begin
     token := token.NextToken; // SKIP '変数宣言'
     HiSystem.FlagVarInit := False; // どちらかのオプションしか使えない
-    if token = nil then raise Exception.Create('『!変数宣言』オプションが不完全です。必要か不要を指定します。');
+    if token = nil then raise HException.Create('『!変数宣言』オプションが不完全です。必要か不要を指定します。');
     case token.TokenID of
       token_hituyou : HiSystem.FlagStrict := True;
       token_huyou   : HiSystem.FlagStrict := False;
       token_system  : HiSystem.FlagSystem := 1;
       token_user    : HiSystem.FlagSystem := 0;
-      else raise Exception.CreateFmt('『!変数宣言』オプションで'+ERR_S_UNDEF_OPTION+'必要か不要を指定します。',[hi_id2tango(token.TokenID)]);
+      else raise HException.CreateFmt('『!変数宣言』オプションで'+ERR_S_UNDEF_OPTION+'必要か不要を指定します。',[hi_id2tango(token.TokenID)]);
     end;
     token := token.NextToken; // SKIP '必要'
   end else
@@ -4057,11 +4065,11 @@ begin
   begin
     token := token.NextToken; // SKIP '変数初期化'
     HiSystem.FlagStrict := False; // どちらかのオプションしか使えない
-    if token = nil then raise Exception.Create('『!変数初期化』オプションが不完全です。必要か不要を指定します。');
+    if token = nil then raise HException.Create('『!変数初期化』オプションが不完全です。必要か不要を指定します。');
     case token.TokenID of
       token_hituyou : HiSystem.FlagVarInit := True;
       token_huyou   : HiSystem.FlagVarInit := False;
-      else raise Exception.CreateFmt('『!変数初期化』オプションで'+ERR_S_UNDEF_OPTION+'必要か不要を指定します。',[hi_id2tango(token.TokenID)]);
+      else raise HException.CreateFmt('『!変数初期化』オプションで'+ERR_S_UNDEF_OPTION+'必要か不要を指定します。',[hi_id2tango(token.TokenID)]);
     end;
     token := token.NextToken; // SKIP '必要'
   end else
@@ -4084,7 +4092,7 @@ begin
                     else ChangeNamespace(token, node);
   end else
   begin
-    raise Exception.CreateFmt(ERR_S_UNDEF_OPTION,[hi_id2tango(token.TokenID)]);
+    raise HException.CreateFmt(ERR_S_UNDEF_OPTION,[hi_id2tango(token.TokenID)]);
   end;
   if token = nil then NextBlock(token);
 
@@ -4119,12 +4127,12 @@ begin
 
   // 条件の取得
   if (token <> nil)and(token.TokenID = token_semiColon) then token := token.NextToken;
-  if token <> nil then raise Exception.Create('『条件分岐』構文は単文で記述できません。');
+  if token <> nil then raise HException.Create('『条件分岐』構文は単文で記述できません。');
   NextBlock(token);
 
   // xで条件分岐     (0)
   //    yならば,xxxx (4)
-  if (token=nil)or(indent >= token.Indent) then raise Exception.Create('『条件分岐』構文ではインデント字下げが必要です。');
+  if (token=nil)or(indent >= token.Indent) then raise HException.Create('『条件分岐』構文ではインデント字下げが必要です。');
 
   // 選択肢
   sIndent := token.Indent;
@@ -4158,10 +4166,10 @@ begin
       }
     end else
     begin
-      if not ReadOneItem(token) then raise Exception.Create('『条件分岐』構文のインデントレベルにあるのに条件が読めませんでした。');
+      if not ReadOneItem(token) then raise HException.Create('『条件分岐』構文のインデントレベルにあるのに条件が読めませんでした。');
       scase := TSyntaxSwitchCase.Create;
       scase.Jouken := FStack.Pop;
-      if (scase.Jouken.JosiId <> josi_naraba) then raise Exception.Create('『(条件式)で条件分岐。(条件)ならば...』の書式で指定してください。');
+      if (scase.Jouken.JosiId <> josi_naraba) then raise HException.Create('『(条件式)で条件分岐。(条件)ならば...』の書式で指定してください。');
       scase.Action.DebugInfo := scase.Jouken.DebugInfo;
       n := scase.Action.Children;
       {
@@ -4237,7 +4245,7 @@ begin
 
   if token.TokenID <> token_mark_function then Exit;
   token := token.NextToken; // skip '*'
-  if token = nil then raise Exception.CreateFmt(ERR_S_UNDEFINED,['*']);
+  if token = nil then raise HException.CreateFmt(ERR_S_UNDEFINED,['*']);
 
   //---
   // 関数名
@@ -4246,7 +4254,7 @@ begin
   // グループ関数か純粋な関数か判別?
   funcNameID := token.TokenID;
   fp := HiSystem.Namespace.GetVar(funcNameID);
-  if (fp = nil) then raise Exception.CreateFmt(ERR_S_DEF_FUNC,[hi_id2tango(funcNameID)]);
+  if (fp = nil) then raise HException.CreateFmt(ERR_S_DEF_FUNC,[hi_id2tango(funcNameID)]);
 
   //---------------------------
   // 普通の関数の場合
@@ -4320,16 +4328,16 @@ begin
     token := token.NextToken;
     while token <> nil do
     begin
-      if fp.VType <> varGroup then raise Exception.Create('グループ付関数の定義に失敗。');
+      if fp.VType <> varGroup then raise HException.Create('グループ付関数の定義に失敗。');
       group := fp;
       fp := hi_group(fp).FindMember(token.TokenID);
-      if (fp = nil) then raise Exception.Create('グループ付関数の定義に失敗');
+      if (fp = nil) then raise HException.Create('グループ付関数の定義に失敗');
       if fp.VType = varFunc then Break;
       funcNameID := token.TokenID;
       //
       token := token.NextToken;
     end;
-    if (group = nil)or(fp = nil)or(fp.VType <> varFunc) then raise Exception.Create('グループ付関数の定義に失敗。');
+    if (group = nil)or(fp = nil)or(fp.VType <> varFunc) then raise HException.Create('グループ付関数の定義に失敗。');
 
     // 関数名をスキップ
     token := token.NextToken; // skip FUNC_NAME
@@ -4392,7 +4400,7 @@ end;
 
 procedure THiParser.setPriority(n: TSyntaxNode);
 begin
-  if n = nil then raise Exception.Create('nil');
+  if n = nil then raise HException.Create('nil');
   if n.ClassType = TSyntaxEnzansi then
   begin
     with TSyntaxEnzansi(n) do begin
@@ -4420,7 +4428,7 @@ begin
       token_mod:    Priority := 50;
       //累乗
       token_power:  Priority := 60;
-      else raise Exception.CreateFmt(ERR_S_SOURCE_DUST,[hi_id2tango(ID)]);
+      else raise HException.CreateFmt(ERR_S_SOURCE_DUST,[hi_id2tango(ID)]);
       end;
     end;
   end else
@@ -4445,11 +4453,11 @@ begin
   //----------------------------------------------------------------------------
   // with VAR の Var がグループかどうか調べる
   pv := n.GetValueNoGetter(False);
-  if pv = nil then raise Exception.Create('「●●について」構文では静的なグループを指定する必要があります。');
+  if pv = nil then raise HException.Create('「●●について」構文では静的なグループを指定する必要があります。');
   if (pv.VType = varLink) then pv := hi_getLink(pv);
   if (pv.VType <> varGroup) then
   begin
-    raise Exception.Create('『'+hi_id2tango(pv.VarID) + '』はグループではありません。「●●について」構文では静的なグループを指定する必要があります。');
+    raise HException.Create('『'+hi_id2tango(pv.VarID) + '』はグループではありません。「●●について」構文では静的なグループを指定する必要があります。');
   end;
 
   //----------------------------------------------------------------------------
@@ -4475,10 +4483,10 @@ end;
 
 function THiParser.ReadInclude(var token: THimaToken; node: TSyntaxNode): Boolean;
 var
-  fname: AnsiString;
+  fname: string;
   res: PHiValue;
 begin
-  fname := token.GetConstStr; // <-- FNAME
+  fname := string(token.GetConstStr); // <-- FNAME
   token := token.NextToken;   //
   token := token.NextToken;   // <-- '取り込む'
   //
@@ -4500,7 +4508,7 @@ var
     while p <> nil do
     begin
       // this ptr
-      s := Format('%0.3d(%2d)',[p.DebugInfo.LineNo, p.FSyntaxLevel]);
+      s := AnsiString(Format('%0.3d(%2d)',[p.DebugInfo.LineNo, p.FSyntaxLevel]));
       for i := 0 to p.FSyntaxLevel - 1 do s := s + '  ';
       s := s + p.DebugStr + #13#10;
 
@@ -4656,7 +4664,7 @@ begin
   if token.TokenID = token_mark_sankaku then
   begin
     TokenNextToken(token);
-    if token = nil then raise Exception.CreateFmt(ERR_S_SYNTAX,['▲']);
+    if token = nil then raise HException.CreateFmt(ERR_S_SYNTAX,['▲']);
   end;
   // get name
   jump_name := token.TokenID;
@@ -4789,7 +4797,7 @@ end;
 
 function TSyntaxConst.outLuaProgram: AnsiString;
 begin
-  raise Exception.Create('TSyntaxConst.outLuaProgram');
+  raise HException.Create('TSyntaxConst.outLuaProgram');
 end;
 
 function TSyntaxConst.outNadesikoProgram: AnsiString;
@@ -4804,7 +4812,7 @@ begin
       Result := '『' + hi_str(constValue) + '』';
     end;
   else
-    raise Exception.Create('グループ定数を定義できません。');
+    raise HException.Create('グループ定数を定義できません。');
   end;
 end;
 
@@ -4928,7 +4936,7 @@ begin
         Result := HiSystem.GroupScope.FindMember(VarID);
         if Result = nil then Result := FGroupScope.FindMember(VarID);
       end;
-    else raise Exception.CreateFmt(ERR_S_RUN_VALUE,[hi_id2tango(VarID)]);
+    else raise HException.CreateFmt(ERR_S_RUN_VALUE,[hi_id2tango(VarID)]);
   end;
 
   pe := Element.NextElement;
@@ -4986,14 +4994,14 @@ begin
           //--- 関数の場合がある
           if pe.Stack <> nil then
           begin
-            if Result.VType <> varFunc then raise Exception.Create('『'+hi_id2tango(pe.groupMember)+'』は関数ではないのに引数があります。');
+            if Result.VType <> varFunc then raise HException.Create('『'+hi_id2tango(pe.groupMember)+'』は関数ではないのに引数があります。');
             Result := HiSystem.RunGroupMethod(group, Result, pe.Stack);
           end;
           //---
           pe := pe.NextElement;
         end;
       else
-        raise Exception.Create('リンク切れ');
+        raise HException.Create('リンク切れ');
     end;
 
     {
@@ -5025,7 +5033,7 @@ begin
         FGroupScope := HiSystem.GroupScope.TopItem;
         Result := Result + '["' + hi_id2tango(VarID) + '"]';
       end;
-    else raise Exception.CreateFmt(ERR_S_RUN_VALUE,[hi_id2tango(VarID)]);
+    else raise HException.CreateFmt(ERR_S_RUN_VALUE,[hi_id2tango(VarID)]);
   end;
 
   pe := Element.NextElement;
@@ -5038,21 +5046,21 @@ begin
     case pe.LinkType of
       svLinkArray:
         begin
-          Result := Result + '[' + Trim(pe.aryIndex.outNadesikoProgram) + ']';
+          Result := Result + '[' + TrimA(pe.aryIndex.outNadesikoProgram) + ']';
           pe := pe.NextElement;
         end;
       svLinkHash:
         begin
-          Result := Result + '[' + Trim(pe.aryIndex.outNadesikoProgram) + ']';
+          Result := Result + '[' + TrimA(pe.aryIndex.outNadesikoProgram) + ']';
           pe := pe.NextElement;
         end;
       svLinkGroup:
         begin
-          Result := Result + '[' + Trim(hi_id2tango(pe.groupMember)) + ']';
+          Result := Result + '[' + TrimA(hi_id2tango(pe.groupMember)) + ']';
           pe := pe.NextElement;
         end;
       else
-        raise Exception.Create('リンク切れ');
+        raise HException.Create('リンク切れ');
     end;
   end;
   //----------------------------------------------------------------------------
@@ -5075,7 +5083,7 @@ begin
         FGroupScope := HiSystem.GroupScope.TopItem;
         Result := Result + hi_id2tango(VarID);
       end;
-    else raise Exception.CreateFmt(ERR_S_RUN_VALUE,[hi_id2tango(VarID)]);
+    else raise HException.CreateFmt(ERR_S_RUN_VALUE,[hi_id2tango(VarID)]);
   end;
 
   pe := Element.NextElement;
@@ -5088,21 +5096,21 @@ begin
     case pe.LinkType of
       svLinkArray:
         begin
-          Result := Result + '[' + Trim(pe.aryIndex.outNadesikoProgram) + ']';
+          Result := Result + '[' + TrimA(pe.aryIndex.outNadesikoProgram) + ']';
           pe := pe.NextElement;
         end;
       svLinkHash:
         begin
-          Result := Result + '@' + Trim(pe.aryIndex.outNadesikoProgram);
+          Result := Result + '@' + TrimA(pe.aryIndex.outNadesikoProgram);
           pe := pe.NextElement;
         end;
       svLinkGroup:
         begin
-          Result := Result + '→' + Trim(hi_id2tango(pe.groupMember));
+          Result := Result + '→' + TrimA(hi_id2tango(pe.groupMember));
           pe := pe.NextElement;
         end;
       else
-        raise Exception.Create('リンク切れ');
+        raise HException.Create('リンク切れ');
     end;
   end;
   //----------------------------------------------------------------------------
@@ -5147,7 +5155,7 @@ begin
   begin
     if node.ClassType = TSyntaxEnzansi then
     begin
-      if sp <= 1 then raise Exception.Create(ERR_RUN_CALC);
+      if sp <= 1 then raise HException.Create(ERR_RUN_CALC);
       vb := stack[sp-1]; Dec(sp); if vb = nil then vb := hi_var_new;
       va := stack[sp-1]; Dec(sp); if va = nil then va := hi_var_new;
       //todo 4: 計算式
@@ -5175,7 +5183,7 @@ begin
       except
         on e:Exception do
         begin
-          raise Exception.CreateFmt('計算の失敗(%s)『%s』(%s):%s',
+          raise HException.CreateFmt('計算の失敗(%s)『%s』(%s):%s',
             [
               Copy(hi_str(va),1,10),
               hi_id2tango(TSyntaxEnzansi(node).ID),
@@ -5189,7 +5197,7 @@ begin
       Inc(sp);
       if Length(stack) <= sp then
       begin
-        raise Exception.Create('計算が複雑すぎます。式を分割してください。');
+        raise HException.Create('計算が複雑すぎます。式を分割してください。');
       end;
       if va.Registered = 0 then hi_var_free(va);
       if vb.Registered = 0 then hi_var_free(vb);
@@ -5207,7 +5215,7 @@ begin
   end;
 
   // スタックの余剰チェック
-  if sp <> 1 then raise Exception.Create(ERR_RUN_CALC);
+  if sp <> 1 then raise HException.Create(ERR_RUN_CALC);
 
   // 答えをメモリ
   hi_var_copy(stack[0], NodeResult);
@@ -5226,7 +5234,7 @@ var
   node: TSyntaxNode;
   va, vb: AnsiString;
   // stack用変数
-  stack: array [0..255] of string;
+  stack: array [0..255] of AnsiString;
   sp: Integer;
 begin
   Result := '';
@@ -5238,7 +5246,7 @@ begin
   begin
     if node.ClassType = TSyntaxEnzansi then
     begin
-      if sp <= 1 then raise Exception.Create(ERR_RUN_CALC);
+      if sp <= 1 then raise HException.Create(ERR_RUN_CALC);
       vb := stack[sp-1]; Dec(sp);
       va := stack[sp-1]; Dec(sp);
       case TSyntaxEnzansi(node).ID of
@@ -5270,8 +5278,8 @@ begin
   end;
 
   // スタックの余剰チェック
-  if sp <> 1 then raise Exception.Create(ERR_RUN_CALC);
-  Result := '(' + Trim(stack[0]) + ')';
+  if sp <> 1 then raise HException.Create(ERR_RUN_CALC);
+  Result := '(' + TrimA(stack[0]) + ')';
 end;
 
 function TSyntaxCalc.outNadesikoProgram: AnsiString;
@@ -5279,7 +5287,7 @@ var
   node: TSyntaxNode;
   va, vb: AnsiString;
   // stack用変数
-  stack: array [0..255] of string;
+  stack: array [0..255] of AnsiString;
   sp: Integer;
 begin
   Result := '';
@@ -5293,7 +5301,7 @@ begin
   begin
     if node.ClassType = TSyntaxEnzansi then
     begin
-      if sp <= 1 then raise Exception.Create(ERR_RUN_CALC);
+      if sp <= 1 then raise HException.Create(ERR_RUN_CALC);
       vb := stack[sp-1]; Dec(sp);
       va := stack[sp-1]; Dec(sp);
       case TSyntaxEnzansi(node).ID of
@@ -5325,8 +5333,8 @@ begin
   end;
 
   // スタックの余剰チェック
-  if sp <> 1 then raise Exception.Create(ERR_RUN_CALC);
-  Result := '(' + Trim(stack[0]) + ')';
+  if sp <> 1 then raise HException.Create(ERR_RUN_CALC);
+  Result := '(' + TrimA(stack[0]) + ')';
 end;
 
 { TSyntaxSentence }
@@ -5433,7 +5441,7 @@ var
         Result := TSyntaxValue(n).GetValueNoGetter(False);
       end else
       begin
-        raise Exception.Create('関数の引数の型が違います。');
+        raise HException.Create('関数の引数の型が違います。');
       end;
     end else
     begin
@@ -5576,22 +5584,22 @@ begin
       'I': res64 := TDllfuncInt64(func);
       'P': // ポインタ型
       begin
-        if HiFunc.DllRetType = 'PAnsiChar' then
+        if (HiFunc.DllRetType = 'PChar')or(HiFunc.DllRetType = 'PAnsiChar') then
         begin
-          resStr := string( TDllfuncPtr(func) );
+          resStr := AnsiChar( TDllfuncPtr(func) );
         end else
         begin
           resPtr := TDllfuncPtr(func);
           res := Integer(resPtr);
         end;
       end;
-      else raise Exception.Create('DLL関数の戻り値が未定義なので呼び出しませんでした。');
+      else raise HException.Create('DLL関数の戻り値が未定義なので呼び出しませんでした。');
     end;
 
     // 関数の結果を代入
     if not (HiFunc.DllRetType[1] = 'V') then begin
       Result := hi_var_new;
-      if HiFunc.DllRetType = 'PAnsiChar' then hi_setStr(Result, resStr)
+      if HiFunc.DllRetType = 'PChar' then hi_setStr(Result, resStr)
                                      else
       begin
         case HiFunc.DllRetType[1] of
@@ -5609,8 +5617,10 @@ begin
       Result := nil;//VOIDの時は値を返さない
     HiFunc.DllArg.RestoreBuffer;
   except on e: Exception do
-    raise EHimaRuntime.Create(DebugInfo, ERR_S_DLL_FUNCTION_EXEC + e.Message,
-      [hi_id2tango(FuncID)]);
+    raise EHimaRuntime.Create(
+      DebugInfo,
+      ERR_S_DLL_FUNCTION_EXEC + AnsiString(e.Message),
+      [(hi_id2tango(FuncID))]);
   end;
   //}
 
@@ -5728,7 +5738,7 @@ var
 
   procedure _getGroupValue;
   begin
-    if not (n is TSyntaxValue) then raise Exception.Create('指定された引数の型と合わない型が指定されてます。');
+    if not (n is TSyntaxValue) then raise HException.Create('指定された引数の型と合わない型が指定されてます。');
     // グループを取得
     tmp := TSyntaxValue(n).GetValueNoGetter(False);
     v   := makeArgVar(tmp, True);
@@ -5827,7 +5837,7 @@ begin
       end;
     end;
   except on e: Exception do
-    raise Exception.CreateFmt(ERR_S_FUNCTION_EXEC + e.Message ,[hi_id2tango(FuncID)]);
+    raise HException.CreateFmt(ERR_S_FUNCTION_EXEC + e.Message ,[hi_id2tango(FuncID)]);
   end;
   //---------------------
   // 戻り値の処理
@@ -5881,7 +5891,7 @@ end;
 
 function TSyntaxFunction.outLuaProgram: AnsiString;
 begin
-  raise Exception.Create('TSyntaxFunction.outLuaProgram');
+  raise HException.Create('TSyntaxFunction.outLuaProgram');
 end;
 
 function TSyntaxFunction.outNadesikoProgram: AnsiString;
@@ -5906,7 +5916,7 @@ begin
     sfLinkGroupMember:
       begin
         //p := Link.LinkValue.GetValueNoGetter;
-        f := Trim(HiSystem.DebugProgram(Link.LinkValue));
+        f := TrimA(HiSystem.DebugProgram(Link.LinkValue));
       end;
     sfLinkVirtuaLink:
       begin
@@ -5914,7 +5924,7 @@ begin
       end;
     end;
   except on e: Exception do
-    raise Exception.CreateFmt(ERR_S_FUNCTION_EXEC + '理由は,' + e.Message ,[hi_id2tango(FuncID)]);
+    raise HException.CreateFmt(ERR_S_FUNCTION_EXEC + '理由は,' + e.Message ,[hi_id2tango(FuncID)]);
   end;
 
   if Stack.Count > 0 then
@@ -5924,7 +5934,7 @@ begin
       o := Stack.Items[i];
       if o <> nil then
       begin
-        Result := Result + Trim(Hisystem.DebugProgram( o ));
+        Result := Result + TrimA(Hisystem.DebugProgram( o ));
         Result := Result + HiSystem.JosiList.ID2Str(o.JosiId);
         Result := Result + ',';
       end;
@@ -6039,7 +6049,7 @@ var
     fn := f.PFunc;               // 実行先ノード
 
     // 引数のチェック
-    if f.Args.Count <> 1 then raise Exception.CreateFmt(ERR_S_DEF_VAR+'セッターの引数は１つにしてください。',[hi_id2tango(Self.VarID)]);
+    if f.Args.Count <> 1 then raise HException.CreateFmt(ERR_S_DEF_VAR+'セッターの引数は１つにしてください。',[hi_id2tango(Self.VarID)]);
 
     // グループ内実行？
     if VarNode.GroupScope <> nil then
@@ -6110,7 +6120,7 @@ begin
 
   // 何に代入するか？
   pName   := VarNode.GetValueNoGetter(True);
-  if pName = nil then raise Exception.Create('代入文で左辺が取得できません。');
+  if pName = nil then raise HException.Create('代入文で左辺が取得できません。');
   if pName.VType = varLink then // リンクなら展開する
   begin
     pName := hi_getLink(pName);
@@ -6141,13 +6151,13 @@ begin
     if pValue = nil then pValue := hi_var_new; // なぜか nil が戻ってきたとき
     if pName  = nil then
     begin
-      raise Exception.Create('代入処理で左辺がnilです。');
+      raise HException.Create('代入処理で左辺がnilです。');
     end;
     // 安全性を考慮
     // グループにグループ以外のモノを代入しようとした
     if(pName.VType = varGroup)and(pValue.VType <> varGroup)then
     begin
-      raise Exception.Create('グループにグループ以外の値を代入しようとしました。');
+      raise HException.Create('グループにグループ以外の値を代入しようとしました。');
     end;
 
     //-----------------------------------
@@ -6219,7 +6229,7 @@ begin
   if Self.IsEvent then
   begin
     // 何に代入するのか先に得る
-    Result := SyntaxTab(Self.SyntaxLevel) + Trim(VarNode.outNadesikoProgram) + '= function()'#13#10;
+    Result := SyntaxTab(Self.SyntaxLevel) + TrimA(VarNode.outNadesikoProgram) + '= function()'#13#10;
     // 実行すべきソースを構文木に変換
     _parseSN;
     Result := Result + 'end'#13#10;
@@ -6227,8 +6237,8 @@ begin
   end;
 
   // 何に代入するか？
-  Result := SyntaxTab(SyntaxLevel) + Trim(VarNode.outLuaProgram);
-  Result := Result + ' = ' + Trim(HiSystem.DebugProgram( Children, langLua)) + #13#10;
+  Result := SyntaxTab(SyntaxLevel) + TrimA(VarNode.outLuaProgram);
+  Result := Result + ' = ' + TrimA(HiSystem.DebugProgram( Children, langLua)) + #13#10;
 end;
 
 function TSyntaxLet.outNadesikoProgram: AnsiString;
@@ -6272,15 +6282,15 @@ begin
   if Self.IsEvent then
   begin
     // 何に代入するのか先に得る
-    Result := SyntaxTab(Self.SyntaxLevel) + Trim(VarNode.outNadesikoProgram) + 'は～'#13#10;
+    Result := SyntaxTab(Self.SyntaxLevel) + TrimA(VarNode.outNadesikoProgram) + 'は～'#13#10;
     // 実行すべきソースを構文木に変換
     _parseSN;
     Exit;
   end;
 
   // 何に代入するか？
-  Result := SyntaxTab(SyntaxLevel) + Trim(VarNode.outNadesikoProgram);
-  Result := Result + ' = ' + Trim(HiSystem.DebugProgram( Children )) + #13#10;
+  Result := SyntaxTab(SyntaxLevel) + TrimA(VarNode.outNadesikoProgram);
+  Result := Result + ' = ' + TrimA(HiSystem.DebugProgram( Children )) + #13#10;
 end;
 
 procedure TSyntaxLet.SetSyntaxLevel(const Value: Integer);
@@ -6370,14 +6380,14 @@ end;
 function TSyntaxWhile.outLuaProgram: AnsiString;
 begin
   Result := SyntaxTab(SyntaxLevel) +
-    'while(' + Trim(HiSystem.DebugProgram(jouken, langLua)) + ')do'#13#10 +
+    'while(' + TrimA(HiSystem.DebugProgram(jouken, langLua)) + ')do'#13#10 +
     HiSystem.DebugProgram(Children,langLua) + #13#10 +
     'end'#13#10;
 end;
 
 function TSyntaxWhile.outNadesikoProgram: AnsiString;
 begin
-  Result := SyntaxTab(SyntaxLevel) + Trim(HiSystem.DebugProgram(jouken)) + 'の間'#13#10;
+  Result := SyntaxTab(SyntaxLevel) + TrimA(HiSystem.DebugProgram(jouken)) + 'の間'#13#10;
   Result := Result + HiSystem.DebugProgram(Children);
 end;
 
@@ -6439,13 +6449,13 @@ begin
     cond_str := '!';
   end;
   Result := SyntaxTab(SyntaxLevel) +
-    'if '+cond_str+'(' + Trim(HiSystem.DebugProgram( Jouken, langLua )) + ')then'#13#10;
+    'if '+cond_str+'(' + TrimA(HiSystem.DebugProgram( Jouken, langLua )) + ')then'#13#10;
   // --
-  Result := Result + SyntaxTab(SyntaxLevel+1) + Trim(HiSystem.DebugProgram(TrueNode,langLua)) + #13#10;
+  Result := Result + SyntaxTab(SyntaxLevel+1) + TrimA(HiSystem.DebugProgram(TrueNode,langLua)) + #13#10;
   if FalseNode <> nil then
   begin
     Result := Result + SyntaxTab(SyntaxLevel) + 'else'#13#10;
-    Result := Result + SyntaxTab(SyntaxLevel+1) +Trim(HiSystem.DebugProgram(FalseNode,langLua)) + #13#10;
+    Result := Result + SyntaxTab(SyntaxLevel+1) +TrimA(HiSystem.DebugProgram(FalseNode,langLua)) + #13#10;
   end;
   Result := Result + 'end'#13#10;
 end;
@@ -6453,15 +6463,15 @@ end;
 function TSyntaxIf.outNadesikoProgram: AnsiString;
 begin
   Result := SyntaxTab(SyntaxLevel);
-  Result := Result + 'もし,' + Trim(HiSystem.DebugProgram( Jouken ));
+  Result := Result + 'もし,' + TrimA(HiSystem.DebugProgram( Jouken ));
   if Reverse then Result := Result + 'でなければ' else Result := Result + 'ならば';
   Result := Result + #13#10;
   // --
-  Result := Result + SyntaxTab(SyntaxLevel+1) + Trim(HiSystem.DebugProgram(TrueNode)) + #13#10;
+  Result := Result + SyntaxTab(SyntaxLevel+1) + TrimA(HiSystem.DebugProgram(TrueNode)) + #13#10;
   if FalseNode <> nil then
   begin
     Result := Result + SyntaxTab(SyntaxLevel) + '違えば'#13#10;
-    Result := Result + SyntaxTab(SyntaxLevel+1) +Trim(HiSystem.DebugProgram(FalseNode)) + #13#10;
+    Result := Result + SyntaxTab(SyntaxLevel+1) +TrimA(HiSystem.DebugProgram(FalseNode)) + #13#10;
   end;
 end;
 
@@ -6540,7 +6550,7 @@ begin
     except
       on e:Exception do
       begin
-        raise Exception.CreateFmt('%d回目の実行中',[i]);
+        raise HException.CreateFmt('%d回目の実行中',[i]);
       end;  
     end;
     if HiSystem.BreakType = btContinue then
@@ -6576,7 +6586,7 @@ begin
   Result := SyntaxTab(SyntaxLevel) +
     'do'#13#10+
       'local _loop'#13#10+
-      'for _loop=1,('+Trim(HiSystem.DebugProgram(kaisu)) + ')do'#13#10+
+      'for _loop=1,('+TrimA(HiSystem.DebugProgram(kaisu)) + ')do'#13#10+
       HiSystem.DebugProgram(Children, langLua) + #13#10 +
       'end'#13#10+
     'end'#13#10;
@@ -6584,7 +6594,7 @@ end;
 
 function TSyntaxLoop.outNadesikoProgram: AnsiString;
 begin
-  Result := SyntaxTab(SyntaxLevel) + Trim(HiSystem.DebugProgram(kaisu)) + '回'#13#10;
+  Result := SyntaxTab(SyntaxLevel) + TrimA(HiSystem.DebugProgram(kaisu)) + '回'#13#10;
   Result := Result + HiSystem.DebugProgram(Children);
 end;
 
@@ -6802,17 +6812,17 @@ begin
   Result := SyntaxTab(SyntaxLevel) +
     'do'#13#10+
     'local i'#13#10+
-    'for i=('+ Trim(HiSystem.DebugProgram(VarFrom,langLua))+'),'+
-    '('+Trim(HiSystem.DebugProgram(VarTo))+')do'#13#10+
-    'l["'+Trim(HiSystem.DebugProgram(VarLoop))+'"]=l'#13#10+
+    'for i=('+ TrimA(HiSystem.DebugProgram(VarFrom,langLua))+'),'+
+    '('+TrimA(HiSystem.DebugProgram(VarTo))+')do'#13#10+
+    'l["'+TrimA(HiSystem.DebugProgram(VarLoop))+'"]=l'#13#10+
     HiSystem.DebugProgram(Children,langLua)+#13#10+
     'end'#13#10;
 end;
 
 function TSyntaxFor.outNadesikoProgram: AnsiString;
 begin
-  Result := SyntaxTab(SyntaxLevel) + Trim(HiSystem.DebugProgram(VarLoop)) + 'で' + Trim(HiSystem.DebugProgram(VarFrom)) + 'から';
-  Result := Result + Trim(HiSystem.DebugProgram(VarTo)) + 'まで繰り返し'#13#10;
+  Result := SyntaxTab(SyntaxLevel) + TrimA(HiSystem.DebugProgram(VarLoop)) + 'で' + TrimA(HiSystem.DebugProgram(VarFrom)) + 'から';
+  Result := Result + TrimA(HiSystem.DebugProgram(VarTo)) + 'まで繰り返し'#13#10;
   Result := Result + HiSystem.DebugProgram(Children);
 end;
 
@@ -7168,7 +7178,7 @@ begin
         if Copy(str,1,11) = '@@@毎行読::' then // 例外的なファイルストリーム
         begin
           getToken_s(str, '::');
-          tkFile := TKTextFileE.Create(Trim(str), fmOpenRead);
+          tkFile := TKTextFileE.Create(TrimA(str), fmOpenRead);
           if not(tkFile is TKTextFileE) then str := '';
           mode := 2;
         end;
@@ -7223,7 +7233,7 @@ function TSyntaxEach.outLuaProgram: AnsiString;
 begin
   Result := SyntaxTab(SyntaxLevel) +
     'do'#13#10+
-      'for _key,_val in pair(' + Trim(HiSystem.DebugProgram(jouken,langLua)) + ') do'#13#10+
+      'for _key,_val in pair(' + TrimA(HiSystem.DebugProgram(jouken,langLua)) + ') do'#13#10+
         HiSystem.DebugProgram(Children,langLua)+#13#10+
       'end'#13#10+
     'end'#13#10;
@@ -7231,7 +7241,7 @@ end;
 
 function TSyntaxEach.outNadesikoProgram: AnsiString;
 begin
-  Result := SyntaxTab(SyntaxLevel) + Trim(HiSystem.DebugProgram(jouken)) + 'を反復'#13#10;
+  Result := SyntaxTab(SyntaxLevel) + TrimA(HiSystem.DebugProgram(jouken)) + 'を反復'#13#10;
   Result := Result + HiSystem.DebugProgram(Children);
 end;
 
@@ -7387,12 +7397,12 @@ begin
   Result := '';
   Result := SyntaxTab(SyntaxLevel) + '-- switch'#13#10;
   Result := SyntaxTab(SyntaxLevel) + 'do'#13#10 +
-    'local _case = ' + Trim( HiSystem.DebugProgram(jouken,langLua) ) + #13#10 +
+    'local _case = ' + TrimA( HiSystem.DebugProgram(jouken,langLua) ) + #13#10 +
     'if false then'#13#10;
   for i := 0 to CaseNodes.Count - 1 do
   begin
     c := CaseNodes.Items[i];
-    Result := Result + 'elsif(_case=='+Trim( HiSystem.DebugProgram(c.Jouken) )+')then'#13#10+
+    Result := Result + 'elsif(_case=='+TrimA( HiSystem.DebugProgram(c.Jouken) )+')then'#13#10+
       HiSystem.DebugProgram(c.Action) + #13#10;
   end;
   if ElseNode <> nil then
@@ -7409,11 +7419,11 @@ var
   i: Integer;
   c: TSyntaxSwitchCase;
 begin
-  Result := SyntaxTab(SyntaxLevel) + Trim( HiSystem.DebugProgram(jouken) ) + 'で条件分岐'#13#10;
+  Result := SyntaxTab(SyntaxLevel) + TrimA( HiSystem.DebugProgram(jouken) ) + 'で条件分岐'#13#10;
   for i := 0 to CaseNodes.Count - 1 do
   begin
     c := CaseNodes.Items[i];
-    Result := Result + SyntaxTab(SyntaxLevel+1) +  Trim( HiSystem.DebugProgram(c.Jouken) ) + 'ならば'#13#10;
+    Result := Result + SyntaxTab(SyntaxLevel+1) +  TrimA( HiSystem.DebugProgram(c.Jouken) ) + 'ならば'#13#10;
     Result := Result + HiSystem.DebugProgram(c.Action);
   end;
   if ElseNode <> nil then
@@ -7490,7 +7500,7 @@ begin
   // --- With Var の Var を取得
   n := WithVar.GetValueNoGetter(False);
   n := hi_getLink(n);
-  if n.VType <> varGroup then raise Exception.Create('『●について』構文にはグループ名を指定してください。');
+  if n.VType <> varGroup then raise HException.Create('『●について』構文にはグループ名を指定してください。');
   // ---
   HiSystem.GroupScope.PushGroupScope(hi_group(n));
   try
@@ -7502,7 +7512,7 @@ end;
 
 function TSyntaxWith.outNadesikoProgram: AnsiString;
 begin
-  Result := SyntaxTab(FSyntaxLevel) + Trim(HiSystem.DebugProgram(WithVar)) + 'について'#13#10;
+  Result := SyntaxTab(FSyntaxLevel) + TrimA(HiSystem.DebugProgram(WithVar)) + 'について'#13#10;
   Result := Result + HiSystem.DebugProgram(Children);
 end;
 
@@ -7511,9 +7521,9 @@ end;
 function TSyntaxNamespace.DebugStr: AnsiString;
 begin
   if scopeID >= 0 then
-    Result := '(ネームスペース変更)' + HimaFileList.Strings[scopeID]
+    Result := '(ネームスペース変更)' + AnsiString(HimaFileList.Strings[scopeID])
   else
-    Result := '(ネームスペース変更)' + IntToStr(scopeID);
+    Result := '(ネームスペース変更)' + IntToStrA(scopeID);
 end;
 
 function TSyntaxNamespace.getValue: PHiValue;
@@ -7530,7 +7540,13 @@ end;
 function TSyntaxNamespace.outNadesikoProgram: AnsiString;
 begin
   if scopeID >= 0 then
-    Result := '『'+ChangeFileExt(HimaFileList.Strings[scopeID],'')+ '』にネームスペース変更。'#13#10
+    Result :=
+      '『' +
+      AnsiString(ChangeFileExt(
+        string(HimaFileList.Strings[scopeID]),
+        ''
+      )) +
+      '』にネームスペース変更。'#13#10
   else
     Result := '『システム』にネームスペース変更。'#13#10;
 end;

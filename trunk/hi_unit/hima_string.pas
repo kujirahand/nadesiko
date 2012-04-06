@@ -531,7 +531,7 @@ begin
     end;
 
     // Œ‹‰Ê
-    if nch = '' then nch := Chr(code);
+    if nch = '' then nch := AnsiString(Chr(code));
   end else
   begin
     // ”¼ŠpƒJƒi‚ð‘SŠp‚É

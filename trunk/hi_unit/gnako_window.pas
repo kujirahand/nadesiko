@@ -15,7 +15,7 @@ type
     Msg: DWORD;
     NotifyCode: Integer;
     GuiID: Integer;
-    EventName: string;
+    EventName: AnsiString;
   end;
 
   TWinEventList = class(THObjectList)
@@ -35,7 +35,7 @@ type
     FBackBmp: THBitmap;
     FCanvas : THCanvas;
     FRect   : TRect;
-    function GetCaption: string;
+    function GetCaption: AnsiString;
     procedure SetCanvas(const Value: THCanvas);
   public
     constructor Create(Handle: HWND);
@@ -45,7 +45,7 @@ type
     function GetRect: TRect;
     property WindowHandle: HWND read hWindow;
     property Canvas: THCanvas read FCanvas write SetCanvas;
-    property Caption: string read GetCaption;
+    property Caption: AnsiString read GetCaption;
   end;
 
 var
@@ -80,7 +80,7 @@ var
 
 procedure Nadesiko_Load;
 var
-  err: string;
+  err: AnsiString;
   res, len: Integer;
   
   procedure errLoad;
@@ -96,10 +96,10 @@ var
 
   function _checkArg: Integer;
   var
-    fname  : string;
+    fname  : AnsiString;
     i      : Integer;
-    s      : string;
-    params : string;
+    s      : AnsiString;
+    params : AnsiString;
     p      : PHiValue;
   begin
     i := 1;
@@ -130,15 +130,15 @@ var
     //----------------------------------
     // command
     p := nako_getVariable('コマンドライン');
-    nako_str2var(PChar(params), p);
+    nako_str2var(PAnsiChar(params), p);
     // bokan
     p := nako_getVariable('母艦パス');
     if p = nil then p := nako_var_new('母艦パス');
     s := ExtractFilePath(fname);
     if s = '' then s := AppPath;
-    nako_str2var(PChar(s), p);
+    nako_str2var(PAnsiChar(s), p);
     // load
-    Result := nako_load(PChar(fname));
+    Result := nako_load(PAnsiChar(fname));
   end;
 
 begin
@@ -184,8 +184,8 @@ begin
     // プログラムの実行に失敗したとき
     len := nako_getError(nil, 0);
     SetLength(err, len);
-    nako_getError(PChar(err), len);
-    MessageBox(hMainWindow, PChar(err), '文法エラー', MB_OK or MB_ICONERROR);
+    nako_getError(PAnsiChar(err), len);
+    MessageBoxA(hMainWindow, PAnsiChar(err), '文法エラー', MB_OK or MB_ICONERROR);
     Exit;
   end;
 
@@ -194,14 +194,14 @@ end;
 
 procedure Nadesiko_exec;
 var
-  str: string; len: Integer;
+  str: AnsiString; len: Integer;
 begin
 
   if nako_NG = nako_run then
   begin
     len := nako_getError(nil, 0); SetLength(str, len+1);
-    nako_getError(PChar(str), len);
-    MessageBox(hMainWindow, PChar(str), '文法エラー', MB_OK or MB_ICONERROR);
+    nako_getError(PAnsiChar(str), len);
+    MessageBoxA(hMainWindow, PAnsiChar(str), '文法エラー', MB_OK or MB_ICONERROR);
     Exit;
   end;
 
@@ -213,12 +213,12 @@ end;
 
 procedure MainDestroy(hWindow: HWND);
 var
-  s: string;
+  s: AnsiString;
 begin
   if debugmode then
   begin
     s := ExtractFilePath(ParamStr(0)) + 'report.txt';
-    nako_makeReport(PChar(s));
+    nako_makeReport(PAnsiChar(s));
   end;
   PostQuitMessage(0);
 end;
@@ -228,7 +228,7 @@ end;
 //------------------------------------------------------------------------------
 
 var cw, ch: Integer;
-var EventLog: string = '';
+var EventLog: AnsiString = '';
 
 function MainWndProc(hWindow: HWND; Msg: UINT; WParam: WPARAM;
   LParam: LPARAM): LRESULT; stdcall; export;
@@ -250,7 +250,7 @@ begin
         //EventLog := EventLog + w.EventName + #13#10;
         nako_int2var(LParam, pLPARAM);
         nako_int2var(WParam, pWPARAM);
-        p := nako_eval(PChar(w.EventName));
+        p := nako_eval(PAnsiChar(w.EventName));
         if (p <> nil) and (p.Registered = 0) then nako_var_free(p);
       finally
 
@@ -274,7 +274,7 @@ begin
   WM_DESTROY:
     begin
       FreeAndNil(_dnako_loader);
-      //MessageBox(0, PChar(EventLog), 'LOG', MB_OK);
+      //MessageBox(0, PAnsiChar(EventLog), 'LOG', MB_OK);
       {
       if bokan.hWindow = hWindow then // 母艦の破壊時になでしこのシステムを解放する
       begin
@@ -378,14 +378,14 @@ begin
   inherited;
 end;
 
-function TBokan.GetCaption: string;
+function TBokan.GetCaption: AnsiString;
 var
   len: Integer;
-  s: string;
+  s: AnsiString;
 begin
   len := GetWindowTextLength(hWindow);
   SetLength(s, len);
-  GetWindowText(hWIndow, PChar(s), len+1);
+  GetWindowTextA(hWIndow, PAnsiChar(s), len+1);
   Result := s;
 end;
 

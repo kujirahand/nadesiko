@@ -1,9 +1,9 @@
 object frmDebug: TfrmDebug
   Left = 196
   Top = 130
-  Width = 449
-  Height = 378
   Caption = #12487#12496#12483#12464
+  ClientHeight = 319
+  ClientWidth = 433
   Color = clBtnFace
   Font.Charset = SHIFTJIS_CHARSET
   Font.Color = clWindowText
@@ -12,7 +12,7 @@ object frmDebug: TfrmDebug
   Font.Style = []
   Menu = MainMenu1
   OldCreateOrder = False
-  Position = poMainFormCenter
+  Position = poDefault
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -28,7 +28,7 @@ object frmDebug: TfrmDebug
   end
   object panelBottom: TPanel
     Left = 0
-    Top = 279
+    Top = 278
     Width = 433
     Height = 41
     Align = alBottom
@@ -125,7 +125,7 @@ object frmDebug: TfrmDebug
     Left = 0
     Top = 188
     Width = 433
-    Height = 91
+    Height = 90
     Align = alClient
     TabOrder = 3
     object Panel4: TPanel
@@ -158,9 +158,10 @@ object frmDebug: TfrmDebug
       Left = 1
       Top = 20
       Width = 431
-      Height = 70
+      Height = 69
       Align = alClient
       BevelOuter = bvNone
+      Caption = 's'
       TabOrder = 1
     end
   end

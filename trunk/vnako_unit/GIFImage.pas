@@ -74,6 +74,78 @@ unit GIFImage;
 // This change was made as a result of a email correspondance with            //
 // Tineke Kosmis (http://www.classe.nl/) which requested such a property.     //
 //                                                                            //
+// Changed 2006.07.09 by Finn Tolderlund:                                     //
+// Added conditional switch as default: FIXHEADER_WIDTHHEIGHT_SILENT          //
+// When the switch is defined:                                                //
+// When loading a gif all frames are examined. If a frame has a larger        //
+// Width/Height than the header values then the header values are updated     //
+// with the larger values from the frame.                                     //
+// I had a MANTA.GIF where the header said 120x89 but the frames said 200x148 //
+// and the frames got clipped. MSIE didn't clip it.                           //
+// http://www.graphcomp.com/info/specs/ani_gif.html :                         //
+// Do not assume all of your images are the same size. Read through their     //
+// sizes and set the logical screen to the largest width & height included    //
+// in the file.                                                               //
+// By removing the define FIXHEADER_WIDTHHEIGHT_SILENT                        //
+// the header is not altered. This makes the unit work as before.             //
+//                                                                            //
+// Changed 2006.07.10 by Finn Tolderlund:                                     //
+// Added conditional switch as default: DEFAULT_GOCLEARLOOP                   //
+// When the switch is defined:                                                //
+// When loading a gif default DrawOptions include goClearLoop                 //
+// Same as adding goClearLoop manually to DrawOptions.                        //
+// This will clear an animated gif before first frame on each loop.           //
+// Someone sent me a 'conductor.gif' where some of the last frame was retaind //
+// when beginning a new loop and that was visually incorrect.                 //
+// Without glClearLoop the first frame may look different on the second loop  //
+// because some part of the last frame could still be present.                //
+// With goClearLoop the first frame will always look the same on each loop.   //
+// I think the last is better.                                                //
+//                                                                            //
+// Changed 2006.07.29 by Finn Tolderlund:                                     //
+// Added a check in procedure TGIFSubImage.Decompress to make sure that       //
+// the InitialBitsPerCode variable never exeeds the value 15.                 //
+// Someone sent an animated iup110296.gif (corrupt I think) which caused      //
+// this unit to crash in function NextLZW because InitialBitsPerCode was 20.  //
+// This fix prevents the crash and should not cause problems with other gifs. //
+// Not sure that the fix is the correct way to handle it. It seems to work.   //
+//                                                                            //
+// Changed 2006.10.09 by Finn Tolderlund:                                     //
+// Received a mail from Michael Thomas Greer with a fix that allows           //
+// the TGIFSubImage.Pixels[] property to be writeable. The help file states   //
+// that the Pixels property can be written, but it was read-only.             //
+// Help file: "Write Pixels to change the color index of individual pixels".  //
+//                                                                            //
+// Changed 2006.10.16 by Finn Tolderlund:                                     //
+// Received a mail from Maurizio Lotauro who was using Delphi 5 and FastMM4.  //
+// FastMM4 complains about a memory leak when using Delphi 5.                 //
+// I don't have Delphi 5 installed so I can't test if there really is a       //
+// memory leak or if it's just FastMM4 which can't detect it correctly.       //
+// The problem and fix only applies to Delphi 5 or older.                     //
+// Added a fix to keep FastMM4 happy. See more at this link:                  //
+// http://sourceforge.net/forum/forum.php?thread_id=1559584&forum_id=443400   //
+//                                                                            //
+// Changed 2007.01.18 by Finn Tolderlund:                                     //
+// The ReduceColors function is changed so that it's now possible to use      //
+// the TFastColorLookup class if you use ColorReduction rmQuantize.           //
+// The TFastColorLookup class was removed 2003-03-06, but is introduced again //
+// because Paul Lopez needed speed when adding images to a gif.               //
+// This changes how rmQuantize works: It's now fast but less precise.         //
+// This means:                                                                //
+// Use rmQuantizeWindows to get precision, use rmQuantize if you need speed.  //
+//                                                                            //
+// Changed 2008.10.19 by Finn Tolderlund:                                     //
+// Now compatible with Delphi 2009.                                           //
+// Generally changed use of Char/PChar to AnsiChar/PAnsiChar.                 //
+//                                                                            //
+// Changed 2009.10.10 by Finn Tolderlund:                                     //
+// Now compatible with Delphi 2010.                                           //
+// Changed conditional defines to assume Delphi 2010 for future compilers.    //
+// Kind thanks to Peter Johnson (www.delphidabbler.com)                       //
+//                                                                            //
+// Changed 2009.10.14 by Finn Tolderlund:                                     //
+// Simplified the list of defines and remove a few warnings in Delphi 2006.   //
+//                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 // Please read the "Conditions of use" in the release notes.                  //
@@ -97,6 +169,15 @@ unit GIFImage;
 //
 ////////////////////////////////////////////////////////////////////////////////
 // To do (in rough order of priority):
+// { TODO -oanme -cFeature : TImage hook for destroy notification. }
+// { TODO -oanme -cFeature : TBitmap pool to limit resource consumption on Win95/98. }
+// { TODO -oanme -cImprovement : Make BitsPerPixel property writable. }
+// { TODO -oanme -cFeature : Visual GIF component. }
+// { TODO -oanme -cImprovement : Easier method to determine DrawPainter status. }
+// { TODO -oanme -cFeature : Import to 256+ color GIF. }
+// { TODO -oanme -cFeature : Make some of TGIFImage's properties persistent (DrawOptions etc). }
+// { TODO -oanme -cFeature : Add TGIFImage.Persistent property. Should save published properties in application extension when this options is set. }
+// { TODO -oanme -cBugFix : Solution for background buffering in scrollbox. }
 //
 //////////////////////////////////////////////////////////////////////////////////
 {$ifdef BCB}
@@ -195,11 +276,24 @@ interface
                                 SERIALIZE_RENDER is defined, the draw threads
                                 uses TThread.Synchronize to serialize GIF to
                                 bitmap rendering.
+
+  FIXHEADER_WIDTHHEIGHT_SILENT  Define this symbol to adjust Width and Height
+                                in the header if any of the frames has a larger
+                                Width or Height.
+
+  DEFAULT_GOCLEARLOOP           Define this symbol to clear animation on each
+                                loop before first frame.
+                                Same as adding goClearLoop to DrawOptions.
+                                STRICT_MOZILLA does the same,
+                                but STRICT_MOZILLA does something more.
+
 *)
 
 {$DEFINE REGISTER_TGIFIMAGE}
 {$DEFINE PIXELFORMAT_TOO_SLOW}
 {$DEFINE CREATEDIBSECTION_SLOW}
+{$DEFINE FIXHEADER_WIDTHHEIGHT_SILENT}
+{$DEFINE DEFAULT_GOCLEARLOOP}
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -264,9 +358,10 @@ interface
   {$DEFINE BAD_STACK_ALIGNMENT}
 {$ENDIF}
 
+(*
 // Delphi 6.x
 {$IFDEF VER140}
-{$WARN SYMBOL_PLATFORM OFF}
+  {$WARN SYMBOL_PLATFORM OFF}
   {$DEFINE VER10_PLUS}
   {$DEFINE VER11_PLUS}
   {$DEFINE VER12_PLUS}
@@ -278,7 +373,7 @@ interface
 
 // Delphi 7.x
 {$IFDEF VER150}
-{$WARN SYMBOL_PLATFORM OFF}
+  {$WARN SYMBOL_PLATFORM OFF}
   {$DEFINE VER10_PLUS}
   {$DEFINE VER11_PLUS}
   {$DEFINE VER12_PLUS}
@@ -289,23 +384,27 @@ interface
   {$DEFINE BAD_STACK_ALIGNMENT}
 {$ENDIF}
 
-// 2003.03.09 ->
-// Unknown compiler version - assume D4 compatible
-//{$IFNDEF VER9x}
-//  {$IFNDEF VER10_PLUS}
-//    {$DEFINE VER10_PLUS}
-//    {$DEFINE VER11_PLUS}
-//    {$DEFINE VER12_PLUS}
-//    {$DEFINE BAD_STACK_ALIGNMENT}
-//  {$ENDIF}
-//{$ENDIF}
-// 2003.03.09 <-
+// 2008.10.19 ->
+// Delphi 2009
+{$IFDEF VER200}
+  {$WARN SYMBOL_PLATFORM OFF}
+  {$DEFINE VER10_PLUS}
+  {$DEFINE VER11_PLUS}
+  {$DEFINE VER12_PLUS}
+  {$DEFINE VER125_PLUS}
+  {$DEFINE VER13_PLUS}
+  {$DEFINE VER14_PLUS}
+  {$DEFINE VER15_PLUS}
+  {$DEFINE VER20_PLUS}
+  {$DEFINE BAD_STACK_ALIGNMENT}
+{$ENDIF}
+// 2008.10.19 <-
 
 // 2003.03.09 ->
 // Unknown compiler version - assume D7 compatible
 {$IFNDEF VER9x}
 {$IFNDEF VER10_PLUS}
-{$WARN SYMBOL_PLATFORM OFF}
+  {$WARN SYMBOL_PLATFORM OFF}
   {$DEFINE VER10_PLUS}
   {$DEFINE VER11_PLUS}
   {$DEFINE VER12_PLUS}
@@ -317,6 +416,53 @@ interface
 {$ENDIF}
 {$ENDIF}
 // 2003.03.09 <-
+
+// 2009.10.10 ->
+// This ensures that future compilers always have same defines as latest compiler listed here.
+{$IFDEF CONDITIONALEXPRESSIONS}
+  {$IF CompilerVersion >= 21.0}   // >= Delphi 2010
+    {$WARN SYMBOL_PLATFORM OFF}
+    {$WARN SYMBOL_DEPRECATED OFF}
+    {$DEFINE VER10_PLUS}
+    {$DEFINE VER11_PLUS}
+    {$DEFINE VER12_PLUS}
+    {$DEFINE VER125_PLUS}
+    {$DEFINE VER13_PLUS}
+    {$DEFINE VER14_PLUS}
+    {$DEFINE VER15_PLUS}
+    {$DEFINE VER20_PLUS}
+    {$DEFINE BAD_STACK_ALIGNMENT}
+    {$DEFINE VER21_PLUS}
+  {$IFEND}
+{$ENDIF}
+// 2009.10.10 <-
+*)
+
+// 2009.10.14 ->
+// This ensures that future compilers always have same defines as latest compiler listed here.
+{$IFDEF CONDITIONALEXPRESSIONS}
+   {$IF CompilerVersion >= 14.0}   // >= Delphi 6
+     {$WARN SYMBOL_PLATFORM OFF}
+     {$WARN SYMBOL_DEPRECATED OFF}
+     {$DEFINE VER10_PLUS}
+     {$DEFINE VER11_PLUS}
+     {$DEFINE VER12_PLUS}
+     {$DEFINE VER125_PLUS}
+     {$DEFINE VER13_PLUS}
+     {$DEFINE VER14_PLUS}
+     {$DEFINE BAD_STACK_ALIGNMENT}
+   {$IFEND}
+   {$IF CompilerVersion >= 15.0}   // >= Delphi 7
+     {$DEFINE VER15_PLUS}
+   {$IFEND}
+   {$IF CompilerVersion >= 20.0}   // >= Delphi 2009
+     {$DEFINE VER20_PLUS}
+   {$IFEND}
+   {$IF CompilerVersion >= 21.0}   // >= Delphi 2010
+     {$DEFINE VER21_PLUS}
+   {$IFEND}
+{$ENDIF}
+// 2009.10.14 <-
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -431,7 +577,7 @@ var
 
 type
   TGIFVersion = (gvUnknown, gv87a, gv89a);
-  TGIFVersionRec = array[0..2] of char;
+  TGIFVersionRec = array[0..2] of AnsiChar;
 
 const
   GIFVersions : array[gv87a..gv89a] of TGIFVersionRec = ('87a', '89a');
@@ -734,7 +880,7 @@ type
     FMask		: HBitmap;
     FNeedMask		: boolean;
     FLocalPalette	: HPalette;
-    FData		: PChar;
+    FData		: PAnsiChar;
     FDataSize		: integer;
     FColorMap		: TGIFColorMap;
     FImageDescriptor	: TImageDescriptor;
@@ -765,6 +911,9 @@ type
     procedure DoSetBounds(ALeft, ATop, AWidth, AHeight: integer);
     function GetClientRect: TRect;
     function GetPixel(x, y: integer): BYTE;
+// 2006.10.09 ->
+    procedure SetPixel(x, y: integer; Value: BYTE);
+// 2006.10.09 <-
     function GetScanline(y: integer): pointer;
     procedure NewBitmap;
     procedure FreeBitmap;
@@ -800,7 +949,7 @@ type
     property Interlaced: boolean read GetInterlaced write SetInterlaced;
     property ColorMap: TGIFColorMap read FColorMap;
     property ActiveColorMap: TGIFColorMap read GetActiveColorMap;
-    property Data: PChar read FData;
+    property Data: PAnsiChar read FData;
     property DataSize: integer read FDataSize;
     property Extensions: TGIFExtensionList read FExtensions;
     property Version: TGIFVersion read GetVersion;
@@ -812,7 +961,10 @@ type
     property Empty: boolean read GetEmpty;
     property Transparent: boolean read FTransparent;
     property GraphicControlExtension: TGIFGraphicControlExtension read FGCE;
-    property Pixels[x, y: integer]: BYTE read GetPixel;
+// 2006.10.09 ->
+//  property Pixels[x, y: integer]: BYTE read GetPixel;
+    property Pixels[x, y: integer]: BYTE read GetPixel write SetPixel;
+// 2006.10.09 <-
     property Scanline[y: integer]: pointer read GetScanline;
   end;
 
@@ -944,8 +1096,8 @@ type
 //                      TGIFApplicationExtension
 //
 ////////////////////////////////////////////////////////////////////////////////
-  TGIFIdentifierCode = array[0..7] of char;
-  TGIFAuthenticationCode = array[0..2] of char;
+  TGIFIdentifierCode = array[0..7] of AnsiChar;
+  TGIFAuthenticationCode = array[0..2] of AnsiChar;
   TGIFApplicationRec = packed record
     Identifier		: TGIFIdentifierCode;
     Authentication	: TGIFAuthenticationCode;
@@ -957,12 +1109,12 @@ type
   TGIFApplicationExtension = class(TGIFExtension)
   private
     FIdent		: TGIFApplicationRec;
-    function GetAuthentication: string;
-    function GetIdentifier: string;
+    function GetAuthentication: AnsiString;
+    function GetIdentifier: AnsiString;
   protected
     function GetExtensionType: TGIFExtensionType; override;
-    procedure SetAuthentication(const Value: string);
-    procedure SetIdentifier(const Value: string);
+    procedure SetAuthentication(const Value: AnsiString);
+    procedure SetIdentifier(const Value: AnsiString);
     procedure SaveData(Stream: TStream); virtual; abstract;
     procedure LoadData(Stream: TStream); virtual; abstract;
   public
@@ -972,8 +1124,8 @@ type
     procedure LoadFromStream(Stream: TStream); override;
     class procedure RegisterExtension(eIdent: TGIFApplicationRec; eClass: TGIFAppExtensionClass);
     class function FindSubExtension(Stream: TStream): TGIFExtensionClass; override;
-    property Identifier: string read GetIdentifier write SetIdentifier;
-    property Authentication: string read GetAuthentication write SetAuthentication;
+    property Identifier: AnsiString read GetIdentifier write SetIdentifier;
+    property Authentication: AnsiString read GetAuthentication write SetAuthentication;
   end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1233,6 +1385,9 @@ type
     procedure Progress(Sender: TObject; Stage: TProgressStage;
       PercentDone: Byte;  RedrawNow: Boolean; const R: TRect; const Msg: string); dynamic;
 {$ENDIF}
+{$IFDEF FIXHEADER_WIDTHHEIGHT_SILENT}
+    procedure FixHeaderWidthHeight;  // 2006.07.09
+{$ENDIF}
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -1349,6 +1504,9 @@ var
   GIFImageDefaultDrawOptions : TGIFDrawOptions =
     [goAsync, goLoop, goTransparent, goAnimate, goDither, goAutoDither
 {$IFDEF STRICT_MOZILLA}
+     ,goClearOnLoop
+{$ENDIF}
+{$IFDEF DEFAULT_GOCLEARLOOP} // 2006.07.10
      ,goClearOnLoop
 {$ENDIF}
     ];
@@ -1526,7 +1684,6 @@ uses
   messages,
   Consts;
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //
 //			Misc consts
@@ -1617,7 +1774,13 @@ function GDICheck(Value: Cardinal): Cardinal;
 {$endif}
 var
   ErrorCode		: integer;
-  Buf			: array [byte] of char;
+// 2008.10.19 ->
+{$IFDEF VER20_PLUS}
+  Buf			: array [byte] of WideChar;
+{$ELSE}
+  Buf			: array [byte] of AnsiChar;
+{$ENDIF}
+// 2008.10.19 <-
 
   function ReturnAddr: Pointer;
   // From classes.pas
@@ -1744,11 +1907,11 @@ var
   i			: integer;
   b			: BYTE;
   size			: integer;
-  s			: string;
+  s			: AnsiString;
 begin
   for i := 0 to Text.Count-1 do
   begin
-    s := Text[i];
+    s := AnsiString(Text[i]);
     size := length(s);
     if (size > 255) then
       b := 255
@@ -1758,7 +1921,10 @@ begin
     begin
       dec(size, b);
       WriteByte(Stream, b);
-      Stream.Write(PChar(s)^, b);
+// 2008.10.19 ->
+//      Stream.Write(PChar(s)^, b);
+      Stream.Write(PByte(s)^, b);
+// 2008.10.19 <-
       delete(s, 1, b);
       if (b > size) then
         b := size;
@@ -1773,10 +1939,11 @@ end;
 **  Read a string list from a stream as multiple blocks
 **  of max 255 characters in each.
 *)
+{ TODO -oanme -cImprovement : Replace ReadStrings with TGIFReader. }
 procedure ReadStrings(Stream: TStream; Text: TStrings);
 var
   size			: BYTE;
-  buf			: array[0..255] of char;
+  buf			: array[0..255] of AnsiChar;
 begin
   Text.Clear;
   if (Stream.Read(size, 1) <> 1) then
@@ -1785,7 +1952,10 @@ begin
   begin
     ReadCheck(Stream, buf, size);
     buf[size] := #0;
-    Text.Add(Buf);
+// 2008.10.19 ->
+//    Text.Add(Buf);
+    Text.Add(string(Buf));
+// 2008.10.19 <-
     if (Stream.Read(size, 1) <> 1) then
       exit;
   end;
@@ -2035,7 +2205,7 @@ var
   Handle		: HBitmap;
 begin
   Result := pfCustom; // This value is never returned
-  // BAD_STACK_ALIGNMENT 
+  // BAD_STACK_ALIGNMENT
   // Note: To work around an optimizer bug, we do not use Bitmap.Handle
   // directly. Instead we store the value and use it indirectly. Unless we do
   // this, the register containing Bitmap.Handle will be overwritten!
@@ -2536,7 +2706,7 @@ begin
 
     if biHeight > 0 then  // bottom-up DIB
       Row := biHeight - Row - 1;
-    Result := PChar(Cardinal(FDIBBits) + Cardinal(Row) * AlignBit(biWidth, biBitCount, 32));
+    Result := PAnsiChar(Cardinal(FDIBBits) + Cardinal(Row) * AlignBit(biWidth, biBitCount, 32));
   end;
 {$else}
   Result := FBitmap.ScanLine[Row];
@@ -2767,7 +2937,7 @@ type
     FColors		: integer;
   public
     constructor Create(Palette: hPalette); virtual;
-    function Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): char; virtual; abstract;
+    function Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar; virtual; abstract;
     property Colors: integer read FColors;
   end;
 
@@ -2797,7 +2967,7 @@ type
   public
     constructor Create(Palette: hPalette); override;
     destructor Destroy; override;
-    function Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): char; override;
+    function Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar; override;
   end;
 
   // TSlowColorLookup implements a precise but very slow generic color mapper.
@@ -2811,35 +2981,35 @@ type
   public
     constructor Create(Palette: hPalette); override;
     destructor Destroy; override;
-    function Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): char; override;
+    function Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar; override;
   end;
 
   // TNetscapeColorLookup maps colors to the netscape 6*6*6 color cube.
   TNetscapeColorLookup = class(TColorLookup)
   public
     constructor Create(Palette: hPalette); override;
-    function Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): char; override;
+    function Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar; override;
   end;
 
   // TGrayWindowsLookup maps colors to 4 shade palette.
   TGrayWindowsLookup = class(TSlowColorLookup)
   public
     constructor Create(Palette: hPalette); override;
-    function Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): char; override;
+    function Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar; override;
   end;
 
   // TGrayScaleLookup maps colors to a uniform 256 shade palette.
   TGrayScaleLookup = class(TColorLookup)
   public
     constructor Create(Palette: hPalette); override;
-    function Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): char; override;
+    function Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar; override;
   end;
 
   // TMonochromeLookup maps colors to a black/white palette.
   TMonochromeLookup = class(TColorLookup)
   public
     constructor Create(Palette: hPalette); override;
-    function Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): char; override;
+    function Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar; override;
   end;
 
 constructor TColorLookup.Create(Palette: hPalette);
@@ -2883,7 +3053,7 @@ begin
 end;
 
 // Map color to arbitrary palette
-function TFastColorLookup.Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): char;
+function TFastColorLookup.Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar;
 var
   i			: integer;
   InverseIndex		: integer;
@@ -2895,7 +3065,7 @@ begin
   InverseIndex := (Red SHR 3) OR ((Green AND $F8) SHL 2) OR ((Blue AND $F8) SHL 7);
 
   if (FInverseLookup^[InverseIndex] <> -1) then
-    Result := char(FInverseLookup^[InverseIndex])
+    Result := AnsiChar(FInverseLookup^[InverseIndex])
   else
   begin
     // Sequential scan for nearest color to minimize euclidian distance
@@ -2911,7 +3081,7 @@ begin
           MinColor := i;
         end;
       end;
-    Result := char(MinColor);
+    Result := AnsiChar(MinColor);
     FInverseLookup^[InverseIndex] := MinColor;
   end;
 
@@ -2944,9 +3114,9 @@ begin
 end;
 
 // Map color to arbitrary palette
-function TSlowColorLookup.Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): char;
+function TSlowColorLookup.Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar;
 begin
-  Result := char(GetNearestPaletteIndex(FPalette, Red OR (Green SHL 8) OR (Blue SHL 16)));
+  Result := AnsiChar(GetNearestPaletteIndex(FPalette, Red OR (Green SHL 8) OR (Blue SHL 16)));
   if (FPaletteEntries <> nil) then
     with FPaletteEntries^[ord(Result)] do
     begin
@@ -2963,12 +3133,12 @@ begin
 end;
 
 // Map color to netscape 6*6*6 color cube
-function TNetscapeColorLookup.Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): char;
+function TNetscapeColorLookup.Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar;
 begin
   R := (Red+3) DIV 51;
   G := (Green+3) DIV 51;
   B := (Blue+3) DIV 51;
-  Result := char(B + 6*G + 36*R);
+  Result := AnsiChar(B + 6*G + 36*R);
   R := R * 51;
   G := G * 51;
   B := B * 51;
@@ -2981,7 +3151,7 @@ begin
 end;
 
 // Convert color to windows grays
-function TGrayWindowsLookup.Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): char;
+function TGrayWindowsLookup.Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar;
 begin
   Result := inherited Lookup(MulDiv(Red, 77, 256),
     MulDiv(Green, 150, 256), MulDiv(Blue, 29, 256), R, G, B);
@@ -2994,9 +3164,9 @@ begin
 end;
 
 // Convert color to grayscale
-function TGrayScaleLookup.Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): char;
+function TGrayScaleLookup.Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar;
 begin
-  Result := char((Blue*29 + Green*150 + Red*77) DIV 256);
+  Result := AnsiChar((Blue*29 + Green*150 + Red*77) DIV 256);
   R := ord(Result);
   G := ord(Result);
   B := ord(Result);
@@ -3009,7 +3179,7 @@ begin
 end;
 
 // Convert color to black/white
-function TMonochromeLookup.Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): char;
+function TMonochromeLookup.Lookup(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar;
 begin
   if ((Blue*29 + Green*150 + Red*77) > 32512) then
   begin
@@ -3041,7 +3211,7 @@ type
     Width		: integer;
   public
     constructor Create(AWidth: integer; Lookup: TColorLookup); virtual;
-    function Dither(Red, Green, Blue: BYTE; var R, G, B: BYTE): char; virtual;
+    function Dither(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar; virtual;
     procedure NextLine; virtual;
     procedure NextColumn;
 
@@ -3076,7 +3246,7 @@ type
   public
     constructor Create(AWidth: integer; Lookup: TColorLookup); override;
     destructor Destroy; override;
-    function Dither(Red, Green, Blue: BYTE; var R, G, B: BYTE): char; override;
+    function Dither(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar; override;
     procedure NextLine; override;
   end;
 
@@ -3107,7 +3277,7 @@ type
   public
     constructor Create(AWidth: integer; Lookup: TColorLookup); override;
     destructor Destroy; override;
-    function Dither(Red, Green, Blue: BYTE; var R, G, B: BYTE): char; override;
+    function Dither(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar; override;
     procedure NextLine; override;
   end;
 
@@ -3163,7 +3333,7 @@ type
   public
     constructor Create(AWidth: integer; Lookup: TColorLookup); override;
     destructor Destroy; override;
-    function Dither(Red, Green, Blue: BYTE; var R, G, B: BYTE): char; override;
+    function Dither(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar; override;
     procedure NextLine; override;
   end;
 
@@ -3185,7 +3355,7 @@ type
   public
     constructor Create(AWidth: integer; Lookup: TColorLookup); override;
     destructor Destroy; override;
-    function Dither(Red, Green, Blue: BYTE; var R, G, B: BYTE): char; override;
+    function Dither(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar; override;
     procedure NextLine; override;
   end;
 
@@ -3202,7 +3372,7 @@ begin
   FColumn := 0;
 end;
 
-function TDitherEngine.Dither(Red, Green, Blue: BYTE; var R, G, B: BYTE): char;
+function TDitherEngine.Dither(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar;
 begin
   // Map color to palette
   Result := FLookup.Lookup(Red, Green, Blue, R, G, B);
@@ -3269,7 +3439,7 @@ end;
   {$DEFINE R_PLUS}
   {$RANGECHECKS OFF}
 {$ENDIF}
-function TFloydSteinbergDitherer.Dither(Red, Green, Blue: BYTE; var R, G, B: BYTE): char;
+function TFloydSteinbergDitherer.Dither(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar;
 var
   BelowNextError	: TErrorTerm;
   Delta			: TErrorTerm;
@@ -3477,7 +3647,7 @@ end;
   {$DEFINE R_PLUS}
   {$RANGECHECKS OFF}
 {$ENDIF}
-function T5by3Ditherer.Dither(Red, Green, Blue: BYTE; var R, G, B: BYTE): char;
+function T5by3Ditherer.Dither(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar;
 var
   ColorR		,
   ColorG		,
@@ -3811,7 +3981,7 @@ end;
   {$DEFINE R_PLUS}
   {$RANGECHECKS OFF}
 {$ENDIF}
-function TSteveArcheDitherer.Dither(Red, Green, Blue: BYTE; var R, G, B: BYTE): char;
+function TSteveArcheDitherer.Dither(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar;
 var
   ColorR		,
   ColorG		,
@@ -4034,7 +4204,7 @@ end;
   {$DEFINE R_PLUS}
   {$RANGECHECKS OFF}
 {$ENDIF}
-function TBurkesDitherer.Dither(Red, Green, Blue: BYTE; var R, G, B: BYTE): char;
+function TBurkesDitherer.Dither(Red, Green, Blue: BYTE; var R, G, B: BYTE): AnsiChar;
 var
   ErrorR		,
   ErrorG		,
@@ -4619,7 +4789,7 @@ var
   SrcScanLine		,
   Src			: PRGBTriple;
   DstScanLine		,
-  Dst			: PChar;
+  Dst			: PAnsiChar;
   BGR			: TRGBTriple;
 {$ifdef DEBUG_DITHERPERFORMANCE}
   TimeStart		,
@@ -4635,7 +4805,10 @@ var
     Pal.palNumEntries := 256;
     for i := 0 to 255 do
     begin
-      with (Pal.palPalEntry[i]) do
+      // 2009.10.10 ->
+      //with (Pal.palPalEntry[i]) do
+      with Pal.palPalEntry[i] do
+      // 2009.10.10 <-
       begin
         peRed := i;
         peGreen := i;
@@ -4658,7 +4831,10 @@ var
     Pal.palNumEntries := 2;
     for i := 0 to 1 do
     begin
-      with (Pal.palPalEntry[i]) do
+      // 2009.10.10 ->
+      //with (Pal.palPalEntry[i]) do
+      with Pal.palPalEntry[i] do
+      // 2009.10.10 <-
       begin
         peRed := Values[i];
         peGreen := Values[i];
@@ -4681,7 +4857,10 @@ var
     Pal.palNumEntries := 4;
     for i := 0 to 3 do
     begin
-      with (Pal.palPalEntry[i]) do
+      // 2009.10.10 ->
+      //with (Pal.palPalEntry[i]) do
+      with Pal.palPalEntry[i] do
+      // 2009.10.10 <-
       begin
         peRed := Values[i];
         peGreen := Values[i];
@@ -4762,6 +4941,7 @@ begin
         exit;
       end;
 
+      { TODO -oanme -cImprovement : Gray scale conversion should be done prior to dithering/mapping. Otherwise corrected values will be converted multiple times. }
 
       // Create a color mapper based on current options
       case (ColorReduction) of
@@ -4772,8 +4952,10 @@ begin
         // rmWindowsGray:
         //  ColorLookup := TGrayWindowsLookup.Create(Palette);
         rmQuantize:
-//          ColorLookup := TFastColorLookup.Create(Palette);
-          ColorLookup := TSlowColorLookup.Create(Palette);  // 2003-03-06
+// 2007.01.18 ->  // switch back to TFastColorLookup
+          ColorLookup := TFastColorLookup.Create(Palette);
+//          ColorLookup := TSlowColorLookup.Create(Palette);  // 2003-03-06
+// 2007.01.18 <-
         rmNetscape:
           ColorLookup := TNetscapeColorLookup.Create(Palette);
         rmGrayScale:
@@ -4845,7 +5027,7 @@ begin
         DIBResult.Free;
       if (DIBSource <> nil) then
         DIBSource.Free;
-      // Must delete palette after TDIBWriter since TDIBWriter uses palette 
+      // Must delete palette after TDIBWriter since TDIBWriter uses palette
       if (Palette <> 0) then
         DeleteObject(Palette);
     end;
@@ -5091,7 +5273,7 @@ begin
       peRed := Red;
       peGreen := Green;
       peBlue := Blue;
-      peFlags := PC_NOCOLLAPSE; 
+      peFlags := PC_NOCOLLAPSE; { TODO -oanme -cImprovement : Verify that PC_NOCOLLAPSE is the correct value to use. }
     end;
   Result := CreatePalette(PLogPalette(@Pal)^);
 end;
@@ -5458,7 +5640,7 @@ end;
 procedure TGIFGlobalColorMap.BuildHistogram(var Histogram: TColormapHistogram);
 var
   Pixel			,
-  LastPixel		: PChar;
+  LastPixel		: PAnsiChar;
   i			: integer;
 begin
   (*
@@ -5490,7 +5672,7 @@ end;
 procedure TGIFGlobalColorMap.MapImages(var Map: TColormapReverse);
 var
   Pixel			,
-  LastPixel		: PChar;
+  LastPixel		: PAnsiChar;
   i			: integer;
 begin
   for i := 0 to FHeader.Image.Images.Count-1 do
@@ -5504,7 +5686,10 @@ begin
       *)
       while (Pixel < LastPixel) do
       begin
-        Pixel^ := chr(Map[ord(Pixel^)]);
+// 2008.10.19 ->
+//        Pixel^ := chr(Map[ord(Pixel^)]);
+        Pixel^ := AnsiChar(Map[ord(Pixel^)]);
+// 2008.10.19 <-
         inc(Pixel);
       end;
 
@@ -5576,7 +5761,7 @@ end;
 
 type
   TGIFHeaderRec = packed record
-    Signature: array[0..2] of char; { contains 'GIF' }
+    Signature: array[0..2] of AnsiChar; { contains 'GIF' }
     Version: TGIFVersionRec;   { '87a' or '89a' }
   end;
 
@@ -5632,7 +5817,10 @@ begin
   Position := Stream.Position;
 
   ReadCheck(Stream, GifHeader, sizeof(GifHeader));
-  if (uppercase(GifHeader.Signature) <> 'GIF') then
+// 2008.10.19 ->
+//  if (uppercase(GifHeader.Signature) <> 'GIF') then
+  if (uppercase(string(GifHeader.Signature)) <> 'GIF') then
+// 2008.10.19 <-
   begin
     // Attempt recovery in case we are reading a GIF stored in a form by rxLib
     Stream.Position := Position;
@@ -5640,7 +5828,10 @@ begin
     Stream.Seek(sizeof(longInt), soFromCurrent);
     // Attempt to read signature again
     ReadCheck(Stream, GifHeader, sizeof(GifHeader));
-    if (uppercase(GifHeader.Signature) <> 'GIF') then
+// 2008.10.19 ->
+//    if (uppercase(GifHeader.Signature) <> 'GIF') then
+    if (uppercase(string(GifHeader.Signature)) <> 'GIF') then
+// 2008.10.19 <-
       Error(sBadSignature);
   end;
 
@@ -5727,7 +5918,7 @@ end;
 procedure TGIFLocalColorMap.BuildHistogram(var Histogram: TColormapHistogram);
 var
   Pixel			,
-  LastPixel		: PChar;
+  LastPixel		: PAnsiChar;
   i			: integer;
 begin
   Pixel := FSubImage.Data;
@@ -5755,7 +5946,7 @@ end;
 procedure TGIFLocalColorMap.MapImages(var Map: TColormapReverse);
 var
   Pixel			,
-  LastPixel		: PChar;
+  LastPixel		: PAnsiChar;
 begin
   Pixel := FSubImage.Data;
   LastPixel := Pixel + FSubImage.Width * FSubImage.Height;
@@ -5765,7 +5956,10 @@ begin
   *)
   while (Pixel < LastPixel) do
   begin
-    Pixel^ := chr(Map[ord(Pixel^)]);
+// 2008.10.19 ->
+//    Pixel^ := chr(Map[ord(Pixel^)]);
+    Pixel^ := AnsiChar(Map[ord(Pixel^)]);
+// 2008.10.19 <-
     inc(Pixel);
   end;
 
@@ -5807,7 +6001,7 @@ var
   firstcode, oldcode	: integer;
   buf			: array[0..257] of BYTE;
 
-  Dest			: PChar;
+  Dest			: PAnsiChar;
   v			,
   xpos, ypos, pass	: integer;
 
@@ -5980,12 +6174,6 @@ var
       ASSERT(Code < TableSize, 'Code too large');
       while (code >= ClearCode) do
       begin
-        if UINT(Source) > UINT(@stack[High(stack)]) then 
-        begin
-          Dec(Source);
-          Result := Source^;
-          Exit;
-        end;
         Source^ := table1[code];
         Inc(Source);
         if (code = table0[code]) then
@@ -6055,7 +6243,10 @@ begin
   *)
   if (Stream.Read(InitialBitsPerCode, 1) <> 1) then
     exit;
-
+// 2006.07.29 ->
+  if InitialBitsPerCode > 8 then
+    InitialBitsPerCode := 8;
+// 2006.07.29 <-
   (*
   **  Initialize the Compression routines
   *)
@@ -6090,7 +6281,7 @@ begin
           v := readLZW;
           if (v < 0) then
             exit;
-          Dest^ := char(v);
+          Dest^ := AnsiChar(v);
           Inc(Dest);
         end;
         Inc(ypos, step);
@@ -6110,7 +6301,7 @@ begin
         v := readLZW;
         if (v < 0) then
           exit;
-        Dest^ := char(v);
+        Dest^ := AnsiChar(v);
         Inc(Dest);
       end;
     end;
@@ -6330,7 +6521,7 @@ type
     FOnWarning		: TGIFWarning;
     FStream		: TStream;
     FOnProgress		: TNotifyEvent;
-    FBuffer		: array [BYTE] of Char;
+    FBuffer		: array [BYTE] of AnsiChar;
     FBufferCount	: integer;
 
   protected
@@ -6394,7 +6585,7 @@ end;
 function TGIFReader.Read(var Buffer; Count: Longint): Longint;
 var
   n			: integer;
-  Dst			: PChar;
+  Dst			: PAnsiChar;
   size			: BYTE;
 begin
   Dst := @Buffer;
@@ -6420,6 +6611,7 @@ begin
     if (FBufferCount <= 0) then
     begin
       FStream.Read(size, 1);
+      { TODO -oanme -cImprovement : Should be handled as a warning instead of an error. }
       if (size >= 255) then
         Error('GIF block too large');
       FBufferCount := size;
@@ -6475,7 +6667,7 @@ begin
   if (FBufferCount <= 0) then
     exit;
 
-  FBuffer[0] := char(FBufferCount-1); // Block size excluding the count
+  FBuffer[0] := AnsiChar(FBufferCount-1); // Block size excluding the count
   FStream.WriteBuffer(FBuffer, FBufferCount);
   FBufferCount := 1; // Reserve first byte of buffer for length
   FOutputDirty := False;
@@ -6484,7 +6676,7 @@ end;
 function TGIFWriter.Write(const Buffer; Count: Longint): Longint;
 var
   n			: integer;
-  Src			: PChar;
+  Src			: PAnsiChar;
 begin
   Result := Count;
   FOutputDirty := True;
@@ -6527,7 +6719,7 @@ type
     Width		,		// Width of image in pixels
     Height		: integer;	// height of image in pixels
     Interlace		: boolean;	// Interlace flag (True = interlaced image)
-    Data		: PChar;	// Pointer to pixel data
+    Data		: PAnsiChar;	// Pointer to pixel data
     GIFStream		: TGIFWriter;	// Output buffer
 
     OutputBucket	: longInt;	// Output bit bucket
@@ -6542,7 +6734,7 @@ type
     EOFCode		: CodeInt;	// Special output code to signal EOF
     BaseCode		: CodeInt;	// ...
 
-    Pixel		: PChar;	// Pointer to current pixel
+    Pixel		: PAnsiChar;	// Pointer to current pixel
 
     cX			,		// Current X counter (Width - X)
     Y			: integer;	// Current Y
@@ -6555,7 +6747,7 @@ type
     procedure DoCompress; virtual; abstract;
   public
     procedure Compress(AStream: TStream; ABitsPerPixel: integer;
-      AWidth, AHeight: integer; AInterlace: boolean; AData: PChar; AMaxColor: integer);
+      AWidth, AHeight: integer; AInterlace: boolean; AData: PAnsiChar; AMaxColor: integer);
     property Warning: TGIFWarning read FOnWarning write FOnWarning;
   end;
 
@@ -6676,7 +6868,7 @@ end;
 
 
 procedure TGIFEncoder.Compress(AStream: TStream; ABitsPerPixel: integer;
-  AWidth, AHeight: integer; AInterlace: boolean; AData: PChar; AMaxColor: integer);
+  AWidth, AHeight: integer; AInterlace: boolean; AData: PAnsiChar; AMaxColor: integer);
 const
   EndBlockByte		= $00;			// End of block marker
 {$ifdef DEBUG_COMPRESSPERFORMANCE}
@@ -7109,7 +7301,7 @@ end;
 
 procedure TLZWEncoder.DoCompress;
 var
-  Color			: char;
+  Color			: AnsiChar;
   NewKey		: KeyInt;
   NewCode		: CodeInt;
 
@@ -7466,8 +7658,8 @@ var
   ColorLookup		: TColorLookup;
   Ditherer		: TDitherEngine;
   DIBResult		: TDIB;
-  Src			: PChar;
-  Dst			: PChar;
+  Src			: PAnsiChar;
+  Dst			: PAnsiChar;
 
   Row			: integer;
   Color			: TGIFColor;
@@ -7476,11 +7668,11 @@ var
   TransparentIndex	: byte;
   IsTransparent		: boolean;
   WasTransparent	: boolean;
-  MappedTransparentIndex: char;
+  MappedTransparentIndex: AnsiChar;
 
-  MaskBits		: PChar;
-  MaskDest		: PChar;
-  MaskRow		: PChar;
+  MaskBits		: PAnsiChar;
+  MaskDest		: PAnsiChar;
+  MaskRow		: PAnsiChar;
   MaskRowWidth		,
   MaskRowBitWidth	: integer;
   Bit			,
@@ -7529,7 +7721,7 @@ begin
         IsTransparent := True;
         TransparentIndex := GraphicControlExtension.TransparentColorIndex;
         Color := ColMap[ord(TransparentIndex)];
-        MappedTransparentIndex := char(Color.Blue DIV 51 +
+        MappedTransparentIndex := AnsiChar(Color.Blue DIV 51 +
           MulDiv(6, Color.Green, 51) + MulDiv(36, Color.Red, 51)+1);
       end;
 
@@ -7586,7 +7778,7 @@ begin
 
             if (IsTransparent) and (Index = TransparentIndex) then
             begin
-              MaskDest^ := char(byte(MaskDest^) OR Bit);
+              MaskDest^ := AnsiChar(byte(MaskDest^) OR Bit);
               WasTransparent := True;
               Ditherer.NextColumn;
             end else
@@ -7658,14 +7850,14 @@ var
   ScanLineRow		: Integer;
   DIBResult		: TDIB;
   DestScanLine		,
-  Src			: PChar;
+  Src			: PAnsiChar;
   TransparentIndex	: byte;
   IsTransparent		: boolean;
   WasTransparent	: boolean;
 
-  MaskBits		: PChar;
-  MaskDest		: PChar;
-  MaskRow		: PChar;
+  MaskBits		: PAnsiChar;
+  MaskDest		: PAnsiChar;
+  MaskRow		: PAnsiChar;
   MaskRowWidth		: integer;
   Col			: integer;
   MaskByte		: byte;
@@ -7741,7 +7933,7 @@ begin
             for Col := 0 to Width-1 do
             begin
               // Set a bit in the mask if the pixel is transparent
-              if (Src^ = char(TransparentIndex)) then
+              if (Src^ = AnsiChar(TransparentIndex)) then
                 MaskByte := MaskByte OR Bit;
 
               Bit := Bit SHR 1;
@@ -7750,7 +7942,7 @@ begin
                 // Store a mask byte for each 8 pixels
                 Bit := $80;
                 WasTransparent := WasTransparent or (MaskByte <> 0);
-                MaskDest^ := char(MaskByte);
+                MaskDest^ := AnsiChar(MaskByte);
                 inc(MaskDest);
                 MaskByte := 0;
               end;
@@ -7760,7 +7952,7 @@ begin
             if (MaskByte <> 0) then
             begin
               WasTransparent := True;
-              MaskDest^ := char(MaskByte);
+              MaskDest^ := AnsiChar(MaskByte);
             end;
             Inc(MaskRow, MaskRowWidth);
           end else
@@ -7983,8 +8175,22 @@ function TGIFSubImage.GetPixel(x, y: integer): BYTE;
 begin
   if (x < 0) or (x > Width-1) then
     Error(sBadPixelCoordinates);
-  Result := BYTE(PChar(longInt(Scanline[y]) + x)^);
+  Result := BYTE(PAnsiChar(longInt(Scanline[y]) + x)^);
 end;
+
+// 2006.10.09 ->
+procedure TGIFSubImage.SetPixel(x, y: integer; Value: BYTE );
+begin
+  if (x < 0) or (x > Width-1) or (y < 0) or (y > Height-1) then
+    Error(sBadPixelCoordinates);
+  if Value >= ActiveColorMap.FCount then
+    Error(sBadColorIndex);
+// 2008.10.19 ->
+//  BYTE(PChar(longInt(Scanline[y]) + x)^) := Value;
+  PByte(LongInt(Scanline[y]) + x)^ := Value;
+// 2008.10.19 <-
+end;
+// 2006.10.09 <-
 
 function TGIFSubImage.GetScanline(y: integer): pointer;
 begin
@@ -8079,7 +8285,7 @@ var
   DIBSource		: TDIB;
   ABitmap		: TBitmap;
 
-  procedure Import8Bit(Dest: PChar);
+  procedure Import8Bit(Dest: PAnsiChar);
   var
     y			: integer;
   begin
@@ -8100,10 +8306,10 @@ var
     end;
   end;
 
-  procedure Import4Bit(Dest: PChar);
+  procedure Import4Bit(Dest: PAnsiChar);
   var
     x, y		: integer;
-    Scanline		: PChar;
+    Scanline		: PAnsiChar;
   begin
     // Copy colormap
     FColorMap.ImportPalette(FBitmap.Palette);
@@ -8116,10 +8322,16 @@ var
       for x := 0 to Width-1 do
       begin
         if (x AND $01 = 0) then
-          Dest^ := chr(ord(ScanLine^) SHR 4)
+// 2008.10.19 ->
+//          Dest^ := chr(ord(ScanLine^) SHR 4)
+          Dest^ := AnsiChar(ord(ScanLine^) SHR 4)
+// 2008.10.19 <-
         else
         begin
-          Dest^ := chr(ord(ScanLine^) AND $0F);
+// 2008.10.19 ->
+//          Dest^ := chr(ord(ScanLine^) AND $0F);
+          Dest^ := AnsiChar(ord(ScanLine^) AND $0F);
+// 2008.10.19 <-
           inc(ScanLine);
         end;
         inc(Dest);
@@ -8127,10 +8339,10 @@ var
     end;
   end;
 
-  procedure Import1Bit(Dest: PChar);
+  procedure Import1Bit(Dest: PAnsiChar);
   var
     x, y		: integer;
-    Scanline		: PChar;
+    Scanline		: PAnsiChar;
     Bit			: integer;
     Byte		: integer;
   begin
@@ -8153,7 +8365,10 @@ var
           Byte := ord(ScanLine^);
           inc(Scanline);
         end;
-        Dest^ := chr((Byte AND $80) SHR 7);
+// 2008.10.19 ->
+//        Dest^ := chr((Byte AND $80) SHR 7);
+        Dest^ := AnsiChar((Byte AND $80) SHR 7);
+// 2008.10.19 <-
         Byte := Byte SHL 1;
         inc(Dest);
         dec(Bit);
@@ -8162,7 +8377,7 @@ var
     end;
   end;
 
-  procedure Import24Bit(Dest: PChar);
+  procedure Import24Bit(Dest: PAnsiChar);
   type
     TCacheEntry = record
       Color		: TColor;
@@ -8211,7 +8426,10 @@ var
             break;
           if (Cache[i].Color = Pixel) then
           begin
-            Dest^ := chr(Cache[i].Index);
+// 2008.10.19 ->
+//            Dest^ := chr(Cache[i].Index);
+            Dest^ := AnsiChar(Cache[i].Index);
+// 2008.10.19 <-
             LastEntry := i;
             goto NextPixel;
           end;
@@ -8221,7 +8439,10 @@ var
             dec(i);
         until (i = LastEntry);
         // Color not found in cache, do it the slow way instead
-        Dest^ := chr(FColorMap.AddUnique(Pixel));
+// 2008.10.19 ->
+//        Dest^ := chr(FColorMap.AddUnique(Pixel));
+        Dest^ := AnsiChar(FColorMap.AddUnique(Pixel));
+// 2008.10.19 <-
         // Add color and index to cache
         LastEntry := (LastEntry + 1) AND (CacheSize-1);
         Cache[LastEntry].Color := Pixel;
@@ -8273,7 +8494,7 @@ var
     i			,
     j			: integer;
     GIFPixel		,
-    MaskPixel		: PChar;
+    MaskPixel		: PAnsiChar;
     WasTransparent	: boolean;
     GCE			: TGIFGraphicControlExtension;
   begin
@@ -8298,7 +8519,10 @@ var
           // Change all unmasked pixels to transparent
           if (MaskPixel^ <> #0) then
           begin
-            GIFPixel^ := chr(TransparentIndex);
+// 2008.10.19 ->
+//            GIFPixel^ := chr(TransparentIndex);
+            GIFPixel^ := AnsiChar(TransparentIndex);
+// 2008.10.19 <-
             WasTransparent := True;
           end;
           inc(MaskPixel);
@@ -8828,11 +9052,11 @@ var
   WasTransparent	: boolean;
   i			: integer;
   NewSize		: integer;
-  NewData		: PChar;
+  NewData		: PAnsiChar;
   NewWidth		,
   NewHeight		: integer;
   pSource		,
-  pDest			: PChar;
+  pDest			: PAnsiChar;
 begin
   if (Empty) or (not Transparent) then
     exit;
@@ -8908,7 +9132,7 @@ begin
     Newheight := CropBottom - CropTop + 1;
     NewSize := NewWidth * NewHeight;
     GetMem(NewData, NewSize);
-    pSource := PChar(integer(FData) + CropTop * Width + CropLeft);
+    pSource := PAnsiChar(integer(FData) + CropTop * Width + CropLeft);
     pDest := NewData;
     for i := 0 to NewHeight-1 do
     begin
@@ -8941,7 +9165,7 @@ var
   X			,
   Y			: integer;
   pSource		,
-  pDest			: PChar;
+  pDest			: PAnsiChar;
   pSourceMap		,
   pDestMap		: PColorMap;
   GCE			: TGIFGraphicControlExtension;
@@ -9025,16 +9249,16 @@ begin
 
   for Y := MergeRect.Top - Top to MergeRect.Bottom - Top-1 do
   begin
-    pSource := PChar(integer(Previous.Scanline[PreviousY]) + MergeRect.Left - Previous.Left);
-    pDest := PChar(integer(Scanline[Y]) + MergeRect.Left - Left);
+    pSource := PAnsiChar(integer(Previous.Scanline[PreviousY]) + MergeRect.Left - Previous.Left);
+    pDest := PAnsiChar(integer(Scanline[Y]) + MergeRect.Left - Left);
 
     for X := MergeRect.Left to MergeRect.Right-1 do
     begin
       // Ignore pixels if either this frame's or the previous frame's pixel is transparent
       if (
             not(
-              ((not NeedTransparentColorIndex) and (pDest^ = char(DestIndex))) or
-              ((SourceTransparent) and (pSource^ = char(SourceIndex)))
+              ((not NeedTransparentColorIndex) and (pDest^ = AnsiChar(DestIndex))) or
+              ((SourceTransparent) and (pSource^ = AnsiChar(SourceIndex)))
             )
           ) and (
             // Replace same colored pixels with transparency
@@ -9047,7 +9271,7 @@ begin
           NeedTransparentColorIndex := False;
           DestIndex := GetTransparentColorIndex;
         end;
-        pDest^ := char(DestIndex);
+        pDest^ := AnsiChar(DestIndex);
       end;
       inc(pDest);
       inc(pSource);
@@ -9677,6 +9901,7 @@ begin
   // Some old Adobe export filters mistakenly uses a value of 10
   if (Size = 10) then
   begin
+    { TODO -oanme -cImprovement : replace with seek or read and check contents = 'Adobe' }
     if (Stream.Read(eIdent, 10) <> 10) then
       exit;
     Result := TGIFUnknownAppExtension;
@@ -9716,28 +9941,28 @@ begin
   Result := bsApplicationExtension;
 end;
 
-function TGIFApplicationExtension.GetAuthentication: string;
+function TGIFApplicationExtension.GetAuthentication: AnsiString;
 begin
   Result := FIdent.Authentication;
 end;
 
-procedure TGIFApplicationExtension.SetAuthentication(const Value: string);
+procedure TGIFApplicationExtension.SetAuthentication(const Value: AnsiString);
 begin
   if (Length(Value) < sizeof(TGIFAuthenticationCode)) then
     FillChar(FIdent.Authentication, sizeof(TGIFAuthenticationCode), 32);
-  StrLCopy(@(FIdent.Authentication[0]), PChar(Value), sizeof(TGIFAuthenticationCode));
+  StrLCopy(@(FIdent.Authentication[0]), PAnsiChar(Value), sizeof(TGIFAuthenticationCode));
 end;
 
-function TGIFApplicationExtension.GetIdentifier: string;
+function TGIFApplicationExtension.GetIdentifier: AnsiString;
 begin
   Result := FIdent.Identifier;
 end;
 
-procedure TGIFApplicationExtension.SetIdentifier(const Value: string);
+procedure TGIFApplicationExtension.SetIdentifier(const Value: AnsiString);
 begin
   if (Length(Value) < sizeof(TGIFIdentifierCode)) then
     FillChar(FIdent.Identifier, sizeof(TGIFIdentifierCode), 32);
-  StrLCopy(@(FIdent.Identifier[0]), PChar(Value), sizeof(TGIFIdentifierCode));
+  StrLCopy(@(FIdent.Identifier[0]), PAnsiChar(Value), sizeof(TGIFIdentifierCode));
 end;
 
 procedure TGIFApplicationExtension.SaveToStream(Stream: TStream);
@@ -10845,7 +11070,7 @@ end;
 function THistogram.ProcessSubImage(Image: TGIFSubImage): boolean;
 var
   Size			: integer;
-  Pixel			: PChar;
+  Pixel			: PAnsiChar;
   IsTransparent		,
   WasTransparent	: boolean;
   OldTransparentColorIndex: byte;
@@ -10941,7 +11166,7 @@ procedure THistogram.MapImages(UseTransparency: boolean; NewTransparentColorInde
 var
   i			: integer;
   Size			: integer;
-  Pixel			: PChar;
+  Pixel			: PAnsiChar;
   ReverseMap		: array[byte] of byte;
   IsTransparent		: boolean;
   OldTransparentColorIndex: byte;
@@ -10976,10 +11201,10 @@ begin
       begin
         // Map transparent pixels to the new transparent color index and...
         if (IsTransparent) and (ord(Pixel^) = OldTransparentColorIndex) then
-          Pixel^ := char(NewTransparentColorIndex)
+          Pixel^ := AnsiChar(NewTransparentColorIndex)
         else
           // ... all other pixels to their new color index
-          Pixel^ := char(ReverseMap[ord(Pixel^)]);
+          Pixel^ := AnsiChar(ReverseMap[ord(Pixel^)]);
         dec(size);
         inc(Pixel);
       end;
@@ -11466,7 +11691,7 @@ var
   Prog			,
   MaxProg		: integer;
 
-  function Scan(Buf: PChar; Value: Byte; Count: integer): boolean; assembler;
+  function Scan(Buf: PAnsiChar; Value: Byte; Count: integer): boolean; assembler;
   asm
     PUSH	EDI
     MOV		EDI, Buf
@@ -11648,6 +11873,7 @@ begin
       begin
         if (ColorReduction = rmPalette) then
           Error(sInvalidReduction);
+        { TODO -oanme -cFeature : Implement ooReduceColors option. }
         // Not implemented!
       end;
     finally
@@ -11711,6 +11937,25 @@ begin
   end;
 end;
 
+// 2006.07.09 ->
+{$IFDEF FIXHEADER_WIDTHHEIGHT_SILENT}
+procedure TGIFImage.FixHeaderWidthHeight;
+var
+  i, w, h: Integer;
+begin
+  for i := 0 to Images.Count - 1 do
+  begin
+    w := Images.SubImages[i].Left + Images.SubImages[i].Width;
+    h := Images.SubImages[i].Top + Images.SubImages[i].Height;
+    if w > Header.Width then
+      Header.Width := w;
+    if h > Header.Height then
+      Header.Height := h;
+  end;
+end;
+{$ENDIF}
+// 2006.07.09 <-
+
 procedure TGIFImage.LoadFromStream(Stream: TStream);
 var
   n			: Integer;
@@ -11726,6 +11971,9 @@ begin
       FHeader.LoadFromStream(Stream);
       // Read images
       FImages.LoadFromStream(Stream, self);
+      {$IFDEF FIXHEADER_WIDTHHEIGHT_SILENT}
+      FixHeaderWidthHeight;  // 2006.07.09
+      {$ENDIF}
       // Read trailer
       with TGIFTrailer.Create(self) do
         try
@@ -11995,6 +12243,7 @@ begin
     inherited AssignTo(Dest);
 end;
 
+{ TODO 1 -oanme -cImprovement : Better handling of TGIFImage.Assign(Empty TBitmap). }
 procedure TGIFImage.Assign(Source: TPersistent);
 var
   i			: integer;
@@ -12042,6 +12291,9 @@ begin
           Progress(Self, psRunning, MulDiv((i+1), 100, TGIFImage(Source).Images.Count),
             False, Rect(0,0,0,0), sProgressCopying);
         end;
+        {$IFDEF FIXHEADER_WIDTHHEIGHT_SILENT}
+        FixHeaderWidthHeight;  // 2006.07.09
+        {$ENDIF}
       finally
         if ExceptObject = nil then
           i := 100
@@ -12625,7 +12877,13 @@ var
 initialization
 {$IFDEF REGISTER_TGIFIMAGE}
   TPicture.RegisterFileFormat('GIF', sGIFImageFile, TGIFImage);
-  CF_GIF := RegisterClipboardFormat(PChar(sGIFImageFile));
+// 2008.10.19 ->
+{$IFDEF VER20_PLUS}
+  CF_GIF := RegisterClipboardFormat(PWideChar(sGIFImageFile));
+{$ELSE}
+  CF_GIF := RegisterClipboardFormat(PAnsiChar(sGIFImageFile));
+{$ENDIF}
+// 2008.10.19 <-
   TPicture.RegisterClipboardFormat(CF_GIF, TGIFImage);
 {$ENDIF}
   DesktopDC := GetDC(0);
@@ -12676,7 +12934,14 @@ finalization
 {$IFDEF VER12_PLUS}
   {$IFNDEF VER14_PLUS} // not anymore need for Delphi 6 and up  // 2001.07.23
   if (DummyThread <> nil) then
+// 2006.10.16 ->
+//    DummyThread.Free;
+  begin
+    DummyThread.Resume;
+    DummyThread.WaitFor;
     DummyThread.Free;
+  end;
+// 2006.10.16 <-
   {$ENDIF}  // 2001.07.23
 {$ENDIF}
 end.

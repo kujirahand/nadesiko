@@ -41,7 +41,7 @@ var
 
 procedure SetWinText(h: HWND; s: AnsiString);
 begin
-  SendMessage(h, WM_SETTEXT, 0, LPARAM(PAnsiChar(s)));
+  SendMessageA(h, WM_SETTEXT, 0, LPARAM(PAnsiChar(s)));
 end;
 
 procedure SetDlgWinText(hDlg: HWND; id: DWORD; s: AnsiString);
@@ -91,7 +91,7 @@ begin
 
   SetDlgWinText(DialogHandle, IDC_EDIT_TEXT, text);
   SetDlgWinText(DialogHandle, IDC_EDIT_INFO, info);
-  SetWindowText(DialogHandle, PAnsiChar(title));
+  SetWindowTextA(DialogHandle, PAnsiChar(title));
 
   if FlagShowDialog then
   begin
@@ -177,7 +177,7 @@ begin
       // Caption
       if dinfo.Caption <> '' then
       begin
-        SetWindowText(hDlg, PAnsiChar(dinfo.Caption));
+        SetWindowTextA(hDlg, PAnsiChar(dinfo.Caption));
       end;
       // IME
       if dinfo.ImeMode > 0 then

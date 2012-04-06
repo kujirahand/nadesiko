@@ -141,41 +141,41 @@ type
     destructor Destroy; override;
 
     //プラグイン読み込み・開放
-    procedure LoadPlugIn(Dir:String);
-    procedure LoadPlugInArc(Dir:String);
+    procedure LoadPlugIn(Dir: AnsiString);
+    procedure LoadPlugInArc(Dir: AnsiString);
     procedure FreePlugIn;
 
     //画像読み込み関数
     procedure LoadFromStream(Stream:TStream;BMP:TBitmap);
-    procedure LoadFromFile(FileName:String;BMP:TBitmap);
+    procedure LoadFromFile(FileName: AnsiString;BMP:TBitmap);
     procedure LoadFromMemory(Buf: PChar; Len: Longint;BMP:TBitmap);
 
     {
     //アーカイブから画像を読み出し
     procedure LoadFromStreamArcPic(Stream,Stream2:TStream;BMP:TBitmap);
-    procedure LoadFromFileArcPic(ARCName,PicName:String;BMP:TBitmap);
+    procedure LoadFromFileArcPic(ARCName,PicName: AnsiString;BMP:TBitmap);
     }
     //アーカイブからファイルをそのままセーブ処理
-    procedure SaveToFile(ArcFIleName,FileName:String);
-    procedure SaveToStream(FileName,ArcFileName:String;Stream:TStream);
-    procedure SaveToMemory(Buf: PChar;FIleName,ArcFileName:String);
+    procedure SaveToFile(ArcFIleName,FileName: AnsiString);
+    procedure SaveToStream(FileName,ArcFileName: AnsiString;Stream:TStream);
+    procedure SaveToMemory(Buf: PChar;FIleName,ArcFileName: AnsiString);
 
     //プラグインのリスト
     procedure ListArc(List:TStrings;bClear:Boolean);
     procedure ListPic(List:TStrings;bClear:Boolean);
 
     //アーカイブ内ファイルのリスト
-    procedure ArcFileList(ArcFileName:String;List:TStrings);
+    procedure ArcFileList(ArcFileName: AnsiString;List:TStrings);
 
     //サポートしてるか
-    function SupportArcFile(FIleName:String):Boolean;
-    function SupportPicFile(FIleName:String):Boolean; // by Mine
-    function SupportPicFileList: string;
+    function SupportArcFile(FIleName: AnsiString):Boolean;
+    function SupportPicFile(FIleName: AnsiString):Boolean; // by Mine
+    function SupportPicFileList: AnsiString;
   published
     { Published 宣言 }
     //プロパティ
-    property  AFilter: String read ARCFilters;
-    property  PFilter: String read PICFilters;
+    property  AFilter: AnsiString read ARCFilters;
+    property  PFilter: AnsiString read PICFilters;
     property  ArcPlugInList:TStrings read APIL;
     property  PicPlugInList:TStrings read SPIL;
 
@@ -227,10 +227,10 @@ begin
   Inherited;
 end;
 
-procedure TSpiLib32.LoadPlugIn(Dir:String);
+procedure TSpiLib32.LoadPlugIn(Dir: AnsiString);
 var SR  :TSearchRec;
     Re  :Integer;
-    s   :String;
+    s   : AnsiString;
     pPo :Pointer;
     pPic:PPicPlug;
     buf :PChar;
@@ -335,10 +335,10 @@ begin
 
 end;
 
-procedure TSpiLib32.LoadPlugInArc(Dir:String);
+procedure TSpiLib32.LoadPlugInArc(Dir: AnsiString);
 var SR  :TSearchRec;
     Re  :Integer;
-    s   :String;
+    s   : AnsiString;
     pPo :Pointer;
     pArc:PArcPlug;
     buf :PChar;
@@ -525,7 +525,7 @@ begin
 end;
 
 
-procedure TSpiLib32.LoadFromFile(FileName:String;BMP:TBitmap);
+procedure TSpiLib32.LoadFromFile(FileName: AnsiString;BMP:TBitmap);
 var Stream:TMemoryStream;
 begin
 
@@ -538,7 +538,7 @@ begin
     end;
 end;
 
-procedure TSpiLib32.SaveToFile(ArcFIleName,FileName:String);
+procedure TSpiLib32.SaveToFile(ArcFIleName,FileName: AnsiString);
 var ms:TMemoryStream;
 begin
 
@@ -551,7 +551,7 @@ begin
    end;
 end;
 
-procedure TSpiLib32.SaveToStream(FileName,ArcFileName:String;Stream:TStream);
+procedure TSpiLib32.SaveToStream(FileName,ArcFileName: AnsiString;Stream:TStream);
 var ms:TMemoryStream;
 begin
 
@@ -564,7 +564,7 @@ begin
   end;
 end;
 
-procedure TSpiLib32.SaveToMemory(Buf: PChar;FIleName,ArcFileName:String);
+procedure TSpiLib32.SaveToMemory(Buf: PChar;FIleName,ArcFileName: AnsiString);
 var i   :Integer;
     pArc:pArcPlug;
     finf:TFileInfo;
@@ -585,7 +585,7 @@ begin
     end;
 end;
 
-function TSpiLib32.SupportArcFile(FIleName:String):Boolean;
+function TSpiLib32.SupportArcFile(FIleName: AnsiString):Boolean;
 var i,j :Integer;
     pArc:pArcPlug;
     ms  :TMemoryStream;
@@ -613,7 +613,7 @@ begin
   end;
 end;
 
-procedure TSpiLib32.ArcFileList(ArcFileName:String;List:TStrings);
+procedure TSpiLib32.ArcFileList(ArcFileName: AnsiString;List:TStrings);
 var i,j :Integer;
     pArc:pArcPlug;
     LMem:HLOCAL;
@@ -713,12 +713,12 @@ begin
 end;
 
 
-function TSpiLib32.SupportPicFile(FileName: String): Boolean;
+function TSpiLib32.SupportPicFile(FileName: AnsiString): Boolean;
 var i :Integer;
     pPic:PPicPlug;
-    ext, s, token: string;
+    ext, s, token: AnsiString;
 
-    function GetToken(const delimiter: String; var str: string): String;
+    function GetToken(const delimiter: AnsiString; var str: AnsiString): AnsiString;
     var
         i: Integer;
     begin
@@ -755,10 +755,10 @@ begin
     end;
 end;
 
-function TSpiLib32.SupportPicFileList: string;
+function TSpiLib32.SupportPicFileList: AnsiString;
 var i :Integer;
     pPic:PPicPlug;
-    ext, s, token: string;
+    ext, s, token: AnsiString;
 
 begin
     Result := '';

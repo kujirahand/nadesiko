@@ -5,18 +5,19 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, Menus,ValEdit, Grids, ComCtrls, StrSortGrid,
-  UIWebBrowser, Spin, TrackBox, HEditor, jpeg, mag, GIFImage,
-  dnako_import, dnako_import_types, NadesikoFountain, HTMLFountain,
-  JavaFountain, CppFountain, PerlFountain, DelphiFountain, HViewEdt, heFountain,
-  heRaStrings, fileDrop, mmsystem, printers, Buttons, EasyMasks, shellapi, MSHTML_TLB,
-  imm,ActiveX,TntStdCtrls,TntExtCtrls, TntGrids
+  UIWebBrowser, Spin, TrackBox, jpeg, mag, GIFImage,
+  dnako_import, dnako_import_types,
+  fileDrop, mmsystem, printers, Buttons, EasyMasks, shellapi,
+  imm, ActiveX, MSHTML_TLB,
+  // TEditor
+  HEdtProp, heFountain
+  //
 {$IF RTLVersion >=15}
-  ,XPMan, gldpng
+  ,XPMan
 {$ELSE}
   ,pngimage
 {$IFEND}
   ;
-
 const
   EVENT_CLICK       = 'クリックした時';
   EVENT_DBLCLICK    = 'ダブルクリックした時';
@@ -133,7 +134,7 @@ type
     pgroup  : PHiValue;
     obj     : TComponent;
     obj_type: Integer;
-    name    : string;
+    name    : AnsiString;
     name_id : DWORD;
     fileDrop: TFileDrop;
     freetag: Integer; // 自由に使えるタグ
@@ -153,8 +154,8 @@ procedure getPenBrush(Canvas: TCanvas = nil);
 procedure getFont(Canvas: TCanvas = nil);
 procedure getFontDialog(Font: TFont = nil);
 procedure setFontName(Font: TFont; name: string);
-function nako_eval_str(src: string): PHiValue;
-procedure nako_eval_str2(src: string);
+function nako_eval_str(src: AnsiString): PHiValue;
+procedure nako_eval_str2(src: AnsiString);
 
 function RGB2Color(c: Integer): Integer;
 function Color2RGB(c: TColor): Integer;
@@ -171,23 +172,23 @@ function vcl_free(h: DWORD): PHiValue; stdcall;
 
 function LoadPic(fname: string): TBitmap;
 procedure SavePic(bmp: TBitmap; fname: string);
-function fontStyleToStr(fs: TFontStyles): string;
+function fontStyleToStr(fs: TFontStyles): AnsiString;
 function StrTofontStyle(fs: string): TFontStyles;
 
 procedure setDialogIME(h: THandle); //ダイアログIME状態
-function setControlIME(v: string): TImeMode;
-function getIMEStatusName(mode: TImeMode): string; //IME状態
+function setControlIME(v: AnsiString): TImeMode;
+function getIMEStatusName(mode: TImeMode): AnsiString; //IME状態
 procedure GetDialogSetting(var title: string; var init: string; var cancel: string; var ime: string);
-function getDialogS(ValueName: string; initValue: string): string; // ダイアログ詳細から値を取り出す
+function getDialogS(ValueName: AnsiString; initValue: AnsiString): AnsiString; // ダイアログ詳細から値を取り出す
 
 function getGui(g: PHiValue): TObject; // オブジェクトを取得
-function getGuiName(g: PHiValue): string; // オブジェクトの名前を取得
+function getGuiName(g: PHiValue): AnsiString; // オブジェクトの名前を取得
 function getGuiObj(o: PHiValue): TObject; // オブジェクトを取得
 function getCanvasFromObj(obj: TObject): TCanvas; // オブジェクトを取得
 function getCanvas(o: PHiValue): TCanvas; // オブジェクトを取得
 function getBmp(o: PHiValue): TBitmap; // オブジェクトを取得
 function getImage(o: PHiValue): TImage; // オブジェクトを取得
-function getGroupName(group: PHiValue): string; // グループ名を取得する
+function getGroupName(group: PHiValue): AnsiString; // グループ名を取得する
 
 function IsDialogConvNum: Boolean;
 
@@ -498,135 +499,6 @@ type
     property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
   end;
 
-  TTntButton = class(TntStdCtrls.TTntButton)
-  private
-    FHoverTime : Cardinal;
-    FOnMouseEnter : TNotifyEvent;
-    FOnMouseLeave : TNotifyEvent;
-    FOnMouseHover : TMouseEvent;
-    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
-    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
-    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
-  public
-    property HoverTime:Cardinal read FHoverTime write FHoverTime;
-    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
-    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
-    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
-  end;
-
-  TTntEdit = class(TntStdCtrls.TTntEdit)
-  private
-    FHoverTime : Cardinal;
-    FOnMouseEnter : TNotifyEvent;
-    FOnMouseLeave : TNotifyEvent;
-    FOnMouseHover : TMouseEvent;
-    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
-    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
-    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
-  public
-    property HoverTime:Cardinal read FHoverTime write FHoverTime;
-    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
-    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
-    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
-  end;
-
-  TTntMemo = class(TntStdCtrls.TTntMemo)
-  private
-    FHoverTime : Cardinal;
-    FOnMouseEnter : TNotifyEvent;
-    FOnMouseLeave : TNotifyEvent;
-    FOnMouseHover : TMouseEvent;
-    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
-    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
-    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
-  public
-    property HoverTime:Cardinal read FHoverTime write FHoverTime;
-    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
-    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
-    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
-  end;
-
-  TTntListBox = class(TntStdCtrls.TTntListBox)
-  private
-    FHoverTime : Cardinal;
-    FOnMouseEnter : TNotifyEvent;
-    FOnMouseLeave : TNotifyEvent;
-    FOnMouseHover : TMouseEvent;
-    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
-    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
-    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
-  public
-    property HoverTime:Cardinal read FHoverTime write FHoverTime;
-    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
-    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
-    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
-  end;
-
-  TTntComboBox = class(TntStdCtrls.TTntComboBox)
-  private
-    FHoverTime : Cardinal;
-    FOnMouseEnter : TNotifyEvent;
-    FOnMouseLeave : TNotifyEvent;
-    FOnMouseHover : TMouseEvent;
-    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
-    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
-    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
-  public
-    property HoverTime:Cardinal read FHoverTime write FHoverTime;
-    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
-    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
-    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
-  end;
-
-  TTntCheckBox = class(TntStdCtrls.TTntCheckBox)
-  private
-    FHoverTime : Cardinal;
-    FOnMouseEnter : TNotifyEvent;
-    FOnMouseLeave : TNotifyEvent;
-    FOnMouseHover : TMouseEvent;
-    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
-    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
-    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
-  public
-    property HoverTime:Cardinal read FHoverTime write FHoverTime;
-    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
-    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
-    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
-  end;
-
-  TTntStringGrid = class(TntGrids.TTntStringGrid)
-  private
-    FHoverTime : Cardinal;
-    FOnMouseEnter : TNotifyEvent;
-    FOnMouseLeave : TNotifyEvent;
-    FOnMouseHover : TMouseEvent;
-    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
-    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
-    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
-  public
-    property HoverTime:Cardinal read FHoverTime write FHoverTime;
-    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
-    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
-    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
-  end;
-
-  TTntLabel = class(TntStdCtrls.TTntLabel)
-  private
-    FHoverTime : Cardinal;
-    FOnMouseEnter : TNotifyEvent;
-    FOnMouseLeave : TNotifyEvent;
-    FOnMouseHover : TMouseEvent;
-    procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
-    procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
-    procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
-  public
-    property HoverTime:Cardinal read FHoverTime write FHoverTime;
-    property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
-    property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
-    property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
-  end;
-
-
 implementation
 
 uses
@@ -636,13 +508,14 @@ uses
 {$ELSE}
   SHDocVw_TLB,
 {$IFEND}
-  EditorEx, TypInfo, frmDebugU, Math, AnimeBox, ABitmap,
+  TypInfo, frmDebugU, Math, AnimeBox, ABitmap,
   ABitmapFilters, bmp_filter, nstretchf, frmMemoU, frmInputU,
   unit_pack_files, hima_stream, frmInputListU, frmPasswordU,
   frmSelectButtonU, dll_plugin_helper, unit_tree_list, frmSayU,
   frmInputNumU, frmHukidasiU, jvIcon, clipbrd, memoXP, SPILib,
-  MedianCut, unit_vista, frmListU, unit_nakopanel, HEdtProp, GraphicEx,
-  frmCalendarU, frmErrorU;
+  MedianCut, unit_vista, frmListU, unit_nakopanel, GraphicEx,
+  frmCalendarU, frmErrorU
+  , NadesikoFountain, DelphiFountain, HTMLFountain;
 
 type
   TRingBufferString = class
@@ -650,13 +523,13 @@ type
       FCapacity: integer;
       FFront: integer;
       FBack: integer;
-      FBuffer: array of char;
-      procedure SetText(const str:string);
-      function GetText:string;
+      FBuffer: array of AnsiChar;
+      procedure SetText(const str:AnsiString);
+      function GetText:AnsiString;
     public
-      procedure Add(const str:string);
-      property Capacity:integer read FCapacity;
-      property Text:string read GetText write SetText;
+      procedure Add(const str:AnsiString);
+      property Capacity:Integer read FCapacity;
+      property Text:AnsiString read GetText write SetText;
       constructor Create(maxsize:integer);
   end;
 
@@ -1127,21 +1000,22 @@ begin
   end;
 end;
 
-{TTntButton}
-procedure TTntButton.CMMouseEnter(var Msg:TMessage);
+(*
+{TButton}
+procedure TButton.CMMouseEnter(var Msg:TMessage);
 begin
   if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
     FOnMouseEnter(self);
   _TrackMouseEvent(Self.Handle,FHoverTime);
 end;
 
-procedure TTntButton.CMMouseLeave(var Msg:TMessage);
+procedure TButton.CMMouseLeave(var Msg:TMessage);
 begin
   if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
     FOnMouseLeave(Self);
 end;
 
-procedure TTntButton.WMMouseHover(var Msg:TMessage);
+procedure TButton.WMMouseHover(var Msg:TMessage);
 begin
   if Assigned(FOnMouseHover) then
   begin
@@ -1150,21 +1024,21 @@ begin
   end;
 end;
 
-{TTntEdit}
-procedure TTntEdit.CMMouseEnter(var Msg:TMessage);
+{TEdit}
+procedure TEdit.CMMouseEnter(var Msg:TMessage);
 begin
   if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
     FOnMouseEnter(self);
   _TrackMouseEvent(Self.Handle,FHoverTime);
 end;
 
-procedure TTntEdit.CMMouseLeave(var Msg:TMessage);
+procedure TEdit.CMMouseLeave(var Msg:TMessage);
 begin
   if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
     FOnMouseLeave(Self);
 end;
 
-procedure TTntEdit.WMMouseHover(var Msg:TMessage);
+procedure TEdit.WMMouseHover(var Msg:TMessage);
 begin
   if Assigned(FOnMouseHover) then
   begin
@@ -1173,21 +1047,21 @@ begin
   end;
 end;
 
-{TTntMemo}
-procedure TTntMemo.CMMouseEnter(var Msg:TMessage);
+{TMemo}
+procedure TMemo.CMMouseEnter(var Msg:TMessage);
 begin
   if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
     FOnMouseEnter(self);
   _TrackMouseEvent(Self.Handle,FHoverTime);
 end;
 
-procedure TTntMemo.CMMouseLeave(var Msg:TMessage);
+procedure TMemo.CMMouseLeave(var Msg:TMessage);
 begin
   if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
     FOnMouseLeave(Self);
 end;
 
-procedure TTntMemo.WMMouseHover(var Msg:TMessage);
+procedure TMemo.WMMouseHover(var Msg:TMessage);
 begin
   if Assigned(FOnMouseHover) then
   begin
@@ -1196,21 +1070,21 @@ begin
   end;
 end;
 
-{TTntListBox}
-procedure TTntListBox.CMMouseEnter(var Msg:TMessage);
+{TListBox}
+procedure TListBox.CMMouseEnter(var Msg:TMessage);
 begin
   if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
     FOnMouseEnter(self);
   _TrackMouseEvent(Self.Handle,FHoverTime);
 end;
 
-procedure TTntListBox.CMMouseLeave(var Msg:TMessage);
+procedure TListBox.CMMouseLeave(var Msg:TMessage);
 begin
   if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
     FOnMouseLeave(Self);
 end;
 
-procedure TTntListBox.WMMouseHover(var Msg:TMessage);
+procedure TListBox.WMMouseHover(var Msg:TMessage);
 begin
   if Assigned(FOnMouseHover) then
   begin
@@ -1219,21 +1093,21 @@ begin
   end;
 end;
 
-{TTntComboBox}
-procedure TTntComboBox.CMMouseEnter(var Msg:TMessage);
+{TComboBox}
+procedure TComboBox.CMMouseEnter(var Msg:TMessage);
 begin
   if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
     FOnMouseEnter(self);
   _TrackMouseEvent(Self.Handle,FHoverTime);
 end;
 
-procedure TTntComboBox.CMMouseLeave(var Msg:TMessage);
+procedure TComboBox.CMMouseLeave(var Msg:TMessage);
 begin
   if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
     FOnMouseLeave(Self);
 end;
 
-procedure TTntComboBox.WMMouseHover(var Msg:TMessage);
+procedure TComboBox.WMMouseHover(var Msg:TMessage);
 begin
   if Assigned(FOnMouseHover) then
   begin
@@ -1242,21 +1116,21 @@ begin
   end;
 end;
 
-{TTntCheckBox}
-procedure TTntCheckBox.CMMouseEnter(var Msg:TMessage);
+{TCheckBox}
+procedure TCheckBox.CMMouseEnter(var Msg:TMessage);
 begin
   if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
     FOnMouseEnter(self);
   _TrackMouseEvent(Self.Handle,FHoverTime);
 end;
 
-procedure TTntCheckBox.CMMouseLeave(var Msg:TMessage);
+procedure TCheckBox.CMMouseLeave(var Msg:TMessage);
 begin
   if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
     FOnMouseLeave(Self);
 end;
 
-procedure TTntCheckBox.WMMouseHover(var Msg:TMessage);
+procedure TCheckBox.WMMouseHover(var Msg:TMessage);
 begin
   if Assigned(FOnMouseHover) then
   begin
@@ -1265,21 +1139,21 @@ begin
   end;
 end;
 
-{TTntStringGrid}
-procedure TTntStringGrid.CMMouseEnter(var Msg:TMessage);
+{TStringGrid}
+procedure TStringGrid.CMMouseEnter(var Msg:TMessage);
 begin
   if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
     FOnMouseEnter(self);
   _TrackMouseEvent(Self.Handle,FHoverTime);
 end;
 
-procedure TTntStringGrid.CMMouseLeave(var Msg:TMessage);
+procedure TStringGrid.CMMouseLeave(var Msg:TMessage);
 begin
   if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
     FOnMouseLeave(Self);
 end;
 
-procedure TTntStringGrid.WMMouseHover(var Msg:TMessage);
+procedure TStringGrid.WMMouseHover(var Msg:TMessage);
 begin
   if Assigned(FOnMouseHover) then
   begin
@@ -1288,21 +1162,21 @@ begin
   end;
 end;
 
-{TTntLabel}
-procedure TTntLabel.CMMouseEnter(var Msg:TMessage);
+{TLabel}
+procedure TLabel.CMMouseEnter(var Msg:TMessage);
 begin
   if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
     FOnMouseEnter(self);
   //_TrackMouseEvent(Self.Handle,FHoverTime);
 end;
 
-procedure TTntLabel.CMMouseLeave(var Msg:TMessage);
+procedure TLabel.CMMouseLeave(var Msg:TMessage);
 begin
   if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
     FOnMouseLeave(Self);
 end;
 
-procedure TTntLabel.WMMouseHover(var Msg:TMessage);
+procedure TLabel.WMMouseHover(var Msg:TMessage);
 begin
   if Assigned(FOnMouseHover) then
   begin
@@ -1311,6 +1185,7 @@ begin
   end;
 end;
 
+*)
 
 constructor TRingBufferString.Create(maxsize:integer);
 begin
@@ -1320,7 +1195,7 @@ begin
   FBack := 0;
 end;
 
-function TRingBufferString.GetText:string;
+function TRingBufferString.GetText:AnsiString;
 begin
   if FFront = FBack then
     Result := ''
@@ -1336,7 +1211,7 @@ begin
   end;
 end;
 
-procedure TRingBufferString.SetText(const str:string);
+procedure TRingBufferString.SetText(const str:AnsiString);
 begin
   FFront := 0;
   if Length(str) < FCapacity then
@@ -1351,7 +1226,7 @@ begin
   end;
 end;
 
-procedure TRingBufferString.Add(const str:string);
+procedure TRingBufferString.Add(const str:AnsiString);
 var
   len,front:Integer;
 begin
@@ -1396,22 +1271,22 @@ begin
   end;
 end;
 
-function nako_eval_str(src: string): PHiValue;
+function nako_eval_str(src: AnsiString): PHiValue;
 var
-  s: string;
+  s: AnsiString;
 begin
   Result := nil;
 
-  if nako_evalEx(PChar(src), Result) = False then
+  if nako_evalEx(PAnsiChar(src), Result) = False then
   begin
     s := nako_getErrorStr;
     nako_continue;
-    raise Exception.Create(s);
+    raise Exception.Create(string(s));
   end;
 
 end;
 
-procedure nako_eval_str2(src: string);
+procedure nako_eval_str2(src: AnsiString);
 var
   p: PHiValue;
 begin
@@ -1468,7 +1343,7 @@ end;
 function ShowModalCheck(Form, Parent: TForm): Integer;
 var
   b: Boolean;
-  cap: string;
+  cap: AnsiString;
 begin
   if (Parent is TForm) then
   begin
@@ -1508,9 +1383,9 @@ function LoadPic(fname: string): TBitmap;
 
 {$IF RTLVersion >=15}
   procedure _png;
-  var png: TGldPng;
+  var png: TPNGGraphic;
   begin
-    png := TGldPng.Create;
+    png := TPNGGraphic.Create;
     try
       png.LoadFromFile(fname);
       Result.Assign(png);
@@ -1610,8 +1485,8 @@ function LoadPic(fname: string): TBitmap;
   begin
     spi := TSpiLib32.Create(nil);
     try
-      spi.LoadPlugIn(ExtractFilePath(ParamStr(0)));
-      spi.LoadFromFile(fname, Result);
+      spi.LoadPlugIn(AnsiString(ExtractFilePath(ParamStr(0))));
+      spi.LoadFromFile(AnsiString(fname), Result);
     finally
       spi.Free;
     end;
@@ -1639,7 +1514,7 @@ begin
   ext := LowerCase(ExtractFileExt(fname));
   if ext = '' then
   begin
-    p := nako_getVariable(PChar(fname));
+    p := nako_getVariable(PAnsiChar(AnsiString(fname)));
     if (p<>nil)and(p.VType = varGroup) then
     begin
       b := GetBMP(p);
@@ -1687,7 +1562,7 @@ var
   begin
     bmp.PixelFormat := pf24bit;
 {$IF RTLVersion >=15}
-    g := TGldPng.Create;
+    g := TPNGGraphic.Create;
 {$ELSE}
     g := TPNGObject.Create;
 {$IFEND}
@@ -1767,7 +1642,7 @@ begin
   g.Free;
 end;
 
-function fontStyleToStr(fs: TFontStyles): string;
+function fontStyleToStr(fs: TFontStyles): AnsiString;
 begin
   //fsBold, fsItalic, fsUnderline, fsStrikeOut)
   Result := '';
@@ -1788,7 +1663,7 @@ end;
 
 procedure getPenBrush(Canvas: TCanvas = nil);
 var
-  ps, bs: string;
+  ps, bs: AnsiString;
 begin
   if Canvas = nil then Canvas := Bokan.BackCanvas;
 
@@ -1828,7 +1703,7 @@ var
 begin
   //Bokan.Canvas.CSelectFont(hi_str(baseFont), nako_var2int(baseFontSize));
   if Canvas = nil then Canvas := Bokan.BackCanvas;
-  s := hi_str(baseFont);
+  s := hi_strU(baseFont);
 
   Canvas.Font.Size    := hi_int(baseFontSize);
   Canvas.Font.Charset := DEFAULT_CHARSET;
@@ -1837,12 +1712,12 @@ begin
 
   if Pos('|', s) > 0 then
   begin // 複数指定あり
-    Canvas.Font.Name   := getToken_s(s, '|');
+    Canvas.Font.Name   := string(getToken_s(s, '|'));
     if s <> '' then Canvas.Font.Size  := StrToIntDef(getToken_s(s,'|'),10);
     if s <> '' then Canvas.Font.Style := StrTofontStyle(getToken_s(s,'|'));
   end else
   begin
-    Canvas.Font.Name   := s;
+    Canvas.Font.Name   := string(s);
   end;
 
 end;
@@ -1850,26 +1725,28 @@ end;
 procedure getFontDialog(Font: TFont);
 var
   s: string;
+  sa: AnsiString;
 begin
   getFont(bokan.BackCanvas);
   if Font = nil then Font := Bokan.BackCanvas.Font;
 
-  Font.Size    := StrToIntDef(getDialogS('文字サイズ','10'),10);
+  Font.Size    := StrToIntDefA(getDialogS('文字サイズ','10'),10);
   Font.Charset := DEFAULT_CHARSET;
   // 色
-  s := getDialogS('文字色','0');
-  if not IsNumber(s) then s := hi_str(nako_eval_str(s));
+  s := string(getDialogS('文字色','0'));
+  sa := AnsiString(s);
+  if not IsNumber(sa) then s := hi_strU(nako_eval_str(AnsiString(s))) else s := string(sa);
   Font.Color := Color2RGB(StrToIntDef(s, 0));
   // 書体
-  s := getDialogS('文字書体', bokan.BackCanvas.Font.Name);
+  s := string(getDialogS('文字書体', AnsiString(bokan.BackCanvas.Font.Name)));
   if Pos('|', s) > 0 then
   begin // 複数指定あり
-    Font.Name   := getToken_s(s, '|');
+    Font.Name   := string(getToken_s(s, '|'));
     if s <> '' then Font.Size  := StrToIntDef(getToken_s(s,'|'),10);
     if s <> '' then Font.Style := StrTofontStyle(getToken_s(s,'|'));
   end else
   begin
-    Font.Name   := s;
+    Font.Name   := string(s);
   end;
 end;
 
@@ -1877,12 +1754,12 @@ procedure setFontName(Font: TFont; name: string);
 begin
   if Pos('|', name) > 0 then
   begin
-    Font.Name   := getToken_s(name, '|');
+    Font.Name   := string(getToken_s(name, '|'));
     if name <> '' then Font.Size  := StrToIntDef(getToken_s(name,'|'),10);
     if name <> '' then Font.Style := StrTofontStyle(getToken_s(name,'|'));
   end else
   begin
-    Font.Name := name;
+    Font.Name := string(name);
   end;
 end;
 
@@ -1905,16 +1782,16 @@ begin
   end;
 end;
 
-function getGroupName(group: PHiValue): string; // グループ名を取得する
+function getGroupName(group: PHiValue): AnsiString; // グループ名を取得する
 var
-  buf: string;
+  buf: AnsiString;
 begin
   SetLength(buf, 1024);
-  nako_id2tango(group.VarID, PChar(buf), 1023);
-  Result := string(PChar(buf));
+  nako_id2tango(group.VarID, PAnsiChar(buf), 1023);
+  Result := AnsiString(PAnsiChar(buf));
 end;
 
-function getGuiName(g: PHiValue): string; // オブジェクトの名前を取得
+function getGuiName(g: PHiValue): AnsiString; // オブジェクトの名前を取得
 var
   p: PHiValue;
 begin
@@ -2062,7 +1939,7 @@ end;
 procedure setDialogIME(h: THandle); //ダイアログIME状態
 var
   p: PHiValue;
-  v: string;
+  v: AnsiString;
 begin
   p := nako_getVariable('ダイアログIME');
   if p = nil then Exit;
@@ -2070,7 +1947,7 @@ begin
   SetImeMode(h, setControlIME(v));
 end;
 
-function setControlIME(v: string): TImeMode;
+function setControlIME(v: AnsiString): TImeMode;
 begin
   if Copy(v,1,6)='ＩＭＥ' then begin System.Delete(v,1,6); v := 'IME' + v; end;
 
@@ -2083,7 +1960,7 @@ begin
   Result := imDontCare;
 end;
 
-function getIMEStatusName(mode: TImeMode): string; //IME状態
+function getIMEStatusName(mode: TImeMode): AnsiString; //IME状態
 begin
   //IMEオン|IMEオフ|IMEひら|IMEカナ
   {
@@ -2109,7 +1986,7 @@ function cmd_print(h: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
   y: Integer;
-  str: string;
+  str: AnsiString;
   r: TRect;
 begin
   // (1) 引数の取得
@@ -2117,9 +1994,9 @@ begin
   if p = nil then p := nako_getSore;
 
   // 簡易ログを追加
-  printLogBuf.Add(hi_str(p));
+  printLogBuf.Add((hi_str(p)));
   printLogBuf.Add(#13#10);
-  hi_setStr(printLog, printLogBuf.Text);
+  hi_setStr(printLog, AnsiString(printLogBuf.Text));
   //---
 
   y := nako_var2int(baseY);
@@ -2135,9 +2012,9 @@ begin
   if str <> '' then
   begin
     str := ExpandTab(str, hi_int(tabCount));
-    y := y + DrawText(
+    y := y + DrawTextA(
       Bokan.BackCanvas.Handle,
-      PChar(str),
+      PAnsiChar(str),
       Length(str),
       r,
       DT_LEFT or DT_NOPREFIX or DT_WORDBREAK
@@ -2164,7 +2041,7 @@ function cmd_print_continue(h: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
   x, y: Integer;
-  str, s: string;
+  str, s: AnsiString;
   hasRet: Boolean;
 begin
   // (1) 引数の取得
@@ -2172,8 +2049,8 @@ begin
   if p = nil then p := nako_getSore;
 
   // 簡易ログを追加
-  printLogBuf.Add(hi_str(p));
-  hi_setStr(printLog, printLogBuf.Text);
+  printLogBuf.Add((hi_str(p)));
+  hi_setStr(printLog, AnsiString(printLogBuf.Text));
 
   //---
   getFont;
@@ -2188,14 +2065,14 @@ begin
 
   while True do
   begin
-    hasRet := (Pos(#13#10, str) > 0);
+    hasRet := (PosA(#13#10, str) > 0);
     if hasRet then begin
       s := getToken_s(str, #13#10)
     end else begin
       s := str;
       str := '';
     end;
-    bokan.BackCanvas.TextOut(x, y, s);
+    bokan.BackCanvas.TextOut(x, y, string(s));
     if hasRet then
     begin
       y := y + bokan.BackCanvas.TextHeight('a') + hi_int(baseInterval);
@@ -2205,7 +2082,7 @@ begin
   end;
   if hasRet = False then
   begin
-    x := x + bokan.BackCanvas.TextWidth(s);
+    x := x + bokan.BackCanvas.TextWidth(string(s));
     if x > bokan.ClientWidth then x := 10;
   end;
   hi_setInt(baseX, x);
@@ -2520,11 +2397,12 @@ end;
 function cmd_poly(h: DWORD): PHiValue; stdcall;
 var
   ps       : PHiValue;
-  s        : string;
+  s        : AnsiString;
   x, y, cnt: Integer;
   pts      : Array of TPoint;
   c        : TCanvas;
-  p        : PChar;
+  p        : PAnsiChar;
+  sx, sy   : AnsiString;
 begin
   // (1) 引数の取得
   c  := getCanvas(nako_getFuncArg(h,0));
@@ -2534,11 +2412,13 @@ begin
   SetLength(pts, 128);
   cnt := 0;
   s := hi_str(ps);
-  p := PChar(s);
+  p := PAnsiChar(s);
   while p^ <> #0 do
   begin
-    x := Trunc(StrToFloatDef(getTokenCh(p, [',',#13]), 0)); if p^ = #10 then Inc(p);
-    y := Trunc(StrToFloatDef(getTokenCh(p, [',',#13]), 0)); if p^ = #10 then Inc(p);
+    sx := getTokenCh(p, [',',#13]);
+    sy := getTokenCh(p, [',',#13]);
+    x := Trunc(StrToFloatDef(string(sx), 0)); if p^ = #10 then Inc(p);
+    y := Trunc(StrToFloatDef(string(sy), 0)); if p^ = #10 then Inc(p);
     
     pts[cnt].X := x;
     pts[cnt].Y := y;
@@ -2567,7 +2447,7 @@ function cmd_loadPic(h: DWORD): PHiValue; stdcall;
 var
   s, x, y : PHiValue;
   xx, yy  : Integer;
-  ss      : string;
+  ss      : AnsiString;
   bmp     : TBitmap;
   c       : TCanvas;
 begin
@@ -2590,7 +2470,7 @@ begin
   ss := hi_str(s); // ファイル名
 
   // (3) 処理
-  bmp := LoadPic(ss);
+  bmp := LoadPic(string(ss));
   try
     c.Draw(xx, yy, bmp);
     hi_setInt(baseY, hi_int(baseY) + bmp.Height + 4);
@@ -2609,7 +2489,7 @@ function cmd_loadPic2(h: DWORD): PHiValue; stdcall;
 var
   s, x, y : PHiValue;
   xx, yy  : Integer;
-  ss      : string;
+  ss      : AnsiString;
   bmp     : TBitmap;
   c       : TCanvas;
 begin
@@ -2631,7 +2511,7 @@ begin
   ss := hi_str(s); // ファイル名
 
   // (3) 処理
-  bmp := LoadPic(ss);
+  bmp := LoadPic(string(ss));
   try
     c.Draw(xx, yy, bmp);
     hi_setInt(baseY, hi_int(baseY) + bmp.Height + 4);
@@ -2751,10 +2631,12 @@ begin
   begin
     Result := hi_var_new;
     hi_setStr(Result,
-      bokan.dlgFont.Font.Name + '|' +
-      IntToStr(bokan.dlgFont.Font.Size) + '|' +
-      fontStyleToStr(bokan.dlgFont.Font.Style)
-      );
+      AnsiString(
+        bokan.dlgFont.Font.Name + '|' +
+        IntToStr(bokan.dlgFont.Font.Size) + '|' +
+        string(fontStyleToStr(bokan.dlgFont.Font.Style))
+      )
+    );
   end;
 end;
 
@@ -2781,7 +2663,7 @@ function cmd_dlgMemo(h: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
   f: TfrmMemo;
-  init,cancel,ime, title:string;
+  init,cancel,ime, title: string;
 begin
   Result := hi_var_new;
 
@@ -2791,13 +2673,16 @@ begin
   // (2) 処理
   f := TfrmMemo.Create(bokan);
   try
-    f.edtMain.Lines.Text := hi_str(p);
+    f.edtMain.Lines.Text := string(hi_str(p));
     setDialogIME(f.edtMain.Handle);
     GetDialogSetting(title, init, cancel, ime);
-    f.Caption := title;
+    f.Caption := string(title);
     getFontDialog(f.edtMain.Font);
     ShowModalCheck(f, bokan);
-    if f.Res then hi_setStr(Result, f.edtMain.Lines.Text) else hi_setStr(Result, cancel);
+    if f.Res then
+      hi_setStrU(Result, (f.edtMain.Lines.Text))
+    else
+      hi_setStrU(Result, cancel);
   finally
     f.Free;
   end;
@@ -2805,25 +2690,25 @@ end;
 
 procedure GetDialogSetting(var title: string; var init: string; var cancel: string; var ime: string);
 begin
-  title  := hi_str(nako_getVariable('ダイアログタイトル'));
-  init   := hi_str(nako_getVariable('ダイアログ初期値'));
-  cancel := hi_str(nako_getVariable('ダイアログキャンセル値'));
-  ime    := hi_str(nako_getVariable('ダイアログIME'));
+  title  := hi_strU(nako_getVariable('ダイアログタイトル'));
+  init   := hi_strU(nako_getVariable('ダイアログ初期値'));
+  cancel := hi_strU(nako_getVariable('ダイアログキャンセル値'));
+  ime    := hi_strU(nako_getVariable('ダイアログIME'));
   //-----------------------------------
   {$IFDEF IS_LIBVNAKO}
   if title = '' then title := 'なでしこ';
   {$ELSE}
-  if title = '' then title := Application.Title;
+  if title = '' then title := (Application.Title);
   {$ENDIF}
 end;
 
-function getDialogS(ValueName: string; initValue: string): string; // ダイアログ詳細から値を取り出す
+function getDialogS(ValueName: AnsiString; initValue: AnsiString): AnsiString; // ダイアログ詳細から値を取り出す
 var
   p, pp: PHiValue;
 begin
   p := nako_getVariable('ダイアログ詳細');
   if p = nil then Exit;
-  pp := nako_hash_get(p, PChar(ValueName));
+  pp := nako_hash_get(p, PAnsiChar(ValueName));
   if (pp = nil)or(pp.VType = varNil) then
   begin
     Result := initValue;
@@ -2837,7 +2722,8 @@ function cmd_dlgInput(h: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
   f: TfrmInput;
-  title, init, cancel, ime, res: string;
+  title, init, cancel, ime: string;
+  res: AnsiString;
   limit: Integer;
 begin
   Result := hi_var_new;
@@ -2849,12 +2735,12 @@ begin
   // (2) 処理
   f := TfrmInput.Create(bokan);
   try
-    f.lblCaption.Caption := hi_str(p);
+    f.lblCaption.Caption := string(hi_str(p));
 
     GetDialogSetting(title, init, cancel, ime);
     setDialogIME(f.edtMain.Handle);
-    f.edtMain.Text := init;
-    f.Caption := title;
+    f.edtMain.Text := string(init);
+    f.Caption := string(title);
     limit := Trunc(1000 * hi_float(nako_getVariable('ダイアログ表示時間')));
     //
     getFontDialog(f.lblCaption.Font);
@@ -2871,13 +2757,16 @@ begin
 
     ShowModalCheck(f, bokan);
     
-    if f.Res then res := f.edtMain.Text
-             else res := cancel;
+    if f.Res then res := AnsiString(f.edtMain.Text)
+             else res := AnsiString(cancel);
 
     if IsDialogConvNum then
     begin
-      if IsNumber(res) then hi_setFloat(Result, StrToFloat(res))
-                       else hi_setStr(Result, res);
+      if IsNumber(AnsiString(res)) then begin
+        hi_setFloat(Result, StrToFloatA(res));
+      end else begin
+        hi_setStr(Result, res);
+      end;
     end else
     begin
       hi_setStr(Result, res);
@@ -2891,7 +2780,8 @@ function cmd_dlgInputNum(h: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
   f: TfrmInputNum;
-  title, init, cancel, ime, res: string;
+  title, init, cancel, ime: string;
+  res: AnsiString;
 begin
   Result := hi_var_new;
 
@@ -2902,19 +2792,19 @@ begin
   // (2) 処理
   f := TfrmInputNum.Create(bokan);
   try
-    f.lblInfo.Caption := hi_str(p);
+    f.lblInfo.Caption := string(hi_str(p));
 
     GetDialogSetting(title, init, cancel, ime);
     //setDialogIME(f.edtMain.Handle);
     if init = '' then init := '0';
-    f.edtMain.Text := init;
-    f.Caption := title;
+    f.edtMain.Text := string(init);
+    f.Caption := string(title);
     ShowModalCheck(f, bokan);
 
-    if f.Res then res := f.edtMain.Text
-             else res := cancel;
+    if f.Res then res := AnsiString(f.edtMain.Text)
+             else res := AnsiString(cancel);
 
-    if IsNumber(res) then hi_setFloat(Result, StrToFloat(res))
+    if IsNumber(res) then hi_setFloat(Result, StrToFloatA(res))
                      else hi_setStr(Result, res);
 
   finally
@@ -2938,15 +2828,15 @@ begin
     //setDialogIME(f.edtMain.Handle);
     if init <> '' then
     begin
-      f.setInitValue(init);
+      f.setInitValue(string(init));
     end;
-    f.Caption := title;
+    f.Caption := string(title);
     ShowModalCheck(f, bokan);
 
-    if f.Res then res := f.ResultStr
+    if f.Res then res := (f.ResultStr)
              else res := cancel;
 
-    Result := hi_newStr(res);
+    Result := hi_newStr(AnsiString(res));
   finally
     f.Free;
   end;
@@ -2973,7 +2863,7 @@ begin
     f.Left := hi_int(px);
     f.Top  := hi_int(py);
     getFont(bokan.Canvas);
-    f.SetText(bokan.Canvas.Font, hi_str(ps));
+    f.SetText(bokan.Canvas.Font, hi_strU(ps));
     // 擬似モーダル
     f.Show;
     while f.Res = False do
@@ -3002,7 +2892,7 @@ begin
   //
   sl := TStringList.Create ;
   try
-    sl.Text := hi_str(ps);
+    sl.Text := hi_strU(ps);
     if not bokan.dlgPrinter.Execute then Exit;
     AssignPrn(prn);
     try
@@ -3204,7 +3094,7 @@ begin
   px := nako_getFuncArg(h,1);
   py := nako_getFuncArg(h,2);
   getFont(Printer.Canvas);
-  Printer.Canvas.TextOut(hi_int(px), hi_int(py), hi_str(ps));
+  Printer.Canvas.TextOut(hi_int(px), hi_int(py), hi_strU(ps));
   Result := nil;
 end;
 function cmd_printGetCharWidth(h: DWORD): PHiValue; stdcall;
@@ -3212,14 +3102,14 @@ var ps: PHiValue;
 begin
   ps := nako_getFuncArg(h,0); if ps = nil then ps := nako_getSore;
   getFont(Printer.Canvas);
-  Result := hi_newInt(Printer.Canvas.TextWidth(hi_str(ps)));
+  Result := hi_newInt(Printer.Canvas.TextWidth(hi_strU(ps)));
 end;
 function cmd_printGetCharHeight(h: DWORD): PHiValue; stdcall;
 var ps: PHiValue;
 begin
   ps := nako_getFuncArg(h,0); if ps = nil then ps := nako_getSore;
   getFont(Printer.Canvas);
-  Result := hi_newInt(Printer.Canvas.TextHeight(hi_str(ps)));
+  Result := hi_newInt(Printer.Canvas.TextHeight(hi_strU(ps)));
 end;
 
 function cmd_printImage(h: DWORD): PHiValue; stdcall;
@@ -3276,11 +3166,11 @@ begin
   f := TfrmInputList.Create(bokan);
   try
     getFontDialog(f.veList.Font);
-    f.setProperty(hi_str(p));
+    f.setProperty(hi_strU(p));
     GetDialogSetting(title, init, cancel, ime);
-    f.Caption := title;
+    f.Caption := string(title);
     ShowModalCheck(f, bokan);
-    if f.Res then hi_setStr(Result, f.getResult);
+    if f.Res then hi_setStr(Result, AnsiString(f.getResult));
   finally
     f.Free;
   end;
@@ -3300,11 +3190,12 @@ begin
   // (2) 処理
   f := TfrmPassword.Create(bokan);
   try
-    f.lblCaption.Caption := hi_str(p);
+    f.lblCaption.Caption := hi_strU(p);
     GetDialogSetting(title, init, cancel, ime);
-    f.Caption := title;
+    f.Caption := string(title);
     ShowModalCheck(f, bokan);
-    if f.Res then hi_setStr(Result, f.edtMain.Text) else hi_setStr(Result, cancel);
+    if f.Res then hi_setStrU(Result, (f.edtMain.Text))
+             else hi_setStrU(Result, cancel);
   finally
     f.Free;
   end;
@@ -3326,10 +3217,11 @@ begin
   f := TfrmSelectButton.Create(bokan);
   try
     GetDialogSetting(title, init, cancel, ime);
-    f.MakeButton(hi_str(ps), hi_str(pv));
-    f.Caption := title;
+    f.MakeButton(hi_strU(ps), hi_strU(pv));
+    f.Caption := string(title);
     ShowModalCheck(f, bokan);
-    if not f.IsCancel then hi_setStr(Result, f.Result) else hi_setStr(Result, cancel);
+    if not f.IsCancel then hi_setStrU(Result, (f.Result))
+                      else hi_setStrU(Result, cancel);
   finally
     f.Free;
   end;
@@ -3357,13 +3249,13 @@ begin
       GetDialogSetting(title, init, cancel, ime);
       limit := Trunc(1000*hi_float(nako_getVariable('ダイアログ表示時間')));
       //
-      f.Caption := title;
+      f.Caption := string(title);
       //-----------------------
       // 大きさの指定
       getFontDialog(f.FBmp.Canvas.Font);
       //-----------------------
       // テキストのセット
-      f.SetProperty(hi_str(ps));
+      f.SetProperty(hi_strU(ps));
       f.SetLimitTime(limit);
       // 表示
       ShowModalCheck(f, bokan);
@@ -3388,7 +3280,7 @@ begin
   // (1) 引数の取得
   p := nako_getFuncArg(h, 0);
   if p = nil then p := nako_getSore;
-  msg := hi_str(p);
+  msg := hi_strU(p);
 
   // (2) 処理
   f := TfrmSay.Create(bokan);
@@ -3397,12 +3289,12 @@ begin
     f.Close;
     f.UseNitaku;
     GetDialogSetting(title, init, cancel, ime);
-    f.Caption := title;
+    f.Caption := string(title);
     limit := Trunc(1000*hi_float(nako_getVariable('ダイアログ表示時間')));
     //-----------------------
     // 大きさの指定
     getFontDialog(f.FBmp.Canvas.Font);
-    f.SetProperty(msg);
+    f.SetProperty(string(msg));
     f.SetLimitTime(limit);
     ShowModalCheck(f, bokan);
     Result := hi_newBool(f.Res);
@@ -3421,7 +3313,7 @@ var
   msg, title, init, cancel, ime: string;
 begin
   // (1) 引数の取得
-  msg := getArgStr(h, 0, True);
+  msg := string(getArgStr(h, 0, True));
   Result := nil;
 
   // (2) 処理
@@ -3429,13 +3321,13 @@ begin
   try
   try
     GetDialogSetting(title, init, cancel, ime);
-    f.Caption := title;
+    f.Caption := string(title);
     getFontDialog(f.edtMain.Font);
     getFontDialog(f.lstItem.Font);
-    f.lstItem.Items.Text := msg;
+    f.lstItem.Items.Text := string(msg);
     f.DefList.Text := msg;
     ShowModalCheck(f, bokan);
-    Result := hi_newStr(f.Res);
+    Result := hi_newStr(AnsiString(f.Res));
   except on e: Exception do
     raise Exception.Create('【リスト絞込み選択】でエラー。' + e.Message);
   end;
@@ -3447,33 +3339,33 @@ end;
 
 function cmd_nitaku_vista(h: DWORD): PHiValue; stdcall;
 var
-  q,s: string;
+  q,s: AnsiString;
   res: Integer;
 begin
   q := getArgStr(h, 0, True);
   s := getArgStr(h, 1);
-  res := TaskDialog(frmNako, frmNako.Caption, q, s,
+  res := TaskDialog(frmNako, frmNako.Caption, string(q), string(s),
     TD_YES or TD_NO, TD_ICON_QUESTION);
   Result := hi_newBool(res = DLGRES_YES);
 end;
 
 function cmd_warning_vista(h: DWORD): PHiValue; stdcall;
 var
-  q,s: string;
+  q,s: AnsiString;
 begin
   q := getArgStr(h, 0, True);
   s := getArgStr(h, 1);
-  TaskDialog(frmNako, frmNako.Caption, q, s, TD_OK, TD_ICON_WARNING);
+  TaskDialog(frmNako, frmNako.Caption, string(q), string(s), TD_OK, TD_ICON_WARNING);
   Result := nil;
 end;
 
 function cmd_okdialog_vista(h: DWORD): PHiValue; stdcall;
 var
-  q,s: string;
+  q,s: AnsiString;
 begin
   q := getArgStr(h, 0, True);
   s := getArgStr(h, 1);
-  TaskDialog(frmNako, frmNako.Caption, q, s, TD_OK, TD_ICON_INFORMATION);
+  TaskDialog(frmNako, frmNako.Caption, string(q), string(s), TD_OK, TD_ICON_INFORMATION);
   Result := nil;
 end;
 
@@ -3540,7 +3432,7 @@ function cmd_textout(h: DWORD): PHiValue; stdcall;
 var
   c: TCanvas;
   x, y, hh, i: Integer;
-  s: string;
+  s: AnsiString;
   sl: TStringList;
 begin
   // 引数
@@ -3555,7 +3447,7 @@ begin
   //
   sl := TStringList.Create ;
   try
-    sl.Text := ExpandTab(s, hi_int(tabCount));
+    sl.Text := string(ExpandTab(s, hi_int(tabCount)));
     hh := Trunc(c.TextHeight('あ') * 1.2);
     for i:=0 to sl.Count -1 do
     begin
@@ -3570,11 +3462,11 @@ begin
 end;
 
 
-procedure textout_delay(o: TObject; c: TCanvas; x, y: Integer; s: string;
+procedure textout_delay(o: TObject; c: TCanvas; x, y: Integer; s: AnsiString;
   m: DWORD; FlagBlur: Boolean);
 var
   hh, i, j, len, ax: Integer;
-  ss, a, b: string;
+  ss, a, b: AnsiString;
   sl: TStringList;
   dEnd: DWORD;
 begin
@@ -3583,11 +3475,11 @@ begin
   //
   sl := TStringList.Create ;
   try
-    sl.Text := ExpandTab(s, hi_int(tabCount));
+    sl.Text := string(ExpandTab(s, hi_int(tabCount)));
     hh := Trunc(c.TextHeight('あ') * 1.2);
     for i:=0 to sl.Count -1 do
     begin
-      ss  := sl.Strings[i];
+      ss  := AnsiString(sl.Strings[i]);
       len := JLength(ss);
       for j := 1 to len do
       begin
@@ -3595,14 +3487,14 @@ begin
         try
 
           try
-          a  := JCopy(ss, 1, j-1);
-          b  := JCopy(ss, j, 1);
-          ax := c.TextWidth(a);
+          a  := CopyA(ss, 1, j-1);
+          b  := CopyA(ss, j, 1);
+          ax := c.TextWidth(string(a));
 
           if not FlagBlur then
-            c.TextOut(x + ax, y+i*hh, b)
+            c.TextOut(x + ax, y+i*hh, string(b))
           else
-            SuperTextOut(c, x + ax, y+i*hh, c.Font, b);
+            SuperTextOut(c, x + ax, y+i*hh, c.Font, string(b));
           finally
           end;
 
@@ -3638,7 +3530,7 @@ var flag_define_str_function: Byte = 0;
 
 procedure define_str_function;
 var
-  s: string;
+  s: AnsiString;
 begin
   if flag_define_str_function <> 0 then Exit;
   flag_define_str_function := 1;
@@ -3659,7 +3551,7 @@ var
   //o: TObject;
   //c: TCanvas;
   x, y, m: Integer;
-  s, name: string;
+  s, name: AnsiString;
 begin
   // 引数
   // o := getGui(nako_getFuncArg(h, 0)); // object
@@ -3673,10 +3565,10 @@ begin
   Result := nil;
   //
   define_str_function;
-  s := JReplace(s, '`', '‘');
+  s := JReplaceA(s, '`', '‘');
   nako_eval_str(
-    format('0して%sの%d,%dへ`%s`を%dでSYS_文字遅延描画処理',
-      [name, x, y, s, m])
+    AnsiString(format('0して%sの%d,%dへ`%s`を%dでSYS_文字遅延描画処理',
+      [name, x, y, s, m]))
   );
 end;
 
@@ -3685,7 +3577,7 @@ var
 //  o: TObject;
 //  c: TCanvas;
   x, y, m: Integer;
-  s, name: string;
+  s, name: AnsiString;
 begin
   // 引数
   //o := getGui(nako_getFuncArg(h, 0)); // object
@@ -3700,9 +3592,9 @@ begin
   // textout_delay(o, c, x, y, s, m, False);
   //
   define_str_function;
-  s := JReplace(s, '`', '‘');
+  s := JReplaceA(s, '`', '‘');
   nako_eval_str(
-    format('1して%sの%d,%dへ`%s`を%dでSYS_文字遅延描画処理',
+    FormatA('1して%sの%d,%dへ`%s`を%dでSYS_文字遅延描画処理',
       [name, x, y, s, m])
   );
 end;
@@ -3712,7 +3604,7 @@ function cmd_textout2(h: DWORD): PHiValue; stdcall;
 var
   c: TCanvas;
   x, y: Integer;
-  s: string;
+  s: AnsiString;
   r: TRect;
 begin
   // 引数
@@ -3728,7 +3620,7 @@ begin
   r.Top := y;
   //c.TextOut(x,y,s);
 
-  DrawTextEx(c.Handle, PChar(s), -1, r, DT_HIDEPREFIX or DT_NOCLIP, nil);
+  DrawTextExA(c.Handle, PAnsiChar(s), -1, r, DT_HIDEPREFIX or DT_NOCLIP, nil);
 
   // 戻り
   Result := nil;
@@ -4129,16 +4021,16 @@ end;
 function cmd_img_save(h: DWORD): PHiValue; stdcall;
 var
   gra: TBitmap;
-    s: string;
+    s: AnsiString;
 begin
   // 引数
   gra := getBmp(nako_getFuncArg(h, 0));
   s   := hi_str(nako_getFuncArg(h, 1));
   //
   try
-    SavePic(gra, s);
+    SavePic(gra, string(s));
   except on e: Exception do
-    raise Exception.Create('"' + s + '"への保存に失敗。' + e.Message);
+    raise Exception.Create('"' + string(s) + '"への保存に失敗。' + e.Message);
   end;
   // 戻り
   Result := nil;
@@ -4197,7 +4089,7 @@ end;
 
 function cmd_getFonts(h: DWORD): PHiValue; stdcall;
 begin
-  Result := hi_newStr( Screen.Fonts.Text );
+  Result := hi_newStr( AnsiString(Screen.Fonts.Text) );
 end;
 
 function cmd_img_copy(h: DWORD): PHiValue; stdcall;
@@ -4542,17 +4434,17 @@ end;
 
 function vcl_create(h: DWORD): PHiValue; stdcall;
 var
-  g,n,t: PHiValue;
+  n,t: PHiValue;
   o: TComponent;
   oType: Integer;
-  oName: string;
+  oName: AnsiString;
   fontsize: Integer;
   fontname: string;
   i: Integer;
   defp: PHiValue;
 begin
   // (1) 引数の取得
-  g := nako_getFuncArg(h, 0); // group
+  // g := nako_getFuncArg(h, 0); // group
   n := nako_getFuncArg(h, 1); // name
   t := nako_getFuncArg(h, 2); // gui type
 
@@ -5078,8 +4970,8 @@ begin
         Bokan.edtPropNormal.Assign(o);
         THiEditor(o).Fountain := TNadesikoFountain.Create(Bokan);
         with THiEditor(o) do begin
-          ExMarks.TabMark.Visible := True;
-          ExMarks.TabMark.Color   := clGray;
+          //ExMarks.TabMark.Visible := True;
+          //ExMarks.TabMark.Color   := clGray;
           Leftbar.Visible := True;
           Leftbar.Column := 3;
           Caret.FreeCaret := False;
@@ -5227,8 +5119,8 @@ begin
     // UNICODE COMPONENT
     VCL_GUI_UBUTTON:
       begin
-        o := TTntButton.Create(parentObj);
-        with TTntButton(o) do begin
+        o := TButton.Create(parentObj);
+        with TButton(o) do begin
           OnClick := Bokan.eventClick;
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
@@ -5244,8 +5136,8 @@ begin
       end;
     VCL_GUI_UEDIT        :
       begin
-        o := TTntEdit.Create(parentObj);
-        with TTntEdit(o) do begin
+        o := TEdit.Create(parentObj);
+        with TEdit(o) do begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
           OnChange    := Bokan.eventChange;
@@ -5266,8 +5158,8 @@ begin
       end;
     VCL_GUI_UMEMO        :
       begin
-        o := TTntMemo.Create(parentObj);
-        with TTntMemo(o) do begin
+        o := TMemo.Create(parentObj);
+        with TMemo(o) do begin
           ScrollBars := ssBoth;
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
@@ -5289,8 +5181,8 @@ begin
       end;
     VCL_GUI_ULIST        :
       begin
-        o := TTntListBox.Create(parentObj);
-        with TTntListBox(o) do begin
+        o := TListBox.Create(parentObj);
+        with TListBox(o) do begin
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
           OnMouseDown := Bokan.eventMouseDown;
@@ -5312,8 +5204,8 @@ begin
       end;
     VCL_GUI_UCOMBO       :
       begin
-        o := TTntComboBox.Create(parentObj);
-        with TTntComboBox(o) do begin
+        o := TComboBox.Create(parentObj);
+        with TComboBox(o) do begin
           AutoComplete := False;
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
@@ -5335,8 +5227,8 @@ begin
       end;
     VCL_GUI_UCHECK       :
       begin
-        o := TTntCheckBox.Create(parentObj);
-        with TTntCheckBox(o) do begin
+        o := TCheckBox.Create(parentObj);
+        with TCheckBox(o) do begin
           OnClick     := Bokan.eventClick;
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
@@ -5355,8 +5247,8 @@ begin
       end;
     VCL_GUI_URADIO       :
       begin
-        o := TTntRadioGroup.Create(parentObj);
-        with TTntRadioGroup(o) do begin
+        o := TRadioGroup.Create(parentObj);
+        with TRadioGroup(o) do begin
           OnClick   := Bokan.eventClick;
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
@@ -5367,8 +5259,8 @@ begin
       end;
     VCL_GUI_UGRID        :
       begin
-        o := TTntStringGrid.Create(parentObj);
-        with TTntStringGrid(o) do begin
+        o := TStringGrid.Create(parentObj);
+        with TStringGrid(o) do begin
           FixedCols := 0;
           DefaultColWidth := 32;
           DefaultRowHeight := Trunc(Bokan.Canvas.TextHeight('Z') * 1.5);
@@ -5392,8 +5284,8 @@ begin
       end;
     VCL_GUI_ULABEL       :
       begin
-        o := TTntLabel.Create(parentObj);
-        with TTntLabel(o) do begin
+        o := TLabel.Create(parentObj);
+        with TLabel(o) do begin
           AutoSize := False;
           Transparent := True;
           OnClick := Bokan.eventClick;
@@ -5456,7 +5348,9 @@ var
   ginfo: TGuiInfo;
 
   procedure _getText;
-  var res: string;
+  var
+    res: string;
+    res_a: AnsiString;
 
     function getGridText: string;
     var g: TStringGrid; i: Integer;
@@ -5469,22 +5363,22 @@ var
         if g.Row < 0 then Exit;
         for i := 0 to g.ColCount - 1 do
         begin
-          Result := Result + '"' + g.Cells[i, g.Row] + '"';
+          Result := Result + '"' + string(g.Cells[i, g.Row]) + '"';
           if (g.ColCount-1) <> i then Result := Result + ',';
         end;
       end else
       begin
         if (g.Col >= 0)and(g.Row >= 0) then
-          Result := '"' + g.Cells[g.Col, g.Row] + '"';
+          Result := '"' + string(g.Cells[g.Col, g.Row]) + '"';
       end;
     end;
 
     function getGridTextUni: WideString;
-    var g: TTntStringGrid; i: Integer;
+    var g: TStringGrid; i: Integer;
     begin
       Result := '';
 
-      g := TTntStringGrid(obj);
+      g := TStringGrid(obj);
       if goRowSelect in g.Options then
       begin
         if g.Row < 0 then Exit;
@@ -5533,7 +5427,7 @@ var
       VCL_GUI_TABPAGE     : res := TPageControl(obj).ActivePage.Caption;
       VCL_GUI_STATUSBAR   : if TStatusBar(obj).SimplePanel then res := TStatusBar(obj).SimpleText else res := getStatusbarText;
       VCL_GUI_SPINEDIT    : res := TSpinEdit(obj).Text;
-      VCL_GUI_TEDITOR     : res := TEditor(obj).Lines.Text;
+      VCL_GUI_TEDITOR     : res := TMemo(obj).Lines.Text;
       VCL_GUI_FORM        : res := TfrmNako(obj).Caption;
       VCL_GUI_TREEVIEW    : begin if TTreeView(obj).Selected <> nil then res := TTreeView(obj).Selected.Text; end;
       VCL_GUI_LISTVIEW    : begin if TListView(obj).Selected <> nil then res := TListView(obj).Selected.Caption; end;
@@ -5544,34 +5438,36 @@ var
       VCL_GUI_BIT_BUTTON  : res := TBitBtn(obj).Caption;
       VCL_GUI_GROUPBOX    : res := TGroupBox(obj).Caption;
       // uni parts
-      VCL_GUI_UBUTTON     : res := uni2ansi(TTntButton(obj).Caption);
+      VCL_GUI_UBUTTON     : res := (TButton(obj).Caption);
       VCL_GUI_UEDIT       :
         begin
-          res := uni2ansi(TTntEdit(obj).Text);
+          res := (TEdit(obj).Text);
           // ShowMessage(StrToHexStr(res)); // ok
         end;
-      VCL_GUI_UMEMO       : res := uni2ansi(TTntMemo(obj).Text);
-      VCL_GUI_ULIST       : if TTntListBox(obj).ItemIndex >= 0 then res := uni2ansi(TTntListBox(obj).Items.Strings[TTntListBox(obj).ItemIndex]);
-      VCL_GUI_UCOMBO      : res := uni2ansi(TTntComboBox(obj).Text);
-      VCL_GUI_UCHECK      : res := uni2ansi(TTntCheckBox(obj).Caption);
-      VCL_GUI_URADIO      : res := uni2ansi(TTntRadioGroup(obj).Caption);
-      VCL_GUI_UGRID       : res := uni2ansi(getGridTextUni);
-      VCL_GUI_ULABEL      : res := uni2ansi(TTntLabel(obj).Caption);
+      VCL_GUI_UMEMO       : res := (TMemo(obj).Text);
+      VCL_GUI_ULIST       : if TListBox(obj).ItemIndex >= 0 then res := (TListBox(obj).Items.Strings[TListBox(obj).ItemIndex]);
+      VCL_GUI_UCOMBO      : res := (TComboBox(obj).Text);
+      VCL_GUI_UCHECK      : res := (TCheckBox(obj).Caption);
+      VCL_GUI_URADIO      : res := (TRadioGroup(obj).Caption);
+      VCL_GUI_UGRID       : res := (getGridTextUni);
+      VCL_GUI_ULABEL      : res := (TLabel(obj).Caption);
 
     end;
     if IsDialogConvNum then
     begin
-      if IsNumber(res) then
+      res_a := AnsiString(res);
+      if IsNumber(res_a) then
       begin
+        res := string(res_a);
         try
-          hi_setFloat(Result, StrToFloat(convToHalf(res)))
+          hi_setFloat(Result, StrToFloatA(convToHalf(AnsiString(res))))
         except
-          hi_setStr(Result, res);
+          hi_setStrU(Result, res);
         end;
-      end else hi_setStr(Result, res);
+      end else hi_setStrU(Result, res);
     end else
     begin
-      hi_setStr(Result, res);
+      hi_setStrU(Result, res);
     end;
   end;
 
@@ -5592,10 +5488,10 @@ var
       VCL_GUI_TREEVIEW    : res := THiTreeView(obj).ItemIndex;
       VCL_GUI_PROGRESS    : res := TProgressBar(obj).Position;
       // uni
-      VCL_GUI_ULIST        : res := TTntListBox(obj).ItemIndex;
-      VCL_GUI_UCOMBO       : res := TTntComboBox(obj).ItemIndex;
-      VCL_GUI_UGRID        : res := TTntStringGrid(obj).Row;
-      VCL_GUI_URADIO       : res := TTntRadioGroup(obj).ItemIndex;
+      VCL_GUI_ULIST        : res := TListBox(obj).ItemIndex;
+      VCL_GUI_UCOMBO       : res := TComboBox(obj).ItemIndex;
+      VCL_GUI_UGRID        : res := TStringGrid(obj).Row;
+      VCL_GUI_URADIO       : res := TRadioGroup(obj).ItemIndex;
       else raise Exception.Create('定義されていません。');
     end;
     hi_setInt(Result, res);
@@ -5615,7 +5511,7 @@ var
           csv := TCsvSheet.Create;
           try
             CsvGridGetData(TStringGrid(obj), csv);
-            res := csv.AsText;
+            res := string(csv.AsText);
           finally
             csv.Free;
           end;
@@ -5624,22 +5520,22 @@ var
         begin
           res := TreeToCsv(obj as THiTreeView);
         end;
-      VCL_GUI_ULIST : res := uni2ansi(TTntListBox(obj).Items.Text);
-      VCL_GUI_UCOMBO: res := uni2ansi(TTntComboBox(obj).Items.Text);
-      VCL_GUI_URADIO: res := uni2ansi(TTntRadioGroup(obj).Items.Text);
+      VCL_GUI_ULIST : res := (TListBox(obj).Items.Text);
+      VCL_GUI_UCOMBO: res := (TComboBox(obj).Items.Text);
+      VCL_GUI_URADIO: res := (TRadioGroup(obj).Items.Text);
       VCL_GUI_UGRID:
         begin
           csv := TCsvSheet.Create;
           try
-            CsvGridGetDataUni(TTntStringGrid(obj), csv);
-            res := csv.AsText;
+            CsvGridGetDataUni(TStringGrid(obj), csv);
+            res := string(csv.AsText);
           finally
             csv.Free;
           end;
         end;
       else raise Exception.Create('定義されていません。');
     end;
-    hi_setStr(Result,res);
+    hi_setStrU(Result,res);
   end;
   procedure _getHandle;
   begin
@@ -5657,14 +5553,14 @@ var
       VCL_GUI_MEMO    : res := TMemoXP(obj).SelText;
       VCL_GUI_COMBO   : res := TComboBox(obj).SelText;
       VCL_GUI_SPINEDIT: res := TSpinEdit(obj).SelText;
-      VCL_GUI_TEDITOR : res := TEditor(obj).SelText;
+      VCL_GUI_TEDITOR : res := TMemo(obj).SelText;
       // uni
-      VCL_GUI_UEDIT    : res := uni2ansi(TTntEdit(obj).SelText);
-      VCL_GUI_UMEMO    : res := uni2ansi(TTntMemo(obj).SelText);
-      VCL_GUI_UCOMBO   : res := uni2ansi(TTntComboBox(obj).SelText);
+      VCL_GUI_UEDIT    : res := (TEdit(obj).SelText);
+      VCL_GUI_UMEMO    : res := (TMemo(obj).SelText);
+      VCL_GUI_UCOMBO   : res := (TComboBox(obj).SelText);
       else raise Exception.Create('定義されていません。');
     end;
-    hi_setStr(Result, res);
+    hi_setStrU(Result, res);
   end;
   procedure _getSelStart;
   var res: Integer;
@@ -5674,11 +5570,11 @@ var
       VCL_GUI_MEMO    : res := TMemoXP(obj).SelStart;
       VCL_GUI_COMBO   : res := TComboBox(obj).SelStart;
       VCL_GUI_SPINEDIT: res := TSpinEdit(obj).SelStart;
-      VCL_GUI_TEDITOR : res := TEditor(obj).SelStart;
+      VCL_GUI_TEDITOR : res := TMemo(obj).SelStart;
       // uni
-      VCL_GUI_UEDIT    : res := TTntEdit(obj).SelStart;
-      VCL_GUI_UMEMO    : res := TTntMemo(obj).SelStart;
-      VCL_GUI_UCOMBO   : res := TTntComboBox(obj).SelStart;
+      VCL_GUI_UEDIT    : res := TEdit(obj).SelStart;
+      VCL_GUI_UMEMO    : res := TMemo(obj).SelStart;
+      VCL_GUI_UCOMBO   : res := TComboBox(obj).SelStart;
       else raise Exception.Create('定義されていません。');
     end;
     hi_setInt(Result, res);
@@ -5691,17 +5587,17 @@ var
       VCL_GUI_MEMO    : res := TMemoXP(obj).SelLength;
       VCL_GUI_COMBO   : res := TComboBox(obj).SelLength;
       VCL_GUI_SPINEDIT: res := TSpinEdit(obj).SelLength;
-      VCL_GUI_TEDITOR : res := TEditor(obj).SelLength;
-      VCL_GUI_UEDIT    : res := TTntEdit(obj).SelLength;
-      VCL_GUI_UMEMO    : res := TTntMemo(obj).SelLength;
-      VCL_GUI_UCOMBO   : res := TTntComboBox(obj).SelLength;
+      VCL_GUI_TEDITOR : res := TMemo(obj).SelLength;
+      VCL_GUI_UEDIT    : res := TEdit(obj).SelLength;
+      VCL_GUI_UMEMO    : res := TMemo(obj).SelLength;
+      VCL_GUI_UCOMBO   : res := TComboBox(obj).SelLength;
       else raise Exception.Create('定義されていません。');
     end;
     hi_setInt(Result, res);
   end;
   procedure _layout;
   var
-    i: TAlign; res: string;
+    i: TAlign; res: AnsiString;
   begin
     res := '';
     if (obj is TWinControl) then
@@ -5730,7 +5626,7 @@ var
       if o = nil then
         hi_setStr(Result,'')
       else
-        nako_varCopyData(nako_getVariable(PChar(GuiInfos[o.Tag].name)), Result);
+        nako_varCopyData(nako_getVariable(PAnsiChar(GuiInfos[o.Tag].name)), Result);
     end;
   end;
   procedure _visible;
@@ -5782,7 +5678,8 @@ begin
       VCL_PROP_DRAGMODE   : if obj is TWinControl then hi_setStr(Result, THiWinControl(obj).hi_getDragMode);
     end;
   except
-    raise Exception.Create(ginfo.name + 'のプロパティ(' + IntToStr(prop) + ')の取得でエラー。');
+    raise Exception.Create(
+      string(ginfo.name) + 'のプロパティ(' + IntToStr(prop) + ')の取得でエラー。');
   end;
 end;
 
@@ -5805,10 +5702,10 @@ var
         if g.Row < 0 then Exit;
         c := TCsvSheet.Create;
         try
-          c.AsText := v;
+          c.AsText := AnsiString(v);
           if c.ColCount > g.ColCount then g.ColCount := c.ColCount;
           for i := 0 to c.ColCount - 1 do begin
-            g.Cells[i, g.Row] := c.Cells[i, 0];
+            g.Cells[i, g.Row] := string(c.Cells[i, 0]);
           end;
         finally
           c.Free;
@@ -5816,19 +5713,19 @@ var
       end else
       begin
         if (g.Col >= 0) and (g.Row >= 0) then
-          g.Cells[g.Col, g.Row] := v;
+          g.Cells[g.Col, g.Row] := string(v);
       end;
     end;
     procedure setGridTextUni(v: string);
-    var g: TTntStringGrid; c: TCsvSheet; i: Integer;
+    var g: TStringGrid; c: TCsvSheet; i: Integer;
     begin
-      g := TTntStringGrid(obj);
+      g := TStringGrid(obj);
       if goRowSelect in g.Options then
       begin
         if g.Row < 0 then Exit;
         c := TCsvSheet.Create;
         try
-          c.AsText := v;
+          c.AsText := AnsiString(v);
           if c.ColCount > g.ColCount then g.ColCount := c.ColCount;
           for i := 0 to c.ColCount - 1 do begin
             g.Cells[i, g.Row] := ansi2uni(c.Cells[i, 0]);
@@ -5839,7 +5736,7 @@ var
       end else
       begin
         if (g.Col >= 0) and (g.Row >= 0) then
-          g.Cells[g.Col, g.Row] := ansi2uni(v);
+          g.Cells[g.Col, g.Row] := (v);
       end;
     end;
 
@@ -5866,7 +5763,7 @@ var
     end;
 
   begin
-    s := hi_str(v);
+    s := hi_strU(v);
     case ginfo.obj_type of
       VCL_GUI_BUTTON      : TButton(obj).Caption    := s;
       VCL_GUI_EDIT        : TEdit(obj).Text         := s;
@@ -5882,7 +5779,7 @@ var
       VCL_GUI_MENUITEM    : TMenuItem(obj).Caption  := s;
       VCL_GUI_STATUSBAR   : if TStatusBar(obj).SimplePanel then TStatusBar(obj).SimpleText  := s else setStatusbarText(s);
       VCL_GUI_SPINEDIT    : TSpinEdit(obj).Text     := s;
-      VCL_GUI_TEDITOR     : TEditor(obj).Lines.Text := s;
+      VCL_GUI_TEDITOR     : TMemo(obj).Lines.Text := s;
       VCL_GUI_FORM        : begin TfrmNako(obj).Caption := s; if obj = bokan then Application.Title := s; end;
       VCL_GUI_TABPAGE     : TPageControl(obj).ActivePage.Caption := s;
       VCL_GUI_TREEVIEW    : begin if TTreeView(obj).Selected <> nil then TTreeView(obj).Selected.Text := s; end;
@@ -5894,18 +5791,18 @@ var
       VCL_GUI_BIT_BUTTON  : TBitBtn(obj).Caption    := s;
       VCL_GUI_GROUPBOX    : TGroupBox(obj).Caption    := s;
       // uni
-      VCL_GUI_UBUTTON     : TTntButton(obj).Caption := ansi2uni(s);
+      VCL_GUI_UBUTTON     : TButton(obj).Caption := (s);
       VCL_GUI_UEDIT       :
         begin
-          TTntEdit(obj).Text         := ansi2uni(s);
+          TEdit(obj).Text         := (s);
         end;
-      VCL_GUI_UMEMO       : TTntMemo(obj).Text         := ansi2uni(s);
-      VCL_GUI_ULIST       : begin if TTntListBox(obj).ItemIndex >= 0 then TListBox(obj).Items[TTntListBox(obj).ItemIndex] := ansi2uni(s); end;
-      VCL_GUI_UCOMBO      : TTntComboBox(obj).Text     := ansi2uni(s);
-      VCL_GUI_UCHECK      : TTntCheckBox(obj).Caption  := ansi2uni(s);
-      VCL_GUI_URADIO      : TTntRadioGroup(obj).Caption:= ansi2uni(s);
+      VCL_GUI_UMEMO       : TMemo(obj).Text         := (s);
+      VCL_GUI_ULIST       : begin if TListBox(obj).ItemIndex >= 0 then TListBox(obj).Items[TListBox(obj).ItemIndex] := (s); end;
+      VCL_GUI_UCOMBO      : TComboBox(obj).Text     := (s);
+      VCL_GUI_UCHECK      : TCheckBox(obj).Caption  := (s);
+      VCL_GUI_URADIO      : TRadioGroup(obj).Caption:= (s);
       VCL_GUI_UGRID       : setGridTextUni(s);
-      VCL_GUI_ULABEL      : begin TTntLabel(obj).AutoSize := True; TTntLabel(obj).Caption := ansi2uni(s); TTntLabel(obj).AutoSize := False; end;
+      VCL_GUI_ULABEL      : begin TLabel(obj).AutoSize := True; TLabel(obj).Caption := (s); TLabel(obj).AutoSize := False; end;
     end;
   end;
 
@@ -5926,11 +5823,11 @@ var
       VCL_GUI_TIMER       : TTimer(obj).Interval := i;
       VCL_GUI_PROGRESS    : TProgressBar(obj).Position := i;
       //
-      VCL_GUI_ULIST        : TTntListBox(obj).ItemIndex  := i;
-      VCL_GUI_UCOMBO       : TTntComboBox(obj).ItemIndex := i;
-      VCL_GUI_UGRID        : TTntStringGrid(obj).Row := i;
-      VCL_GUI_URADIO       : TTntRadioGroup(obj).ItemIndex := i;
-      VCL_GUI_UCHECK       : TTntCheckBox(obj).Checked := (i<>0);
+      VCL_GUI_ULIST        : TListBox(obj).ItemIndex  := i;
+      VCL_GUI_UCOMBO       : TComboBox(obj).ItemIndex := i;
+      VCL_GUI_UGRID        : TStringGrid(obj).Row := i;
+      VCL_GUI_URADIO       : TRadioGroup(obj).ItemIndex := i;
+      VCL_GUI_UCHECK       : TCheckBox(obj).Checked := (i<>0);
       else raise Exception.Create('定義されていません。');
     end;
   end;
@@ -5939,15 +5836,15 @@ var
   var csv: TCsvSheet;
   begin
     case ginfo.obj_type of
-      VCL_GUI_LIST        : TListBox(obj).Items.Text  := hi_str(v);
-      VCL_GUI_COMBO       : TComboBox(obj).Items.Text := hi_str(v);
-      VCL_GUI_RADIO       : TRadioGroup(obj).Items.Text := hi_str(v);
-      VCL_GUI_RADIOGROUP  : TRadioGroup(obj).Items.Text := hi_str(v);
+      VCL_GUI_LIST        : TListBox(obj).Items.Text  := hi_strU(v);
+      VCL_GUI_COMBO       : TComboBox(obj).Items.Text := hi_strU(v);
+      VCL_GUI_RADIO       : TRadioGroup(obj).Items.Text := hi_strU(v);
+      VCL_GUI_RADIOGROUP  : TRadioGroup(obj).Items.Text := hi_strU(v);
       VCL_GUI_GRID        :
         begin
           csv := TCsvSheet.Create;
           try
-            csv.AsText := Trim(hi_str(v));
+            csv.AsText := TrimA(hi_str(v));
             with TStringGrid(obj) do
             begin
               if csv.Count >= 2 then
@@ -5961,11 +5858,11 @@ var
             csv.Free;
           end;
         end;
-      VCL_GUI_TREEVIEW    : CsvToTree( THiTreeView(obj), hi_str(v), True);
+      VCL_GUI_TREEVIEW    : CsvToTree( THiTreeView(obj), hi_strU(v), True);
       // uni
-      VCL_GUI_ULIST       : TTntListBox(obj).Items.Text  := ansi2uni(hi_str(v));
-      VCL_GUI_UCOMBO      : TTntComboBox(obj).Items.Text := ansi2uni(hi_str(v));
-      VCL_GUI_URADIO      : TTntRadioGroup(obj).Items.Text := ansi2uni(hi_str(v));
+      VCL_GUI_ULIST       : TListBox(obj).Items.Text  := ansi2uni(hi_str(v));
+      VCL_GUI_UCOMBO      : TComboBox(obj).Items.Text := ansi2uni(hi_str(v));
+      VCL_GUI_URADIO      : TRadioGroup(obj).Items.Text := ansi2uni(hi_str(v));
       VCL_GUI_UGRID       :
         begin
           csv := TCsvSheet.Create;
@@ -5977,8 +5874,8 @@ var
                 RowCount := csv.Count
               else
                 RowCount := 2;
-              CsvGridSetDataUni(TTntStringGrid(obj), csv);
-              CsvGridAutoColWidthUni(TTntDrawGrid(obj), csv);
+              CsvGridSetDataUni(TStringGrid(obj), csv);
+              CsvGridAutoColWidthUni(TDrawGrid(obj), csv);
             end;
           finally
             csv.Free;
@@ -5991,17 +5888,17 @@ var
   procedure _setSelText;
   var res: string;
   begin
-    res := hi_str(v);
+    res := hi_strU(v);
     case ginfo.obj_type of
       VCL_GUI_EDIT    : TEdit(obj).SelText       := res;
       VCL_GUI_MEMO    : TMemo(obj).SelText       := res;
       VCL_GUI_COMBO   : TComboBox(obj).SelText   := res;
       VCL_GUI_SPINEDIT: TSpinEdit(obj).SelText      := res;
-      VCL_GUI_TEDITOR : TEditor(obj).SelText        := res;
+      VCL_GUI_TEDITOR : TMemo(obj).SelText        := res;
       // uni
-      VCL_GUI_UEDIT    : TTntEdit(obj).SelText       := ansi2uni(res);
-      VCL_GUI_UMEMO    : TTntMemo(obj).SelText       := ansi2uni(res);
-      VCL_GUI_UCOMBO   : TTntComboBox(obj).SelText   := ansi2uni(res);
+      VCL_GUI_UEDIT    : TEdit(obj).SelText       := (res);
+      VCL_GUI_UMEMO    : TMemo(obj).SelText       := (res);
+      VCL_GUI_UCOMBO   : TComboBox(obj).SelText   := (res);
       else raise Exception.Create('定義されていません。');
     end;
   end;
@@ -6016,11 +5913,11 @@ var
         VCL_GUI_MEMO    : TMemo(obj).SelStart      := res;
         VCL_GUI_COMBO   : TComboBox(obj).SelStart  := res;
         VCL_GUI_SPINEDIT: TSpinEdit(obj).SelStart  := res;
-        VCL_GUI_TEDITOR : TEditor(obj).SelStart    := res;
+        VCL_GUI_TEDITOR : TMemo(obj).SelStart    := res;
         // uni
-        VCL_GUI_UEDIT    : TTntEdit(obj).SelStart      := res;
-        VCL_GUI_UMEMO    : TTntMemo(obj).SelStart      := res;
-        VCL_GUI_UCOMBO   : TTntComboBox(obj).SelStart  := res;
+        VCL_GUI_UEDIT    : TEdit(obj).SelStart      := res;
+        VCL_GUI_UMEMO    : TMemo(obj).SelStart      := res;
+        VCL_GUI_UCOMBO   : TComboBox(obj).SelStart  := res;
         else raise Exception.Create('定義されていません。');
       end;
     finally
@@ -6035,16 +5932,16 @@ var
       VCL_GUI_MEMO    : TMemo(obj).SelLength      := res;
       VCL_GUI_COMBO   : TComboBox(obj).SelLength  := res;
       VCL_GUI_SPINEDIT: TSpinEdit(obj).SelLength  := res;
-      VCL_GUI_TEDITOR : TEditor(obj).SelLength    := res;
+      VCL_GUI_TEDITOR : TMemo(obj).SelLength    := res;
       // uni
-      VCL_GUI_UEDIT    : TTntEdit(obj).SelLength      := res;
-      VCL_GUI_UMEMO    : TTntMemo(obj).SelLength      := res;
-      VCL_GUI_UCOMBO   : TTntComboBox(obj).SelLength  := res;
+      VCL_GUI_UEDIT    : TEdit(obj).SelLength      := res;
+      VCL_GUI_UMEMO    : TMemo(obj).SelLength      := res;
+      VCL_GUI_UCOMBO   : TComboBox(obj).SelLength  := res;
       else raise Exception.Create('定義されていません。');
     end;
   end;
   procedure _layout;
-  var s: string; i: TAlign;
+  var s: AnsiString; i: TAlign;
   begin
     s := hi_str(v);
     if obj is TControl then
@@ -6114,7 +6011,7 @@ var
   procedure _hint;
   var str: string; b: Boolean;
   begin
-    str := hi_str(v);
+    str := hi_strU(v);
     b   := (str <> '');
     if obj is TControl then
     begin
@@ -6163,7 +6060,7 @@ begin
       else raise Exception.Create(IntToStr(prop)+' は読取専用のプロパティです。');
     end;
   except
-    raise Exception.Create(ginfo.name + 'のプロパティ(' + IntToStr(prop) + ')の設定でエラー。');
+    raise Exception.Create(string(ginfo.name) + 'のプロパティ(' + IntToStr(prop) + ')の設定でエラー。');
   end;
 
   // (3) 結果の代入
@@ -6185,7 +6082,7 @@ var
   procedure setResS(s: string);
   begin
     Result := hi_var_new;
-    hi_setStr(Result, s);
+    hi_setStrU(Result, s);
   end;
 
   procedure _VCL_GUI_TOOLBUTTON;
@@ -6218,7 +6115,7 @@ var
     end else;
     if cmd = 'スタイル設定' then //線|ルート|ボタン
     begin
-      s := hi_str(v);
+      s := hi_strU(v);
       TTreeView(obj).ShowLines := (Pos('線',    s) > 0);
       TTreeView(obj).ShowRoot  := (Pos('ルート',s) > 0);
       TTreeView(obj).ShowButtons := (Pos('ボタン',s) > 0);
@@ -6246,39 +6143,39 @@ var
       Result := hi_var_new;
       tn := TTreeView(obj).Selected;
       if tn = nil then Exit;
-      hi_setStr(Result, THiTreeNode(tn.Data).GetTreePathText);
+      hi_setStrU(Result, THiTreeNode(tn.Data).GetTreePathText);
     end else
     if cmd = 'ドロップパス取得' then
     begin
-      Result := hi_newStr(e.dropPath);
+      Result := hi_newStr(AnsiString(e.dropPath));
     end else
     if cmd = 'ノード調査' then
     begin
-      s := hi_str(v);
+      s := hi_strU(v);
       xx := StrToIntDef(getToken_s(s, ','), -1);
       yy := StrToIntDef(s,-1);
       if(xx<0)or(yy<0)then Exit;
       tn := e.GetNodeAt(xx, yy);
       if tn <> nil then
-        Result := hi_newStr( THiTreeNode(tn.Data).IDStr );  
+        Result := hi_newStr(AnsiString( THiTreeNode(tn.Data).IDStr ));
     end
-    else if cmd = '選択パス設定' then THiTreeView(obj).SetSelectPath(hi_str(v))
-    else if cmd = '選択ID取得' then Result := hi_newStr(THiTreeView(obj).SelectedID)
-    else if cmd = '選択ID設定' then THiTreeView(obj).SelectedID := hi_str(v)
+    else if cmd = '選択パス設定' then THiTreeView(obj).SetSelectPath(hi_strU(v))
+    else if cmd = '選択ID取得' then Result := hi_newStr(AnsiString(THiTreeView(obj).SelectedID))
+    else if cmd = '選択ID設定' then THiTreeView(obj).SelectedID := hi_strU(v)
     else if cmd = 'アイテム数' then Result := hi_newInt(THiTreeView(obj).list.Count)
-    else if cmd = 'テキスト変更' then THiTreeView(obj).ChangeText(hi_str(v))
-    else if cmd = '画像番号変更' then THiTreeView(obj).ChangePic(hi_str(v))
-    else if cmd = '選択画像番号変更' then THiTreeView(obj).ChangeSelectPic(hi_str(v))
-    else if cmd = 'ノード削除' then THiTreeView(obj).DeleteID(hi_str(v))
-    else if cmd = 'ノード開く'   then THiTreeView(obj).ExpandID(hi_str(v))
-    else if cmd = 'ノード閉じる' then THiTreeView(obj).CollapseID(hi_str(v))
-    else if cmd = 'ノード番号取得' then Result := hi_newInt(THiTreeView(obj).list.FindID(hi_str(v)))
-    else if cmd = '親ノード取得'   then Result := hi_newStr(THiTreeView(obj).GetParentID(hi_str(v)))
-    else if cmd = '子ノード取得'   then Result := hi_newStr(THiTreeView(obj).GetChildrenID(hi_str(v)))
+    else if cmd = 'テキスト変更' then THiTreeView(obj).ChangeText(hi_strU(v))
+    else if cmd = '画像番号変更' then THiTreeView(obj).ChangePic(hi_strU(v))
+    else if cmd = '選択画像番号変更' then THiTreeView(obj).ChangeSelectPic(hi_strU(v))
+    else if cmd = 'ノード削除' then THiTreeView(obj).DeleteID(hi_strU(v))
+    else if cmd = 'ノード開く'   then THiTreeView(obj).ExpandID(hi_strU(v))
+    else if cmd = 'ノード閉じる' then THiTreeView(obj).CollapseID(hi_strU(v))
+    else if cmd = 'ノード番号取得' then Result := hi_newInt(THiTreeView(obj).list.FindID(hi_strU(v)))
+    else if cmd = '親ノード取得'   then Result := hi_newStrU(THiTreeView(obj).GetParentID(hi_strU(v)))
+    else if cmd = '子ノード取得'   then Result := hi_newStrU(THiTreeView(obj).GetChildrenID(hi_strU(v)))
     else
     if cmd = 'POPUP' then TTreeView(obj).PopupMenu := TPopupMenu( hi_int(v) ) else
-    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
-    if cmd = '文字書体SET' then setFontName(e.Font, hi_str(v)) else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then setFontName(e.Font, hi_strU(v)) else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size) end else
     if cmd = '文字サイズSET' then e.Font.Size := hi_int(v) else
     if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
@@ -6290,7 +6187,7 @@ var
     ;
   end;
   procedure _VCL_GUI_LISTVIEW;
-  var s: string; e: THiListView;
+  var s: AnsiString; e: THiListView;
   begin
     e := THiListView(obj);
     if cmd = '画像設定' then
@@ -6316,8 +6213,8 @@ var
       TListView(obj).ViewStyle := vsIcon;
     end else
     if cmd = 'POPUP' then e.PopupMenu := TPopupMenu( hi_int(v) ) else
-    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
-    if cmd = '文字書体SET' then setFontName(e.Font, hi_str(v)) else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then setFontName(e.Font, hi_strU(v)) else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size) end else
     if cmd = '文字サイズSET' then e.Font.Size := hi_int(v) else
     if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
@@ -6343,8 +6240,8 @@ var
   var e: TEdit;
   begin
     e := TEdit(obj);
-    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
-    if cmd = '文字書体SET' then begin setFontName(e.Font, hi_str(v)); end else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then begin setFontName(e.Font, string(hi_str(v))); end else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size); end else
     if cmd = '文字サイズSET' then begin e.Font.Size := hi_int(v); end else
     if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
@@ -6406,21 +6303,22 @@ var
     procedure setcoloring;
     var s: string;
     begin
-      s := UpperCase(hi_str(v));
+      // TODO
+      s := UpperCase(hi_strU(v));
       if s = 'HTML'     then e.Fountain := _setHTMLColor else
       if s = 'DELPHI'   then e.Fountain := TDelphiFountain.Create(Bokan) else
-      if s = 'PERL'     then e.Fountain := TPerlFountain.Create(Bokan) else
-      if s = 'CPP'      then e.Fountain := TCppFountain.Create(Bokan) else
-      if s = 'JAVA'     then e.Fountain := TJavaFountain.Create(Bokan) else
+      //if s = 'PERL'     then e.Fountain := TPerlFountain.Create(Bokan) else
+      //if s = 'CPP'      then e.Fountain := TCppFountain.Create(Bokan) else
+      //if s = 'JAVA'     then e.Fountain := TJavaFountain.Create(Bokan) else
       if s = 'なでしこ' then e.Fountain := TNadesikoFountain.Create(Bokan) else
       if (s = '')or(s = 'TEXT') then e.Fountain := nil else
       raise Exception.Create(s + 'はサポートしていません。HTML/DELPHI/PERL/CPP/JAVA/TEXT/なでしこのみ');
     end;
-
+  
   begin
     e := THiEditor(obj);
-    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
-    if cmd = '文字書体SET' then setFontName(e.Font, hi_str(v)) else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then setFontName(e.Font, hi_strU(v)) else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size) end else
     if cmd = '文字サイズSET' then e.Font.Size := hi_int(v) else
     if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
@@ -6448,14 +6346,14 @@ var
     if cmd = '左バー'   then e.Leftbar.Visible := hi_bool(v) else
     if cmd = '表示記号' then e.ViewFlag(hi_str(v)) else
     if cmd = '折り返し' then begin e.WordWrap := (hi_int(v) >= 1); e.WrapOption.WrapByte := hi_int(v) end else
-    if cmd = '強調語句設定' then begin if e.Fountain = nil then e.ReserveWordList.Text := hi_str(v) else e.Fountain.ReserveWordList.Text := hi_str(v) end else
+    if cmd = '強調語句設定' then begin if e.Fountain = nil then e.ReserveWordList.Text := hi_strU(v) else e.Fountain.ReserveWordList.Text := hi_strU(v) end else
     if cmd = '強調語句取得' then begin if e.Fountain = nil then setResS(e.ReserveWordList.Text) else setResS(e.Fountain.ReserveWordList.Text) end else
     if cmd = 'オートインデント設定' then e.Caret.AutoIndent := hi_bool(v) else
     if cmd = 'オートインデント取得' then setRes(ord(e.Caret.AutoIndent))  else
-    if cmd = '設定パネル表示' then begin EditEditorProp(bokan.edtPropNormal,nil); bokan.edtPropNormal.AssignTo(e); end else
-    if cmd = 'カラーリングパネル表示' then begin EditEditorProp(bokan.edtPropNormal,nil); bokan.edtPropNormal.AssignTo(e); end else
-    if cmd = '設定保存' then begin Bokan.edtPropNormal.Assign(e); Bokan.edtPropNormal.WriteIni(hi_str(v),'TEditor','edit'); end else
-    if cmd = '設定読込' then begin try Bokan.edtPropNormal.ReadIni(hi_str(v),'TEditor','edit'); except end; Bokan.edtPropNormal.AssignTo(e); end else
+    //if cmd = '設定パネル表示' then begin EditEditorProp(bokan.edtPropNormal,nil); bokan.edtPropNormal.AssignTo(e); end else
+    //if cmd = 'カラーリングパネル表示' then begin EditEditorProp(bokan.edtPropNormal,nil); bokan.edtPropNormal.AssignTo(e); end else
+    if cmd = '設定保存' then begin Bokan.edtPropNormal.Assign(e); Bokan.edtPropNormal.WriteIni(hi_strU(v),'TEditor','edit'); end else
+    if cmd = '設定読込' then begin try Bokan.edtPropNormal.ReadIni(hi_strU(v),'TEditor','edit'); except end; Bokan.edtPropNormal.AssignTo(e); end else
     if cmd = 'しおり設定'     then begin e.PutMark(hi_int(v));  end else
     if cmd = 'しおりジャンプ' then begin e.GotoMark(hi_int(v)); end else
     if cmd = '編集設定' then e.ReadOnly := not hi_bool(v) else
@@ -6465,11 +6363,12 @@ var
     if cmd = 'ファイルドロップ許可設定' then
     begin
       if hi_bool(v) then
-        e.OnDropFiles := Bokan.eventTEditorDropFile
+        // e.OnDropFiles := Bokan.eventTEditorDropFile
       else
-        e.OnDropFiles := nil;
+        //e.OnDropFiles := nil
+      ;
     end else
-    if cmd = 'ファイルドロップ許可取得' then Result := hi_newBool(Assigned(e.OnDropFiles)) else
+    //if cmd = 'ファイルドロップ許可取得' then Result := hi_newBool(Assigned(e.OnDropFiles)) else
     ;
   end;
   procedure _VCL_GUI_GRID;
@@ -6477,8 +6376,8 @@ var
   begin
     e := TStrSortGrid(obj);
     if cmd = 'POPUP' then e.PopupMenu := TPopupMenu( hi_int(v) ) else
-    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
-    if cmd = '文字書体SET' then setFontName(e.Font, hi_str(v)) else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then setFontName(e.Font, hi_strU(v)) else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size) end else
     if cmd = '文字サイズSET' then begin
       e.Font.Size := hi_int(v); e.Canvas.Font := e.Font;
@@ -6538,7 +6437,7 @@ var
     e := TImage(obj);
     if cmd = '画像設定' then
     begin
-      f := hi_str(v);
+      f := hi_strU(v);
       ext := UpperCase(ExtractFileExt(f));
       if f = '' then
       begin
@@ -6564,7 +6463,7 @@ var
       end else
       // その他の画像形式
       begin
-        bmp := LoadPic(hi_str(v));
+        bmp := LoadPic(hi_strU(v));
         e.Picture.Assign(bmp);
         e.Width  := bmp.Width;
         e.Height := bmp.Height;
@@ -6633,23 +6532,23 @@ var
     try
       if cmd = 'SETURL'    then
       begin
-        e.Navigate(hi_str(v));
+        e.Navigate(hi_strU(v));
         GuiInfos[ e.Tag ].freetag := 1;
       end else
-      if cmd = 'GETURL'    then Result := hi_newStr( e.LocationURL ) else
+      if cmd = 'GETURL'    then Result := hi_newStrU( e.LocationURL ) else
       if cmd = '戻る'   then e.GoBack else
       if cmd = '進む'   then e.GoForward else
       if cmd = 'ホーム' then e.GoHome else
       if cmd = 'タイトル取得' then
       begin
         Doc := e.Document as IHTMLDocument2;
-        Result := hi_newStr(Doc.title);
+        Result := hi_newStrU(Doc.title);
       end else
-      if cmd = '禁止項目設定' then changeSetting(hi_str(v)) else
+      if cmd = '禁止項目設定' then changeSetting(hi_strU(v)) else
       if cmd = 'タグ追加' then
       begin
         Doc := e.Document as IHTMLDocument2;
-        Doc.body.insertAdjacentHTML('BeforeEnd', hi_str(v));
+        Doc.body.insertAdjacentHTML('BeforeEnd', hi_strU(v));
       end else
       if cmd = '注目' then
       begin
@@ -6670,8 +6569,8 @@ var
     e := TSpinEdit(obj);
     if cmd = '最大値' then e.MaxValue := hi_int(v) else
     if cmd = '最小値' then e.MinValue := hi_int(v) else
-    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
-    if cmd = '文字書体SET' then setFontName(e.Font, hi_str(v)) else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then setFontName(e.Font, hi_strU(v)) else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size) end else
     if cmd = '文字サイズSET' then e.Font.Size := hi_int(v) else
     if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
@@ -6695,19 +6594,19 @@ var
   begin
     e := TButton(obj);
     if cmd = 'POPUP' then e.PopupMenu := TPopupMenu( hi_int(v) ) else
-    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
-    if cmd = '文字書体SET' then begin setFontName(e.Font, hi_str(v)); end else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then begin setFontName(e.Font, hi_strU(v)); end else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size); end else
     if cmd = '文字サイズSET' then begin e.Font.Size := hi_int(v); end else
     if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
     if cmd = '文字色SET' then e.Font.Color := RGB2Color( hi_int(v) ) else
   end;
   procedure _VCL_GUI_MEMO;
-  var e: TMemo; s: string;
+  var e: TMemo; s: AnsiString;
   begin
     e := TMemo(obj);
-    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
-    if cmd = '文字書体SET' then begin setFontName(e.Font, hi_str(v)); end else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then begin setFontName(e.Font, hi_strU(v)); end else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size); end else
     if cmd = '文字サイズSET' then begin e.Font.Size := hi_int(v); end else
     if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
@@ -6754,8 +6653,8 @@ var
   begin
     e := TListBox(obj);
     if cmd = 'POPUP' then e.PopupMenu := TPopupMenu( hi_int(v) ) else
-    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
-    if cmd = '文字書体SET' then setFontName(e.Font, hi_str(v)) else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then setFontName(e.Font, hi_strU(v)) else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size) end else
     if cmd = '文字サイズSET' then begin
       e.Style := lbOwnerDrawFixed;
@@ -6774,8 +6673,8 @@ var
   begin
     e := TComboBox( obj );
     if cmd = 'POPUP' then e.PopupMenu := TPopupMenu( hi_int(v) ) else
-    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
-    if cmd = '文字書体SET' then setFontName(e.Font, hi_str(v)) else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then setFontName(e.Font, hi_strU(v)) else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size) end else
     if cmd = '文字サイズSET' then e.Font.Size := hi_int(v) else
     if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
@@ -6809,7 +6708,7 @@ var
     if cmd = 'POPUP' then e.PopupMenu := TPopupMenu( hi_int(v) ) else
   end;
   procedure _VCL_GUI_PANEL;
-  var e: TNakoPanel; s: string;
+  var e: TNakoPanel; s: AnsiString;
   begin
     e := TNakoPanel(obj);
     if cmd = 'POPUP' then e.PopupMenu := TPopupMenu( hi_int(v) ) else
@@ -6832,8 +6731,8 @@ var
     end else
     if cmd = '背景色取得' then setRes(Color2RGB(e.Color))  else
     if cmd = '背景色設定' then e.Color := RGB2Color(hi_int(v)) else
-    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
-    if cmd = '文字書体SET' then setFontName(e.Font, hi_str(v)) else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then setFontName(e.Font, hi_strU(v)) else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size) end else
     if cmd = '文字サイズSET' then e.Font.Size := hi_int(v) else
     if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
@@ -6847,8 +6746,8 @@ var
     if cmd = 'POPUP' then e.PopupMenu := TPopupMenu( hi_int(v) ) else
     if cmd = '背景色取得' then setRes(Color2RGB(e.Color))  else
     if cmd = '背景色設定' then e.Color := RGB2Color(hi_int(v)) else
-    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
-    if cmd = '文字書体SET' then setFontName(e.Font, hi_str(v)) else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then setFontName(e.Font, hi_strU(v)) else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size) end else
     if cmd = '文字サイズSET' then e.Font.Size := hi_int(v) else
     if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
@@ -6873,8 +6772,8 @@ var
   begin
     e := TCheckBox(obj);
     if cmd = 'POPUP' then e.PopupMenu := TPopupMenu( hi_int(v) ) else
-    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
-    if cmd = '文字書体SET' then setFontName(e.Font, hi_str(v)) else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then setFontName(e.Font, hi_strU(v)) else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size) end else
     if cmd = '文字サイズSET' then e.Font.Size := hi_int(v) else
     if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
@@ -6888,8 +6787,8 @@ var
   begin
     e := TRadioGroup(obj);
     if cmd = 'POPUP' then e.PopupMenu := TPopupMenu( hi_int(v) ) else
-    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
-    if cmd = '文字書体SET' then setFontName(e.Font, hi_str(v)) else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then setFontName(e.Font, hi_strU(v)) else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size) end else
     if cmd = '文字サイズSET' then e.Font.Size := hi_int(v) else
     if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
@@ -6905,8 +6804,8 @@ var
   begin
     e := TRadioGroup(obj);
     if cmd = 'POPUP' then e.PopupMenu := TPopupMenu( hi_int(v) ) else
-    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
-    if cmd = '文字書体SET' then setFontName(e.Font, hi_str(v)) else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then setFontName(e.Font, hi_strU(v)) else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size) end else
     if cmd = '文字サイズSET' then e.Font.Size := hi_int(v) else
     if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
@@ -6916,16 +6815,16 @@ var
     if cmd = 'GETCOL' then setRes(e.Columns)  else
     if cmd = 'SETCOL' then e.Columns := hi_int(v) else
     if cmd = 'GETTITLE' then setResS(e.Caption) else
-    if cmd = 'SETTITLE' then e.Caption := hi_str(v) else
+    if cmd = 'SETTITLE' then e.Caption := hi_strU(v) else
 
   end;
   procedure _VCL_GUI_LABEL;
-  var e: TLabel; s: string;
+  var e: TLabel; s: AnsiString;
   begin
     e := TLabel(obj);
     if cmd = 'POPUP' then e.PopupMenu := TPopupMenu( hi_int(v) ) else
-    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
-    if cmd = '文字書体SET' then setFontName(e.Font, hi_str(v)) else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then setFontName(e.Font, hi_strU(v)) else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size) end else
     if cmd = '文字サイズSET' then e.Font.Size := hi_int(v) else
     if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
@@ -6962,10 +6861,10 @@ var
     end else
     if cmd = 'チェック取得' then begin Result := hi_newBool(e.Checked) end else
     if cmd = 'チェック設定' then begin e.Checked := (hi_int(v) <> 0); end else
-    if cmd = 'ショートカット取得' then begin Result := hi_newStr(ShortCutToText(e.ShortCut)) end else
-    if cmd = 'ショートカット設定' then begin e.ShortCut := TextToShortCut(hi_str(v)); end else
+    if cmd = 'ショートカット取得' then begin Result := hi_newStrU(ShortCutToText(e.ShortCut)) end else
+    if cmd = 'ショートカット設定' then begin e.ShortCut := TextToShortCut(hi_strU(v)); end else
     begin
-      raise Exception.Create(cmd+'は未定義です。');
+      raise Exception.Create(string(cmd)+'は未定義です。');
     end;
   end;
   procedure _VCL_GUI_TABPAGE;
@@ -6976,7 +6875,7 @@ var
     if cmd = 'タブ追加' then
     begin
       sheet := TTabSheet.Create(obj);
-      sheet.Caption := hi_str(v);
+      sheet.Caption := hi_strU(v);
       sheet.PageControl := e;
       Result := nako_var_new(nil);
       hi_setInt(Result, Integer(sheet));
@@ -6984,11 +6883,11 @@ var
     if cmd = 'テキスト取得' then
     begin
       Result := hi_var_new;
-      hi_setStr(Result, e.ActivePage.Caption);
+      hi_setStrU(Result, e.ActivePage.Caption);
     end else
     if cmd = 'テキスト設定' then
     begin
-      e.ActivePage.Caption := hi_str(v);
+      e.ActivePage.Caption := hi_strU(v);
     end else
     if cmd = '表示タブ取得' then
     begin
@@ -7037,7 +6936,7 @@ var
       e.ClientHeight := hi_int(v);
     end
     else begin
-      raise Exception.Create(cmd+'は未定義です。');
+      raise Exception.Create(string(cmd)+'は未定義です。');
     end;
   end;
   procedure _VCL_GUI_CALENDER;
@@ -7051,8 +6950,8 @@ var
   begin
     e := TStatusBar(obj);
     if cmd = 'POPUP' then e.PopupMenu := TPopupMenu( hi_int(v) ) else
-    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
-    if cmd = '文字書体SET' then setFontName(e.Font, hi_str(v)) else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then setFontName(e.Font, hi_strU(v)) else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size) end else
     if cmd = '文字サイズSET' then e.Font.Size := hi_int(v) else
     if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
@@ -7108,8 +7007,8 @@ var
   var e: TValueListEditor;
   begin
     e := TValueListEditor(obj);
-    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
-    if cmd = '文字書体SET' then setFontName(e.Font, hi_str(v)) else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then setFontName(e.Font, hi_strU(v)) else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size) end else
     if cmd = '文字サイズSET' then begin
       e.Font.Size := hi_int(v); e.Canvas.Font := e.Font;
@@ -7128,8 +7027,8 @@ var
     if cmd = '背景ハンドル' then begin Result := hi_var_new; hi_setInt(Result, Integer(e.BackCanvas.Handle)); end else
     if cmd = '表示'         then begin e.Show; e.Invalidate; end else
     if cmd = 'POPUP'        then e.PopupMenu := TPopupMenu( hi_int(v) ) else
-    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
-    if cmd = '文字書体SET' then setFontName(e.Font, hi_str(v)) else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then setFontName(e.Font, hi_strU(v)) else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size) end else
     if cmd = '文字サイズSET' then e.Font.Size := hi_int(v) else
     if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
@@ -7143,7 +7042,7 @@ var
     if cmd = 'CH取得' then Result := hi_newInt(e.ClientHeight) else
     if cmd = 'アイコン設定' then
     begin
-      s := hi_str(v);
+      s := hi_strU(v);
       icoCreate := TjvIcon.Create(nil);
       bmp := LoadPic(s);
       ico := icoCreate.CreateIcon(bmp);
@@ -7161,7 +7060,7 @@ var
         e.ClearScreen(e.Color);
       end else
       begin
-        bmp := LoadPic(hi_str(v));
+        bmp := LoadPic(hi_strU(v));
         try
           e.BackCanvas.Draw(0,0,bmp);
           e.ClientWidth := bmp.Width;
@@ -7313,7 +7212,7 @@ var
       menu.Visible := True;
     end else
     begin
-      raise Exception.Create(cmd+'は未定義です。');
+      raise Exception.Create(string(cmd)+'は未定義です。');
     end;
   end;
   procedure _VCL_GUI_POPUPMENU;
@@ -7326,7 +7225,7 @@ var
       menu.Visible := True;
     end else
     begin
-      raise Exception.Create(cmd+'は未定義です。');
+      raise Exception.Create(string(cmd)+'は未定義です。');
     end;
   end;
   procedure _VCL_GUI_SPLITTER;
@@ -7342,7 +7241,7 @@ var
     if cmd = '追加' then
     begin
       imgs  := TImageList(obj);
-      fname := hi_str(v);
+      fname := hi_strU(v);
       if LowerCase(ExtractFileExt(fname)) = '.ico' then
       begin
         ico := TIcon.Create;
@@ -7364,7 +7263,7 @@ var
     if cmd = '一括追加' then
     begin
       imgs  := TImageList(obj);
-      fname := hi_str(v);
+      fname := hi_strU(v);
       bmp := LoadPic(fname);
       try
         w := imgs.Width;
@@ -7394,7 +7293,7 @@ var
     if cmd = '置換' then
     begin
       imgs  := TImageList(obj);
-      fname := hi_str(v);
+      fname := hi_strU(v);
       no := StrToIntDef(getToken_s(fname, '@'), 0);
       if LowerCase(ExtractFileExt(fname)) = '.ico' then
       begin
@@ -7445,7 +7344,7 @@ var
     Result := nil;
     if cmd = '画像設定' then
     begin
-      bmp := LoadPic(hi_str(v));
+      bmp := LoadPic(hi_strU(v));
       try
         e.Glyph := bmp;
       finally
@@ -7454,8 +7353,8 @@ var
     end else
     if cmd = 'フラット取得' then Result := hi_newBool(e.Flat) else
     if cmd = 'フラット設定' then e.Flat := hi_bool(v) else
-    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
-    if cmd = '文字書体SET' then setFontName(e.Font, hi_str(v)) else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then setFontName(e.Font, hi_strU(v)) else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size) end else
     if cmd = '文字サイズSET' then e.Font.Size := hi_int(v) else
     if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
@@ -7472,15 +7371,15 @@ var
     Result := nil;
     if cmd = '画像設定' then
     begin
-      bmp := LoadPic(hi_str(v));
+      bmp := LoadPic(hi_strU(v));
       try
         e.Glyph := bmp;
       finally
         bmp.Free;
       end;
     end else
-    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStr(Result, e.Font.Name); end else
-    if cmd = '文字書体SET' then setFontName(e.Font, hi_str(v)) else
+    if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
+    if cmd = '文字書体SET' then setFontName(e.Font, hi_strU(v)) else
     if cmd = '文字サイズGET' then begin Result := hi_var_new; hi_setInt(Result, e.Font.Size) end else
     if cmd = '文字サイズSET' then e.Font.Size := hi_int(v) else
     if cmd = '文字色GET' then setRes(Color2RGB(e.Font.Color))  else
@@ -7500,7 +7399,7 @@ var
       e.ClearImage;
       s := TStringList.Create;
       try
-        s.Text := hi_str(v);
+        s.Text := hi_strU(v);
         for i := 0 to s.Count - 1 do
         begin
           bmp := LoadPic(s.Strings[i]);
@@ -7517,7 +7416,7 @@ var
       gif := TGIFImage.Create;
       try
         try
-          gif.LoadFromFile(hi_str(v));
+          gif.LoadFromFile(hi_strU(v));
           for i := 0 to gif.Images.Count - 1 do
           begin
             e.AddBitmap(gif.Images.SubImages[i].Bitmap);
@@ -7568,18 +7467,18 @@ begin
   c := nako_getFuncArg(h, 1); // cmd
   v := nako_getFuncArg(h, 2); // value
 
-  cmd   := hi_str(c);
+  cmd   := hi_strU(c);
 
   if(o=nil)then
   begin
-    raise Exception.Create('VCL_COMMANDの『'+cmd+'』でオブジェクトが生成されていません。');
+    raise Exception.Create('VCL_COMMANDの『'+string(cmd)+'』でオブジェクトが生成されていません。');
   end;
 
   try
     ginfo := GuiInfos[TControl(hi_int(o)).Tag];
     obj   := ginfo.obj;
   except
-    raise Exception.Create('VCL_COMMANDの『'+cmd+'』でオブジェクトが特定できませんでした。');
+    raise Exception.Create('VCL_COMMANDの『'+string(cmd)+'』でオブジェクトが特定できませんでした。');
   end;
 
   case ginfo.obj_type of
@@ -7634,7 +7533,7 @@ begin
     VCL_GUI_UGRID       : _VCL_GUI_GRID;
     VCL_GUI_ULABEL      : _VCL_GUI_LABEL;
     else
-      raise Exception.Create(ginfo.name + 'にはコマンドは未定義です。');
+      raise Exception.Create(string(ginfo.name) + 'にはコマンドは未定義です。');
   end;
 end;
 
@@ -7644,14 +7543,14 @@ var
   ps: PHiValue;
 begin
   ps := nako_getFuncArg(h, 0);
-  Application.Title := hi_str(ps);
+  Application.Title := hi_strU(ps);
   Result := nil;
 end;
 
 function vcl_get_apptitle(h: DWORD): PHiValue; stdcall;
 begin
   Result := hi_var_new;
-  hi_setStr(Result, Application.Title);
+  hi_setStrU(Result, Application.Title);
 end;
 
 function cmd_StayOnTop(h: DWORD): PHiValue; stdcall;
@@ -7732,10 +7631,10 @@ begin
   PostMessage(fh, fmsg, fw, fl);
 end;
 
-function browser_getId(web:TUIWebBrowser; idname: string): Variant;
+function browser_getId(web:TUIWebBrowser; idname: AnsiString): Variant;
 var
   doc, items, inp: Variant;
-  names: string;
+  names: AnsiString;
   no: Integer;
 begin
   try
@@ -7743,12 +7642,12 @@ begin
     if VarIsClear(doc) then Exit;
 
     // IDを指定する
-    if Pos('\', idname) = 0 then
+    if PosA('\', idname) = 0 then
     begin
       inp := doc.getElementById(idname);
     end else begin
       names := getToken_s(idname, '\');
-      no    := StrToIntDef(Trim(idname), 1);
+      no    := StrToIntDefA(TrimA(idname), 1);
       items  := doc.getElementsByName(names);
       if VarIsClear(items) or (items.Length = 0) then
       begin
@@ -7783,7 +7682,7 @@ end;
 function browser_getFormValue(h: DWORD): PHiValue; stdcall;
 var
   obj: TObject;
-  idname: string;
+  idname: AnsiString;
   inp: Variant;
 begin
   Result := nil;
@@ -7796,7 +7695,7 @@ begin
     begin
       Exit;
     end;
-    Result := hi_newStr(inp.value);
+    Result := hi_newStrU(inp.value);
   finally
     inp := Unassigned;
   end;
@@ -7805,7 +7704,7 @@ end;
 function browser_setFormValue(h: DWORD): PHiValue; stdcall;
 var
   obj: TObject;
-  idname, value: string;
+  idname, value: AnsiString;
   inp: Variant;
 begin
   Result := nil;
@@ -7828,7 +7727,7 @@ end;
 function browser_submit(h: DWORD): PHiValue; stdcall;
 var
   obj: TObject;
-  idname: string;
+  idname: AnsiString;
   inp: Variant;
 begin
   Result := nil;
@@ -7851,7 +7750,7 @@ end;
 function browser_click(h: DWORD): PHiValue; stdcall;
 var
   obj: TObject;
-  idname: string;
+  idname: AnsiString;
   inp: Variant;
 begin
   Result := nil;
@@ -7877,7 +7776,6 @@ end;
 function browser_printpreview(h: DWORD): PHiValue; stdcall;
 var
   obj: TObject;
-  idname: string;
   d1, d2:OleVariant;
 begin
   Result := nil;
@@ -7894,7 +7792,6 @@ end;
 function browser_execwb(h: DWORD): PHiValue; stdcall;
 var
   obj: TObject;
-  idname: string;
   cmd,opt:Integer;
   d1, d2:OleVariant;
 begin
@@ -7915,7 +7812,7 @@ end;
 function browser_setHTML(h: DWORD): PHiValue; stdcall;
 var
   obj: TObject;
-  idname, html: string;
+  idname, html: AnsiString;
   inp: Variant;
 begin
   Result := nil;
@@ -7938,7 +7835,7 @@ end;
 function browser_getHTML(h: DWORD): PHiValue; stdcall;
 var
   obj: TObject;
-  idname: string;
+  idname: AnsiString;
   inp: Variant;
 begin
   Result := nil;
@@ -7951,7 +7848,7 @@ begin
     begin
       Exit;
     end;
-    Result := hi_newStr(inp.innerHTML);
+    Result := hi_newStrU(inp.innerHTML);
   finally
     inp := Unassigned;
   end;
@@ -7975,9 +7872,12 @@ end;
 
 
 function sys_toHurigana(h: DWORD): PHiValue; stdcall;
+var
+  s: string;
 begin
-  Result := hi_newStr(
-    StrUnit.ConvToHurigana(getArgStr(h,0,True))
+  s := string(getArgStr(h,0,True));
+  Result := hi_newStrU(
+    StrUnit.ConvToHurigana(s)
   );
 end;
 
@@ -7989,11 +7889,11 @@ var
   csv: TCsvSheet;
   i,cnt: Integer;
 
-  oya, vname, cap, scut, opt, event: string;
-  oldOya: array [0..30] of string;
+  oya, vname, cap, scut, opt, event: AnsiString;
+  oldOya: array [0..30] of AnsiString;
   mnu: TMenuItem;
 
-  function _count(s: string): Integer;
+  function _count(s: AnsiString): Integer;
   var i : Integer;
   begin
     Result := 0;
@@ -8010,16 +7910,16 @@ begin
     csv.AsText := hi_str(ps);
     for i := 0 to csv.Count - 1 do
     begin
-      oya   := Trim(csv.Cells[0,i]); if oya   = 'なし' then oya  := '';
-      vname := Trim(csv.Cells[1,i]); if vname = '' then Continue;
-      cap   := Trim(csv.Cells[2,i]);
-      scut  := Trim(csv.Cells[3,i]); if scut  = 'なし' then scut  := '';
-      opt   := Trim(csv.Cells[4,i]); if opt   = 'なし' then opt   := '';
-      event := Trim(csv.Cells[5,i]); if event = 'なし' then event := '';
+      oya   := TrimA(csv.Cells[0,i]); if oya   = 'なし' then oya  := '';
+      vname := TrimA(csv.Cells[1,i]); if vname = '' then Continue;
+      cap   := TrimA(csv.Cells[2,i]);
+      scut  := TrimA(csv.Cells[3,i]); if scut  = 'なし' then scut  := '';
+      opt   := TrimA(csv.Cells[4,i]); if opt   = 'なし' then opt   := '';
+      event := TrimA(csv.Cells[5,i]); if event = 'なし' then event := '';
       if (Copy(oya,1,1) = '#')or(Copy(oya,1,2)='＃') then Continue;
       if Copy(vname,1,1) = '-' then
       begin
-        vname := '__auto_' + oldOya[0] + '_line' + IntToStr(i);
+        vname := '__auto_' + oldOya[0] + '_line' + IntToStrA(i);
         cap   := '-';
       end;
       // キャプションを省略
@@ -8043,7 +7943,7 @@ begin
       end;
 
       // 生成
-      pm := nako_getVariable(PChar(vname));
+      pm := nako_getVariable(PAnsiChar(vname));
       //
       //nako_eval_str('!' + vname + 'とはメニュー。'#13#10+vname+'を作る。');
       if pm = nil then pm := hi_var_new(vname);
@@ -8051,19 +7951,28 @@ begin
       nako_varCopyData(pmenu, pm);
       nako_group_exec(pm, '作');
 
-      pm_obj := nako_getGroupMember(PChar(vname), 'オブジェクト');
-      if pm_obj = nil then raise Exception.Create('システムエラー.メニュー"'+vname+'"のポインタが取得できません。');
-      if not (TComponent(hi_int(pm_obj)) is TMenuItem) then raise Exception.Create('システムエラー.メニュー"'+vname+'"のポインタが取得できません。');
+      pm_obj := nako_getGroupMember(PAnsiChar(vname), 'オブジェクト');
+      if pm_obj = nil then begin
+        raise Exception.Create(
+                'システムエラー.メニュー"' +
+                string(vname)+
+                '"のポインタが取得できません。');
+      end;
+      if not (TComponent(hi_int(pm_obj)) is TMenuItem) then
+        raise Exception.Create(
+                'システムエラー.メニュー"'+
+                string(vname)+
+                '"のポインタが取得できません。');
 
       mnu := TMenuItem(hi_int(pm_obj));
-      mnu.Caption := cap;
+      mnu.Caption := string(cap);
       mnu.OnClick := Bokan.eventClick;
       with GuiInfos[mnu.Tag] do begin
         name     := vname;
         pgroup   := pm;
       end;
 
-      if scut <> '' then mnu.ShortCut := TextToShortCut(scut);
+      if scut <> '' then mnu.ShortCut := TextToShortCut(string(scut));
       // option
       if opt = 'チェック' then TMenuItem(mnu).Checked := True;
 
@@ -8073,7 +7982,7 @@ begin
         try
           nako_eval_str(vname+'のクリックした時は～'+event);
         except on e: Exception do
-          raise Exception.Create('"'+vname+'"のイベントの設定エラー。' + e.Message);
+          raise Exception.Create('"'+string(vname)+'"のイベントの設定エラー。' + e.Message);
         end;
       end;
 
@@ -8087,10 +7996,13 @@ begin
         menu.Items.Add(mnu);
       end else
       begin
-        po := nako_getVariable(PChar(oya));
-        if po = nil then raise Exception.Create(oya + 'は未定義です。');
+        po := nako_getVariable(PAnsiChar(oya));
+        if po = nil then
+          raise Exception.Create(
+                  string(oya) + 'は未定義です。'
+          );
 
-        po := nako_getGroupMember(PChar(oya), 'オブジェクト');
+        po := nako_getGroupMember(PAnsiChar(oya), 'オブジェクト');
         opo := TComponent(hi_int(po));
         if opo is TMainMenu then
           TMainMenu(opo).Items.Add(mnu)
@@ -8139,7 +8051,7 @@ var
   o: TObject;
 begin
   o := getGui(pobj);
-  CsvToTree(o as THiTreeView, hi_str(ps), FlagClear);
+  CsvToTree(o as THiTreeView, hi_strU(ps), FlagClear);
 end;
 
 function vcl_treenode(h: DWORD): PHiValue; stdcall;
@@ -8168,7 +8080,7 @@ var
   i: Integer;
 
   //親部品名,部品名,テキスト,画像番号
-  oya, vname, text, pic: string;
+  oya, vname, text, pic: AnsiString;
 
   tn, oya_tn: TListItem;
   tv: THiListView;
@@ -8201,10 +8113,10 @@ begin
       if oya_tn = nil then
       begin
         tn := tv.Items.Add;
-        tn.Caption := text;
+        tn.Caption := string(text);
       end else
       begin
-        oya_tn.SubItems.Add(text);
+        oya_tn.SubItems.Add(string(text));
         tn := oya_tn;
       end;
 
@@ -8213,7 +8125,7 @@ begin
       n.Ptr := tn;
 
       // カスタマイズ
-      tn.ImageIndex    := StrToIntDef(pic,-1);
+      tn.ImageIndex    := StrToIntDefA(pic,-1);
     end;
   finally
     csv.Free;
@@ -8249,7 +8161,7 @@ var
   i: Integer;
 
   //部品名,画像番号,種類,イベント
-  vname, ino, itype, hint, event: string;
+  vname, ino, itype, hint, event: AnsiString;
 
   btn: TToolButton;
   toolbar: TToolBar;
@@ -8279,20 +8191,20 @@ begin
 
       // 生成
       // nako_eval_str('!' + vname + 'とはツールボタン。'#13#10+vname+'を作る。');
-      btn_group := nako_getVariable(PChar(vname));
-      if btn_group = nil then btn_group := nako_var_new(PChar(vname));
+      btn_group := nako_getVariable(PAnsiChar(vname));
+      if btn_group = nil then btn_group := nako_var_new(PAnsiChar(vname));
       //
       ptoolbtn := nako_getVariable('ツールボタン');
       nako_varCopyData(ptoolbtn, btn_group);
       nako_group_exec(btn_group, '作');
       pm := nako_group_findMember(btn_group, 'オブジェクト');
 
-      if pm = nil then raise Exception.Create('システムエラー.ツールボタン'+vname+'のポインタが取得できません。');
+      if pm = nil then raise Exception.Create('システムエラー.ツールボタン'+string(vname)+'のポインタが取得できません。');
 
       btn := TToolButton(hi_int(pm));
-      btn.ImageIndex := StrToIntDef(ino, -1);
+      btn.ImageIndex := StrToIntDefA(ino, -1);
       if hint <> '' then begin
-        btn.Hint := hint;
+        btn.Hint := string(hint);
         btn.ShowHint := True;
       end;
       btn.Left := i * toolbar.ButtonWidth;
@@ -8300,7 +8212,7 @@ begin
       with GuiInfos[btn.Tag] do begin
         name := vname;
         pgroup := btn_group;
-        name_id := nako_tango2id(PChar(vname));
+        name_id := nako_tango2id(PAnsiChar(vname));
       end;
 
       if (itype = '')or(itype='ボタン') then
@@ -8338,14 +8250,14 @@ end;
 type
   PEnumRec = ^TEnumRec;
   TEnumRec = record
-    Pattern: string;
+    Pattern: AnsiString;
     result: HWND;
   end;
 
 function EnumWindowsProc(h: HWND; lp: LPARAM): BOOL; stdcall;
 var
   p: PEnumRec;
-  s: string;
+  s: AnsiString;
   len: Integer;
 begin
   Result := True;
@@ -8356,10 +8268,10 @@ begin
   // set text
   SetLength(s, len+1);
   GetWindowText(h, @s[1], len+1);
-  s := PChar(s);
+  s := PAnsiChar(s);
 
   // match ?
-  if MatchesMask(s, p^.Pattern) then
+  if MatchesMask(string(s), string(p^.Pattern)) then
   begin
     Result := False;
     p^.result := h;
@@ -8372,7 +8284,7 @@ begin
 end;
 
 // 失敗すれば INVALID_HANDLE_VALUE を返す
-function MyFindWindow(title: string): HWND;
+function MyFindWindow(title: AnsiString): HWND;
 var
   EnumRec: TEnumRec;
 begin
@@ -8389,7 +8301,7 @@ function cmd_captureHandle(h: DWORD): PHiValue; stdcall;
 var
   pobj, ps: PHiValue;
   obj: TObject;
-  title: string;
+  title: AnsiString;
   target: THandle;
   dc: HDC;
   c: TCanvas;
@@ -8403,7 +8315,7 @@ begin
   obj    := getGui(pobj);
   title  := hi_str(ps);
   //
-  target := StrToIntDef(hi_str(ps), 0);
+  target := StrToIntDefA(hi_str(ps), 0);
   if target = 0 then target := GetDesktopWindow;
   if IsWindow(target) then
   if BringWindowToTop(target) then
@@ -8436,7 +8348,7 @@ function cmd_capture(h: DWORD): PHiValue; stdcall;
 var
   pobj, ps: PHiValue;
   obj: TObject;
-  title: string;
+  title: AnsiString;
   target: THandle;
   dc: HDC;
   c: TCanvas;
@@ -8489,7 +8401,7 @@ function cmd_captureClient(h: DWORD): PHiValue; stdcall;
 var
   pobj, ps: PHiValue;
   obj: TObject;
-  title: string;
+  title: AnsiString;
   target: THandle;
   dc: HDC;
   c: TCanvas;
@@ -8546,7 +8458,7 @@ end;
 function cmd_extractIcon(h: DWORD): PHiValue; stdcall;
 var
   icon: TIcon;
-  fname: string;
+  fname: AnsiString;
   obj: TCanvas;
   no: Integer;
 begin
@@ -8557,7 +8469,7 @@ begin
   //
   icon := TIcon.Create;
   try
-    icon.Handle := ExtractIcon(hInstance, PChar(fname), no);
+    icon.Handle := ExtractIconA(hInstance, PAnsiChar(fname), no);
     DrawIconEx(
         obj.Handle,
         0, 0, icon.Handle, icon.Width, icon.Height,
@@ -8571,10 +8483,10 @@ end;
 
 function cmd_extractIconCount(h: DWORD): PHiValue; stdcall;
 var
-  fname: string;
+  fname: AnsiString;
 begin
   fname := getArgStr(h, 0);
-  Result := hi_newInt(Integer(ExtractIcon(hInstance, PChar(fname), UINT(-1))));
+  Result := hi_newInt(Integer(ExtractIconA(hInstance, PAnsiChar(fname), UINT(-1))));
 end;
 
 
@@ -8584,7 +8496,7 @@ var
 begin
   ps := nako_getFuncArg(h, 0);
   getFont(Bokan.BackCanvas);
-  Result := hi_newInt(Bokan.BackCanvas.TextWidth(hi_str(ps)));
+  Result := hi_newInt(Bokan.BackCanvas.TextWidth(hi_strU(ps)));
 end;
 
 function cmd_getCharH(h: DWORD): PHiValue; stdcall;
@@ -8593,7 +8505,7 @@ var
 begin
   ps := nako_getFuncArg(h, 0);
   getFont(Bokan.BackCanvas);
-  Result := hi_newInt(Bokan.BackCanvas.TextHeight(hi_str(ps)));
+  Result := hi_newInt(Bokan.BackCanvas.TextHeight(hi_strU(ps)));
 end;
 
 //------------------------------------------------------------------------------

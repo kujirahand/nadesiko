@@ -71,14 +71,14 @@ function SHFileRename(const Sorce, Dest: string): Boolean;
 
 
 {Windows の XCopy.exe を使って、一気にコピー}
-procedure XCopy(const Sorce, Dest: string);
+procedure XCopy(const Sorce, Dest: AnsiString);
 
 {ファイルに任意の文字列を書きこむ}
 function WriteTextFile(const fname, str:string):Boolean;
 function ReadTextFile(const fname:string; var str:string):Boolean;
 
 {ソフトを起動する}
-function RunApp(const fname: String; IsHide:Boolean = False): Boolean;
+function RunApp(const fname: AnsiString; IsHide:Boolean = False): Boolean;
 function OpenApp(const fname: string; IsHide:Boolean = False): Integer;
 function RunAppAndWait(const fname: string; arg: string = ''): Boolean;
 
@@ -446,16 +446,16 @@ end;
 
 
 {ソフトを起動する}
-function RunApp(const fname: String; IsHide:Boolean = False): Boolean;
+function RunApp(const fname: AnsiString; IsHide:Boolean = False): Boolean;
 var
     retCode: Integer;
 begin
     if IsHide then
     begin
-      retCode := WinExec(PChar(fname), SW_HIDE);
+      retCode := WinExec(PAnsiChar(fname), SW_HIDE);
     end else
     begin
-      retCode := WinExec(PChar(fname), SW_SHOW);
+      retCode := WinExec(PAnsiChar(fname), SW_SHOW);
     end;
 
     if retCode > 31 then
@@ -878,11 +878,11 @@ end;
 
 
 {Windows の XCopy.exe を使って、一気にコピー}
-procedure XCopy(const Sorce, Dest: string);
-var s:string;
+procedure XCopy(const Sorce, Dest: AnsiString);
+var s: AnsiString;
 begin
 	s := 'XCOPY.EXE "'+Sorce+'" "'+dest+'" /E';
-    WinExec(PChar(s),SW_NORMAL);
+    WinExec(PAnsiChar(s),SW_NORMAL);
 end;
 
 {ファイルに任意の文字列を書きこむ}

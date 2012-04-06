@@ -76,7 +76,7 @@ var
 begin
   // ŒvZ
   s := edtMain.Text;
-  if nako_evalEx(PChar(s), ret) then
+  if nako_evalEx(PAnsiChar(s), ret) then
   begin
     edtMain.Text := hi_str(ret);
   end;

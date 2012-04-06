@@ -50,10 +50,10 @@ function StrToDateStr(str: AnsiString): AnsiString;
 begin
     Result:='';
     if str='' then Exit;
-    Result := FormatDateTime(
+    Result := AnsiString(FormatDateTime(
         'yyyy/mm/dd',
         StrToDateEx(str)
-    );
+    ));
 end;
 
 function StrToDateEx(str: AnsiString): TDateTime;
@@ -61,7 +61,7 @@ begin
     Result := Now;
     str := convToHalf(str);
     if str='' then Exit;
-    if Pos('.',str)>0 then str := JReplace(str,'.','/');
+    if PosA('.',str)>0 then str := JReplaceA(str,'.','/');
     Result := VarToDateTime(str);
 end;
 
@@ -76,9 +76,9 @@ begin
     flg := Copy(AddTime,1,1);
     if (flg='-')or(flg='+') then Delete(AddTime, 1,1);
 
-    hh := StrToIntDef(getToken_s(AddTime,':'),0);
-    nn := StrToIntDef(getToken_s(AddTime,':'),0);
-    ss := StrToIntDef(AddTime, 0);
+    hh := StrToIntDef(string(getToken_s(AddTime,':')),0);
+    nn := StrToIntDef(string(getToken_s(AddTime,':')),0);
+    ss := StrToIntDef(string(AddTime), 0);
     if flg <> '-' then
     begin
       Result := IncHour(BaseTime, hh);
@@ -105,9 +105,9 @@ begin
     if (flg='-')or(flg='+') then Delete(AddDate, 1,1);
 
     // 足す日付を分解する
-    yy := StrToIntDef(getToken_s(AddDate,'/'),0);
-    mm := StrToIntDef(getToken_s(AddDate,'/'),0);
-    dd := StrToIntDef(AddDate, 0);
+    yy := StrToIntDef(string(getToken_s(AddDate,'/')),0);
+    mm := StrToIntDef(string(getToken_s(AddDate,'/')),0);
+    dd := StrToIntDef(string(AddDate), 0);
     if flg <> '-' then
     begin
       // 足す
@@ -138,26 +138,26 @@ begin
     if ((MEIJI<=yy)and(yy<TAISYO))or((TAISYO=yy)and((mm<=6)or((mm=7)and(dd<=30)))) then
     begin
         y := yy-MEIJI+1;
-        if y=1 then sy := '元年' else sy := IntToStr(y)+'年';
-        Result := Format('明治'+sy+'%d月%d日',[mm,dd]);
+        if y=1 then sy := '元年' else sy := IntToStrA(y)+'年';
+        Result := FormatA('明治'+sy+'%d月%d日',[mm,dd]);
     end else
     if ((TAISYO<=yy)and(yy<SYOWA))or((SYOWA=yy)and((mm<=11)or((mm=12)and(dd<=25)))) then
     begin
         y := yy-TAISYO+1;
-        if y=1 then sy := '元年' else sy := IntToStr(y)+'年';
-        Result := Format('大正'+sy+'%d月%d日',[mm,dd]);
+        if y=1 then sy := '元年' else sy := IntToStrA(y)+'年';
+        Result := FormatA('大正'+sy+'%d月%d日',[mm,dd]);
     end else
     if ((SYOWA<=yy)and(yy<HEISEI))or((HEISEI=yy)and((mm=1)and(dd<=7))) then
     begin
         y := yy-SYOWA+1;
-        if y=1 then sy := '元年' else sy := IntToStr(y)+'年';
-        Result := Format('昭和'+sy+'%d月%d日',[mm,dd]);
+        if y=1 then sy := '元年' else sy := IntToStrA(y)+'年';
+        Result := FormatA('昭和'+sy+'%d月%d日',[mm,dd]);
     end else
     if (HEISEI<=yy) then
     begin
         y := yy-HEISEI+1;
-        if y=1 then sy := '元年' else sy := IntToStr(y)+'年';
-        Result := Format('平成'+sy+'%d月%d日',[mm,dd]);
+        if y=1 then sy := '元年' else sy := IntToStrA(y)+'年';
+        Result := FormatA('平成'+sy+'%d月%d日',[mm,dd]);
     end;
 end;
 
@@ -168,7 +168,7 @@ begin
     d := convToHalf(d);
     if IsNumber(d) then
     begin
-      yy := StrToIntDef(d, 0);
+      yy := StrToIntDefA(d, 0);
       if yy < MEIJI then begin Result := ''; Exit; end;
     end else
     begin
@@ -178,25 +178,25 @@ begin
     if (MEIJI<=yy)and(yy<TAISYO) then
     begin
         y := yy-MEIJI+1;
-        if y=1 then sy := '元年' else sy := IntToStr(y)+'年';
+        if y=1 then sy := '元年' else sy := IntToStrA(y)+'年';
         Result := '明治'+sy;
     end else
     if (TAISYO<=yy)and(yy<SYOWA) then
     begin
         y := yy-TAISYO+1;
-        if y=1 then sy := '元年' else sy := IntToStr(y)+'年';
+        if y=1 then sy := '元年' else sy := IntToStrA(y)+'年';
         Result := '大正'+sy;
     end else
     if (SYOWA<=yy)and(yy<HEISEI) then
     begin
         y := yy-SYOWA+1;
-        if y=1 then sy := '元年' else sy := IntToStr(y)+'年';
+        if y=1 then sy := '元年' else sy := IntToStrA(y)+'年';
         Result := '昭和'+sy;
     end else
     if (HEISEI<=yy) then
     begin
         y := yy-HEISEI+1;
-        if y=1 then sy := '元年' else sy := IntToStr(y)+'年';
+        if y=1 then sy := '元年' else sy := IntToStrA(y)+'年';
         Result := '平成'+sy;
     end;
 end;

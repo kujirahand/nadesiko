@@ -17,15 +17,15 @@ uses
   {$IF RTLVersion>=15},Variants{$IFEND},imm, Forms;
 
 type
-  TCharSet = set of Char;
+  TCharSet = set of AnsiChar;
 
 {------------------------------------------------------------------------------}
 {マルチバイトに対応した検索置換関数}
 
 {文字列検索 // ｎバイト目の文字の位置を返す}
-function JPosEx(const sub, str:string; idx:Integer): Integer;
+function PosExW(const sub, str:string; idx:Integer): Integer;
 {文字列置換}
-function JReplace(const Str, oldStr, newStr:string; repAll:Boolean): string;
+function JReplaceU(const Str, oldStr, newStr:string; repAll:Boolean): string;
 {文字列置換拡張版}
 function JReplaceEx(const Str, oldStr, newStr:string; repAll:Boolean; useCase:Boolean): string;
 {指定個目のoldStrを、newStrに置換する}
@@ -70,7 +70,8 @@ function TrimLeftKana(str: string): string;
 {文字種類の判別}
 function IsHiragana(const str: string): Boolean;
 function IsKatakana(const str: string): Boolean;
-function Asc(const str: string): Integer; //文字コードを得る
+function AscA(const str: AnsiString): Integer; //文字コードを得る
+function AscW(const str: string): Integer; //文字コードを得る
 function IsNumStr(const str: string): Boolean; //文字列が全て数値かどうか判断
 
 {------------------------------------------------------------------------------}
@@ -119,7 +120,7 @@ function StrToValue(const str: string): Extended;
 {ワイルドカードマッチ}
 function WildMatch(Filename,Mask:string):Boolean;
 {行揃えする}
-function CutLine(line: string; cnt,tabCnt: Integer; kinsoku: string): string;
+function CutLine(line: AnsiString; cnt,tabCnt: Integer; kinsoku: AnsiString): AnsiString;
 
 {バイナリ表示する}
 function StrToHexStr(s:string): string;
@@ -143,13 +144,13 @@ begin
 end;
 
 {行揃えする}
-function CutLine(line: string; cnt,tabCnt: Integer; kinsoku: string): string;
+function CutLine(line: AnsiString; cnt,tabCnt: Integer; kinsoku: AnsiString): AnsiString;
 (*
 const
   GYOUTOU_KINSI = '、。，．・？！゛゜ヽヾゝゞ々ー）］｝」』!),.:;?]}｡｣､･ｰﾞﾟ';
 *)
 var
-  p: PChar;
+  p: PAnsiChar;
   i: Integer;
 
   procedure CopyOne;
@@ -159,7 +160,7 @@ var
   end;
 
   procedure InsCrLf;
-  var next_c: string;
+  var next_c: AnsiString;
   begin
     //禁則処理(行頭禁則文字)
     if kinsoku<>'' then
@@ -172,7 +173,7 @@ var
         next_c := p^;
       end;
 
-      if JPosEx(next_c, kinsoku, 1) > 0 then
+      if PosExW(string(next_c), string(kinsoku), 1) > 0 then
       begin
         if p^ in LeadBytes then
         begin
@@ -195,7 +196,7 @@ begin
     Exit;
   end;
 
-  p  := PChar(line);
+  p  := PAnsiChar(line);
   i := 0;
   while p^ <> #0 do
   begin
@@ -266,50 +267,14 @@ end;
 
 {マルチバイト文字数を得る}
 function JLength(const str: string): Integer;
-var
-    p: PChar;
 begin
-    p := PChar(str);
-    Result := 0;
-    while p^ <> #0 do
-    begin
-        if p^ in LeadBytes then
-            Inc(p,2)
-        else
-            Inc(p);
-        Inc(Result);
-    end;
+  Result := Length(str);
 end;
 
 {マルチバイト文字列を切り出す}
 function JCopy(const str: string; Index, Count: Integer): string;
-var
-    i, iTo: Integer;
-    p: PChar;
-    ch: string;
 begin
-    i   := 1;
-    iTo := Index + Count -1;
-    p := PChar(str);
-    Result := '';
-    while (p^ <> #0) do
-    begin
-        if p^ in LeadBytes then
-        begin
-            ch := p^ + (p+1)^;
-            Inc(p,2);
-        end else
-        begin
-            ch :=p^;
-            Inc(p);
-        end;
-        if (Index <= i) and (i <= iTo) then
-        begin
-            Result := Result + ch;
-        end;
-        Inc(i);
-        if iTo < i then Break;
-    end;
+  Result := Copy(str, Index, Count);
 end;
 
 {マルチバイト文字列を検索する}
@@ -328,18 +293,12 @@ begin
         begin
             Result := i; Break;
         end;
-        if p^ in LeadBytes then
-        begin
-            Inc(p,2);
-        end else
-        begin
-            Inc(p);
-        end;
+        Inc(p);
         Inc(i);
     end;
 end;
 
-function Asc(const str: string): Integer; //文字コードを得る
+function AscA(const str: AnsiString): Integer; //文字コードを得る
 begin
     if str='' then begin
         Result := 0;
@@ -352,6 +311,16 @@ begin
     end else
         Result := Ord(str[1]);
 end;
+
+function AscW(const str: string): Integer; //文字コードを得る
+begin
+  if str = '' then begin
+    Result := 0;
+    Exit;
+  end;
+  Result := Ord(str[1]);
+end;
+
 
 {西暦、和暦に対応した日付変換用関数}
 function StrToDateStr(const str: string): string;
@@ -368,7 +337,7 @@ function StrToDateEx(str: string): TDateTime;
 begin
     Result := Now;
     if str='' then Exit;
-    if Pos('.',str)>0 then str := JReplace(str,'.','/',True);
+    if Pos('.',str)>0 then str := JReplaceU(str,'.','/',True);
     Result := VarToDateTime(str);
 end;
 
@@ -432,7 +401,7 @@ end;
 
 procedure skipSpace(var p: PChar);
 begin
-    while p^ in [' ',#9] do Inc(p);
+    while CharInSet(p^, [' ',#9]) do Inc(p);
 end;
 
 {ネストする（）の内容を抜き出す}
@@ -458,10 +427,6 @@ begin
     tmp := pp;
     while pp^ <> #0 do
     begin
-        if pp^ in LeadBytes then
-        begin
-            Inc(pp,2); continue;
-        end else
         case pp^ of
             CH_STR1:
             begin
@@ -478,7 +443,9 @@ begin
             '\':
             begin
                 Inc(pp);
-                if IsStr then if pp^ in LeadBytes then Inc(pp,2) else Inc(pp);
+                if IsStr then begin
+                  Inc(pp);
+                end;
             end;
             '(':
             begin
@@ -552,11 +519,11 @@ begin
     // はじめに、数字を半角にする
     if Trim(str)='' then begin Result := 0; Exit; end;
 
-    buf := Trim(JReplace(ConvToHalfMini(str),',','',True));//カンマを削除
+    buf := Trim(JReplaceU(ConvToHalfMini(str),',','',True));//カンマを削除
     if Copy(buf,1,1) = '\' then System.Delete(buf,1,1);
 
     p := PChar(buf);
-    while p^ in [' ',#9] do Inc(p);
+    while CharInSet(p^, [' ',#9]) do Inc(p);
     if p^='$' then
     begin
         Result := StrToIntDef(buf,0);
@@ -574,15 +541,15 @@ begin
 
     st := p;
     // 整数
-    while p^ in ['0'..'9'] do Inc(p);
+    while CharInSet(p^, ['0'..'9']) do Inc(p);
     // 小数点
     if p^ = '.' then Inc(p);
-    while p^ in ['0'..'9'] do Inc(p);
+    while CharInSet(p^, ['0'..'9']) do Inc(p);
     // 指数形式
-    if (p^ in ['e','E']) and ((p+1)^ in ['+','-']) and ((p+2)^ in ['0'..'9']) then
+    if CharInSet(p^, ['e','E']) and CharInSet((p+1)^, ['+','-']) and CharInSet((p+2)^,['0'..'9']) then
     begin
       Inc(p,3);
-      while p^ in ['0'..'9'] do Inc(p);
+      while CharInSet(p^ ,['0'..'9']) do Inc(p);
     end;
 
     len := p - st;
@@ -603,7 +570,7 @@ function GetToken(const delimiter: String; var str: string): String;
 var
     i: Integer;
 begin
-    i := JPosEx(delimiter, str,1);
+    i := PosExW(delimiter, str,1);
     if i=0 then
     begin
         Result := str;
@@ -630,16 +597,6 @@ begin
     TagIn := False;
     while i <= Length(txt) do
     begin
-
-        if txt[i] in SysUtils.LeadBytes then
-        begin
-            if TagIn=False then
-            begin
-                Result := Result + Copy(txt,i,2);
-            end;
-            Inc(i,2);
-            Continue;
-        end;
         case txt[i] of
             '<': //TAG in
             begin
@@ -679,18 +636,11 @@ var
     Result := '';
     while p^ <> #0 do
     begin
-      if p^ in LeadBytes then
+      if CharInSet(p^ , ['/', 'A'..'Z','a'..'z','0'..'9','_','-']) then
       begin
-        Result := Result + p^ + (p+1)^;
-        Inc(p,2);
+        Result := Result + p^; Inc(p);
       end else
-      begin
-        if p^ in ['/', 'A'..'Z','a'..'z','0'..'9','_','-'] then
-        begin
-          Result := Result + p^; Inc(p);
-        end else
-          Break;
-      end;
+        Break;
     end;
   end;
 
@@ -703,7 +653,7 @@ var
         Inc(p);
         break;
       end;
-      if p^ in LeadBytes then Inc(p,2) else Inc(p);
+      Inc(p);
     end;
   end;
 
@@ -724,15 +674,15 @@ var
       begin
         Inc(p); skipToChar('''', p);
       end else
-      if p^ in LeadBytes then Inc(p,2) else Inc(p);
+      Inc(p);
     end;
   end;
 
 begin
   // タグを大文字に切りそろえる。タグ記号は削除する
   tag := UpperCase(tag);
-  tag := JReplace(tag, '<','', True);
-  tag := JReplace(tag, '>','', True);
+  tag := JReplaceU(tag, '<','', True);
+  tag := JReplaceU(tag, '>','', True);
 
   // タグの始まりを探す
   p := PChar(html);
@@ -740,10 +690,6 @@ begin
   pFrom := nil;
   while p^ <> #0 do
   begin
-    if p^ in LeadBytes then
-    begin
-      Inc(p,2); Continue;
-    end;
     if p^ <> '<' then begin Inc(p); Continue; end;
     pp := p;
     Inc(pp);
@@ -769,10 +715,6 @@ begin
   pEnd := nil;
   while p^ <> #0 do
   begin
-    if p^ in LeadBytes then
-    begin
-      Inc(p,2); Continue;
-    end;
     if p^ <> '<' then begin Inc(p); Continue; end;
     Inc(p);
     s := getTagName(p);
@@ -955,7 +897,7 @@ var
         Result := '';
         if s='' then Exit;
         i := GetBoinNo(c);
-        if s[1] in ['1'..'9'] then
+        if CharInSet(s[1] , ['1'..'9']) then
         begin
             len := StrToIntDef(s[1],1);
             Delete(s,1,1);
@@ -1016,14 +958,14 @@ begin
             Inc(p); siin := '';
             Continue;
         end else
-        if p^ in ['a','i','u','e','o'] then
+        if CharInSet(p^, ['a','i','u','e','o']) then
         begin //母音なので決定
             DecideChar(p^);
             Inc(p);
             siin := '';
             Continue;
         end else
-        if p^ in ['a'..'z'] then
+        if CharInSet(p^ , ['a'..'z']) then
         begin
             if (siin='n')and(p^<>'y') then
             begin
@@ -1055,14 +997,14 @@ begin
     Result := '';
     if str='' then Exit;
 
-    if (str[1] in ['ｱ'..'ﾝ'])and(Copy(str,2,1)=' ') then
+    if CharInSet(str[1] , ['ｱ'..'ﾝ'])and(Copy(str,2,1)=' ') then
     begin
         Delete(str,1,1);
     end;
     Result := Trim(str);
 end;
 
-function JPosEx(const sub, str:string; idx:Integer): Integer;
+function PosExW(const sub, str:string; idx:Integer): Integer;
 var
   len_sub, len_str: Integer;
   p, pSub, pStart: PChar;
@@ -1083,10 +1025,6 @@ begin
   Dec(idx);
   while idx > 0 do
   begin
-    if p^ in LeadBytes then
-    begin
-      Inc(p, 2); Dec(idx, 2);
-    end else
     begin
       Inc(p); Dec(idx);
     end;
@@ -1101,20 +1039,20 @@ begin
         Result := (p - pStart) + 1;
         Break;
       end;
-      if p^ in LeadBytes then Inc(p, 2) else Inc(p);
+      Inc(p);
     end;
   except
     raise Exception.Create('文字列の検索中にエラー。'); 
   end;
 end;
 
-function JReplace(const Str, oldStr, newStr:string; repAll:Boolean): string;
+function JReplaceU(const Str, oldStr, newStr:string; repAll:Boolean): string;
 var
     i, idx:Integer;
 begin
     Result := Str;
     // ****
-    i := JPosEx(oldStr, Str, 1);
+    i := PosExW(oldStr, Str, 1);
     if i=0 then Exit;
     Delete(result, i, Length(oldStr));
     Insert(newStr, result, i);
@@ -1123,7 +1061,7 @@ begin
     // *** Loop
     while True do
     begin
-        i := JPosEx(oldStr, result, idx);
+        i := PosExW(oldStr, result, idx);
         if i=0 then Exit;
         Delete(result, i, Length(oldStr));
         Insert(newStr, result, i);
@@ -1156,10 +1094,7 @@ begin
       Inc(p, Length(oldStr));
     end else
     begin
-      if p^ in LeadBytes then
-        Inc(p,2)
-      else
-        Inc(p);
+      Inc(p);
     end;
   end;
   Result := Str;
@@ -1175,7 +1110,7 @@ begin
     oldStrFind := UpperCaseEx(oldStr);
     strFind := UpperCaseEx(Result);
     // ****
-    i := JPosEx(oldStrFind, strFind, 1);
+    i := PosExW(oldStrFind, strFind, 1);
     if i=0 then Exit;
     Delete(result, i, Length(oldStr));
     Insert(newStr, result, i);
@@ -1186,7 +1121,7 @@ begin
     begin
         oldStrFind := UpperCaseEx(oldStr);
         strFind := UpperCaseEx(Result);
-        i := JPosEx(oldStrFind, strFind, idx);
+        i := PosExW(oldStrFind, strFind, idx);
         if i=0 then Exit;
         Delete(result, i, Length(oldStr));
         Insert(newStr, result, i);
@@ -1265,13 +1200,23 @@ begin
   if osvi.dwPlatformId = VER_PLATFORM_WIN32_NT then
   begin
     //WindowsNT系:SJIFT-JISのまま
-    lngSize := ImmGetConversionListA(hKL, hIMC, PChar(str), nil, 0, GCL_REVERSECONVERSION);
+    lngSize := ImmGetConversionListW(
+      hKL,
+      hIMC,
+      PChar(str),
+      nil,
+      0,
+      GCL_REVERSECONVERSION);
     if lngSize > 0 Then
     begin
       SetLength(byCandiateArray, lngSize);
       // 変換結果を取得
-      ImmGetConversionList(hKL, hIMC, PChar(str), @byCandiateArray[0],
-                    lngSize, GCL_REVERSECONVERSION);
+      ImmGetConversionListW(
+        hKL, hIMC,
+        PChar(str),
+        @byCandiateArray[0],
+        lngSize,
+        GCL_REVERSECONVERSION);
       // バッファ内容を参照するため構造体にコピ-
       Move(byCandiateArray[0], CandiateList, sizeof(CandiateList));
       if CandiateList.dwCount > 0 then
@@ -1289,7 +1234,12 @@ begin
     //（"愛"はたまたま、他の文字はダメですから本当は使えません。なお、変換には MultiByteToWideChar API が用意されています。）
     //Windows 2000 がマトモなのに比べ Windows98 は本来使わないと思われる ImmGetConversionListW でなければ変換できません。
     //さらに渡すのは Shift-JIS で戻ってくるのは Unicode。マイクロソフトの言う一部サポートとはこういうことなんでしょうか？
-    lngSize := ImmGetConversionListA(hKL, hIMC, PChar(str), nil, 0, GCL_REVERSECONVERSION);
+    lngSize := ImmGetConversionListW(
+                hKL, hIMC,
+                PChar(str),
+                nil,
+                0,
+                GCL_REVERSECONVERSION);
     if lngSize > 0 Then
     begin
       SetLength(byCandiateArray, lngSize);
@@ -1356,28 +1306,28 @@ begin
 
     while p^ <> #0 do
     begin
-        if p^ in LeadBytes then
+        if Ord(p^) > $7F then
         begin
-            s := p^ + (p+1)^;
+            s := p^;
             i := Pos(s, HALF_JOUKEN);
-            if (i>0)and(((i-1)mod 2)=0) then //文字が途中で分断されているのを防ぐため、mod 2=0 でチェック
+            if (i>0) then //文字が途中で分断されているのを防ぐため、mod 2=0 でチェック
             begin
                 s := convToHalf(s);
-                pr^ := s[1]; Inc(pr);
-                Inc(p,2);
+                pr^ := s[1];
+                Inc(pr);
+                Inc(p);
             end else
             begin
-                pr^ := p^; Inc(pr); Inc(p);
-                pr^ := p^; Inc(pr); Inc(p);
+                pr^ := p^;
+                Inc(pr); Inc(p);
             end;
         end else
         begin // 既に ank
-            //半角カタカナは全角へ(( 0xA0-0xDF ))
-            if (#$A0 <= p^)and(p^ <= #$DF) then
+            //半角カタカナは全角へ((SJIS:0xA0-0xDF) UNI:FF61-FF9F)
+            if CharInSet(p^,[#$FF61..#$FF9F]) then
             begin
               s := convToFull(p^);
               pr^ := s[1]; Inc(pr);
-              pr^ := s[2]; Inc(pr);
               Inc(p);
             end else
             begin
@@ -1397,13 +1347,8 @@ begin
   Result := '';
   while ptr^ <> #0 do
   begin
-    if ptr^ in LeadBytes then
     begin
-      Result := Result + ptr^ + (ptr+1)^;
-      Inc(ptr,2);
-    end else
-    begin
-      if ptr^ in delimiter then
+      if CharInSet(ptr^, delimiter) then
       begin
         Inc(ptr);
         Break;
@@ -1419,11 +1364,6 @@ begin
   Result := '';
   while ptr^ <> #0 do
   begin
-    if ptr^ in LeadBytes then
-    begin
-      Result := Result + (ptr^) + (ptr+1)^;
-      Inc(ptr,2);
-    end else
     begin
       if ptr^ = delimiter then
       begin
@@ -1476,12 +1416,12 @@ begin
     Result := False;
     p := PChar(str);
 
-    if not (p^ in ['0'..'9']) then Exit;
+    if not CharInSet(p^ , ['0'..'9']) then Exit;
     Inc(p);
 
     while p^ <> #0 do
     begin
-        if p^ in ['0'..'9','e','E','+','-','.'] then //浮動小数点に対応
+        if CharInSet(p^, ['0'..'9','e','E','+','-','.']) then //浮動小数点に対応
             Inc(p)
         else
             Exit;

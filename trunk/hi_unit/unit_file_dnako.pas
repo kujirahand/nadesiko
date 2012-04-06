@@ -14,10 +14,10 @@ type
   TWindowState = (wsNormal, wsMinimized, wsMaximized);
 
 // 文字列にファイルの内容を全部開く
-function FileLoadAll(Filename: AnsiString): AnsiString;
+function FileLoadAll(Filename: string): AnsiString;
 
 // 文字列にファイルの内容を全部書き込む
-procedure FileSaveAll(s, Filename: AnsiString);
+procedure FileSaveAll(s:AnsiString; Filename: string);
 
 implementation
 
@@ -25,26 +25,35 @@ uses
   unit_windows_api, unit_string;
 
 // 文字列にファイルの内容を全部開く
-function FileLoadAll(Filename: AnsiString): AnsiString;
+function FileLoadAll(Filename: string): AnsiString;
 var
   f: THandle;
   size, rsize: DWORD;
+  err: string;
 begin
   // open
-  f := CreateFileA(PAnsiChar(Filename), GENERIC_READ, FILE_SHARE_READ, nil,
-    OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN,0);
+  f := CreateFile(
+        PChar(Filename),
+        GENERIC_READ,
+        FILE_SHARE_READ,
+        nil,
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN,
+        0);
   if f = INVALID_HANDLE_VALUE then
-    raise EInOutError.Create(AnsiString('ファイル"' + Filename + '"が開けません。' + GetLastErrorStr));
+  begin
+    err := 'ファイル"' + string(Filename) + '"が開けません。' + GetLastErrorStr;
+    raise EInOutError.Create(err);
+  end;
   try
     // set pointer
     SetFilePointer(f, 0, nil, FILE_BEGIN); // 初めからゼロの位置に
-
     // read
     size := GetFileSize(f, nil); // 4G 以下限定
     SetLength(Result, size);
     if not ReadFile(f, Result[1], size, rsize, nil) then
     begin // 失敗
-      raise EInOutError.Create('ファイル"' + Filename + '"の読み取りに失敗しました。' + GetLastErrorStr);
+      raise EInOutError.Create('ファイル"' + string(Filename) + '"の読み取りに失敗しました。' + GetLastErrorStr);
     end;
   finally
     // close
@@ -53,27 +62,33 @@ begin
 end;
 
 // 文字列にファイルの内容を全部書き込む
-procedure FileSaveAll(s, Filename: AnsiString);
+procedure FileSaveAll(s:AnsiString; Filename: string);
 var
   f: THandle;
   size, rsize: DWORD;
 begin
   // open
-  f := CreateFileA(PAnsiChar(Filename), GENERIC_WRITE, 0, nil,
-    CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN,0);
+  f := CreateFile(
+        PChar(Filename),
+        GENERIC_WRITE, 0, nil,
+        CREATE_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, 0);
   if f = INVALID_HANDLE_VALUE then
-    raise EInOutError.Create('ファイル"' + Filename + '"が開けません。' + GetLastErrorStr);
+    raise EInOutError.Create(
+      'ファイル"' + string(Filename) + '"が開けません。' +
+      GetLastErrorStr);
   try
     // set pointer
     SetFilePointer(f, 0, nil, FILE_BEGIN); // 初めからゼロの位置に
-
     // write
     size := Length(s);
     if size > 0 then
     begin
       if not WriteFile(f, s[1], size, rsize, nil) then
       begin // 失敗
-        raise EInOutError.Create('ファイル"' + Filename + '"の読み取りに失敗しました。' + GetLastErrorStr);
+        raise EInOutError.Create(
+          'ファイル"' + string(Filename) + '"の読み取りに失敗しました。' +
+          GetLastErrorStr);
       end;
     end;
   finally

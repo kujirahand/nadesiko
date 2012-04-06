@@ -334,7 +334,7 @@ begin
   c := clBtnFace;
   if ((Copy(s,1,1) = '$')or(Copy(s,1,1) = '#')) and (Length(s) = 7) then
   begin
-    s := JReplace(s, '#', '$', True);
+    s := JReplaceU(s, '#', '$', True);
     c := StrToIntDef(s, -1);
     if c >= 0 then c := Color2RGB(c);
   end;

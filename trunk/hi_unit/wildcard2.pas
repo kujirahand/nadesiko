@@ -185,6 +185,9 @@ procedure TestReplace;
 
 implementation
 
+uses
+  unit_string;
+
 procedure TestAll;
 begin
   TestWildcard1;
@@ -303,7 +306,7 @@ begin
   try
     FillChar( pDes^, len2, 0 );
     LCMapStringA( LOCALE_SYSTEM_DEFAULT, MapFlag, PAnsiChar(str), len, pDes, len2-1);
-    Result := string( pDes );
+    Result := AnsiString( pDes );
   finally
     FreeMem(pDes);
   end;
@@ -388,6 +391,7 @@ function WildSplit(Src, FindStr: AnsiString): TStringList;
 var
   pat: TKWPattern;
   p: PAnsiChar;
+  s: AnsiString;
 begin
   if FindStr = '' then
   begin
@@ -398,11 +402,12 @@ begin
     begin
       if p^ in LeadBytes then
       begin
-        Result.Add(p^ + (p+1)^);
+        s := p^ + (p+1)^;
+        Result.Add(string(s));
         Inc(p,2);
       end else
       begin
-        Result.Add(p^);
+        Result.Add(string(p^));
         Inc(p);
       end
     end;
@@ -840,7 +845,7 @@ begin
       begin
         for i := 0 to pickup.Count - 1 do
         begin
-          s := JReplace(s, '$' + IntToStr(i+1), pickup.Strings[i]);
+          s := JReplaceA(s, '$' + IntToStrA(i+1), AnsiString(pickup.Strings[i]));
         end;
       end;
       //-----------------------------
@@ -852,7 +857,7 @@ begin
         Continue;
       end else
       begin
-        Result := Result + string(p); Break;
+        Result := Result + AnsiString(p); Break;
       end;
     end else
     begin
@@ -877,7 +882,7 @@ begin
     Self.Index := 0;
     if IsTopMatchPAnsiChar(p) then
     begin
-      Result.Add(s);
+      Result.Add(string(s));
       s := '';
       pickup.Clear;
       pTemp := p;
@@ -888,7 +893,7 @@ begin
       p := pTemp;
     end;
   end;
-  if s <> '' then Result.Add(s);
+  if s <> '' then Result.Add(string(s));
 end;
 
 function TKWPattern.SubMatch(Src: AnsiString): AnsiString;
@@ -934,7 +939,7 @@ begin
     Self.Index := 0;
     if IsTopMatchPAnsiChar(p) then
     begin
-      Src := string(p);
+      Src := AnsiString(p);
       Exit;
     end else
     begin
@@ -1003,7 +1008,7 @@ begin
     s := s + pp^;
     Inc(pp);
   end;
-  Parent.Pickup.Add(s);
+  Parent.Pickup.Add(string(s));
 end;
 
 function TKWKakkoTo.IsTopMatch(var p: PAnsiChar): Boolean;
@@ -1031,7 +1036,7 @@ var
 
   function CharCode2Str(code: Integer): AnsiString;
   begin
-    Result := Chr( (code shr 8) and $FF ) + Chr( code and $FF );
+    Result := AnsiChar(Chr( (code shr 8) and $FF )) + AnsiChar(Chr( code and $FF ));
   end;
 
   procedure getSets;
@@ -1049,7 +1054,7 @@ var
       if p^ = '\' then
       begin
         Inc(p);
-        Sets.Add(c);
+        Sets.Add(string(c));
         Continue;
       end;
       if p^ = '-' then
@@ -1058,7 +1063,7 @@ var
         c2 := getOneChar(p);
         for i := getCharCode(c) to getCharCode(c2) do
         begin
-          Sets.Add(CharCode2Str(i));
+          Sets.Add(string(CharCode2Str(i)));
         end;
       end;
 
@@ -1066,7 +1071,7 @@ var
       begin
         Break;
       end;
-      Sets.Add(c);
+      Sets.Add(string(c));
     end;
   end;
   procedure getWords;
@@ -1092,7 +1097,7 @@ var
         s := s + p^;
         Inc(p);
       end;
-      if s <> '' then Sets.Add(s);
+      if s <> '' then Sets.Add(string(s));
       if p^ = ']' then
       begin
         Inc(p);
@@ -1171,7 +1176,7 @@ var
   begin
     c := getOneChar(p);
     if c = '' then begin Result := False; Exit; end;
-    Result := (Sets.IndexOf(c) >= 0);
+    Result := (Sets.IndexOf(string(c)) >= 0);
     if IsNot then Result := not Result;
   end;
 
@@ -1182,11 +1187,11 @@ var
       if IsNot then
       begin
         c := getChar;
-        Result := (Sets.IndexOf(c) < 0);
+        Result := (Sets.IndexOf(string(c)) < 0);
       end else
       begin
         c := getChar;
-        Result := (Sets.IndexOf(c) >= 0);
+        Result := (Sets.IndexOf(string(c)) >= 0);
       end;
       if c = '' then Break;
       if not Result then Break;
@@ -1218,7 +1223,7 @@ begin
         Result := False;
         for i := 0 to Sets.Count - 1 do
         begin
-          c := Sets.Strings[i];
+          c := AnsiString(Sets.Strings[i]);
           if StrLComp(PAnsiChar(c), p, Length(c)) = 0 then
           begin
             Result := True;
