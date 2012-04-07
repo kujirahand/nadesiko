@@ -306,7 +306,7 @@ var
   NRead    : cardinal;
   Total    : int64;
 begin
-  Result:=false; Total:=0; NRead := 0;
+  Result:=false; Total:=0;
   if WriteHeader (sDest) then begin
     repeat
       try
@@ -364,7 +364,7 @@ begin
 
 function TEncryption.DecryptStream (sSource,sDest: TStream; SLength : int64) : boolean;
 var
-  NRead    : Integer;
+  NRead    : cardinal;
   Total    : int64;
 begin
   result:=false; Total:=0;

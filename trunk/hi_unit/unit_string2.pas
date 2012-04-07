@@ -630,18 +630,20 @@ end;
 
 function TrimCoupleFlag(s: string): string;
 var
-  mae, usiro: string;
+  mae, usiro: WideString;
   flg: Boolean;
+  ws: WideString;
 begin
   s := Trim(s); // ***
   if s = '' then
   begin
     Result := s; Exit;
   end;
+  ws := s;
   flg := False;
   begin
-    mae   := Copy(s,1,1);
-    usiro := Copy(s,Length(s),1);
+    mae   := Copy(ws,1,1);
+    usiro := Copy(ws,Length(ws),1);
     if mae = usiro then flg := True
     else begin
       // 対応する記号をチェック
@@ -665,7 +667,8 @@ begin
   //
   if flg then
   begin
-    Result := Copy(s, Length(mae)+1, Length(s) - Length(mae)*2);
+    ws := Copy(ws, Length(mae)+1, Length(ws) - Length(usiro)*2);
+    Result := AnsiString(ws);
   end else
   begin
     Result := s;
