@@ -7,8 +7,13 @@ uses
   dll_plugin_helper, dnako_import, dnako_import_types,
   winsock,unit_eml,
   IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdFTPCommon,
-  IdFTP, IdFTPList, IdHttp, IdTcpServer, IdSNTP, IdSMTP, IdMessage,
-  IdAllFTPListParsers, IdPOP3, IdReplyPOP3, IdSASLLogin, IdAttachmentFile,
+  IdFTP, IdFTPList, IdHttp, IdTcpServer, IdSNTP, IdSMTP,
+  IdMessage,
+  IdAllFTPListParsers,
+  IdPOP3,
+  IdReplyPOP3,
+  IdSASLLogin,
+  IdAttachmentFile,
   IdMessageParts,
   IdUserPassProvider, IdSSLOpenSSL, IdExplicitTLSClientServerBase,
   IdLogFile;
@@ -25,16 +30,16 @@ type
     hProgress: HWND;
     WorkCount: Integer;
   public
-    target: AnsiString;
-    ResultData: AnsiString;
-    errormessage: AnsiString;
+    target: string;
+    ResultData: string;
+    errormessage: string;
     Status: TNetDialogStatus;
     procedure WorkBegin(Sender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
     procedure WorkEnd(Sender: TObject; AWorkMode: TWorkMode);
     procedure Work(Sender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
     function ShowDialog(stext, sinfo: AnsiString; Visible: Boolean): Boolean;
-    procedure setInfo(s: AnsiString);
-    procedure setText(s: AnsiString);
+    procedure setInfo(s: string);
+    procedure setText(s: string);
     procedure Cancel;
     procedure Comlete;
     procedure Error;
@@ -56,7 +61,7 @@ type
   end;
 
 function NetDialog:TNetDialog;
-function get_on_off(str: AnsiString): Boolean;
+function get_on_off(str: string): Boolean;
 procedure alert(msg: AnsiString);
 
 procedure RegistFunction;
@@ -173,13 +178,13 @@ begin
   try
     kskFtp.MainWindowHandle := nako_getMainWindowHandle;
     h.UseBasicAuth  := http_opt_useBasicAuth;
-    h.id            := http_opt_getId;
-    h.password      := http_opt_getPassword;
-    h.UserAgent     := http_opt_getUA;
+    h.id            := AnsiString(http_opt_getId);
+    h.password      := AnsiString(http_opt_getPassword);
+    h.UserAgent     := AnsiString(http_opt_getUA);
     h.UseDialog     := hi_bool(pProgDialog);
-    h.httpVersion   := http_opt_getHttpVersion;
+    h.httpVersion   := AnsiString(http_opt_getHttpVersion);
     h.DownloadDialog(url);
-    h.Stream.SaveToFile(local);
+    h.Stream.SaveToFile(string(local));
   finally
     h.Free;
   end;
@@ -196,13 +201,13 @@ var
   procedure subDownload;
   begin
     // 何らかの理由で標準命令が使えなかったときに使うサブメソッド
-    local := TempDir + 'temp';
+    local := AnsiString(TempDir + 'temp');
     if URLDownloadToFileA(nil, PAnsiChar(url), PAnsiChar(local), 0, nil) <> s_ok then
     begin
-      raise Exception.Create(url+'をダウンロードできませんでした。');
+      raise Exception.Create(string(url)+'をダウンロードできませんでした。');
     end;
     s := FileLoadAll(local);
-    if FileExists(local) then DeleteFile(local);
+    if FileExists(string(local)) then DeleteFile(string(local));
   end;
 
   procedure _download;
@@ -214,9 +219,9 @@ var
     try
       kskFtp.MainWindowHandle := nako_getMainWindowHandle;
       h.UseBasicAuth := http_opt_useBasicAuth;
-      h.id       := http_opt_getId;
-      h.password := http_opt_getPassword;
-      h.UserAgent     := http_opt_getUA;
+      h.id       := AnsiString(http_opt_getId);
+      h.password := AnsiString(http_opt_getPassword);
+      h.UserAgent     := AnsiString(http_opt_getUA);
       h.UseDialog     := hi_bool(pProgDialog);
       if h.DownloadDialog(url) then
       begin
@@ -280,7 +285,7 @@ begin
   try
     try
       http.GetProxySettingFromRegistry; // レジストリからProxyを読む
-      s := http.Head(url);
+      s := AnsiString(http.Head(string(url)));
     except
       on E: Exception do
         // 何らかの理由で標準命令が使えなかったとき
@@ -296,15 +301,15 @@ end;
 var _idftp: Tidftp = nil;
 var _idftp_logfile:TIdLogFile = nil;
 
-function get_on_off(str: AnsiString): Boolean;
+function get_on_off(str: string): Boolean;
 begin
-  str := JReplace_(str, 'オン','1');
-  str := JReplace_(str, 'オフ','0');
-  str := JReplace_(str, 'はい','1');
-  str := JReplace_(str, 'いいえ','0');
-  str := JReplace_(str, '１','1');
-  str := JReplace_(str, '０','0');
-  Result := (StrToIntDef(str, 0) <> 0);
+  str := JReplaceW(str, 'オン','1');
+  str := JReplaceW(str, 'オフ','0');
+  str := JReplaceW(str, 'はい','1');
+  str := JReplaceW(str, 'いいえ','0');
+  str := JReplaceW(str, '１','1');
+  str := JReplaceW(str, '０','0');
+  Result := (StrToIntDef(string(str), 0) <> 0);
 end;
 
 function sys_ftp_connect(args: DWORD): PHiValue; stdcall;
@@ -314,7 +319,7 @@ var
 begin
   ps := nako_getFuncArg(args, 0);
   s  := TStringList.Create;
-  s.Text := hi_str(ps);
+  s.Text := hi_strU(ps);
 
   _idftp := Tidftp.Create(nil);
   if _idftp_logfile <> nil then // logfile
@@ -369,8 +374,8 @@ var
   fs: TFileStream;
   pfname: PString;
   ps: PString;
-  localname: AnsiString;
-  servername: AnsiString;
+  localname: string;
+  servername: string;
 begin
   pfname := Sender.arg1;
   ps     := Sender.arg2;
@@ -409,12 +414,12 @@ end;
 
 procedure proc_ftp_uploadDir(Sender: TNetThread; ftp: Tidftp);
 var
-  local, remote, pat: AnsiString;
+  local, remote, pat: string;
 
-  procedure _upload(local, remote: AnsiString);
+  procedure _upload(local, remote: string);
   var
     dirs, files: TStringList;
-    tmp: AnsiString;
+    tmp: string;
     i: Integer;
     flgSubDir: Boolean;
   begin
@@ -437,7 +442,7 @@ var
         tmp := files.Strings[i];
         if pat <> '' then
         begin
-          if MatchesMaskEx(tmp, pat) then Continue;
+          if MatchesMaskEx(AnsiString(tmp), AnsiString(pat)) then Continue;
         end;
         ftp.Put(local + tmp, tmp);
       end;
@@ -452,7 +457,7 @@ var
         tmp := dirs.Strings[i];
         if pat <> '' then
         begin
-          if MatchesMaskEx(tmp, pat) then Continue;
+          if MatchesMaskEx(AnsiString(tmp), AnsiString(pat)) then Continue;
         end;
         _upload(local + tmp + '\', tmp);
       end;
@@ -466,7 +471,7 @@ var
   end;
 
 begin
-  pat    := hi_str(nako_getVariable(FTP_NG_PATTERN));
+  pat    := hi_strU(nako_getVariable(FTP_NG_PATTERN));
 
   local  := PString(Sender.arg1)^;
   remote := PString(Sender.arg2)^;
@@ -548,7 +553,7 @@ end;
 function sys_ftp_uploadDir(args: DWORD): PHiValue; stdcall;
 var
   pLocal, pRemote: PHiValue;
-  fname, remote: AnsiString;
+  fname, remote: string;
   uploader: TNetThread;
   bShow: Boolean;
 begin
@@ -558,12 +563,12 @@ begin
   if _idftp = nil then raise Exception.Create('アップロードの前に『FTP接続』で接続してください。');
   _idftp.Tag := hi_int(pProgDialog);
   try
-    fname := hi_str(pLocal);
+    fname := hi_strU(pLocal);
     if DirectoryExists(fname) = False then
     begin
       raise Exception.CreateFmt('アップロード対象ファイル"%s"がありません。',[fname]);
     end;
-    remote := hi_str(pRemote);
+    remote := hi_strU(pRemote);
     try
     try
       if _idftp.Connected = False then raise Exception.Create('接続していません。');
@@ -645,16 +650,15 @@ end;
 
 procedure proc_ftp_downloadDir(Sender: TNetThread; ftp: Tidftp);
 var
-  local, remote, pat: AnsiString;
+  local, remote, pat: string;
   isError: Boolean;
-  errors: AnsiString;
+  errors: string;
 
-  procedure _getDir(_local, _remote: AnsiString);
+  procedure _getDir(_local, _remote: string);
   var
-    tmp, tmp_d: AnsiString;
+    tmp: string;
     dirs, saiki: TStringList;
     i: Integer;
-    p: PAnsiChar;
     item: TIdFTPListItem;
     f: TSearchRec;
     d1, d2: TDateTime;
@@ -682,21 +686,19 @@ var
              (item.ModifiedDate > 0) then
           begin
             tmp := item.FileName;
-            if MatchesMaskEx(tmp, pat) then Continue;
+            if MatchesMaskEx(AnsiString(tmp), AnsiString(pat)) then Continue;
             if tmp <> '' then
             begin
-              p := PAnsiChar(tmp);
-              tmp_d := sjis_copyByte(p,24);
-              if tmp <> tmp_d then tmp_d := tmp_d + '..';
               NetDialog.target :=
                 IntToStr(i+1) + '/' + IntToStr(ftp.DirectoryListing.Count) + ',' +
-                tmp_d;
+                Copy(tmp, 1, 12) + '..';
             end;
             // --- 差分ダウンロード
             if FileExists(_local + tmp) then
             begin
               if FindFirst(_local + tmp, faAnyFile, f) = 0 then
               begin
+                {$WARN SYMBOL_PLATFORM OFF}
                 d1 := FileTimeToDateTimeEx(f.FindData.ftLastWriteTime);
                 d2 := item.ModifiedDate;
                 i1 := DelphiDateTimeToUNIXTime(d1);
@@ -760,7 +762,7 @@ begin
   local  := PString(Sender.arg1)^;
   remote := PString(Sender.arg2)^;
 
-  pat := hi_str(nako_getVariable(FTP_NG_PATTERN));
+  pat := hi_strU(nako_getVariable(FTP_NG_PATTERN));
 
   isError := False;
   errors := '';
@@ -784,7 +786,7 @@ function sys_ftp_download(args: DWORD): PHiValue; stdcall;
 var
   pLocal, pRemote: PHiValue;
   dat: TMemoryStream;
-  fname, remote: AnsiString;
+  fname, remote: string;
   thread: TNetThread;
   bShow: Boolean;
 begin
@@ -796,8 +798,8 @@ begin
   _idftp.Tag := hi_int(pProgDialog);
   dat := TMemoryStream.Create;
   try
-    fname  := hi_str(pLocal);
-    remote := hi_str(pRemote);
+    fname  := hi_strU(pLocal);
+    remote := hi_strU(pRemote);
 
     NetDialog.errormessage := '';
 
@@ -880,13 +882,13 @@ end;
 function sys_ftp_glob(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
-  s, res, tmp: AnsiString;
+  s, res, tmp: string;
   sl: TStringList;
   i: Integer;
   item: TIdFTPListItem;
 begin
   p := nako_getFuncArg(args, 0);
-  s := hi_str(p);
+  s := hi_strU(p);
   Result := nil;
 
   if _idftp = nil then raise Exception.Create('FTP処理の前に『FTP接続』で接続してください。');
@@ -905,7 +907,7 @@ begin
           res := res + tmp + #13#10;
         end;
       end;
-      Result := hi_newStr(res);
+      Result := hi_newStr(AnsiString(res));
     except
       on e:Exception do
         raise Exception.Create(e.Message);
@@ -920,17 +922,15 @@ end;
 function sys_ftp_glob2(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
-  s, res: AnsiString;
+  s, res: string;
 begin
   p := nako_getFuncArg(args, 0);
-  s := hi_str(p);
-  Result := nil;
-
+  s := hi_strU(p);
   if _idftp = nil then raise Exception.Create('FTP処理の前に『FTP接続』で接続してください。');
   try
     _idftp.List(s);
     res := _idftp.ListResult.Text;
-    Result := hi_newStr(res);
+    Result := hi_newStrU(res);
   except on e: Exception do
     raise Exception.Create('FTPでディレクトリ一覧の取得に失敗しました。' + e.Message);
   end;
@@ -940,12 +940,12 @@ end;
 function sys_ftp_globDir(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
-  s, res, tmp: AnsiString;
+  s, res, tmp: string;
   sl: TStringList;
   i: Integer;
 begin
   p := nako_getFuncArg(args, 0);
-  s := hi_str(p);
+  s := hi_strU(p);
 
   if _idftp = nil then raise Exception.Create('FTP処理の前に『FTP接続』で接続してください。');
   sl := TStringList.Create;
@@ -962,7 +962,7 @@ begin
         res := res + tmp + #13#10;
       end;
     end;
-    Result := hi_newStr(res);
+    Result := hi_newStrU(res);
   except
     Result := hi_newStr('');
     sl.Free;
@@ -973,10 +973,10 @@ end;
 function sys_ftp_mkdir(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
-  s: AnsiString;
+  s: string;
 begin
   p := nako_getFuncArg(args, 0);
-  s := hi_str(p);
+  s := hi_strU(p);
 
   if _idftp = nil then raise Exception.Create('FTP処理の前に『FTP接続』で接続してください。');
   _idftp.MakeDir(s);
@@ -987,10 +987,10 @@ end;
 function sys_ftp_rmdir(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
-  s: AnsiString;
+  s: string;
 begin
   p := nako_getFuncArg(args, 0);
-  s := hi_str(p);
+  s := hi_strU(p);
 
   //if _kskFtp = nil then raise Exception.Create('FTP処理の前に『FTP接続』で接続してください。');
   //_kskFtp.DeleteDir(s);
@@ -1004,10 +1004,10 @@ end;
 function sys_ftp_changeDir(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
-  s: AnsiString;
+  s: string;
 begin
   p := nako_getFuncArg(args, 0);
-  s := hi_str(p);
+  s := hi_strU(p);
 
   //if _kskFtp = nil then raise Exception.Create('FTP処理の前に『FTP接続』で接続してください。');
   //_kskFtp.ChangeDir(s);
@@ -1024,16 +1024,16 @@ begin
   //s := _kskFtp.CurrentDir;
   if _idftp = nil then raise Exception.Create('FTP処理の前に『FTP接続』で接続してください。');
   //
-  Result := hi_newStr(_idftp.RetrieveCurrentDir);
+  Result := hi_newStrU(_idftp.RetrieveCurrentDir);
 end;
 
 function sys_ftp_delFile(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
-  s: AnsiString;
+  s: string;
 begin
   p := nako_getFuncArg(args, 0);
-  s := hi_str(p);
+  s := hi_strU(p);
 
   //if _kskFtp = nil then raise Exception.Create('FTP処理の前に『FTP接続』で接続してください。');
   //_kskFtp.DeleteFile(s);
@@ -1054,7 +1054,7 @@ begin
   //_kskFtp.RanemeFile(hi_str(pa), hi_str(pb));
 
   if _idftp = nil then raise Exception.Create('FTP処理の前に『FTP接続』で接続してください。');
-  _idftp.Rename(hi_str(pa), hi_str(pb));
+  _idftp.Rename(hi_strU(pa), hi_strU(pb));
 
 
   Result := nil;
@@ -1077,23 +1077,23 @@ begin
   }
   if _idftp = nil then raise Exception.Create('FTP処理の前に『FTP接続』で接続してください。');
   try
-    i:=_idftp.Quote(hi_str(ps));
+    i:=_idftp.Quote(hi_strU(ps));
   except
-    raise Exception.Create('コマンド"' + hi_str(ps) + '"に失敗。');
+    raise Exception.Create('コマンド"' + hi_strU(ps) + '"に失敗。');
   end;
-  Result := hi_newStr(IntToStr(i)+' '+_idftp.LastCmdResult.Text.Text);
+  Result := hi_newStrU(IntToStr(i)+' '+_idftp.LastCmdResult.Text.Text);
 end;
 
 function sys_ftp_chmod(args: DWORD): PHiValue; stdcall;
 var
   ps, pa: PHiValue;
-  s, a, cmd: AnsiString;
+  s, a, cmd: string;
 begin
   ps := nako_getFuncArg(args, 0);
   pa := nako_getFuncArg(args, 1);
 
-  s := Trim(hi_str(ps));
-  a := Trim(hi_str(pa));
+  s := Trim(hi_strU(ps));
+  a := Trim(hi_strU(pa));
 
   //if _kskFtp = nil then raise Exception.Create('FTP処理の前に『FTP接続』で接続してください。');
 
@@ -1116,9 +1116,9 @@ end;
 
 function sys_ftp_setLogFile(args: DWORD): PHiValue; stdcall;
 var
-  f: AnsiString;
+  f: string;
 begin
-  f := getArgStr(args, 0, True);
+  f := getArgStrU(args, 0, True);
   if _idftp_logfile = nil then
   begin
     _idftp_logfile := TIdLogFile.Create(nil);
@@ -1129,13 +1129,13 @@ end;
 
 procedure getPop3Info(pop3: TKPop3Dialog);
 var
-  option: AnsiString;
+  option: string;
 begin
-  pop3.Host       := hi_str(nako_getVariable('メールホスト'));
-  pop3.Port       := StrToIntDef(hi_str(nako_getVariable('メールポート')), 110);
-  pop3.User       := hi_str(nako_getVariable('メールID'));
-  pop3.Password   := hi_str(nako_getVariable('メールパスワード'));
-  option          := UpperCase(hi_str(nako_getVariable('メールオプション')));
+  pop3.Host       := hi_strU(nako_getVariable('メールホスト'));
+  pop3.Port       := StrToIntDef(hi_strU(nako_getVariable('メールポート')), 110);
+  pop3.User       := hi_strU(nako_getVariable('メールID'));
+  pop3.Password   := hi_strU(nako_getVariable('メールパスワード'));
+  option          := UpperCase(hi_strU(nako_getVariable('メールオプション')));
   if Pos('APOP',option) > 0 then pop3.APop := True;
   // CHECK
   if pop3.Host = '' then raise Exception.Create('メールホストが空です。');
@@ -1152,11 +1152,11 @@ var
   Provider: TIdUserPassProvider;
   SSLHandler: TIdSSLIOHandlerSocketOpenSSL;
 begin
-  pop3.Host       := hi_str(nako_getVariable('メールホスト'));
-  pop3.Port       := StrToIntDef(hi_str(nako_getVariable('メールポート')), 110);
-  pop3.Username   := hi_str(nako_getVariable('メールID'));
-  pop3.Password   := hi_str(nako_getVariable('メールパスワード'));
-  option          := UpperCase(hi_str(nako_getVariable('メールオプション')));
+  pop3.Host       := hi_strU(nako_getVariable('メールホスト'));
+  pop3.Port       := StrToIntDef(hi_strU(nako_getVariable('メールポート')), 110);
+  pop3.Username   := hi_strU(nako_getVariable('メールID'));
+  pop3.Password   := hi_strU(nako_getVariable('メールパスワード'));
+  option          := UpperCase(hi_strU(nako_getVariable('メールオプション')));
   pop3.AuthType := patUserPass;
   if Pos('APOP',option) > 0 then
   begin
@@ -1190,12 +1190,12 @@ begin
   if pop3.Password = '' then raise Exception.Create('メールパスワードが空です。');
 end;
 
-function Popd3CheckMessageIdAsFileName(msgid: AnsiString): AnsiString;
+function Popd3CheckMessageIdAsFileName(msgid: string): string;
 var
   i: Integer;
-  function _CheckId(ch: AnsiString): AnsiString;
+  function _CheckId(ch: string): string;
   begin
-    if Pos(ch, '<>/?"%\;:''`') > 0 then
+    if Pos(string(ch), '<>/?"%\;:''`') > 0 then
     begin
       ch := '%' + IntToHex(Ord(ch[1]), 2);
     end;
@@ -1205,7 +1205,7 @@ begin
   Result := '';
   for i := 1 to Length(msgid) do
   begin
-    Result := Result + _CheckId(msgid[i]);
+    Result := Result + (_CheckId(msgid[i]));
   end;
 end;
 
@@ -1213,7 +1213,7 @@ procedure __sys_pop3_recv_indy(Sender: TNetThread; ptr: Pointer);
 var
   pop3: TIdPOP3;
   msgids, msgidsNow, raw: TStringList;
-  tmpDir, msgid, fmt: AnsiString;
+  tmpDir, msgid, fmt: string;
   i: Integer;
   bRemove: Boolean;
   iFrom: Integer;
@@ -1305,7 +1305,7 @@ end;
 
 function __sys_pop3_recv_indy10(recv_dir: AnsiString; iFrom:Integer = 0; iTo:Integer = -1): PHiValue; stdcall;
 var
-  tmpDir, fname, txtFile: AnsiString;
+  tmpDir, fname, txtFile: string;
   from, replyto: AnsiString;
   pop3: TIdPop3;
   eml, sub: TEml;
@@ -2213,7 +2213,7 @@ function sys_smtp_send_indy10(args: DWORD): PHiValue; stdcall;
 var
   smtp: TIdSMTP;
   msg: TIdMessage;
-  addHead, from, rcptto, title, body, attach, html, cc, bcc: AnsiString;
+  addHead, from, rcptto, title, body, attach, html, cc, bcc: string;
   tmp: AnsiString;
   eml: TEml;
   th: TNetThread;
@@ -2223,24 +2223,25 @@ begin
     // 認証
     addHead := hi_str(nako_getVariable('メールヘッダ'));
     // 宛先など
-    from   := hi_str(nako_getVariable('メール差出人'));
-    rcptto := hi_str(nako_getVariable('メール宛先'));
-    title  := hi_str(nako_getVariable('メール件名'));
-    body   := hi_str(nako_getVariable('メール本文'));
-    attach := hi_str(nako_getVariable('メール添付ファイル'));
-    html   := hi_str(nako_getVariable('メールHTML'));
-    cc     := hi_str(nako_getVariable('メールCC'));
-    bcc    := hi_str(nako_getVariable('メールBCC'));
+    from   := hi_strU(nako_getVariable('メール差出人'));
+    rcptto := hi_strU(nako_getVariable('メール宛先'));
+    title  := hi_strU(nako_getVariable('メール件名'));
+    body   := hi_strU(nako_getVariable('メール本文'));
+    attach := hi_strU(nako_getVariable('メール添付ファイル'));
+    html   := hi_strU(nako_getVariable('メールHTML'));
+    cc     := hi_strU(nako_getVariable('メールCC'));
+    bcc    := hi_strU(nako_getVariable('メールBCC'));
     // SMTP
     getSmtpInfoIndy(smtp);
     // Message
     msg := TIdMessage.Create(smtp);
+    msg.From.Address := ExtractMailAddress(from, false);
     msg.Recipients.EMailAddresses := rcptto;
     msg.CCList.EMailAddresses     := cc;
     msg.BccList.EMailAddresses    := bcc;
     msg.Subject   := jConvert.CreateHeaderStringEx(title);
     msg.Body.Text := jConvert.ConvertJCode(body, JIS_OUT);
-    msg.NoEncode  := True;
+    msg.NoEncode  := true;
     // -------------------------------------------------------------------------
     // set to eml
     eml := TEml.Create(nil);
@@ -2441,7 +2442,7 @@ var
   http: TKHttpClient;
   url, head,body: AnsiString;
 
-  procedure _method_https;
+  function _method_https: PHiValue;
   begin
     raise Exception.Create('未サポートです。');
   end;
@@ -2453,7 +2454,7 @@ begin
 
   if Copy(url,1,8) = 'https://' then
   begin
-    _method_https;
+    Result := _method_https;
     Exit;
   end;
 
@@ -2795,12 +2796,12 @@ begin
   Status := statError;
 end;
 
-procedure TNetDialog.setInfo(s: AnsiString);
+procedure TNetDialog.setInfo(s: string);
 begin
   SetDlgWinText(hProgress, IDC_EDIT_INFO, s);
 end;
 
-procedure TNetDialog.setText(s: AnsiString);
+procedure TNetDialog.setText(s: string);
 begin
   SetDlgWinText(hProgress, IDC_EDIT_TEXT, s);
 end;

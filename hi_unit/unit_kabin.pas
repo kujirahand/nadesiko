@@ -4,7 +4,8 @@ unit unit_kabin;
 
 interface
 uses
-  SysUtils, Classes, IdTcpServer, IdContext,
+  SysUtils, Classes, IdTcpServer,
+  IdContext,
   unit_string, jconvert, md5, json,
   dnako_import, dll_plugin_helper,
   dnako_import_types;
@@ -159,6 +160,10 @@ begin
           end;
         end;
       end;
+    else
+      begin
+        Result := nil;
+      end;
   end;
 end;
 
@@ -276,7 +281,7 @@ var
 begin
   //
   json := nil;
-  funcid := 0;
+  // funcid := 0;
   while AThread.Connection.Connected do
   begin
     line := AThread.Connection.IOHandler.ReadLn(#0);
@@ -310,11 +315,11 @@ begin
       try
         funcid := json.AsObject.Get('id').AsInteger;
         args   := JsonObject2PHiValue(json.AsObject.Get('args'));
+        res := nako_callSysFunction(funcid, args);
       except
         err('Wrong Format.');
         Continue;
       end;
-      res := nako_callSysFunction(funcid, args);
       ok_json;
       Continue;
     end;

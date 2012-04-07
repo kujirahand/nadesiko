@@ -1453,13 +1453,13 @@ var
     i := HiSystem.DllNameList.IndexOf(dllName);
     if i < 0 then
     begin
-      h := LoadLibraryW(PChar(dllName));
+      h := LoadLibrary(PChar(dllName));
       if h <= 0 then
       begin
         if Pos(':\', dllName) = 0 then
         begin
           dllName := ExtractFilePath(ParamStr(0)) + 'plug-ins\' + dllName;
-          h := LoadLibraryW(PChar(dllName));
+          h := LoadLibrary(PChar(dllName));
         end;
         if h <= 0 then begin
           raise Exception.Create('DLL「'+dllName+'」が読み込めません。エラーコード:'+IntToStr(GetLastError));

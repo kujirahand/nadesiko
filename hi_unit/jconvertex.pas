@@ -21,7 +21,7 @@ const
   UTF8N_OUT  = 10;
 
 // 拡張文字コードチェック
-function InCodeCheckEx(const s: string): integer;
+function InCodeCheckEx(const s: AnsiString): integer;
 // UNICODE(Little Endian)をSJISに変換する
 function uniLETosjis(const s: PWideChar): string;
 function uniLETosjis2(const s: string): string; // 文字列型で与えられたUNICODEをsjisに変換
@@ -160,7 +160,7 @@ end;
 //以下のＷＥＢを参考にした
 //http://www.gprj.net/dev/tips/other/kanji.shtml
 
-function InCodeCheckEx(const s: string): Integer;
+function InCodeCheckEx(const s: AnsiString): Integer;
 var
   i, rMax, rMaxV, maxLen, sLen: Integer;
   FlagUTF8Bom: Boolean;

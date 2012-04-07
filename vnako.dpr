@@ -73,10 +73,8 @@ uses
   unit_nakopanel in 'vnako_unit\unit_nakopanel.pas',
   GraphicEx in 'component\GraphicEx\GraphicEx.pas',
   vnako_message in 'vnako_unit\vnako_message.pas',
-  frmCalendarU in 'vnako_unit\frmCalendarU.pas' {frmCalendar},
-  NadesikoFountain in 'vnako_unit\NadesikoFountain.pas',
-  DelphiFountain in 'component\hedit248U\DelphiFountain.pas',
-  HTMLFountain in 'component\hedit248U\HTMLFountain.pas';
+  frmCalendarU in 'vnako_unit\frmCalendarU.pas' {frmCalendar}
+  ;
 
 {$R *.res}
 

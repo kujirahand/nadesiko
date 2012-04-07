@@ -190,7 +190,7 @@ type
     function GetVariableRaw(VarID: DWORD): PHiValue; // 変数の取得
     function GetVariableNoGroupScope(VarID: DWORD): PHiValue; // 変数の取得
     function GetVariableS(vname: AnsiString): PHiValue; // 変数の取得
-    function ExpandStr(s: RawByteString): RawByteString;       // 文字列の展開
+    function ExpandStr(s: string): string;       // 文字列の展開
     procedure AddSystemFileCommand;               // ちょっと危険？なファイル関連の命令をシステムに追加する
     procedure LoadPlugins;                         // プラグインのロード
     function ErrorContinue: PHiValue;             // エラーで止まったノードを続ける
@@ -1463,7 +1463,7 @@ begin
   if (p <> nil) and (p.Registered = 0) then hi_var_free(p);
 end;
 
-function THiSystem.ExpandStr(s: RawByteString): RawByteString;
+function THiSystem.ExpandStr(s: string): string;
 var
   c, EOS, n: AnsiString;
   p: PAnsiChar;

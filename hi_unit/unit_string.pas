@@ -14,6 +14,9 @@ uses
 
 type
   TChars = set of AnsiChar;
+  {$IFDEF VER150}
+  RawByteString = string;
+  {$ENDIF}
 
 //------------------------------------------------------------------------------
 // PAnsiChar 関連
@@ -33,11 +36,11 @@ function getToSplitterB(var p: PAnsiChar; splitter: AnsiString): AnsiString;
 // 特定の区切り文字までを取得する（区切り文字は削除する）
 function getTokenCh(var p: PAnsiChar; ch: TChars): AnsiString;
 // 特定の区切り文字までを取得する（区切り文字は削除する）
-function getTokenStr(var p: PAnsiChar; splitter: AnsiString): AnsiString; overload;
-function getTokenStr(var p: PChar; splitter: string): string; overload;
+function getTokenStr(var p: PAnsiChar; splitter: AnsiString): AnsiString;
+function getTokenStrU(var p: PChar; splitter: string): string;
 // 特定の区切り文字までを取得する（区切り文字は削除する）
-function getToken_s(var s: AnsiString; splitter: AnsiString): AnsiString; overload;
-function getToken_s(var s: string; splitter: string): string; overload;
+function getToken_s(var s: AnsiString; splitter: AnsiString): AnsiString;
+function getToken_sU(var s: string; splitter: string): string;
 
 // 特定の区切り文字までを取得する（区切り文字は削除する）
 function getTokenChW(var p: PAnsiChar; ch: TChars): AnsiString;
@@ -62,15 +65,15 @@ procedure JDelete(var s: AnsiString; i, count: Integer);
 // 置換
 function JReplaceW(str, sFind, sNew: string): string;
 function JReplaceA(str, sFind, sNew: AnsiString): AnsiString;
-function JReplace(str, sFind, sNew: AnsiString): AnsiString; overload;
-function JReplace(str, sFind, sNew: string): string; overload;
+function JReplace(str, sFind, sNew: AnsiString): AnsiString;
+function JReplaceU(str, sFind, sNew: string): string;
 function JReplaceOne(str, sFind, sNew: AnsiString): AnsiString;
 // 繰り返し
 function RepeatStr(s: AnsiString; count: Integer): AnsiString;
 
 function GetAbsolutePath(soutai, base: string; Delimiter: Char): string;
-function SplitChar(delimiter: AnsiChar; str: AnsiString): THStringList; overload;
-function SplitChar(delimiter: Char; str: string): TStringList; overload;
+function SplitChar(delimiter: AnsiChar; str: AnsiString): TStringList;
+function SplitCharU(delimiter: Char; str: string): TStringList;
 
 //------------------------------------------------------------------------------
 // S_JIS対応コピー
@@ -241,7 +244,7 @@ end;
 function MatchesMaskEx(Filename, Masks: AnsiString): Boolean;
 var
   i: Integer;
-  list: THStringList;
+  list: TStringList;
 begin
   Result := False;
   list := SplitChar(';', Masks);
@@ -495,7 +498,7 @@ end;
 // 特定の区切り文字までを取得する（区切り文字は削除する）
 // 区切り文字が空文字列の時は1文字だけ返す
 
-function getTokenStr(var p: PChar; splitter: string): string; overload;
+function getTokenStrU(var p: PChar; splitter: string): string;
 var
   sp: PChar;
   len: Integer;
@@ -628,7 +631,7 @@ begin
   end;
 end;
 
-function getToken_s(var s: string; splitter: string): string; overload;
+function getToken_sU(var s: string; splitter: string): string; overload;
 var
   ps, pSplitter: PChar;
   lenS, len, lenSplitter: Integer;
@@ -890,12 +893,12 @@ begin
   Result := Result + Copy(p,1,slen-i);
 end;
 
-function JReplace(str, sFind, sNew: AnsiString): AnsiString; overload;
+function JReplace(str, sFind, sNew: AnsiString): AnsiString;
 begin
   Result := JReplaceA(str, sFind, sNew);
 end;
 
-function JReplace(str, sFind, sNew: string): string; overload;
+function JReplaceU(str, sFind, sNew: string): string;
 begin
   Result := JReplaceW(str, sFind, sNew);
 end;
@@ -934,11 +937,11 @@ begin
   end;
 end;
 
-function SplitChar(delimiter: AnsiChar; str: AnsiString): THStringList;
+function SplitChar(delimiter: AnsiChar; str: AnsiString): TStringList;
 var
   p: PAnsiChar; s: AnsiString;
 begin
-  Result := THStringList.Create ;
+  Result := TStringList.Create ;
   p := PAnsiChar(str);
   while p^ <> #0 do
   begin
@@ -947,7 +950,7 @@ begin
   end;
 end;
 
-function SplitChar(delimiter: Char; str: string): TStringList; overload;
+function SplitCharU(delimiter: Char; str: string): TStringList; overload;
 var
   p: PChar; s: string;
 begin

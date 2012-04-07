@@ -576,7 +576,7 @@ end;
 
 function CheckFilename(fname: string): string;
 const
-  fchars: TChars = ['0'..'9','a'..'z','A'..'Z','!','#','$','%','(',')',
+  fchars: TSysCharSet = ['0'..'9','a'..'z','A'..'Z','!','#','$','%','(',')',
                     '-','=','~','@','.','_', '\', ' ',':'];
 var
   i: Integer;
@@ -584,19 +584,9 @@ begin
   i := 1;
   while i <= Length(fname) do
   begin
-    if fname[i] in LeadBytes then
     begin
-      Result := Result + fname[i];
-      Inc(i);
-      if i < Length(fname) then
-      begin
-        Result := Result + fname[i];
-        Inc(i);
-      end;
-    end else
-    begin
-      if fname[i] in fchars then Result := Result + fname[i]
-                            else Result := Result + '_';
+      if CharInSet(fname[i], fchars) then Result := Result + fname[i]
+                                     else Result := Result + '_';
       Inc(i);
 
     end;
@@ -990,7 +980,7 @@ begin
     while i < Lines.Count do
     begin
       s := Lines.Strings[i];
-      if (s = '')or(not(s[1] in [' ',#9])) then Break;
+      if (s = '')or(not(CharInSet(s[1], [' ',#9]))) then Break;
       value := value + #13#10 + s; // 忠実に取得
       Inc(i);
     end;
@@ -1081,6 +1071,9 @@ begin
   if Self.Header['X-Priority'] = '' then Self.Header['X-Priority'] := '3';
   if Self.Header['X-Mailer'  ] = '' then Self.Header['X-Mailer'  ] := 'Nadesiko ver.' + NADESIKO_VER;
   if Self.Header['Message-Id'] = '' then Self.Header['Message-Id'] := CreateMessageID(from);
+  // --- 注意
+  // mailfrom に書かれるアドレス
+  if (Self.Header['Return-Path'] = '')or(Self.Header['Return-Path'] = '<>') then Self.Header['Return-Path'] := ExtractMailAddress(from);
   //
   if (files = '')and(html = '') then
   begin
@@ -1137,7 +1130,7 @@ var
 
   procedure skipSpace2(var p: PChar);
   begin
-    while p^ in [#9, ' ', #13, #10] do Inc(p);
+    while CharInSet(p^, [#9, ' ', #13, #10]) do Inc(p);
   end;
 
 begin
@@ -1169,7 +1162,7 @@ begin
       Inc(p)
     else begin // 値のないサブキー...(壊れている場合もなんとかする）
       subkeys.Add(subkey, '');
-      while p^ in [';',#13,#10,#9] do Inc(p);
+      while CharInSet(p^, [';',#13,#10,#9]) do Inc(p);
       Continue;
     end;
     skipSpace2(p);
@@ -1182,7 +1175,7 @@ begin
     begin
       subVal := getTokenCh(p, [';',#13,#10]);
     end;
-    while p^ in [';',#13,#10,#9] do Inc(p);
+    while CharInSet(p^, [';',#13,#10,#9]) do Inc(p);
     subkeys.Add(subKey, subVal);
   end;
 end;

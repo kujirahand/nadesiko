@@ -506,7 +506,7 @@ var
 begin
   { DLL ‚Ì“®“IŒÄ‚Ño‚µ }
   PATH_BREGEXP_DLL := FindDLLFile(DLL_BREGEXP);
-  hDll := LoadLibraryW(PChar(PATH_BREGEXP_DLL));
+  hDll := LoadLibrary(PChar(PATH_BREGEXP_DLL));
   if hDll <= 0 then
   begin
     hDll := LoadLibrary(DLL_BREGEXP);

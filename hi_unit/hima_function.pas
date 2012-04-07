@@ -2053,7 +2053,7 @@ end;
 function sys_ary_varSplit(args: THiArray): PHiValue; stdcall;
 var
   ary, v: PHiValue;
-  sl  : THStringList;
+  sl  : TStringList;
   i   : Integer;
   s, vname : AnsiString;
 begin

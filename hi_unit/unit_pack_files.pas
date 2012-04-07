@@ -497,6 +497,7 @@ begin
     Delete(str,1,i + Length(delimiter) -1);
 end;
 
+{$IFDEF UNICODE}
 function GetToken(const delimiter: string; var str: string): string; overload;
 var
     i: Integer;
@@ -511,6 +512,7 @@ begin
     Result := Copy(str, 1, i-1);
     Delete(str,1,i + Length(delimiter) -1);
 end;
+{$ENDIF}
 
 { TFileMixWriter }
 

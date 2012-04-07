@@ -2,11 +2,12 @@ unit CsvUtils2;
 
 interface
 uses
-  SysUtils, Classes;
+  SysUtils, Classes, Windows;
 
 type
   PCsvProgressFunc = ^TCsvProgressFunc;
   TCsvProgressFunc = procedure (percent: Integer; var Cancel: Boolean) of Object;
+  RawByteString = string;
 
   TCsvCells = class
   private
@@ -95,6 +96,7 @@ type
 
 function uni2ansi(ws:WideString): RawByteString;
 function ansi2uni(s:RawByteString):WideString;
+function UTF8ToWideString(const S: AnsiString): WideString;
 
 implementation
 
@@ -185,6 +187,20 @@ begin
     // SJIS
     Result := WideString(tmp);
   end;
+end;
+
+function UTF8ToWideString(const S: AnsiString): WideString;
+var
+  BufSize: Integer;
+begin
+  Result := '';
+  if Length(S) = 0 then Exit;
+
+  BufSize := MultiByteToWideChar(CP_UTF8, 0, PAnsiChar(S), Length(S), nil, 0);
+  SetLength(result, BufSize);
+  MultiByteToWideChar(CP_UTF8, 0, PANsiChar(S), Length(S), PWideChar(Result), BufSize);
+
+//  Result := UTF8Decode(S);
 end;
 
 
@@ -1236,7 +1252,7 @@ var
   begin
     if (JPosM('"', s) > 0)or(JPosM(#13, s) > 0)or(JPosM(#10, s) > 0) then
     begin
-      Result := '"' + JReplaceU(s, '"', '""', True) + '"';
+      Result := '"' + JReplace(s, '"', '""') + '"';
     end else
     if JPosM(#9, s) > 0 then
     begin
@@ -1326,3 +1342,4 @@ begin
 end;
 
 end.
+
