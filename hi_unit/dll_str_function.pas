@@ -476,7 +476,7 @@ function sys_getTagTrees(args: DWORD): PHiValue; stdcall;
 var
   ps, pa: PHiValue;
   s: string;
-  tags: THStringList;
+  tags: TStringList;
   i: Integer;
 begin
   // (1) ˆø”‚Ìæ“¾

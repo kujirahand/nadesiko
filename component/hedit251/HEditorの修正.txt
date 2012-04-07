@@ -1,0 +1,6 @@
+HEditor.pasの9287,9288行目の修正内容です。
+行の色付けを行末までおこなう為、以下の行をコメントアウトしてください。
+  // 文字列長＋[EOF]マークが左に隠れている場合はキャンセル
+  SL := Length(S);
+//  if (SL + 5) * FFontWidth < FLeftScrollWidth then
+//    Exit;

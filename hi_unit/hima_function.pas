@@ -1146,7 +1146,7 @@ var
   str, sa, sb, res, rem: AnsiString;
 begin
   // (1) 引数の取得
-  s := args.Values[0];
+  s := args.FindKey(token_s);
   if s = nil then s := HiSystem.Sore;
   
   str := hi_str(s);
@@ -1189,10 +1189,10 @@ begin
   // --A-- [sa] --B-- [sb] --C--
   res := ''; // B
 
-  idx1 := PosA(sa, str);
+  idx1 := AnsiPos(sa, str);
   if idx1 <> 0 then
   begin
-    idx2 := PosA((sb),Copy(str,idx1 + Length(sa),High(integer)));
+    idx2 := AnsiPos((sb),Copy(str,idx1 + Length(sa),High(integer)));
     if idx2 <> 0 then
     begin
       idx2 := idx2 + idx1 + Length(sa) - 1;
@@ -1253,19 +1253,25 @@ begin
   sb  := string(hi_str(b));
   sc  := string(hi_str(c));
 
-  idx1 := Pos(string(sa), string(str));
+  idx1 := AnsiPos(sa, str);
   if idx1 <> 0 then
   begin
-    idx2 := Pos(string(sb),Copy(string(str),idx1 + Length(sa),High(integer)));
+    idx2 := AnsiPos(sb, Copy(str,idx1 + Length(sa),High(integer)));
     if idx2 <> 0 then
     begin
       idx2 := idx2 + idx1 + Length(sa) - 1;
+      if idx2-idx1+Length(sb) >= Length(sc) then
       begin
-        //SetLength(res,Length(str)-(idx2-idx1+Length(sb))+Length(sc));
-        //Move(str[1],res[1],idx1-1);
-        //Move(sc[1],res[idx1],Length(sc));
-        //Move(str[idx2+Length(sb)],res[idx1+Length(sc)],Length(str)-idx2-Length(sb)+1);
-        //str:=res;
+        Move(sc[1],str[idx1],Length(sc));
+        Delete(str,idx1+Length(sc),idx2-idx1+Length(sb)-Length(sc));
+      end else
+      begin
+        SetLength(res,Length(str)-(idx2-idx1+Length(sb))+Length(sc));
+        Move(str[1],res[1],idx1-1);
+        Move(sc[1],res[idx1],Length(sc));
+        Move(str[idx2+Length(sb)],res[idx1+Length(sc)],Length(str)-idx2-Length(sb)+1);
+        str:=res;
+        (*
         // 前
         res := Copy(str, 1, idx1);
         // 置換後文字列
@@ -1273,6 +1279,7 @@ begin
         // 後ろ
         res := res + Copy(str, idx2, Length(str));
         str := res;
+        *)
       end;
     end;
   end;
@@ -1546,14 +1553,14 @@ var
   res, i, len: integer;
 begin
   // (1) 引数の取得
-  ss := string(getArgStr(args, 0, True));
-  sa := string(getArgStr(args, 1));
+  ss := getArgStr(args, 0, True);
+  sa := getArgStr(args, 1);
 
   // (2) データの処理
   res := 0;
   len := Length(sa);
   repeat
-    i := Pos(sa, ss);
+    i := AnsiPos(sa, ss);
     if i <> 0 then
     begin
       Inc(res);
