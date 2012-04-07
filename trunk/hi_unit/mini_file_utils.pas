@@ -209,8 +209,13 @@ begin
 
   // Windows ‚Ì API ‚ğg‚¤•û–@ .. ˆê”Ô‘‚¢‚ªƒ‰ƒ“ƒ_ƒ€
   SetLength(Result, MAX_PATH);
+  {$IFDEF UNICODE}
   GetTempFileNameW(PWideChar(fdir), PWideChar(name), 0, PWideChar(Result));
   Result := string(PWideChar(Result));
+  {$ELSE}
+  GetTempFileName(PChar(fdir), PChar(name), 0, PChar(Result));
+  Result := string(PChar(Result));
+  {$ENDIF}
 end;
 
 {

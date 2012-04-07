@@ -185,7 +185,7 @@ function TempDir: string;
 var
  TempTmp: Array [0..MAX_PATH] of Char;
 begin
- GetTempPathW(MAX_PATH, TempTmp);
+ GetTempPath(MAX_PATH, TempTmp);
  Result:= string(TempTmp);
  if Copy(Result,Length(Result),1)<>'\' then Result := Result + '\';
 end;

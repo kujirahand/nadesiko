@@ -4,41 +4,21 @@ unit StrUnit;
 
 全ての関数は、マルチバイト文字(S-JIS)に対応している
 
-作成者：作成者：クジラ飛行机(http://kujirahand.com)
+作成者：クジラ飛行机(http://kujirahand.com)
 作成日：2001/11/24
 
 履歴：
 2002/04/09 途中に#0を含む文字列でも検索置換できるように修正
+2004/11/12 ナデシコ用に改良
 
 ------------------------------------------------------------------------------*)
 interface
 uses
-  Windows, SysUtils, Classes, EasyMasks {$IFDEF VER140},Variants{$ENDIF}
-  {$IF RTLVersion>=15},Variants{$IFEND},imm, Forms;
+  Windows, Classes, SysUtils, DateUtils, hima_types, imm
+  {$IFDEF VER140},Variants{$ENDIF}{$IFDEF VER150},Variants{$ENDIF};
 
 type
-  TCharSet = set of AnsiChar;
-
-{------------------------------------------------------------------------------}
-{マルチバイトに対応した検索置換関数}
-
-{文字列検索 // ｎバイト目の文字の位置を返す}
-function PosExW(const sub, str:string; idx:Integer): Integer;
-{文字列置換}
-function JReplaceU(const Str, oldStr, newStr:string; repAll:Boolean): string;
-{文字列置換拡張版}
-function JReplaceEx(const Str, oldStr, newStr:string; repAll:Boolean; useCase:Boolean): string;
-{指定個目のoldStrを、newStrに置換する}
-function JReplaceCnt(const Str, oldStr, newStr:string; Index: Integer): string;
-{デリミタ文字列までの単語を切り出す。（切り出した単語にデリミタは含まない。）
-切り出し後は、元の文字列strから、切り出した文字列＋デリミタ分を削除する。}
-function GetToken(const delimiter: String; var str: string): String;
-{マルチバイト文字数を得る}
-function JLength(const str: string): Integer;
-{マルチバイト文字列を切り出す}
-function JCopy(const str: string; Index, Count: Integer): string;
-{マルチバイト文字列を検索する}
-function JPosM(const sub, str: string): Integer;
+  TCharSet = set of Char;
 
 {------------------------------------------------------------------------------}
 {文字種類の変換}
@@ -56,22 +36,22 @@ function convToHalfAnk(const str: string): string;
 {ひらがな・カタカナの変換}
 function convToHiragana(const str: string): string;
 function convToKatakana(const str: string): string;
-function ConvToHurigana(const str: string): string; // 振り仮名に変換
 {マルチバイトを考慮した大文字、小文字化}
 function LowerCaseEx(const str: string): string;
 function UpperCaseEx(const str: string): string;
-function UpperCaseOne(const str: string): string;//一文字目だけ大文字
 {ローマ字表記を半角カナに変換}
 function RomajiToKana(romaji: String): String;
+function KanaToRomaji(kana: string): string;
 {ｱ 愛知県 のような行頭の半角カナを削除して返す}
 function TrimLeftKana(str: string): string;
+// 漢字をふりがなに変換
+function ConvToHurigana(const str: string; hwnd: HWND): string;
 
 {------------------------------------------------------------------------------}
 {文字種類の判別}
 function IsHiragana(const str: string): Boolean;
 function IsKatakana(const str: string): Boolean;
-function AscA(const str: AnsiString): Integer; //文字コードを得る
-function AscW(const str: string): Integer; //文字コードを得る
+function Asc(const str: string): Integer; //文字コードを得る
 function IsNumStr(const str: string): Boolean; //文字列が全て数値かどうか判断
 
 {------------------------------------------------------------------------------}
@@ -83,8 +63,7 @@ function DeleteTag(const html: string): String;
 function GetTag(var html:string; tag: string): string;
 function GetTags(html:string; tag: string): string;
 function GetAbsolutePath(soutai, base: string; Delimiter: Char): string;
-function HtmlColorToColorCode(s: string): Integer;
-function ColorCodeToHtmlColor(c: Integer): string;
+function GetTagAttribute(html:string; tag:string; attribute: string; FlagGetAll: Boolean = False): string;
 
 {------------------------------------------------------------------------------}
 {トークン処理}
@@ -96,19 +75,6 @@ function SplitChar(delimiter: Char; str: string): TStringList;
 {ネストする（）の内容を抜き出す}
 function GetKakko(var pp: PChar): string;
 
-{------------------------------------------------------------------------------}
-{日時処理}
-
-{日付の加算 ex)３ヵ月後 IncDate('2001/10/30','0/3/0') 三日前 IncDate('2001/1/1','-0/0/3')}
-function IncDate(BaseDate: TDateTime; AddDate: string): TDateTime;
-{時間の加算 ex)３時間後 IncTime('15:0:0','3:0:0') 三秒前 IncTime('12:45:0','-0:0:3')}
-function IncTime(BaseTime: TDateTime; AddTime: string): TDateTime;
-{西暦、和暦に対応した日付変換用関数}
-function StrToDateStr(const str: string): string;
-{西暦、和暦に対応した日付変換用関数}
-function StrToDateEx(str: string): TDateTime;
-{TDateTimeを、和暦に変換する}
-function DateToWareki(d: TDateTime): string;
 
 {------------------------------------------------------------------------------}
 {その他}
@@ -118,163 +84,313 @@ function InsertYenComma(const yen: string): string;
 {文字を出来る限り数値に変換する}
 function StrToValue(const str: string): Extended;
 {ワイルドカードマッチ}
-function WildMatch(Filename,Mask:string):Boolean;
+//function WildMatch(Filename,Mask:string):Boolean;
 {行揃えする}
-function CutLine(line: AnsiString; cnt,tabCnt: Integer; kinsoku: AnsiString): AnsiString;
+function CutLine(line: string; cnt,tabCnt: Integer; kinsoku: string='dafault'): string;
 
-{バイナリ表示する}
-function StrToHexStr(s:string): string;
+{------------------------------------------------------------------------------}
+function JReplace(const Str, oldStr, newStr:string; repAll:Boolean): string;
+function JLength(const str: string): Integer;
+function JPosM(const sub, str: string): Integer;
 
+function GetToken(const delimiter: String; var str: string): String;
 {------------------------------------------------------------------------------}
 implementation
 
-uses DateUtils, gui_benri;
-
-
-function StrToHexStr(s:string): string;
+function JPosEx(const sub, str:string; idx:Integer): Integer;
 var
-  i: Integer;
+  len_sub, len_str: Integer;
+  p, pSub, pStart: PChar;
 begin
-  Result := '';
-  for i := 1 to Length(s) do
-  begin
-    Result := Result + IntToHex(Ord(s[i]), 2) + ',';
-    if (i-1) mod 16 = 15 then Result := Result + #13#10;
-  end;
-end;
+  Result  := 0;
+  if (sub = '')or(str = '') then Exit;
 
-{行揃えする}
-function CutLine(line: AnsiString; cnt,tabCnt: Integer; kinsoku: AnsiString): AnsiString;
-(*
-const
-  GYOUTOU_KINSI = '、。，．・？！゛゜ヽヾゝゞ々ー）］｝」』!),.:;?]}｡｣､･ｰﾞﾟ';
-*)
-var
-  p: PAnsiChar;
-  i: Integer;
+  len_sub := Length(sub);
+  len_str := Length(str);
+  if idx > len_str then Exit; // 文字列の長さよりインデックスが後ろにある場合は抜ける
 
-  procedure CopyOne;
-  begin
-    Result := Result + p^;
-    Inc(p);
-  end;
+  // １文字ずつ一致を探すためにポインタを取得
+  p := PChar(str);
+  pStart := p;
+  pSub := PChar(sub);
 
-  procedure InsCrLf;
-  var next_c: AnsiString;
-  begin
-    //禁則処理(行頭禁則文字)
-    if kinsoku<>'' then
-    begin
-      if p^ in LeadBytes then
-      begin
-        next_c := p^ + (p+1)^;
-      end else
-      begin
-        next_c := p^;
-      end;
-
-      if PosExW(string(next_c), string(kinsoku), 1) > 0 then
-      begin
-        if p^ in LeadBytes then
-        begin
-          CopyOne; CopyOne;
-        end else
-        begin
-          CopyOne;
-        end;
-      end;
-    end;
-
-    Result := Result + #13#10;
-    i := 0;
-  end;
-
-begin
-  if cnt<=0 then
-  begin
-    Result := line;
-    Exit;
-  end;
-
-  p  := PAnsiChar(line);
-  i := 0;
-  while p^ <> #0 do
+  // idx 分 ポインタを進める
+  Dec(idx);
+  while idx > 0 do
   begin
     if p^ in LeadBytes then
     begin
-      if (i+2) > cnt then InsCrLf;
-      CopyOne;
-      CopyOne;
-      Inc(i,2);
+      Inc(p, 2); Dec(idx, 2);
     end else
     begin
-      if i >= cnt then InsCrLf;
-      if p^ in [#13,#10] then
-      begin
-          Inc(p);
-          if p^ in[#13,#10] then Inc(p);
-          InsCrLf;
-      end else
-      if p^ = #9 then
-      begin
-          CopyOne;
-          Inc(i, tabCnt);
-      end else
-      begin
-          CopyOne;
-          Inc(i);
-      end;
+      Inc(p); Dec(idx);
     end;
+  end;
+
+  // 繰り返し検索
+  try
+    while p^ <> #0 do
+    begin
+      if StrLComp(p, pSub, len_sub) = 0 then
+      begin
+        Result := (p - pStart) + 1;
+        Break;
+      end;
+      if p^ in LeadBytes then Inc(p, 2) else Inc(p);
+    end;
+  except
+    raise Exception.Create('文字列の検索中にエラー。'); 
   end;
 end;
 
-{TDateTimeを、和暦に変換する}
-function DateToWareki(d: TDateTime): string;
-var y, yy, mm, dd: Word; sy: string;
-
-const
-  MEIJI  = 1868; //* 修正 2003/09/28
-  TAISYO = 1912;
-  SYOWA  = 1926;
-  HEISEI = 1989;
+function JReplace(const Str, oldStr, newStr:string; repAll:Boolean): string;
+var
+    i, idx:Integer;
 begin
-    DecodeDate(d, yy, mm, dd);
-    if (MEIJI<=yy)and(yy<TAISYO) then
+    Result := Str;
+    // ****
+    i := JPosEx(oldStr, Str, 1);
+    if i=0 then Exit;
+    Delete(result, i, Length(oldStr));
+    Insert(newStr, result, i);
+    idx := i + Length(newStr);
+    if repAll = False then Exit;
+    // *** Loop
+    while True do
     begin
-        y := yy-MEIJI+1;
-        if y=1 then sy := '元年' else sy := IntToStr(y)+'年';
-        Result := Format('明治'+sy+'%d月%d日',[mm,dd]);
-    end else
-    if (TAISYO<=yy)and(yy<SYOWA) then
-    begin
-        y := yy-TAISYO+1;
-        if y=1 then sy := '元年' else sy := IntToStr(y)+'年';
-        Result := Format('大正'+sy+'%d月%d日',[mm,dd]);
-    end else
-    if (SYOWA<=yy)and(yy<HEISEI) then
-    begin
-        y := yy-SYOWA+1;
-        if y=1 then sy := '元年' else sy := IntToStr(y)+'年';
-        Result := Format('昭和'+sy+'%d月%d日',[mm,dd]);
-    end else
-    if (HEISEI<=yy) then
-    begin
-        y := yy-HEISEI+1;
-        if y=1 then sy := '元年' else sy := IntToStr(y)+'年';
-        Result := Format('平成'+sy+'%d月%d日',[mm,dd]);
+        i := JPosEx(oldStr, result, idx);
+        if i=0 then Exit;
+        Delete(result, i, Length(oldStr));
+        Insert(newStr, result, i);
+        idx := i + Length(newStr);
     end;
 end;
 
+//指定個目のoldStrを、newStrに置換する
+function JReplaceCnt(const Str, oldStr, newStr:string; Index: Integer): string;
+var
+  i, idx:Integer;
+  p, pp: PChar;
+begin
+  idx := 0;
+  p := PChar(str);
+  pp := p;
+  while p^ <> #0 do
+  begin
+    if StrLComp(p, PChar(oldStr), Length(oldStr)) = 0 then
+    begin
+      Inc(idx);
+      if idx = Index then
+      begin
+        i := (p - pp);
+        Result := Copy(Str, 1, i); // 前半部分
+        Result := Result + newStr; // 置換部分
+        Result := Result + Copy(Str, 1 + i + Length(oldStr), Length(Str));
+        Exit;
+      end;
+      Inc(p, Length(oldStr));
+    end else
+    begin
+      if p^ in LeadBytes then
+        Inc(p,2)
+      else
+        Inc(p);
+    end;
+  end;
+  Result := Str;
+end;
+
+function JReplaceEx(const Str, oldStr, newStr:string; repAll:Boolean; useCase:Boolean): string;
+var
+    i, idx:Integer;
+    oldStrFind: string;
+    strFind: string;
+begin
+    Result := Str;
+    oldStrFind := UpperCaseEx(oldStr);
+    strFind := UpperCaseEx(Result);
+    // ****
+    i := JPosEx(oldStrFind, strFind, 1);
+    if i=0 then Exit;
+    Delete(result, i, Length(oldStr));
+    Insert(newStr, result, i);
+    idx := i + Length(newStr);
+    if repAll = False then Exit;
+    // *** Loop
+    while True do
+    begin
+        oldStrFind := UpperCaseEx(oldStr);
+        strFind := UpperCaseEx(Result);
+        i := JPosEx(oldStrFind, strFind, idx);
+        if i=0 then Exit;
+        Delete(result, i, Length(oldStr));
+        Insert(newStr, result, i);
+        idx := i + Length(newStr);
+    end;
+end;
+
+
+function GetToken(const delimiter: String; var str: string): String;
+var
+    i: Integer;
+begin
+    i := JPosEx(delimiter, str,1);
+    if i=0 then
+    begin
+        Result := str;
+        str := '';
+        Exit;
+    end;
+    Result := Copy(str, 1, i-1);
+    Delete(str,1,i + Length(delimiter) -1);
+end;
+
+{行揃えする}
+function CutLine(line: string; cnt,tabCnt: Integer; kinsoku: string): string;
+const
+  GYOUTOU_KINSI = '、。，．・？！゛゜ヽヾゝゞ々ー）］｝」』!),.:;?]}｡｣､･ｰﾞﾟ';
+var
+    p, pr,pr_s: PChar;
+    i,len: Integer;
+
+    procedure CopyOne;
+    begin
+        pr^ := p^; Inc(pr); Inc(p);
+    end;
+
+    procedure InsCrLf;
+    var next_c: string;
+    begin
+        //禁則処理(行頭禁則文字)
+        if kinsoku <> '' then
+        begin
+            if p <> nil then
+            if p^ in LeadBytes then
+            begin
+                next_c := p^ + (p+1)^;
+            end else
+            begin
+                next_c := p^;
+            end;
+
+            if JPosM(next_c, kinsoku) > 0 then
+            begin
+                if p^ in LeadBytes then
+                begin
+                    if p <> nil then CopyOne;
+                    if p <> nil then CopyOne;
+                end else
+                begin
+                    if p <> nil then CopyOne;
+                end;
+            end;
+        end;
+
+        // 追加
+        pr^ := #13; Inc(pr);
+        pr^ := #10; Inc(pr);
+        i := 0;
+    end;
+
+begin
+    if cnt<=0 then
+    begin
+        Result := line;
+        Exit;
+    end;
+    if line = '' then
+    begin
+        Result := line;
+        Exit;
+    end;
+    if kinsoku = 'dafault' then kinsoku := GYOUTOU_KINSI;
+
+    len := Length(line);
+    SetLength(Result, len + (len div cnt) * 3);
+
+    pr := PChar(Result); pr_s := pr;
+    p  := PChar(line);
+    i := 0;
+    while p^ <> #0 do
+    begin
+        if p^ in LeadBytes then
+        begin
+            if (i+2) > cnt then InsCrLf;
+            CopyOne;
+            CopyOne;
+            Inc(i,2);
+        end else
+        begin
+            if i >= cnt then InsCrLf;
+            if p^ in [#13,#10] then
+            begin
+                Inc(p);
+                if p^ in[#13,#10] then Inc(p);
+                InsCrLf;
+            end else
+            if p^ = #9 then
+            begin
+                CopyOne;
+                Inc(i, tabCnt);
+            end else
+            begin
+                CopyOne;
+                Inc(i);
+            end;
+        end;
+    end;
+
+    pr^ := #0;
+    Result := string( pr_s );
+end;
+
+
 {マルチバイト文字数を得る}
 function JLength(const str: string): Integer;
+var
+    p: PChar;
 begin
-  Result := Length(str);
+    p := PChar(str);
+    Result := 0;
+    while p^ <> #0 do
+    begin
+        if p^ in LeadBytes then
+            Inc(p,2)
+        else
+            Inc(p);
+        Inc(Result);
+    end;
 end;
 
 {マルチバイト文字列を切り出す}
 function JCopy(const str: string; Index, Count: Integer): string;
+var
+    i, iTo: Integer;
+    p: PChar;
+    ch: string;
 begin
-  Result := Copy(str, Index, Count);
+    i   := 1;
+    iTo := Index + Count -1;
+    p := PChar(str);
+    Result := '';
+    while (p^ <> #0) do
+    begin
+        if p^ in LeadBytes then
+        begin
+            ch := p^ + (p+1)^;
+            Inc(p,2);
+        end else
+        begin
+            ch :=p^;
+            Inc(p);
+        end;
+        if (Index <= i) and (i <= iTo) then
+        begin
+            Result := Result + ch;
+        end;
+        Inc(i);
+        if iTo < i then Break;
+    end;
 end;
 
 {マルチバイト文字列を検索する}
@@ -293,12 +409,18 @@ begin
         begin
             Result := i; Break;
         end;
-        Inc(p);
+        if p^ in LeadBytes then
+        begin
+            Inc(p,2);
+        end else
+        begin
+            Inc(p);
+        end;
         Inc(i);
     end;
 end;
 
-function AscA(const str: AnsiString): Integer; //文字コードを得る
+function Asc(const str: string): Integer; //文字コードを得る
 begin
     if str='' then begin
         Result := 0;
@@ -312,96 +434,10 @@ begin
         Result := Ord(str[1]);
 end;
 
-function AscW(const str: string): Integer; //文字コードを得る
-begin
-  if str = '' then begin
-    Result := 0;
-    Exit;
-  end;
-  Result := Ord(str[1]);
-end;
-
-
-{西暦、和暦に対応した日付変換用関数}
-function StrToDateStr(const str: string): string;
-begin
-    Result:='';
-    if str='' then Exit;
-    Result := FormatDateTime(
-        'yyyy/mm/dd',
-        StrToDateEx(str)
-    );
-end;
-
-function StrToDateEx(str: string): TDateTime;
-begin
-    Result := Now;
-    if str='' then Exit;
-    if Pos('.',str)>0 then str := JReplaceU(str,'.','/',True);
-    Result := VarToDateTime(str);
-end;
-
-{時間の加算 ex)３時間後 IncTime('15:0:0','3:0:0') 三秒前 IncTime('12:45:0','-0:0:3')}
-function IncTime(BaseTime: TDateTime; AddTime: string): TDateTime;
-var
-    flg: string;
-    hh,nn,ss: Word;
-begin
-    // デルファイの標準関数を使うように変更 2003/2/19
-    // 足すか引くか判断
-    flg := Copy(AddTime,1,1);
-    if (flg='-')or(flg='+') then Delete(AddTime, 1,1);
-
-    hh := StrToIntDef(getToken(':', AddTime),0);
-    nn := StrToIntDef(getToken(':', AddTime),0);
-    ss := StrToIntDef(AddTime, 0);
-    if flg <> '-' then
-    begin
-      Result := IncHour(BaseTime, hh);
-      Result := IncMinute(Result, nn);
-      Result := IncSecond(Result, ss);
-    end else
-    begin
-      Result := IncHour(BaseTime, hh*-1);
-      Result := IncMinute(Result, nn*-1);
-      Result := IncSecond(Result, ss*-1);
-      if(Result<0)then Result := IncHour(Result, 24);
-    end;
-end;
-
-{日付の加算 ex)３ヵ月後 IncDate('2001/10/30','0/3/0') 三日前 IncDate('2001/1/1','-0/0/3')}
-function IncDate(BaseDate: TDateTime; AddDate: string): TDateTime;
-var
-    flg: string;
-    yy,mm,dd: Word;
-begin
-    // デルファイの標準関数を使うように変更 2003/2/19
-    // 足すか引くかの判断
-    flg := Copy(AddDate,1,1);
-    if (flg='-')or(flg='+') then Delete(AddDate, 1,1);
-
-    // 足す日付を分解する
-    yy := StrToIntDef(getToken('/', AddDate),0);
-    mm := StrToIntDef(getToken('/', AddDate),0);
-    dd := StrToIntDef(AddDate, 0);
-    if flg <> '-' then
-    begin
-      // 足す
-      Result := IncYear(BaseDate, yy);
-      Result := IncMonth(Result, mm);
-      Result := IncDay(Result, dd);
-    end else
-    begin
-      // 引く
-      Result := IncYear(BaseDate, yy*-1);
-      Result := IncMonth(Result, mm*-1);
-      Result := IncDay(Result, dd*-1);
-    end;
-end;
 
 procedure skipSpace(var p: PChar);
 begin
-    while CharInSet(p^, [' ',#9]) do Inc(p);
+    while p^ in [' ',#9] do Inc(p);
 end;
 
 {ネストする（）の内容を抜き出す}
@@ -427,6 +463,10 @@ begin
     tmp := pp;
     while pp^ <> #0 do
     begin
+        if pp^ in LeadBytes then
+        begin
+            Inc(pp,2); continue;
+        end else
         case pp^ of
             CH_STR1:
             begin
@@ -443,9 +483,7 @@ begin
             '\':
             begin
                 Inc(pp);
-                if IsStr then begin
-                  Inc(pp);
-                end;
+                if IsStr then if pp^ in LeadBytes then Inc(pp,2) else Inc(pp);
             end;
             '(':
             begin
@@ -491,10 +529,12 @@ begin
 end;
 
 {ワイルドカードマッチ}
+{
 function WildMatch(Filename,Mask:string):Boolean;
 begin
     Result := MatchesMask(Filename, Mask);
 end;
+}
 
 {文字列を数値に変換する}
 function StrToValue(const str: string): Extended;
@@ -519,11 +559,10 @@ begin
     // はじめに、数字を半角にする
     if Trim(str)='' then begin Result := 0; Exit; end;
 
-    buf := Trim(JReplaceU(ConvToHalfMini(str),',','',True));//カンマを削除
-    if Copy(buf,1,1) = '\' then System.Delete(buf,1,1);
+    buf := Trim(JReplace(ConvToHalfMini(str),',','',True));//カンマを削除
 
     p := PChar(buf);
-    while CharInSet(p^, [' ',#9]) do Inc(p);
+    while p^ in [' ',#9] do Inc(p);
     if p^='$' then
     begin
         Result := StrToIntDef(buf,0);
@@ -541,15 +580,15 @@ begin
 
     st := p;
     // 整数
-    while CharInSet(p^, ['0'..'9']) do Inc(p);
+    while p^ in ['0'..'9'] do Inc(p);
     // 小数点
     if p^ = '.' then Inc(p);
-    while CharInSet(p^, ['0'..'9']) do Inc(p);
+    while p^ in ['0'..'9'] do Inc(p);
     // 指数形式
-    if CharInSet(p^, ['e','E']) and CharInSet((p+1)^, ['+','-']) and CharInSet((p+2)^,['0'..'9']) then
+    if (p^ in ['e','E']) and ((p+1)^ in ['+','-']) and ((p+2)^ in ['0'..'9']) then
     begin
       Inc(p,3);
-      while CharInSet(p^ ,['0'..'9']) do Inc(p);
+      while p^ in ['0'..'9'] do Inc(p);
     end;
 
     len := p - st;
@@ -566,27 +605,15 @@ begin
 end;
 
 
-function GetToken(const delimiter: String; var str: string): String;
-var
-    i: Integer;
-begin
-    i := PosExW(delimiter, str,1);
-    if i=0 then
-    begin
-        Result := str;
-        str := '';
-        Exit;
-    end;
-    Result := Copy(str, 1, i-1);
-    Delete(str,1,i + Length(delimiter) -1);
-end;
-
 {HTML から タグを取り除く}
 function DeleteTag(const html: string): String;
 var
-  i: Integer;
+  i, j: Integer;
   txt: String;
   TagIn: Boolean;
+const
+  CDATA_IN  = '<![CDATA[';
+  CDATA_OUT = ']]>';
 begin
     txt := Trim(html);
     if txt = '' then Exit;
@@ -597,6 +624,34 @@ begin
     TagIn := False;
     while i <= Length(txt) do
     begin
+
+        if txt[i] in SysUtils.LeadBytes then
+        begin
+            if TagIn=False then
+            begin
+                Result := Result + Copy(txt,i,2);
+            end;
+            Inc(i,2);
+            Continue;
+        end;
+
+        // Check "<![CDATA[ .. ]]>"
+        if Copy(txt, i, Length(CDATA_IN)) = CDATA_IN then
+        begin
+          Inc(i, Length(CDATA_IN));
+          j := JPosEx(CDATA_OUT, txt, i);
+          if j = 0 then // MAYBE BROKEN?
+          begin
+            Result := Result + CDATA_IN + txt;
+            Break;
+          end;
+          Result := Result + Copy(txt, i, (j-i));
+          i := j;
+          Inc(i, Length(CDATA_OUT));
+          Continue;
+        end;
+        
+
         case txt[i] of
             '<': //TAG in
             begin
@@ -634,13 +689,25 @@ var
   function getTagName(var p: PChar): string;
   begin
     Result := '';
+    //先頭の/を考慮
+    if p^ = '/' then
+    begin
+      Result := Result + p^; Inc(p);
+    end;
     while p^ <> #0 do
     begin
-      if CharInSet(p^ , ['/', 'A'..'Z','a'..'z','0'..'9','_','-']) then
+      if p^ in LeadBytes then
       begin
-        Result := Result + p^; Inc(p);
+        Result := Result + p^ + (p+1)^;
+        Inc(p,2);
       end else
-        Break;
+      begin
+        if p^ in ['A'..'Z','a'..'z','0'..'9','_',':','-','.'] then
+        begin
+          Result := Result + p^; Inc(p);
+        end else
+          Break;
+      end;
     end;
   end;
 
@@ -653,7 +720,7 @@ var
         Inc(p);
         break;
       end;
-      Inc(p);
+      if p^ in LeadBytes then Inc(p,2) else Inc(p);
     end;
   end;
 
@@ -674,15 +741,63 @@ var
       begin
         Inc(p); skipToChar('''', p);
       end else
-      Inc(p);
+      if p^ in LeadBytes then Inc(p,2) else Inc(p);
     end;
+  end;
+
+  function skipSection(var p: PChar):Boolean;
+  begin
+    // <!-- --> <![CDATA[]]> などの<!で始まるものを読み飛ばす
+    Result := False;
+    if (p+1)^ <> '!' then Exit;
+
+    Inc(p,2); // skip <!
+    if AnsiStrLComp(p,'--', 2) = 0 then
+    begin
+      while p^ <> #0 do
+      begin
+        if p^ in LeadBytes then
+        begin
+          Inc(p,2); Continue;
+        end;
+        if AnsiStrLComp(p,'-->', 3) = 0 then begin Inc(p,3); Break; end;
+        Inc(p);
+      end;
+      Result := True;
+    end
+    else if AnsiStrLComp(p,'[CDATA[', 7) = 0 then
+    begin
+      while p^ <> #0 do
+      begin
+        if p^ in LeadBytes then
+        begin
+          Inc(p,2); Continue;
+        end;
+        if AnsiStrLComp(p,']]>', 3) = 0 then begin Inc(p,3); Break; end;
+        Inc(p);
+      end;
+      Result := True;
+    end;
+  end;
+
+  function isBlankTag(p:Pchar):boolean;
+  begin
+    Result:=False;
+    Dec(p);
+    if p^ <> '>' then
+    begin
+      Exit;
+    end;
+    Dec(p);
+    while p^ = ' ' do Dec(p);
+    Result := p^ = '/' ;
   end;
 
 begin
   // タグを大文字に切りそろえる。タグ記号は削除する
   tag := UpperCase(tag);
-  tag := JReplaceU(tag, '<','', True);
-  tag := JReplaceU(tag, '>','', True);
+  tag := JReplace(tag, '<','', True);
+  tag := JReplace(tag, '>','', True);
 
   // タグの始まりを探す
   p := PChar(html);
@@ -690,13 +805,32 @@ begin
   pFrom := nil;
   while p^ <> #0 do
   begin
+    if p^ in LeadBytes then
+    begin
+      Inc(p,2); Continue;
+    end;
     if p^ <> '<' then begin Inc(p); Continue; end;
+    if skipSection(p) then
+    begin
+      Continue;
+    end;
     pp := p;
     Inc(pp);
     s := getTagName(pp);
     skipTagEnd(pp);
     if UpperCase(s) = tag then
     begin
+      if isBlankTag(pp) then
+      begin
+        // 切り取り結果
+        len := (pp - p);
+        SetLength(Result, len);
+        StrLCopy(PChar(Result), p, len);
+
+        // html の残りをセット
+        html := string( PChar( pp ) );
+        Exit;
+      end;
       pFrom := p; // タグの < の前
       nest := 1;
       Break;
@@ -715,7 +849,13 @@ begin
   pEnd := nil;
   while p^ <> #0 do
   begin
+    if p^ in LeadBytes then
+    begin
+      Inc(p,2); Continue;
+    end;
     if p^ <> '<' then begin Inc(p); Continue; end;
+    if skipSection(p) then Continue;
+
     Inc(p);
     s := getTagName(p);
     skipTagEnd(p);
@@ -723,7 +863,7 @@ begin
     // タグのネストを検出
     if UpperCase(s) = tag then
     begin
-      Inc(nest);
+      if not isBlankTag(p) then Inc(nest);
       Continue;
     end;
 
@@ -748,6 +888,7 @@ begin
   // html の残りをセット
   html := string( PChar( pEnd ) );
 end;
+
 function GetTags(html:string; tag: string): string;
 var
     s: string;
@@ -759,6 +900,186 @@ begin
         if s<>'' then
             Result := Result + s + #13#10;
     end;
+end;
+
+// tag の attribute を取得する tag が '' の時は tag の種類を問わない
+function GetTagAttribute(html:string; tag:string; attribute: string; FlagGetAll: Boolean): string;
+var
+  p: PChar;
+
+  function getTokenName(var p: PChar): string;
+  begin
+    Result := '';
+    while p^ <> #0 do
+    begin
+      if p^ in LeadBytes then
+      begin
+        Result := Result + p^ + (p+1)^;
+        Inc(p,2);
+      end else
+      begin
+        if p^ in ['a'..'z','A'..'Z','_','0'..'9','-','!','.',':'] then
+        begin
+          Result := Result + p^;
+          Inc(p);
+        end else
+          Break;
+      end;
+    end;
+  end;
+  function getStrValue(var p: PChar): string;
+  begin
+    Result := '';
+    while p^ in [' ', #13, #10, #9] do Inc(p);
+    if p^='"' then
+    begin
+      Inc(p);
+      while p^ <> #0 do
+      begin
+        if (p^='"') then begin Inc(p); Break; end;
+        if p^ in LeadBytes then
+        begin
+          Result := Result + p^ + (p+1)^; Inc(p,2);
+        end else
+        begin
+          Result := Result + p^; Inc(p);
+        end;
+      end;
+    end else
+    if p^='''' then
+    begin
+      Inc(p);
+      while p^ <> #0 do
+      begin
+        if (p^='''') then begin Inc(p); Break; end;
+        if p^ in LeadBytes then
+        begin
+          Result := Result + p^ + (p+1)^; Inc(p,2);
+        end else
+        begin
+          Result := Result + p^; Inc(p);
+        end;
+      end;
+    end else
+    begin
+      while p^ <> #0 do
+      begin
+        if (p^=' ') then begin Inc(p); Break; end;
+        if (p^='>') then begin Break; end;
+        if p^ in LeadBytes then
+        begin
+          Result := Result + p^ + (p+1)^; Inc(p,2);
+        end else
+        begin
+          Result := Result + p^; Inc(p);
+        end;
+      end;
+    end;
+
+  end;
+
+  procedure readTag;
+  var
+    name, attname, attvalue:string;
+    att: TStringList;
+  begin
+    // タグ <name att="value" att="value" ... >
+    //      <!-- xxx "xxx" -->
+    //      <!DOCTYPE ... >
+    //------------
+    // 名前を取得
+    name := UpperCase(getTokenName(p));
+
+    // 属性を取得
+    att  := TStringList.Create ;
+    while p^ <> #0 do
+    begin
+      // 終了判定
+      while p^ in [' ',#9, #13, #10] do Inc(p);
+      if p^ = '>' then begin Inc(p); Break; end;
+
+      // 属性取得
+      attname := UpperCase(getTokenName(p));
+      while p^ in [' ',#9, #13, #10] do Inc(p);
+      if (p^ = '=') then
+      begin
+        Inc(p);
+        attvalue := getStrValue(p);
+        if attname <> '' then att.Add(attname + '=' + attvalue);
+      end else
+      begin
+        // 属性ではない場合(コメントなど)
+        attvalue := getStrValue(p);
+      end;
+    end;
+
+    // 結果に加えるか判定
+    if FlagGetAll then
+    begin
+      if (tag='')or(tag=name) then
+        Result := Result + Trim(att.Text) + #13#10;
+    end else
+    if (tag='')or(tag=name) then
+    begin
+      if att.IndexOfName(attribute) >= 0 then
+        Result := Result + att.Values[attribute] + #13#10;
+    end;
+  end;
+
+begin
+  Result := '';
+  tag := UpperCase(tag);
+  attribute := UpperCase(attribute);
+  p := PChar(html);
+  while p^ <> #0 do
+  begin
+    if p^ in LeadBytes then
+    begin
+      Inc(p,2);
+    end else
+    begin
+      if p^ = '<' then
+      begin
+        Inc(p);
+
+        // <!-- --> <![CDATA[]]> などの<!で始まるものを読み飛ばす
+        if (p)^ = '!' then
+        begin
+          Inc(p);
+          if AnsiStrComp(p,'--') = 0 then
+          begin
+            while p^ <> #0 do
+            begin
+              if p^ in LeadBytes then
+              begin
+                Inc(p,2); Continue;
+              end;
+              if AnsiStrComp(p,'-->') = 0 then begin Inc(p,3); Break; end;
+              Inc(p);
+            end;
+          end
+          else if AnsiStrComp(p,'[CDATA[') = 0 then
+          begin
+            while p^ <> #0 do
+            begin
+              if p^ in LeadBytes then
+              begin
+                Inc(p,2); Continue;
+              end;
+              if AnsiStrComp(p,']]>') = 0 then begin Inc(p,3); Break; end;
+              Inc(p);
+            end;
+          end;
+          Continue;
+        end;
+
+        readTag;
+      end else
+      begin
+        Inc(p);
+      end;
+    end;
+  end;
 end;
 
 function GetAbsolutePath(soutai, base: string; Delimiter: Char): string;
@@ -831,39 +1152,96 @@ begin
     end;
 end;
 
-function HtmlColorToColorCode(s: string): Integer;
+function KanaToRomaji(kana: string): string;
+const
+  hira: string     = 'あいうえおかきくけこがぎぐげごさしすせそざじずぜぞ'+
+                      'たっちつてとだぢづでど'+
+                      'なにぬねのはひふへほばびぶべぼぱぴぷぺぽ'+
+                      'まみむめもやゆよらりるれろわをんーヴ';
+  roma: string     = 'a,i,u,e,o,ka,ki,ku,ke,ko,ga,gi,gu,ge,go,sa,si,su,se,so,za,zi,zu,ze,zo,' +
+                      'ta,ltu,ti,tu,te,to,da,di,du,de,do,'+
+                      'na,ni,nu,ne,no,ha,hi,hu,he,ho,ba,bi,bu,be,bo,pa,pi,pu,pe,po,'+
+                      'ma,mi,mu,me,mo,ya,yu,yo,ra,ri,ru,re,ro,wa,wo,n,-,vo';
 var
-  r,g,b: string;
-begin
-  Result := -1;
-  s := Trim(UpperCase(s));
-  if s='' then Exit;
-  if s[1] <> '#' then
-  begin
-    Result := StrToIntDef(s,-1); Exit;
-  end;
-  // 1234567
-  // #RRGGBB
-  r := Copy(s, 2, 2);
-  g := Copy(s, 4, 2);
-  b := Copy(s, 6, 2);
-  try
-    Result := RGB(StrToInt('$'+r), StrToInt('$'+g), StrToInt('$'+b));
-  except
-    Result := -1;
-  end;
-end;
+  i: Integer;
+  c, nc: string;
+  romaList: TStringList;
 
-function ColorCodeToHtmlColor(c: Integer): string;
-var
-  r,g,b: Byte;
+  function getOne: string;
+  begin
+    Result := '';
+    if i > Length(kana) then Exit;
+    if kana[i] in SysUtils.LeadBytes then
+    begin
+      Result := Result + kana[i];
+      Inc(i);
+      if i <= Length(kana) then
+      begin
+        Result := Result + kana[i];
+        Inc(i);
+      end;
+    end else
+    begin
+      Result := Result + kana[i];
+      Inc(i);
+    end;
+  end;
+
+  function kana2roma(c: string): string;
+  var
+    j: Integer;
+  begin
+    Result := '';
+    j := JPosM(c, hira);
+    if j > 0 then
+    begin
+      Result := romaList.Strings[j-1];
+    end;
+  end;
+
 begin
-  // COL -> HTML
-  // B G R
-  r := c and $FF;
-  g := BYTE( (c and $FF00) shr 8 );
-  b := BYTE( (c and $FF0000) shr 16);
-  Result := '#'+IntToHex(r,2)+IntToHex(g,2)+IntToHex(b,2); 
+  kana := convToHiragana(kana);
+  romaList:= TStringList.Create;
+  romaList.Text := JReplace(roma, ',',#13#10,True);
+  i := 1;
+  while (i <= Length(kana)) do
+  begin
+    c := getOne;
+    if Result <> '' then
+    begin
+      if c = 'ゃ' then
+      begin
+        // きゃ : ki => kya
+        Delete(Result, Length(Result), 1);
+        Result := Result + 'ya';
+      end else
+      if c = 'ゅ' then
+      begin
+        Delete(Result, Length(Result), 1);
+        Result := Result + 'yu';
+      end else
+      if c = 'ょ' then
+      begin
+        Delete(Result, Length(Result), 1);
+        Result := Result + 'yo';
+      end else
+      if c = 'っ' then
+      begin
+        // かった : ka ta => ka-tta
+        nc := kana2roma(getOne);
+        Result := Result + Copy(nc,1,1) + nc;
+      end else
+      begin
+        Result := Result + kana2roma(c);
+      end;
+    end else
+    begin
+      Result := Result + kana2roma(c);
+    end;
+  end;
+  romaList.Free;
+  // 整形
+  Result := JReplace(Result, 'zyo', 'jo', True);
 end;
 
 function RomajiToKana(romaji: String): String;
@@ -871,7 +1249,7 @@ const
     kana_list = 'k,ｶｷｸｹｺ,s,ｻｼｽｾｿ,t,ﾀﾁﾂﾃﾄ,n,ﾅﾆﾇﾈﾉ,h,ﾊﾋﾌﾍﾎ,m,ﾏﾐﾑﾒﾓ,y,2ﾔ ｲ ﾕ ｲｪﾖ ,r,ﾗﾘﾙﾚﾛ,w,2ﾜ ｳｨｳ ｳｪｦ ,'+
     'g,2ｶﾞｷﾞｸﾞｹﾞｺﾞ,z,2ｻﾞｼﾞｽﾞｾﾞｿﾞ,d,2ﾀﾞﾁﾞﾂﾞﾃﾞﾄﾞ,b,2ﾊﾞﾋﾞﾌﾞﾍﾞﾎﾞ,p,2ﾊﾟﾋﾟﾌﾟﾍﾟﾎﾟ,'+
     'q,2ｸｧｸｨｸ ｸｪｸｫ,f,2ﾌｧﾌｨﾌ ﾌｪﾌｫ,j,3ｼﾞｬｼﾞ ｼﾞｭｼﾞｪｼﾞｮ,l,ｧｨｩｪｫ,x,ｧｨｩｪｫ,c,ｶｼｸｾｺ,'+
-    'v,3ｳﾞｧｳﾞｨｳﾞ ｳﾞｪｳﾞｫ,f,ﾊﾋﾌﾍﾎ'+
+    'v,3ｳﾞｧｳﾞｨｳﾞ ｳﾞｪｳﾞｫ,f,ﾊﾋﾌﾍﾎ,'+
     'ky,2ｷｬｷｨｷｭｷｪｷｮ,sy,2ｼｬｼｨｼｭｼｪｼｮ,ty,2ﾁｬﾁｨﾁｭﾁｪﾁｮ,ny,2ﾆｬﾆｨﾆｭﾆｪﾆｮ,hy,2ﾋｬﾋｨﾋｭﾋｪﾋｮ,'+
     'my,2ﾐｬﾐｨﾐｭﾐｪﾐｮ,by,3ﾋﾞｬﾋﾞｨﾋﾞｭﾋﾞｪﾋﾞｮ,cy,2ﾁｬﾁｨﾁｭﾁｪﾁｮ,ch,2ﾁｬﾁ ﾁｭﾁｪﾁｮ,sh,2ｼｬｼ ｼｭｼｪｼｮ';
 var
@@ -897,7 +1275,7 @@ var
         Result := '';
         if s='' then Exit;
         i := GetBoinNo(c);
-        if CharInSet(s[1] , ['1'..'9']) then
+        if s[1] in ['1'..'9'] then
         begin
             len := StrToIntDef(s[1],1);
             Delete(s,1,1);
@@ -958,14 +1336,14 @@ begin
             Inc(p); siin := '';
             Continue;
         end else
-        if CharInSet(p^, ['a','i','u','e','o']) then
+        if p^ in ['a','i','u','e','o'] then
         begin //母音なので決定
             DecideChar(p^);
             Inc(p);
             siin := '';
             Continue;
         end else
-        if CharInSet(p^ , ['a'..'z']) then
+        if p^ in ['a'..'z'] then
         begin
             if (siin='n')and(p^<>'y') then
             begin
@@ -988,7 +1366,6 @@ begin
             Inc(p);
         end;
     end;
-
 end;
 
 {ｱ 愛知県 のような行頭の半角カナを削除して返す}
@@ -997,137 +1374,14 @@ begin
     Result := '';
     if str='' then Exit;
 
-    if CharInSet(str[1] , ['ｱ'..'ﾝ'])and(Copy(str,2,1)=' ') then
+    if (str[1] in ['ｱ'..'ﾝ'])and(Copy(str,2,1)=' ') then
     begin
         Delete(str,1,1);
     end;
     Result := Trim(str);
 end;
 
-function PosExW(const sub, str:string; idx:Integer): Integer;
-var
-  len_sub, len_str: Integer;
-  p, pSub, pStart: PChar;
-begin
-  Result  := 0;
-  if (sub = '')or(str = '') then Exit;
 
-  len_sub := Length(sub);
-  len_str := Length(str);
-  if idx > len_str then Exit; // 文字列の長さよりインデックスが後ろにある場合は抜ける
-
-  // １文字ずつ一致を探すためにポインタを取得
-  p := PChar(str);
-  pStart := p;
-  pSub := PChar(sub);
-
-  // idx 分 ポインタを進める
-  Dec(idx);
-  while idx > 0 do
-  begin
-    begin
-      Inc(p); Dec(idx);
-    end;
-  end;
-
-  // 繰り返し検索
-  try
-    while p^ <> #0 do
-    begin
-      if StrLComp(p, pSub, len_sub) = 0 then
-      begin
-        Result := (p - pStart) + 1;
-        Break;
-      end;
-      Inc(p);
-    end;
-  except
-    raise Exception.Create('文字列の検索中にエラー。'); 
-  end;
-end;
-
-function JReplaceU(const Str, oldStr, newStr:string; repAll:Boolean): string;
-var
-    i, idx:Integer;
-begin
-    Result := Str;
-    // ****
-    i := PosExW(oldStr, Str, 1);
-    if i=0 then Exit;
-    Delete(result, i, Length(oldStr));
-    Insert(newStr, result, i);
-    idx := i + Length(newStr);
-    if repAll = False then Exit;
-    // *** Loop
-    while True do
-    begin
-        i := PosExW(oldStr, result, idx);
-        if i=0 then Exit;
-        Delete(result, i, Length(oldStr));
-        Insert(newStr, result, i);
-        idx := i + Length(newStr);
-    end;
-end;
-
-//指定個目のoldStrを、newStrに置換する
-function JReplaceCnt(const Str, oldStr, newStr:string; Index: Integer): string;
-var
-  i, idx:Integer;
-  p, pp: PChar;
-begin
-  idx := 0;
-  p := PChar(str);
-  pp := p;
-  while p^ <> #0 do
-  begin
-    if StrLComp(p, PChar(oldStr), Length(oldStr)) = 0 then
-    begin
-      Inc(idx);
-      if idx = Index then
-      begin
-        i := (p - pp);
-        Result := Copy(Str, 1, i); // 前半部分
-        Result := Result + newStr; // 置換部分
-        Result := Result + Copy(Str, 1 + i + Length(oldStr), Length(Str));
-        Exit;
-      end;
-      Inc(p, Length(oldStr));
-    end else
-    begin
-      Inc(p);
-    end;
-  end;
-  Result := Str;
-end;
-
-function JReplaceEx(const Str, oldStr, newStr:string; repAll:Boolean; useCase:Boolean): string;
-var
-    i, idx:Integer;
-    oldStrFind: string;
-    strFind: string;
-begin
-    Result := Str;
-    oldStrFind := UpperCaseEx(oldStr);
-    strFind := UpperCaseEx(Result);
-    // ****
-    i := PosExW(oldStrFind, strFind, 1);
-    if i=0 then Exit;
-    Delete(result, i, Length(oldStr));
-    Insert(newStr, result, i);
-    idx := i + Length(newStr);
-    if repAll = False then Exit;
-    // *** Loop
-    while True do
-    begin
-        oldStrFind := UpperCaseEx(oldStr);
-        strFind := UpperCaseEx(Result);
-        i := PosExW(oldStrFind, strFind, idx);
-        if i=0 then Exit;
-        Delete(result, i, Length(oldStr));
-        Insert(newStr, result, i);
-        idx := i + Length(newStr);
-    end;
-end;
 
 
 {LCMapString-------------------------------------------------------------------}
@@ -1175,93 +1429,6 @@ function convToKatakana(const str: string): string;
 begin
     Result := LCMapStringEx( str, LCMAP_KATAKANA );
 end;
-function ConvToHurigana(const str: string): string;
-var
-  hIMC: THandle;    // 入力コンテキストハンドル
-  hKL: THandle;    // キーボードレイアウトハンドル
-  lngSize: Integer; // 変換後バッファサイズ
-  lngOffset: Integer;// 変換文字列候補オフセットアドレス
-  byCandiateArray: array of Byte; // 変換結果バッファ
-  CandiateList: TCANDIDATELIST;
-  osvi: TOSVERSIONINFO;
-  w: WideString;
-begin
-  Result := '';
-  if str = '' then Exit; //空文字列の場合は処理しない
-
-  // OS判別
-  osvi.dwOSVersionInfoSize := sizeof(osvi);
-  GetVersionEx(osvi);
-
-  // IME コンテキスト取得
-  hIMC := ImmGetContext(Application.Handle);
-  hKL := GetKeyboardLayout(0);
-
-  if osvi.dwPlatformId = VER_PLATFORM_WIN32_NT then
-  begin
-    //WindowsNT系:SJIFT-JISのまま
-    lngSize := ImmGetConversionListW(
-      hKL,
-      hIMC,
-      PChar(str),
-      nil,
-      0,
-      GCL_REVERSECONVERSION);
-    if lngSize > 0 Then
-    begin
-      SetLength(byCandiateArray, lngSize);
-      // 変換結果を取得
-      ImmGetConversionListW(
-        hKL, hIMC,
-        PChar(str),
-        @byCandiateArray[0],
-        lngSize,
-        GCL_REVERSECONVERSION);
-      // バッファ内容を参照するため構造体にコピ-
-      Move(byCandiateArray[0], CandiateList, sizeof(CandiateList));
-      if CandiateList.dwCount > 0 then
-      begin
-        // 先頭候補のオフセット取得
-        lngOffset := CandiateList.dwOffset[1];
-        // '"ふりがな"取得
-        Result := PChar( @byCandiateArray[lngOffset] );
-      end;
-    end;
-  end else
-  begin
-    //Windows95系:シフトJISに変換
-    //Windows98では ImmGetConversionListA API が Shift-JIS⇒Unicode の変換に使えることが判明しました。＼＾〇＾／
-    //（"愛"はたまたま、他の文字はダメですから本当は使えません。なお、変換には MultiByteToWideChar API が用意されています。）
-    //Windows 2000 がマトモなのに比べ Windows98 は本来使わないと思われる ImmGetConversionListW でなければ変換できません。
-    //さらに渡すのは Shift-JIS で戻ってくるのは Unicode。マイクロソフトの言う一部サポートとはこういうことなんでしょうか？
-    lngSize := ImmGetConversionListW(
-                hKL, hIMC,
-                PChar(str),
-                nil,
-                0,
-                GCL_REVERSECONVERSION);
-    if lngSize > 0 Then
-    begin
-      SetLength(byCandiateArray, lngSize);
-      // 変換結果を取得 in: SJIS out: UNICODE
-      ImmGetConversionList(hKL, hIMC, PChar(str), @byCandiateArray[0],
-                    lngSize, GCL_REVERSECONVERSION);
-      // バッファ内容を参照するため構造体にコピ-
-      Move(byCandiateArray[0], CandiateList, sizeof(CandiateList));
-      if CandiateList.dwCount > 0 then
-      begin
-        // 先頭候補のオフセット取得
-        lngOffset := CandiateList.dwOffset[1];
-        // '"ふりがな"取得 --- 戻りは UNICODE だそうだ wideString にキャスト
-        w := PWideChar( @byCandiateArray[lngOffset] );
-        Result := w; // Delphi ちゃんは楽チン自動変換の巻
-      end;
-    end;
-  end;
-  //開放
-  ImmReleaseContext(Application.Handle, hIMC);
-end;
-
 {マルチバイトを考慮した大文字、小文字化}
 function LowerCaseEx(const str: string): string;
 begin
@@ -1271,20 +1438,91 @@ function UpperCaseEx(const str: string): string;
 begin
     Result := LCMapStringExHalf( str, LCMAP_UPPERCASE );
 end;
-function UpperCaseOne(const str: string): string;//一文字目だけ大文字
+
+function ConvToHurigana(const str: string; hwnd: HWND): string;
 var
-  s: WideString; c: WideString;
+  src       : string;
+  wstr      : WideString;
+  hIMC_     : HIMC;
+  hKL_      : HKL;
+  lngOffset : DWORD;
+  osvi      : TOSVersionInfo;
+  pclist    : PCANDIDATELIST;
+  p         : PChar;
+  pw        : PWideString;
+  lngSize   : DWORD;
 begin
-  if Length(str) > 0 then
+  Result := '';
+  if str = '' then Exit;
+
+  if hwnd = 0 then // 0のときうまく動かない（よって、コンソール版だとNG）
   begin
-    s := LowerCaseEx(str);
-    c := s[1];
-    c := UpperCase(c);
-    s[1] := c[1];
-    Result := s;
-  end else
-  begin
-    Result := '';
+    hwnd := GetForegroundWindow;
+  end;
+
+  // OS判別
+  osvi.dwOSVersionInfoSize := SizeOf(osvi);
+  GetVersionEx(osvi);
+
+  hIMC_ := ImmGetContext(hwnd);
+  hKL_  := GetKeyboardLayout(0);
+  try
+    if osvi.dwPlatformId = VER_PLATFORM_WIN32_NT then
+    begin
+      // Windows NT : SHIFT_JIS にて
+      src := str;
+      // 変換結果を受け取るバッファサイズを取得
+      lngSize := ImmGetConversionListA(hKL_, hIMC_, @src[1], nil, 0, GCL_REVERSECONVERSION);
+      if lngSize > 0 then
+      begin
+        // バッファ分の配列を取得
+        pclist := GetMemory(lngSize);
+        try
+          // 変換結果を取得
+          ImmGetConversionListA(hKL_, hIMC_, @src[1], pclist, lngSize, GCL_REVERSECONVERSION);
+          if pclist.dwCount > 0 then
+          begin
+            // 先頭候補のオフセット取得
+            lngOffset := pclist.dwOffset[1];
+            p := PChar(pclist);
+            Inc(PChar(p), lngOffset);
+            // ふりがな取得
+            Result := string(PChar(p));
+          end;
+        finally
+          FreeMemory(pclist);
+        end;
+      end;
+    end else
+    begin
+      // Windows 9x : SHIFT_JIS
+      src := str;
+      // 変換結果を受け取るバッファサイズを取得
+      lngSize := ImmGetConversionListW(hKL_, hIMC_, @src[1], nil, 0, GCL_REVERSECONVERSION);
+      if lngSize > 0 then
+      begin
+        // バッファ分の配列を取得
+        pclist := GetMemory(lngSize);
+        try
+          // 変換結果を取得
+          ImmGetConversionListW(hKL_, hIMC_, @src[1], pclist, lngSize, GCL_REVERSECONVERSION);
+          if pclist.dwCount > 0 then
+          begin
+            // 先頭候補のオフセット取得
+            lngOffset := pclist.dwOffset[1];
+            pw := PWideString(pclist);
+            Inc(PWideString(pw), lngOffset);
+            // ふりがな取得
+            wstr := WideString(pw);
+            Result := wstr;
+          end;
+        finally
+          FreeMemory(pclist);
+        end;
+      end;
+    end;
+  finally
+    ImmReleaseContext(hwnd, hIMC_);
   end;
 end;
 
@@ -1297,7 +1535,7 @@ const
     HALF_JOUKEN = '０１２３４５６７８９'+
         'ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ'+
         'ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ'+
-        '！”＃＄％＆’（）＝－￥［］｛｝＿／＞＜，．＠‘　';
+        '！”＃＄％＆’（）＝－￥［］｛｝＿／＞＜，．＠‘　｜';
 
 begin
     SetLength(Result, Length(str)*2+1);//とりあえず適当な大きさを確保
@@ -1306,28 +1544,28 @@ begin
 
     while p^ <> #0 do
     begin
-        if Ord(p^) > $7F then
+        if p^ in LeadBytes then
         begin
-            s := p^;
+            s := p^ + (p+1)^;
             i := Pos(s, HALF_JOUKEN);
-            if (i>0) then //文字が途中で分断されているのを防ぐため、mod 2=0 でチェック
+            if (i>0)and(((i-1)mod 2)=0) then //文字が途中で分断されているのを防ぐため、mod 2=0 でチェック
             begin
                 s := convToHalf(s);
-                pr^ := s[1];
-                Inc(pr);
-                Inc(p);
+                pr^ := s[1]; Inc(pr);
+                Inc(p,2);
             end else
             begin
-                pr^ := p^;
-                Inc(pr); Inc(p);
+                pr^ := p^; Inc(pr); Inc(p);
+                pr^ := p^; Inc(pr); Inc(p);
             end;
         end else
         begin // 既に ank
-            //半角カタカナは全角へ((SJIS:0xA0-0xDF) UNI:FF61-FF9F)
-            if CharInSet(p^,[#$FF61..#$FF9F]) then
+            //半角カタカナは全角へ(( 0xA0-0xDF ))
+            if (#$A0 <= p^)and(p^ <= #$DF) then
             begin
               s := convToFull(p^);
               pr^ := s[1]; Inc(pr);
+              pr^ := s[2]; Inc(pr);
               Inc(p);
             end else
             begin
@@ -1347,8 +1585,13 @@ begin
   Result := '';
   while ptr^ <> #0 do
   begin
+    if ptr^ in LeadBytes then
     begin
-      if CharInSet(ptr^, delimiter) then
+      Result := Result + ptr^ + (ptr+1)^;
+      Inc(ptr,2);
+    end else
+    begin
+      if ptr^ in delimiter then
       begin
         Inc(ptr);
         Break;
@@ -1364,6 +1607,11 @@ begin
   Result := '';
   while ptr^ <> #0 do
   begin
+    if ptr^ in LeadBytes then
+    begin
+      Result := Result + (ptr^) + (ptr+1)^;
+      Inc(ptr,2);
+    end else
     begin
       if ptr^ = delimiter then
       begin
@@ -1416,12 +1664,12 @@ begin
     Result := False;
     p := PChar(str);
 
-    if not CharInSet(p^ , ['0'..'9']) then Exit;
+    if not (p^ in ['0'..'9']) then Exit;
     Inc(p);
 
     while p^ <> #0 do
     begin
-        if CharInSet(p^, ['0'..'9','e','E','+','-','.']) then //浮動小数点に対応
+        if p^ in ['0'..'9','e','E','+','-','.'] then //浮動小数点に対応
             Inc(p)
         else
             Exit;
@@ -1430,3 +1678,4 @@ begin
 end;
 
 end.
+

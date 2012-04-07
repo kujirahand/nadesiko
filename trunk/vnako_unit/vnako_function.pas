@@ -5144,8 +5144,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          OnMouseEnter:= Bokan.eventMouseEnter;
-          OnMouseLeave:= Bokan.eventMouseLeave;
+          //OnMouseEnter:= Bokan.eventMouseEnter;
+          //OnMouseLeave:= Bokan.eventMouseLeave;
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -5167,8 +5167,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          OnMouseEnter:= Bokan.eventMouseEnter;
-          OnMouseLeave:= Bokan.eventMouseLeave;
+          //OnMouseEnter:= Bokan.eventMouseEnter;
+          //OnMouseLeave:= Bokan.eventMouseLeave;
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -5270,8 +5270,8 @@ begin
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
           OnMouseUp   := Bokan.eventMouseUp;
-          OnMouseEnter:= Bokan.eventMouseEnter;
-          OnMouseLeave:= Bokan.eventMouseLeave;
+          //OnMouseEnter:= Bokan.eventMouseEnter;
+          //OnMouseLeave:= Bokan.eventMouseLeave;
           OnKeyDown   := Bokan.eventKeyDown;
           OnKeyPress  := Bokan.eventKeyPress;
           OnKeyUp     := Bokan.eventKeyUp;
@@ -7877,7 +7877,7 @@ var
 begin
   s := string(getArgStr(h,0,True));
   Result := hi_newStrU(
-    StrUnit.ConvToHurigana(s)
+    StrUnit.ConvToHurigana(s, frmNako.Handle)
   );
 end;
 

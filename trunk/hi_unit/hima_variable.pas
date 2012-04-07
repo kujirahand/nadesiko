@@ -46,7 +46,7 @@ function hi_bin   (v: PHiValue): AnsiString;
 // ïœä∑Å©THiValue
 procedure hi_setInt   (v: PHiValue; const i: Integer);
 procedure hi_setFloat (v: PHiValue; const f: HFloat);
-procedure hi_setStr   (v: PHiValue; const s: RawByteString);
+procedure hi_setStr   (v: PHiValue; const s: string);
 procedure hi_setBool  (v: PHiValue; const b: Boolean);
 procedure hi_setIntOrFloat(v: PHiValue; f: HFloat);
 
@@ -637,7 +637,7 @@ begin
   PHFloat(v.ptr)^ := f;
 end;
 
-procedure hi_setStr(v: PHiValue; const s: RawByteString);
+procedure hi_setStr(v: PHiValue; const s: string);
 begin
   hi_var_clear(v);
   v.VType := varStr;

@@ -30,6 +30,7 @@ function getArg(h: DWORD; Index: Integer; UseHokan: Boolean = False): PHiValue;
 function getArgInt(h: DWORD; Index: Integer; UseHokan: Boolean = False): Integer;
 function getArgIntDef(h: DWORD; Index: Integer; Def:Integer): Integer;
 function getArgStr(h: DWORD; Index: Integer; UseHokan: Boolean = False): AnsiString;
+function getArgStrU(h: DWORD; Index: Integer; UseHokan: Boolean = False): string;
 function getArgBool(h: DWORD; Index: Integer; UseHokan: Boolean = False): Boolean;
 function getArgFloat(h: DWORD; Index: Integer; UseHokan: Boolean = False): HFloat;
 // ìÆéåÇÃåÍîˆïœâªÇçÌèú
@@ -202,6 +203,13 @@ function getArgStr(h: DWORD; Index: Integer; UseHokan: Boolean = False): AnsiStr
 begin
   Result := hi_str(getArg(h, Index,UseHokan));
 end;
+
+function getArgStrU(h: DWORD; Index: Integer; UseHokan: Boolean = False): string;
+begin
+  Result := hi_strU(getArg(h, Index,UseHokan));
+end;
+
+
 function getArgBool(h: DWORD; Index: Integer; UseHokan: Boolean = False): Boolean;
 begin
   Result := hi_bool(getArg(h, Index,UseHokan));

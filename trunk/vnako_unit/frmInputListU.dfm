@@ -1,9 +1,9 @@
 object frmInputList: TfrmInputList
   Left = 192
   Top = 114
+  Width = 467
+  Height = 350
   Caption = #38917#30446#35352#20837
-  ClientHeight = 291
-  ClientWidth = 451
   Color = clBtnFace
   Font.Charset = SHIFTJIS_CHARSET
   Font.Color = clWindowText

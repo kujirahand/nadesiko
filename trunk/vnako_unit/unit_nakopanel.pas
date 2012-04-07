@@ -109,8 +109,8 @@ begin
   FImage.OnMouseDown := doMouseDown;
   FImage.OnMouseMove := doMouseMove;
   FImage.OnMouseUp := doMouseUp;
-  FImage.OnMouseEnter:= doMouseEnter;
-  FImage.OnMouseLeave:= doMouseLeave;
+  //FImage.OnMouseEnter:= doMouseEnter;
+  //FImage.OnMouseLeave:= doMouseLeave;
 end;
 
 procedure TNakoPanel.doClick(Sender: TObject);

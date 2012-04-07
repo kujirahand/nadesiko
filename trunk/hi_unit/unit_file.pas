@@ -195,16 +195,26 @@ var
   tmp: string;
 begin
   SetLength(tmp, MAX_PATH + 1);
+  {$IFDEF UNICODE}
   GetShortPathNameW(PWideChar(LongName), PWideChar(tmp), MAX_PATH);
   Result := string(PWideChar(tmp));
+  {$ELSE}
+  GetShortPathName(PChar(LongName), PChar(tmp), MAX_PATH);
+  Result := string(PChar(tmp));
+  {$ENDIF}
 end;
 
 function getVolumeName(drive: string): string;
 var
+  {$IFDEF UNICODE}
   fi: SHFILEINFOW;
+  {$ELSE}
+  fi: SHFILEINFO;
+  {$ENDIF}
 begin
   if Length(drive) = 1 then drive := drive + ':\';
   //
+  {$IFDEF UNICODE}
   SHGetFileInfoW(
     PWideChar(drive),
     0,
@@ -212,9 +222,19 @@ begin
     sizeof(SHFILEINFO),
     SHGFI_DISPLAYNAME);
   Result := string(fi.szDisplayName);
+  {$ELSE}
+  SHGetFileInfo(
+    PAnsiChar(drive),
+    0,
+    fi,
+    sizeof(SHFILEINFO),
+    SHGFI_DISPLAYNAME);
+  Result := string(fi.szDisplayName);
+  {$ENDIF}
 end;
 
 function getFileSystemName(drive: string): string;
+{$IFDEF UNICODE}
 var
 	SystemName: array [0..1000] of WideChar;
 	SerialNumber: DWORD;
@@ -235,7 +255,28 @@ begin
   //
   Result := string(PWideChar(@SystemName[0]));
 end;
-
+{$ELSE}
+var
+	SystemName: array [0..1000] of AnsiChar;
+	SerialNumber: DWORD;
+	FileNameLength: DWORD;
+  Flags: DWORD;
+begin
+  if Length(drive) = 1 then drive := drive + ':\';
+  //
+	GetVolumeInformation(
+		PAnsiChar(drive),
+    nil,
+		0,
+		@SerialNumber,
+		FileNameLength,
+		Flags,
+		@SystemName[0],
+		1000);
+  //
+  Result := string(PAnsiChar(@SystemName[0]));
+end;
+{$ENDIF}
 
 function getSerialNo(drive: AnsiString): DWORD;
 var

@@ -567,7 +567,7 @@ end;
 
 function CheckFilename(fname: string): string;
 const
-  fchars: TChars = ['0'..'9','a'..'z','A'..'Z','!','#','$','%','(',')',
+  fchars: TSysCharSet = ['0'..'9','a'..'z','A'..'Z','!','#','$','%','(',')',
                     '-','=','~','@','.','_', '\', ' ',':','[',']'];
 var
   i: Integer;

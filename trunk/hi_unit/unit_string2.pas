@@ -13,7 +13,7 @@ uses
   Windows, SysUtils, Classes;
 
 type
-  TChars = set of Char;
+  TChars = set of char;
 
 //------------------------------------------------------------------------------
 // PChar 関連
@@ -28,15 +28,15 @@ procedure skipSpace(var p: PChar);
 // もしsplitterがあれば HasSplitter=True を返す
 function getToSplitter(var p: PChar; splitter: string; var HasSplitter: Boolean): string;
 function getToSplitterStr(var s: string; splitter: string): string;
-function getToSplitterCh(var p: PChar; splitter: TChars; var HasSplitter: Boolean): string;
+function getToSplitterCh(var p: PChar; splitter: TSysCharSet; var HasSplitter: Boolean): string;
 // 特定の文字列の手前までを取得する
 function getToSplitterB(var p: PChar; splitter: string): string;
 // 特定の区切り文字までを取得する（区切り文字は削除する）
-function getTokenCh(var p: PChar; ch: TChars): string;
+function getTokenCh(var p: PChar; ch: TSysCharSet): string;
 // 特定の区切り文字までを取得する（区切り文字は削除する）
 function getTokenStr(var p: PChar; splitter: string): string;
 // 特定のCharsを取得する
-function getChars(var p: PChar; ch: TChars): string;
+function getChars(var p: PChar; ch: TSysCharSet): string;
 
 //------------------------------------------------------------------------------
 // 文字列関連
@@ -44,7 +44,7 @@ function getChars(var p: PChar; ch: TChars): string;
 // 特定の区切り文字までを取得する（区切り文字は削除する）
 function getToken_s(var s: string; splitter: string): string;
 // 特定のCharsの間を取得する
-function getChars_s(var s: string; ch: TChars): string;
+function getChars_s(var s: string; ch: TSysCharSet): string;
 
 //------------------------------------------------------------------------------
 // 検索取り出し
@@ -98,7 +98,19 @@ function UpperCaseEx(const str: string): string;
 function ExpandTab(s: string; tabCnt: Integer): string;
 function TrimCoupleFlag(s: string): string;
 
+{$IFDEF VER150}
+function CharInSet(c: Char; chars: TChars): Boolean;
+{$ENDIF}
+
+
 implementation
+
+{$IFDEF VER150}
+function CharInSet(c: Char; chars: TChars): Boolean;
+begin
+  if c in chars then Result := True else Result := False;
+end;
+{$ENDIF}
 
 //------------------------------------------------------------------------------
 // PChar 関連
@@ -106,11 +118,6 @@ implementation
 // PChar から 1文字取り出す
 function getOneChar(var p: PChar): string;
 begin
-  if p^ in SysUtils.LeadBytes then
-  begin
-    Result := p^ + (p+1)^;
-    Inc(p, 2);
-  end else
   begin
     Result := p^;
     Inc(p);
@@ -120,11 +127,6 @@ end;
 // PChar から 1文字取り出し文字コードで返す
 function getOneCharCode(var p: PChar): Integer;
 begin
-  if p^ in SysUtils.LeadBytes then
-  begin
-    Result := Ord(p^) shl 8 + Ord((p+1)^);
-    Inc(p, 2);
-  end else
   begin
     Result := Ord(p^);
     Inc(p);
@@ -134,7 +136,7 @@ end;
 // PChar で空白文字を飛ばす
 procedure skipSpace(var p: PChar);
 begin
-  while p^ in [' ',#9] do Inc(p);
+  while CharInSet(p^, [' ',#9]) do Inc(p);
 end;
 
 // PChar で特定の文字までを取り出しポインタを進める(返す文字にsplitterを含む)
@@ -184,13 +186,14 @@ begin
   end;
 end;
 
-function getToSplitterCh(var p: PChar; splitter: TChars; var HasSplitter: Boolean): string;
+function getToSplitterCh(var p: PChar; splitter: TSysCharSet; var HasSplitter: Boolean): string;
 begin
   HasSplitter := False;
   Result := '';
   while p^ <> #0 do
   begin
-    if p^ in splitter then // 合致したか
+    //if p^ in splitter then // 合致したか
+    if CharInSet(p^, splitter) then
     begin
       Result := Result + p^;
       Inc(p);
@@ -202,18 +205,12 @@ begin
 end;
 
 // 特定の区切り文字までを取得する（区切り文字は削除する）
-function getTokenCh(var p: PChar; ch: TChars): string;
+function getTokenCh(var p: PChar; ch: TSysCharSet): string;
 begin
   Result := '';
   while p^ <> #0 do
   begin
-    if p^ in SysUtils.LeadBytes then
-    begin
-      Result := Result + p^ + (p+1)^;
-      Inc(p, 2); Continue;
-    end;
-
-    if p^ in ch then
+    if CharInSet(p^, ch) then
     begin
       Inc(p);
       Break;
@@ -243,11 +240,6 @@ begin
       Break;
     end;
 
-    if p^ in SysUtils.LeadBytes then
-    begin
-      Result := Result + p^ + (p+1)^;
-      Inc(p, 2);
-    end else
     begin
       Result := Result + p^; Inc(p);
     end;
@@ -255,10 +247,10 @@ begin
 end;
 
 // 特定のCharsを取得する
-function getChars(var p: PChar; ch: TChars): string;
+function getChars(var p: PChar; ch: TSysCharSet): string;
 begin
   Result := '';
-  while p^ in ch do
+  while CharInSet(p^ , ch) do
   begin
     Result := Result + p^;
     Inc(p);
@@ -276,7 +268,7 @@ begin
 end;
 
 // 特定のCharsの間を取得する
-function getChars_s(var s: string; ch: TChars): string;
+function getChars_s(var s: string; ch: TSysCharSet): string;
 var
   p: PChar;
 begin
@@ -307,10 +299,6 @@ begin
     end;
     // 一致しないならば一文字ずらして検索続行
     Inc(i);
-    if ps^ in LeadBytes then
-    begin
-      Inc(ps, 2);
-    end else
     begin
       Inc(ps);
     end;
@@ -337,10 +325,6 @@ begin
     end;
     // 一致しないならば一文字ずらして検索続行
     Inc(i);
-    if ps^ in LeadBytes then
-    begin
-      Inc(ps, 2);
-    end else
     begin
       Inc(ps);
     end;
@@ -516,13 +500,6 @@ begin
   i := 0;
   while p^ <> #0 do
   begin
-    if p^ in SysUtils.LeadBytes then
-    begin
-      if (i+2) > count then Break; // バイト数を飛び出すなら抜ける
-      Result := Result + p^ + (p+1)^;
-      Inc(p, 2);
-      Inc(i, 2);
-    end else
     begin
       if (i+1) > count then Break;
       Result := Result + p^;
@@ -538,12 +515,7 @@ begin
         Result := 0;
         Exit;
     end;
-
-    if ch[1] in LeadBytes then
-    begin
-        Result := (Ord(ch[1]) shl 8) + Ord(ch[2]);
-    end else
-        Result := Ord(ch[1]);
+    Result := Ord(ch[1]);
 end;
 
 
@@ -625,16 +597,11 @@ begin
   c := 0;
   while (p^ <> #0) do
   begin
-    if p^ in SysUtils.LeadBytes then
-    begin
-      Result := Result + p^ + (p+1)^;
-      Inc(p, 2); Inc(c, 2);
-    end else
     begin
       case p^ of
       #13:
         begin
-          while p^ in [#13,#10] do begin
+          while CharInSet(p^, [#13,#10]) do begin
             Result := Result + p^; Inc(p);
           end;
           c := 0;
@@ -672,24 +639,6 @@ begin
     Result := s; Exit;
   end;
   flg := False;
-  if s[1] in LeadBytes then
-  begin
-    mae   := Copy(s,1,2);
-    usiro := Copy(s,Length(s)-2+1,2);
-    if mae = usiro then flg := True
-    else begin
-      // 対応する記号をチェック
-      if (mae='「')and(usiro='」') then flg := True else
-      if (mae='『')and(usiro='』') then flg := True else
-      if (mae='｛')and(usiro='｝') then flg := True else
-      if (mae='【')and(usiro='】') then flg := True else
-      if (mae='（')and(usiro='）') then flg := True else
-      if (mae='〔')and(usiro='〕') then flg := True else
-      if (mae='“')and(usiro='”') then flg := True else
-      if (mae='‘')and(usiro='’') then flg := True else
-      if (mae='＜')and(usiro='＞') then flg := True else
-    end;
-  end else
   begin
     mae   := Copy(s,1,1);
     usiro := Copy(s,Length(s),1);
@@ -701,6 +650,16 @@ begin
       if (mae='{')and(usiro='}') then flg := True else
       if (mae='`')and(usiro='''') then flg := True else
       if (mae='<')and(usiro='>') then flg := True else
+      if (mae='「')and(usiro='」') then flg := True else
+      if (mae='『')and(usiro='』') then flg := True else
+      if (mae='｛')and(usiro='｝') then flg := True else
+      if (mae='【')and(usiro='】') then flg := True else
+      if (mae='（')and(usiro='）') then flg := True else
+      if (mae='〔')and(usiro='〕') then flg := True else
+      if (mae='“')and(usiro='”') then flg := True else
+      if (mae='‘')and(usiro='’') then flg := True else
+      if (mae='＜')and(usiro='＞') then flg := True else
+      ;
     end;
   end;
   //

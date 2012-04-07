@@ -220,7 +220,7 @@ end;
 //------------------------------------------------------------------------------
 // ƒƒCƒ“ƒvƒƒOƒ‰ƒ€
 begin
-  ReportMemoryLeaksOnShutdown := False;
+  //ReportMemoryLeaksOnShutdown := False;
   _nako_loader := nil;
   try
     try

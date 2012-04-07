@@ -176,7 +176,7 @@ function procMemoDialog(hDlg: HWND; msg: UINT; wp: WPARAM; lp: LPARAM): BOOL; st
 var
   ID, i, len: Integer;
   h: HWND;
-  s, a: AnsiString;
+  s, a: string;
 begin
   Result := False;
 
