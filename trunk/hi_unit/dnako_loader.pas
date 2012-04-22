@@ -171,10 +171,12 @@ begin
     Exit;
   end;
   ver := nako_getVersion();
+  (*
   if ver <> NADESIKO_VER then
   begin
     raise Exception.Create('ng 開発版:なでしこのバージョンが一致しません。');
   end;
+  *)
   // set Handle
   if FhasPackfile then
   begin
