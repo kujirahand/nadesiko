@@ -213,7 +213,7 @@ procedure TNakoPanel.CMMouseEnter(var Msg:TMessage);
 var
   tme:TTrackMouseEvent;
 begin
-  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+  if Assigned(FOnMouseEnter) then
     FOnMouseEnter(self);
   tme.cbSize := sizeof(tme);
   tme.dwFlags := TME_HOVER;
@@ -224,7 +224,7 @@ end;
 
 procedure TNakoPanel.CMMouseLeave(var Msg:TMessage);
 begin
-  if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+  if Assigned(FOnMouseLeave) then
     FOnMouseLeave(Self);
 end;
 
