@@ -35,7 +35,7 @@ var
 
 procedure CheckMixFile(var fname: string);
 var
-  s: THMemoryStream;
+  s: TMemoryStream;
   f: string;
 begin
   // mix file ‚ğŒŸõ
@@ -575,7 +575,7 @@ function sys_enumFiles(args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
   path, f: string;
-  g: THStringList;
+  g: TStringList;
   i: Integer;
 begin
   // (1) ˆø”‚Ìæ“¾
@@ -605,7 +605,7 @@ function sys_enumAllFiles(args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
   path: string;
-  g: THStringList;
+  g: TStringList;
   i: Integer;
 begin
   // (1) ˆø”‚Ìæ“¾
@@ -634,7 +634,7 @@ function sys_enumAllFilesRelative(args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
   tmp, path, basepath: AnsiString;
-  g: THStringList;
+  g: TStringList;
   i,len: Integer;
 begin
   // (1) ˆø”‚Ìæ“¾
@@ -666,7 +666,7 @@ function sys_enumAllDir(args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
   path: string;
-  g: THStringList;
+  g: TStringList;
   i: Integer;
 begin
   // (1) ˆø”‚Ìæ“¾
@@ -696,7 +696,7 @@ function sys_enumDirs (args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
   path, n: string;
-  g: THStringList;
+  g: TStringList;
   i: Integer;
 begin
   Result := hi_var_new;

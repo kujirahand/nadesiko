@@ -5,7 +5,7 @@ unit unit_archive;
 interface
 
 uses
-  Windows, SysUtils, hima_types, Zip32, UnZip32, unit_file;
+  Windows, SysUtils, classes, hima_types, Zip32, UnZip32, unit_file;
 
 // UNLHA32.DLL ÇégÇ¡ÇΩà≥èkâìÄ
 procedure lha_compress(srcFile, desFile: string);
@@ -206,7 +206,7 @@ end;
 var
   Unlha: function(const _hwnd: HWND; _szCmdLine: pchar; _szOutput: pchar; const _wSize: longint): integer; stdcall;
 
-function GetBasePath(srcFiles: THStringList): string;
+function GetBasePath(srcFiles: TStringList): string;
 var
   min: string;
   i: Integer;
@@ -234,7 +234,7 @@ begin
   Result := min;
 end;
 
-procedure DeleteBasePath(srcFiles: THStringList; basePath: string);
+procedure DeleteBasePath(srcFiles: TStringList; basePath: string);
 var
   i: Integer;
   s: string;
@@ -294,10 +294,10 @@ end;
 procedure lha_compress(srcFile, desFile: string);
 var
   cmd, basePath, fs : string;
-  srcFiles : THStringList;
+  srcFiles : TStringList;
   i: Integer;
 begin
-  srcFiles := THStringList.Create ;
+  srcFiles := TStringList.Create ;
   try
     srcFiles.Text := srcFile ;
 
@@ -401,7 +401,7 @@ begin
   ZpInit(Z);
 end;
 {----------------------------------------------------------------------------------}
-procedure ZipFiles(FileName : string; FileList: THStringList);
+procedure ZipFiles(FileName : string; FileList: TStringList);
 var
   i        : integer;
   ZipRec   : TZCL;
@@ -466,9 +466,9 @@ end;
 procedure zip_compress(srcFile, desFile: string);
 var
   opts: ZPOPT;
-  srcFiles, fs, tmp: THStringList;
+  srcFiles, fs, tmp: TStringList;
   basePath, s: string;
-  i: Integer;
+  i, j: Integer;
 begin
   if Use7zip32 then
   begin
@@ -493,8 +493,8 @@ begin
   opts.fExtra := True;
   opts.fSuffix := True;
 
-  srcFiles := THStringList.Create;
-  fs       := THStringList.Create;
+  srcFiles := TStringList.Create;
+  fs       := TStringList.Create;
   try
     srcFiles.Text := srcFile;
     basePath := GetBasePath(srcFiles);
@@ -509,7 +509,9 @@ begin
       begin
         if Copy(s, Length(s), 1) <> '\' then s := s + '\*';
         tmp := EnumAllFiles(s);
-        fs.AddStringList(tmp);
+        for j := 0 to tmp.Count - 1 do begin
+          fs.Add(tmp.Strings[j]);
+        end;
         tmp.Free;
       end else
       begin
@@ -748,10 +750,10 @@ end;
 procedure cab_compress(srcFile, desFile: string);
 var
   s, cmd, basePath, fs : string;
-  srcFiles : THStringList;
+  srcFiles : TStringList;
   i: Integer;
 begin
-  srcFiles := THStringList.Create ;
+  srcFiles := TStringList.Create ;
   try
     srcFiles.Text := srcFile ;
 
@@ -799,10 +801,10 @@ end;
 procedure zip7_compress(srcFile, desFile: string);
 var
   s, cmd, basePath, fs, pass: string;
-  srcFiles : THStringList;
+  srcFiles : TStringList;
   i: Integer;
 begin
-  srcFiles := THStringList.Create ;
+  srcFiles := TStringList.Create ;
   try
     srcFiles.Text := srcFile ;
 
@@ -862,10 +864,10 @@ end;
 procedure yz1_compress(srcFile, desFile: string);
 var
   s, cmd, basePath, fs, pass: string;
-  srcFiles : THStringList;
+  srcFiles : TStringList;
   i: Integer;
 begin
-  srcFiles := THStringList.Create ;
+  srcFiles := TStringList.Create ;
   try
     srcFiles.Text := srcFile ;
 
