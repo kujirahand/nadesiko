@@ -1094,6 +1094,11 @@ var
         begin
           Break;
         end;
+        if p^ in LeadBytes then
+        begin
+          s := s + p^;
+          Inc(p);
+        end;
         s := s + p^;
         Inc(p);
       end;
