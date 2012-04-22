@@ -12,7 +12,7 @@ object frmInputList: TfrmInputList
   Font.Style = []
   Menu = MainMenu1
   OldCreateOrder = False
-  Position = poDefault
+  Position = poMainFormCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
