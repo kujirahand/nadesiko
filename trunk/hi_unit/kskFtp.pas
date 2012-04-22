@@ -868,81 +868,83 @@ begin
   inherited;
 
   flagStop := False;
-  hSession := InternetOpenA(PAnsiChar(FUserAgent), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0);
-  if not Assigned(hSession) then
-  begin
-    err('セッションが開けません。'); Exit;
-  end;
 
-  // InternetOpenUrl
-  szheader := FHeaders;
-  SetLength(szHeader, Length(szHeader));
-  hRequest := InternetOpenUrlA(hSession, PAnsiChar(FUrl),
-                PAnsiChar(szheader), Length(szheader),
-                INTERNET_FLAG_RELOAD, 0);
-
-  // CA(認証)エラーの場合、無視オプションをセットする
-  if not Assigned(hRequest) then
-  begin
-    if (GetLastError = ERROR_INTERNET_INVALID_CA) or
-       (GetLastError = ERROR_INTERNET_CLIENT_AUTH_CERT_NEEDED) then
+  try
+    hSession := InternetOpenA(PAnsiChar(FUserAgent), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0);
+    if not Assigned(hSession) then
     begin
-      if not _httpsDownload then Exit;
-    end;
-  end;
-  if not Assigned(hRequest) then
-  begin
-    err('リクエスト時のエラー'); Exit;
-  end;
-
-  // ヘッダの取得
-  dwBytesRead := Length(lpBuffer);
-  ZeroMemory(@lpBuffer, dwBytesRead);
-  HttpQueryInfo(hRequest, HTTP_QUERY_CONTENT_LENGTH,
-      @lpBuffer, dwBytesRead, Reserved);
-  dwTotal := StrToIntDef(AnsiString( @lpBuffer ), 0);
-  dwRead  := 0;
-
-  dwBytesRead := Length(lpBuffer);
-  while dwBytesRead <> 0 do
-  begin
-
-    if Terminated or kskFlagStop then
-    begin
-      err('ユーザーによる中断');
-      Break;
+      err('セッションが開けません。'); Exit;
     end;
 
-    if Assigned(FOnProgress) then
+    // InternetOpenUrl
+    szheader := FHeaders;
+    SetLength(szHeader, Length(szHeader));
+    hRequest := InternetOpenUrlA(hSession, PAnsiChar(FUrl),
+                  PAnsiChar(szheader), Length(szheader),
+                  INTERNET_FLAG_RELOAD, 0);
+
+    // CA(認証)エラーの場合、無視オプションをセットする
+    if not Assigned(hRequest) then
     begin
-      FOnProgress(dwRead, dwTotal, flagStop);
-      if flagStop then
+      if (GetLastError = ERROR_INTERNET_INVALID_CA) or
+         (GetLastError = ERROR_INTERNET_CLIENT_AUTH_CERT_NEEDED) then
+      begin
+        if not _httpsDownload then Exit;
+      end;
+    end;
+    if not Assigned(hRequest) then
+    begin
+      err('リクエスト時のエラー'); Exit;
+    end;
+
+    // ヘッダの取得
+    dwBytesRead := Length(lpBuffer);
+    ZeroMemory(@lpBuffer, dwBytesRead);
+    HttpQueryInfo(hRequest, HTTP_QUERY_CONTENT_LENGTH,
+        @lpBuffer, dwBytesRead, Reserved);
+    dwTotal := StrToIntDef(AnsiString( @lpBuffer ), 0);
+    dwRead  := 0;
+
+    dwBytesRead := Length(lpBuffer);
+    while dwBytesRead <> 0 do
+    begin
+
+      if Terminated or kskFlagStop then
       begin
         err('ユーザーによる中断');
         Break;
+      end;
+
+      if Assigned(FOnProgress) then
+      begin
+        FOnProgress(dwRead, dwTotal, flagStop);
+        if flagStop then
+        begin
+          err('ユーザーによる中断');
+          Break;
+          Break;
+        end;
+      end;
+
+      if InternetReadFile(hRequest, @lpBuffer, Length(lpBuffer), dwBytesRead) then
+      begin
+        stream.WriteBuffer(lpBuffer, dwBytesRead);
+        Inc(dwRead, dwBytesRead);
+      end else
+      begin
+        err('データが読み取れません。');
         Break;
       end;
+
+      Sleep(10);
     end;
-
-    if InternetReadFile(hRequest, @lpBuffer, Length(lpBuffer), dwBytesRead) then
+    if Assigned(OnTerminate) then
     begin
-      stream.WriteBuffer(lpBuffer, dwBytesRead);
-      Inc(dwRead, dwBytesRead);
-    end else
-    begin
-      err('データが読み取れません。');
-      Break;
+      OnTerminate(Self);
     end;
-
-    Sleep(10);
+  finally
+    closeHandleAll;
   end;
-
-  if Assigned(OnTerminate) then
-  begin
-    OnTerminate(Self);
-    Exit;
-  end;
-  closeHandleAll;
 end;
 
 

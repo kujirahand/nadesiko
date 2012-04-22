@@ -2,16 +2,17 @@ object frmError: TfrmError
   Left = 192
   Top = 114
   BorderStyle = bsDialog
-  Caption = 'なでしこエラー表示'
+  Caption = #12394#12391#12375#12371#12456#12521#12540#34920#31034
   ClientHeight = 213
   ClientWidth = 465
   Color = clBtnFace
   Font.Charset = SHIFTJIS_CHARSET
   Font.Color = clWindowText
   Font.Height = -12
-  Font.Name = 'ＭＳ Ｐゴシック'
+  Font.Name = #65325#65331' '#65328#12468#12471#12483#12463
   Font.Style = []
   OldCreateOrder = False
+  Position = poMainFormCenter
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 12
@@ -35,7 +36,7 @@ object frmError: TfrmError
         Top = 4
         Width = 75
         Height = 25
-        Caption = 'デバッグ(&D)'
+        Caption = #12487#12496#12483#12464'(&D)'
         TabOrder = 0
         OnClick = btnDebugClick
       end
@@ -44,7 +45,7 @@ object frmError: TfrmError
         Top = 4
         Width = 75
         Height = 25
-        Caption = '続ける(&C)'
+        Caption = #32154#12369#12427'(&C)'
         TabOrder = 1
         OnClick = btnContinueClick
       end
@@ -53,7 +54,7 @@ object frmError: TfrmError
         Top = 4
         Width = 75
         Height = 25
-        Caption = '終了(&O)'
+        Caption = #32066#20102'(&O)'
         TabOrder = 2
         OnClick = btnCloseClick
       end
@@ -63,7 +64,7 @@ object frmError: TfrmError
       Top = 5
       Width = 65
       Height = 25
-      Caption = 'お手上げ'
+      Caption = #12362#25163#19978#12370
       TabOrder = 1
       OnClick = btnOteageClick
     end
@@ -77,7 +78,7 @@ object frmError: TfrmError
     Font.Charset = SHIFTJIS_CHARSET
     Font.Color = clBlack
     Font.Height = -13
-    Font.Name = 'ＭＳ ゴシック'
+    Font.Name = #65325#65331' '#12468#12471#12483#12463
     Font.Style = []
     ParentFont = False
     ScrollBars = ssVertical

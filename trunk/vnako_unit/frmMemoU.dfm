@@ -19,7 +19,7 @@ object frmMemo: TfrmMemo
   TextHeight = 12
   object Status: TStatusBar
     Left = 0
-    Top = 357
+    Top = 356
     Width = 520
     Height = 19
     Panels = <>
@@ -27,7 +27,7 @@ object frmMemo: TfrmMemo
   end
   object panelBase: TPanel
     Left = 0
-    Top = 324
+    Top = 323
     Width = 520
     Height = 33
     Align = alBottom
@@ -98,7 +98,7 @@ object frmMemo: TfrmMemo
     Left = 0
     Top = 0
     Width = 520
-    Height = 324
+    Height = 323
     Cursor = crIBeam
     Align = alClient
     Caret.AutoCursor = True
@@ -124,6 +124,7 @@ object frmMemo: TfrmMemo
     Caret.Style = csDefault
     Caret.TabIndent = True
     Caret.TabSpaceCount = 4
+    Caret.TokenEndStop = False
     Font.Charset = SHIFTJIS_CHARSET
     Font.Color = clBlack
     Font.Height = -13

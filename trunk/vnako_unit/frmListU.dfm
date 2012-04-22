@@ -11,6 +11,7 @@ object frmList: TfrmList
   Font.Name = #65325#65331' '#65328#12468#12471#12483#12463
   Font.Style = []
   OldCreateOrder = False
+  Position = poMainFormCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -55,7 +56,7 @@ object frmList: TfrmList
     Left = 0
     Top = 30
     Width = 390
-    Height = 258
+    Height = 257
     Align = alClient
     BevelInner = bvSpace
     BevelOuter = bvSpace
