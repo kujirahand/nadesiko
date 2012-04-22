@@ -820,7 +820,7 @@ begin
         if CS_OffLine in DownloadControl then
            dlc := dlc or DLCTL_OFFLINEIFNOTCONNECTED;
 
-        PVariant(VarResult)^ :=dlc;
+        PVariant(VarResult)^ := Integer(dlc);
      end;
     end;
    end
