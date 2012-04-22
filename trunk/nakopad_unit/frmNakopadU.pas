@@ -2057,13 +2057,13 @@ var
   var i: Integer;
   begin
     s := Trim(s);
-    i := unit_string.JPos(key, s);
+    i := unit_string.PosA(key, s);
     Result := (i > 0);
     if Result then
     begin
       if Length(s) > 32 then
       begin
-        s := unit_string.JCopy(s, max(i-4, 0), 32);
+        s := unit_string.CopyA(s, max(i-4, 0), 32);
       end;
     end;
   end;
@@ -2907,12 +2907,12 @@ begin
       line := getToken_s(line, '←');
       line := getToken_s(line, '→');
       // { ... } の切り取り
-      while JPos('{', line) > 0 do begin
+      while PosA('{', line) > 0 do begin
         name := GetToken_s(line, '{');
         GetToken_s(line,'}');
         line := name + line;
       end;
-      if JPos('(',line) > 0 then
+      if PosA('(',line) > 0 then
       begin
         // カッコを逆にするか？
         if not IsHalfStr(line) then

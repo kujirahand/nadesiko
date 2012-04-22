@@ -212,21 +212,12 @@ begin
 end;
 
 function PosA(sub, s:AnsiString):Integer;
-var
-  i, len: Integer;
 begin
-  Result := 0;
-  len := Length(sub);
-  for i := 1 to (Length(s) - Length(sub) + 1) do
-  begin
-    if Copy(s, i, len) = sub then
-    begin
-      Result := i; Break;
-    end;
-  end;
+  Result := AnsiPos(sub, s);
 end;
 
 function TrimA(const S: AnsiString): AnsiString;
+{$IFDEF UNICODE}
 var
   I, L: Integer;
 begin
@@ -239,7 +230,11 @@ begin
     Result := Copy(S, I, L - I + 1);
   end;
 end;
-
+{$ELSE}
+begin
+  Result := Trim(S);
+end;
+{$ENDIF}
 
 function MatchesMaskEx(Filename, Masks: AnsiString): Boolean;
 var

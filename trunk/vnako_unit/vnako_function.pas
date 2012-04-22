@@ -5427,7 +5427,7 @@ var
       VCL_GUI_TABPAGE     : res := TPageControl(obj).ActivePage.Caption;
       VCL_GUI_STATUSBAR   : if TStatusBar(obj).SimplePanel then res := TStatusBar(obj).SimpleText else res := getStatusbarText;
       VCL_GUI_SPINEDIT    : res := TSpinEdit(obj).Text;
-      VCL_GUI_TEDITOR     : res := TMemo(obj).Lines.Text;
+      VCL_GUI_TEDITOR     : res := THiEditor(obj).Lines.Text;
       VCL_GUI_FORM        : res := TfrmNako(obj).Caption;
       VCL_GUI_TREEVIEW    : begin if TTreeView(obj).Selected <> nil then res := TTreeView(obj).Selected.Text; end;
       VCL_GUI_LISTVIEW    : begin if TListView(obj).Selected <> nil then res := TListView(obj).Selected.Caption; end;
@@ -5553,7 +5553,7 @@ var
       VCL_GUI_MEMO    : res := TMemoXP(obj).SelText;
       VCL_GUI_COMBO   : res := TComboBox(obj).SelText;
       VCL_GUI_SPINEDIT: res := TSpinEdit(obj).SelText;
-      VCL_GUI_TEDITOR : res := TMemo(obj).SelText;
+      VCL_GUI_TEDITOR : res := THiEditor(obj).SelText;
       // uni
       VCL_GUI_UEDIT    : res := (TEdit(obj).SelText);
       VCL_GUI_UMEMO    : res := (TMemo(obj).SelText);
@@ -5570,7 +5570,7 @@ var
       VCL_GUI_MEMO    : res := TMemoXP(obj).SelStart;
       VCL_GUI_COMBO   : res := TComboBox(obj).SelStart;
       VCL_GUI_SPINEDIT: res := TSpinEdit(obj).SelStart;
-      VCL_GUI_TEDITOR : res := TMemo(obj).SelStart;
+      VCL_GUI_TEDITOR : res := THiEditor(obj).SelStart;
       // uni
       VCL_GUI_UEDIT    : res := TEdit(obj).SelStart;
       VCL_GUI_UMEMO    : res := TMemo(obj).SelStart;
@@ -5587,7 +5587,7 @@ var
       VCL_GUI_MEMO    : res := TMemoXP(obj).SelLength;
       VCL_GUI_COMBO   : res := TComboBox(obj).SelLength;
       VCL_GUI_SPINEDIT: res := TSpinEdit(obj).SelLength;
-      VCL_GUI_TEDITOR : res := TMemo(obj).SelLength;
+      VCL_GUI_TEDITOR : res := THiEditor(obj).SelLength;
       VCL_GUI_UEDIT    : res := TEdit(obj).SelLength;
       VCL_GUI_UMEMO    : res := TMemo(obj).SelLength;
       VCL_GUI_UCOMBO   : res := TComboBox(obj).SelLength;
@@ -5779,7 +5779,7 @@ var
       VCL_GUI_MENUITEM    : TMenuItem(obj).Caption  := s;
       VCL_GUI_STATUSBAR   : if TStatusBar(obj).SimplePanel then TStatusBar(obj).SimpleText  := s else setStatusbarText(s);
       VCL_GUI_SPINEDIT    : TSpinEdit(obj).Text     := s;
-      VCL_GUI_TEDITOR     : TMemo(obj).Lines.Text := s;
+      VCL_GUI_TEDITOR     : THiEditor(obj).Lines.Text := s;
       VCL_GUI_FORM        : begin TfrmNako(obj).Caption := s; if obj = bokan then Application.Title := s; end;
       VCL_GUI_TABPAGE     : TPageControl(obj).ActivePage.Caption := s;
       VCL_GUI_TREEVIEW    : begin if TTreeView(obj).Selected <> nil then TTreeView(obj).Selected.Text := s; end;
@@ -5894,7 +5894,7 @@ var
       VCL_GUI_MEMO    : TMemo(obj).SelText       := res;
       VCL_GUI_COMBO   : TComboBox(obj).SelText   := res;
       VCL_GUI_SPINEDIT: TSpinEdit(obj).SelText      := res;
-      VCL_GUI_TEDITOR : TMemo(obj).SelText        := res;
+      VCL_GUI_TEDITOR : THiEditor(obj).SelText        := res;
       // uni
       VCL_GUI_UEDIT    : TEdit(obj).SelText       := (res);
       VCL_GUI_UMEMO    : TMemo(obj).SelText       := (res);
@@ -5913,7 +5913,7 @@ var
         VCL_GUI_MEMO    : TMemo(obj).SelStart      := res;
         VCL_GUI_COMBO   : TComboBox(obj).SelStart  := res;
         VCL_GUI_SPINEDIT: TSpinEdit(obj).SelStart  := res;
-        VCL_GUI_TEDITOR : TMemo(obj).SelStart    := res;
+        VCL_GUI_TEDITOR : THiEditor(obj).SelStart    := res;
         // uni
         VCL_GUI_UEDIT    : TEdit(obj).SelStart      := res;
         VCL_GUI_UMEMO    : TMemo(obj).SelStart      := res;
@@ -5932,7 +5932,7 @@ var
       VCL_GUI_MEMO    : TMemo(obj).SelLength      := res;
       VCL_GUI_COMBO   : TComboBox(obj).SelLength  := res;
       VCL_GUI_SPINEDIT: TSpinEdit(obj).SelLength  := res;
-      VCL_GUI_TEDITOR : TMemo(obj).SelLength    := res;
+      VCL_GUI_TEDITOR : THiEditor(obj).SelLength    := res;
       // uni
       VCL_GUI_UEDIT    : TEdit(obj).SelLength      := res;
       VCL_GUI_UMEMO    : TMemo(obj).SelLength      := res;
