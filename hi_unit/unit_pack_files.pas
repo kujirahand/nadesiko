@@ -619,7 +619,7 @@ begin
     autoDelete := True;
     TempFile := FName;
     fList := THList.Create ;
-    fs := TFileStream.Create(FName, fmOpenRead);
+    fs := TFileStream.Create(FName, fmOpenRead or fmShareDenyNone);
     fs.Seek(0,soBeginning);
     fs.Read(theHeader, sizeof(theHeader));
     if StrLComp(@theHeader.HeaderID[0], 'fMix', 4) <> 0 then raise EInOutError.CreateFmt('"%s"‚ÍATFileMixHeader‚Å‚ÍŒ`®‚ªˆá‚¤‚½‚ß“Ç‚ß‚Ü‚¹‚ñB',[FName]);
