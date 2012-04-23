@@ -54,11 +54,14 @@ begin
   begin
     s := hi_str(p);
     s := JReplace(s, '\', '\\');
+    s := JReplace(s, '"', '\"');
+    s := JReplace(s, #8,  '\b');
+    s := JReplace(s, #12,  '\f');
     s := JReplace(s, #9,  '\t');
     s := JReplace(s, #13, '\r');
     s := JReplace(s, #10, '\n');
-    s := JReplace(s, #0,  '\0');
-    Result := '"' + hi_str(p) + '"';
+    s := JReplace(s, #0,  '\u0000');
+    Result := '"' + s + '"';
     Exit;
   end;
   if (p.VType = varArray) then
