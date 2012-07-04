@@ -73,12 +73,14 @@ uses
   unit_nakopanel in 'vnako_unit\unit_nakopanel.pas',
   GraphicEx in 'component\GraphicEx\GraphicEx.pas',
   vnako_message in 'vnako_unit\vnako_message.pas',
-  frmCalendarU in 'vnako_unit\frmCalendarU.pas' {frmCalendar}
-  {$IFDEF DELUX_VERSION}
-  ,unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas';
-  {$ELSE}
+  frmCalendarU in 'vnako_unit\frmCalendarU.pas' {frmCalendar},
+  CppFountain in 'component\hedit251\CppFountain.pas',
+  JavaFountain in 'component\hedit251\JavaFountain.pas',
+  PerlFountain in 'component\hedit251\PerlFountain.pas'
+{$IFDEF DELUX_VERSION}
+  ,unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas'
+{$ENDIF}
   ;
-  {$ENDIF}
 
 {$R *.res}
 
