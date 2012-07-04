@@ -561,7 +561,8 @@ uses
   frmInputNumU, frmHukidasiU, jvIcon, clipbrd, memoXP, SPILib,
   MedianCut, unit_vista, frmListU, unit_nakopanel, GraphicEx,
   frmCalendarU, frmErrorU
-  , NadesikoFountain, DelphiFountain, HTMLFountain;
+  , NadesikoFountain, DelphiFountain, HTMLFountain, PerlFountain,
+  CppFountain, JavaFountain;
 
 type
   TRingBufferString = class
@@ -6242,14 +6243,14 @@ var
       s := UpperCase(hi_strU(v));
       if s = 'HTML'     then e.Fountain := _setHTMLColor else
       if s = 'DELPHI'   then e.Fountain := TDelphiFountain.Create(Bokan) else
-      //if s = 'PERL'     then e.Fountain := TPerlFountain.Create(Bokan) else
-      //if s = 'CPP'      then e.Fountain := TCppFountain.Create(Bokan) else
-      //if s = 'JAVA'     then e.Fountain := TJavaFountain.Create(Bokan) else
+      if s = 'PERL'     then e.Fountain := TPerlFountain.Create(Bokan) else
+      if s = 'CPP'      then e.Fountain := TCppFountain.Create(Bokan) else
+      if s = 'JAVA'     then e.Fountain := TJavaFountain.Create(Bokan) else
       if s = 'なでしこ' then e.Fountain := TNadesikoFountain.Create(Bokan) else
       if (s = '')or(s = 'TEXT') then e.Fountain := nil else
       raise Exception.Create(s + 'はサポートしていません。HTML/DELPHI/PERL/CPP/JAVA/TEXT/なでしこのみ');
     end;
-  
+
   begin
     e := THiEditor(obj);
     if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
