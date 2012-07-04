@@ -16,6 +16,7 @@ type
   TCpuUsage = class(TComponent)
   private
     FHandle: THandle;
+    FInfoSize: Integer;
     FReg: TRegistry;
     FOldIdleTime: LARGE_INTEGER;
     FOldSystemTime: LARGE_INTEGER;
@@ -42,7 +43,8 @@ const
 type
   _SYSTEM_PERFORMANCE_INFORMATION = record
     IdleTime: LARGE_INTEGER;
-    Reserved: array [0..75] of DWORD;
+    // Reserved: array [0..75] of DWORD;
+    Reserved: array [0..87] of DWORD;
   end;
   PSystemPerformanceInformation = ^TSystemPerformanceInformation;
   TSystemPerformanceInformation = _SYSTEM_PERFORMANCE_INFORMATION;
@@ -82,7 +84,7 @@ begin
     end else
       FHandle := 0;
   end;
-
+  FInfoSize := 312;
 end;
 
 destructor TCpuUsage.Destroy;
@@ -123,8 +125,13 @@ begin
 
   if NtQuerySystemInformation(3, @TimeInfo, SizeOf(TimeInfo), nil) <> NO_ERROR then
     Exit;
-  if NtQuerySystemInformation(2, @PerfInfo, SizeOf(PerfInfo), nil) <> NO_ERROR then
-    Exit;
+
+  if NtQuerySystemInformation(2, @PerfInfo, FInfoSize, nil) <> NO_ERROR then
+  begin
+    FInfoSize := 312 + 360 - FInfoSize;
+    if NtQuerySystemInformation(2, @PerfInfo, FInfoSize, nil) <> NO_ERROR then
+      Exit;
+  end;
 
   if FOldIdleTime.QuadPart <> 0 then begin
     IdleTime := PerfInfo.IdleTime.QuadPart - FOldIdleTime.QuadPart;
