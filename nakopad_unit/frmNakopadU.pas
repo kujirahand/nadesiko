@@ -17,7 +17,6 @@ const
   NAKO_CNAKO = 2;
   GUI_TXT       = 'tools\gui.txt';
   COMMAND_TXT   = 'tools\command.txt';
-  REPORT_TXT    = 'report.txt';
   DIR_TOOLS     = 'tools\';
   DIR_TEMPLATE  = 'tools\template\';
   MODE_HINT_STR = '※【なでしこ実行モード】';
@@ -739,7 +738,8 @@ implementation
 
 uses gui_benri, unit_string, unit_windows_api, StrUnit, Math,
   wildcard, frmMakeExeU, jconvert, jconvertex, MSCryptUnit, frmFindU,
-  frmReplaceU, md5, unit_file, nkf, unit_blowfish, SHA1, vnako_message;
+  frmReplaceU, md5, unit_file, nkf, unit_blowfish, SHA1, vnako_message,
+  nadesiko_version;
 
 {$R *.dfm}
 
@@ -5618,8 +5618,15 @@ begin
 end;
 
 function TfrmNakopad.GetReportFile: string;
+var
+  path: string;
 begin
-  Result := AppPath + REPORT_TXT;
+  path := LocalAppData + NADESIKO_LOCAL_APP_DIR;
+  if not FileExists(path) then
+  begin
+    ForceDirectories(path);
+  end;
+  Result := LocalAppData + NADESIKO_REPORT_TXT;
 end;
 
 procedure TfrmNakopad.mnuInsRunModeClick(Sender: TObject);
@@ -5976,10 +5983,17 @@ end;
 
 procedure TfrmNakopad.RunProgram(FlagWait: Boolean);
 var
-  s, exe, txt, param: string;
+  report, s, exe, txt, param: string;
 begin
   // 実行
   RuntimeLineno := edtActive.Row;
+
+  // report.txtをチェックする
+  report := GetReportFile;
+  if FileExists(report) then
+  begin
+    try DeleteFile(report); except end;
+  end;
 
   // 仮ファイルを作成
   if (FFileName = '') then

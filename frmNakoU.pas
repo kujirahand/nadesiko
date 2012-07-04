@@ -225,7 +225,7 @@ implementation
 uses dnako_import,
   hima_stream, mini_file_utils, fileDrop, unit_windows_api, frmDebugU,
   frmErrorU, frmInputListU, UIWebBrowser, dll_plugin_helper, unit_dbt,
-  gui_benri;
+  gui_benri, nadesiko_version;
 
 {$R *.dfm}
 
@@ -1994,7 +1994,7 @@ begin
   // ---------------------------------------
   if UseDebug then
   begin
-    s := AnsiString(ExtractFilePath(ParamStr(0)) + 'report.txt');
+    s := LocalAppData + NADESIKO_REPORT_TXT;
     try
       nako_makeReport(PAnsiChar(s));
     except
