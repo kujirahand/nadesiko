@@ -90,6 +90,7 @@ type
     property Visible: Boolean read FVisible write SetVisible;
     property Version: Integer read GetVersion;
     function getLastRow(col:string):Integer;
+    function getLastCol(row:string):Integer;
     procedure UniqueRow(col:string);
     procedure ProtectOn(sheet: string; password: string);
     procedure ProtectOff(sheet: string; password: string);
@@ -202,6 +203,7 @@ const
   xlLeft = -4131;
   xlRight = -4152;
   xlTop = -4160;
+  xlToLeft = -4159;
 
 implementation
 
@@ -947,6 +949,18 @@ begin
   v1 := E_WorkSheet.Range[col + '65535'];
   v2 := v1.End[xlUp];
   Result := v2.Row;
+  v1 := Unassigned;
+  v2 := Unassigned;
+end;
+
+function TKExcel.getLastCol(row: string): Integer;
+var
+  v1, v2:Variant;
+begin
+  E_WorkSheet := E_Application.ActiveSheet;
+  v1 := E_WorkSheet.Range['IV' + row];
+  v2 := v1.End[xlToLeft];
+  Result := v2.column;
   v1 := Unassigned;
   v2 := Unassigned;
 end;
