@@ -22,14 +22,14 @@ uses
   IdBaseComponent, IdComponent, IdTCPServer,
   vnako_message,
   // TEditor Support
-  HEditor, heRaStrings, heClasses, HEdtProp
+  EditorEx, heRaStrings, heClasses, HEdtProp, EditorExProp
   ;
 
 const
   WM_NotifyTasktray = WM_USER + 100;
 
 type
-  THiEditor = class(TEditor)
+  THiEditor = class(TEditorEx)
   private
     FHoverTime : Cardinal;
     FOnMouseEnter : TNotifyEvent;
@@ -352,9 +352,8 @@ begin
 end;
 
 procedure THiEditor.ViewFlag(s: AnsiString);
-//var i:Integer;
+var i:Integer;
 begin
-  (*
   ExMarks.TabMark.Visible := (Pos('タブ',s) > 0);
 
   ExMarks.DBSpaceMark.Visible := (Pos('全角スペース',s) > 0);
@@ -375,12 +374,11 @@ begin
       ExMarks.DBSpaceMark.Visible := True;
       break;
     end;
-    i := PosEx('スペース',s, i+1);
+    i := PosExA('スペース',s, i+1);
   end;
 
   Marks.EofMark.Visible := (Pos('EOF',s) > 0);
   Marks.RetMark.Visible := (Pos('改行',s) > 0);
-  *)
 end;
 
 procedure THiEditor.WMMousewheel(var Msg: TMessage);

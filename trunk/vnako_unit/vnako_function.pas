@@ -4905,8 +4905,8 @@ begin
         Bokan.edtPropNormal.Assign(o);
         THiEditor(o).Fountain := TNadesikoFountain.Create(Bokan);
         with THiEditor(o) do begin
-          //ExMarks.TabMark.Visible := True;
-          //ExMarks.TabMark.Color   := clGray;
+          ExMarks.TabMark.Visible := True;
+          ExMarks.TabMark.Color   := clGray;
           Leftbar.Visible := True;
           Leftbar.Column := 3;
           Caret.FreeCaret := False;
