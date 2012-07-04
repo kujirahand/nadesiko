@@ -300,6 +300,22 @@ begin
   Result := hi_newInt(excel.getLastRow(col));
 end;
 
+function excel_getLastCol(h: DWORD): PHiValue; stdcall;
+var
+  row: string;
+  v: PHiValue;
+begin
+  v := nako_getFuncArg(h, 0);
+  if v = nil then
+  begin
+    row := '1';
+  end else
+  begin
+    row := hi_str(v);
+  end;
+  Result := hi_newInt(excel.getLastCol(row));
+end;
+
 function excel_getVersion(h: DWORD): PHiValue; stdcall;
 begin
   Result := hi_newInt(excel.Version);
@@ -1949,7 +1965,6 @@ begin
   AddFunc  ('エクセルシート名前変更','NAMEをNEWNAMEに|NAMEからNEWNAMEへ', 4705, excel_sheetrename,'ExcelのシートNAMEの名前をNEWNAMEへ変更する','えくせるしーとなまえへんこう');
   AddFunc  ('エクセルセル名取得','ROW,COLの|ROW,COLで', 4706, excel_cellname,'Excelのセル名を行ROW,列COLから「A1」や「C5」のようなセル名を計算します。CELL(ROW,COL)でも同じ。ROW,COLは1起点で数えること。','えくせるせるめいしゅとく');
   AddFunc  ('CELL','ROW,COL', 4707, excel_cellname,'Excelのセル名を行ROW,列COLから「A1」や「C5」のようなセル名を計算します。エクセルセル名取得も同じ。ROW,COLは1起点で数えること。','CELL');
-  AddFunc  ('エクセル最下行取得','{=A}COLの|COLで', 4708, excel_getLastRow,'Excelの列名COL(ABC..で指定)の最下行を調べて返す。','えくせるさいかぎょうしゅとく');
   AddFunc  ('エクセルバージョン','', 4709, excel_getVersion,'Excelのバージョン情報を返す。(9:Excel2000,10:2002,11:2003,12:2007)','えくせるばーじょん');
   AddFunc  ('エクセル重複削除','{=A}COLの|COLで', 4710, excel_uniqueRow,'Excelの列COL(ABC..)をキーにして重複している行を削除する','えくせるじゅうふくさくじょ');
   AddFunc  ('エクセル漢字読み取得','{=?}Sを|Sの', 4711, excel_yomi,'Excelを利用して漢字のよみがなを取得する','えくせるかんじよみしゅとく');
@@ -1970,6 +1985,8 @@ begin
   AddFunc  ('エクセル選択範囲マージ','', 4728, excel_selection_merge,'選択されているセルをマージする。','えくせるせんたくはんいまーじ');
   AddFunc  ('エクセル選択範囲左右配置設定','Vに|Vへ', 4729, excel_selection_align,'選択されているセルを、左・右・中央に寄せる','えくせるせんたくはんいさゆうはいちせってい');
   AddFunc  ('エクセル選択範囲上下配置設定','Vに|Vへ', 4730, excel_selection_valign,'選択されているセルを、上・下・中央に寄せる','えくせるせんたくはんいじょうげはいちせってい');
+  AddFunc  ('エクセル最下行取得','{=A}COLの|COLで', 4708, excel_getLastRow,'Excelの列名COL(ABC..で指定)の最下行を調べて返す。','えくせるさいかぎょうしゅとく');
+  AddFunc  ('エクセル最右列取得','{=1}ROWの|ROWで', 4732, excel_getLastCol,'Excelの行番号ROW(123..で指定)の最右列を調べて返す。','えくせるさいうれつしゅとく');
 
   //-ワード(Word)
   AddFunc  ('ワード起動','{=1}Aで', 4330, word_open,'可視A(オンかオフ)でワードを起動する','わーどきどう');
