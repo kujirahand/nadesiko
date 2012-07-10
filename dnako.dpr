@@ -575,8 +575,11 @@ end;
 procedure nako_makeReport(fname: PAnsiChar); stdcall; // 取り込んだファイル、プラグインのレポートを作成する
 var
   s: AnsiString;
+  path: string;
 begin
   s := HiSystem.makeDllReport;
+  path := ExtractFilePath(fname);
+  ForceDirectories(path);
   FileSaveAll(s, fname);
 end;
 
