@@ -1468,14 +1468,14 @@ var
   c, EOS, n: AnsiString;
   p: PAnsiChar;
 
-  function subEval(w: RawByteString): RawByteString;
+  function subEval(w: String): String;
   var
     vid: Integer;
     n: Integer;
     v: PHiValue;
     p: PAnsiChar;
     dummy: AnsiString;
-    c, s: RawByteString;
+    c, s: String;
   begin
     w := HimaSourceConverter(-1, w);
     if w='' then begin Result := ''; Exit; end;
@@ -1508,10 +1508,10 @@ var
                   c := '';
                   while n > 255 do
                   begin
-                    c := RawByteString(AnsiChar(n and $FF)) + c;
+                    c := String(AnsiChar(n and $FF)) + c;
                     n := n shr 8;
                   end;
-                  c := RawByteString(AnsiChar(n)) + c;
+                  c := String(AnsiChar(n)) + c;
                   s := s + c;
                 end;
                 else begin
