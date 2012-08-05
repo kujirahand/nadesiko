@@ -80,7 +80,7 @@ function SplitCharU(delimiter: Char; str: string): TStringList;
 //------------------------------------------------------------------------------
 function sjis_copyByte(p: PAnsiChar; count: Integer): AnsiString;
 function sjis_copyB(p: PAnsiChar; index, count: Integer): AnsiString;
-function Asc(const ch: RawByteString): Integer; //文字コードを得る
+function Asc(const ch: String): Integer; //文字コードを得る
 
 //------------------------------------------------------------------------------
 // 文字種類変換 関連
@@ -1098,7 +1098,7 @@ begin
   end;
 end;
 
-function Asc(const ch: RawByteString): Integer; //文字コードを得る
+function Asc(const ch: String): Integer; //文字コードを得る
 begin
     if ch = '' then begin
         Result := 0;
