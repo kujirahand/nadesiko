@@ -2,7 +2,6 @@
 なでしことは？,about.nako
 デモを見る,demo.nako
 なでしこWEBサイト,web.nako
-(週刊)仕事に役立つプログラミング入門,webpc.nako
 最新版チェック,check-new.nako
 +便利ツール
 マニュアル探査艦,manual_searcher\manual_searcher.nako

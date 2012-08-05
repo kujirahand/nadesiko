@@ -392,6 +392,9 @@ type
     edtDiff: TEditorEx;
     btnDiff: TButton;
     mnuInsDebug: TMenuItem;
+    popGUIFind: TPopupMenu;
+    popGUIFindCopy: TMenuItem;
+    popGUIPaste: TMenuItem;
     procedure mnuCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure mnuViewLeftPanelClick(Sender: TObject);
@@ -611,6 +614,8 @@ type
     procedure edtBMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure mnuInsDebugClick(Sender: TObject);
+    procedure popGUIFindCopyClick(Sender: TObject);
+    procedure popGUIPasteClick(Sender: TObject);
   private
     { Private êÈåæ }
     ini: TIniFile;
@@ -1870,6 +1875,8 @@ begin
     if cmd='stop'           then sub_stop else
     if cmd='selectall'      then edtActive.SelectAll else
     if cmd='selectnone'     then edtActive.SelLength := 0 else
+    if cmd='setselstart'    then begin edtActive_setFocus; edtActive.SelStart := StrToIntDef(value, 0) end else
+    if cmd='getselstart'    then Clipboard.AsText := IntToStr(edtActive.SelStart) else
     ;
     Application.ProcessMessages ;
 end;
@@ -6060,6 +6067,16 @@ begin
       RunAppAndWait(exe);
     end;
   end;
+end;
+
+procedure TfrmNakopad.popGUIFindCopyClick(Sender: TObject);
+begin
+  edtGuiFind.CopyToClipboard;
+end;
+
+procedure TfrmNakopad.popGUIPasteClick(Sender: TObject);
+begin
+  edtGuiFind.PasteFromClipboard;
 end;
 
 end.
