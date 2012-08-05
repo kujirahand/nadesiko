@@ -1,6 +1,6 @@
 object frmNakopad: TfrmNakopad
-  Left = 195
-  Top = 134
+  Left = 160
+  Top = 112
   Width = 823
   Height = 574
   Caption = 'frmNakopad'
@@ -29,7 +29,7 @@ object frmNakopad: TfrmNakopad
     Top = 29
     Width = 217
     Height = 467
-    ActivePage = sheetTree
+    ActivePage = sheetAction
     Align = alLeft
     MultiLine = True
     TabOrder = 0
@@ -111,7 +111,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 0
+            ItemHeight = 12
             PopupMenu = popFind
             TabOrder = 0
             OnEnter = cmbFindEnter
@@ -210,7 +210,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 0
+            ItemHeight = 12
             PopupMenu = popFind
             TabOrder = 2
             OnEnter = cmbGroupEnter
@@ -392,7 +392,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 0
+            ItemHeight = 12
             PopupMenu = popFind
             TabOrder = 2
             OnEnter = cmbCmdEnter
@@ -511,7 +511,7 @@ object frmNakopad: TfrmNakopad
           Width = 193
           Height = 20
           AutoComplete = False
-          ItemHeight = 0
+          ItemHeight = 12
           PopupMenu = popFind
           TabOrder = 1
           OnEnter = cmbVarEnter
@@ -626,6 +626,7 @@ object frmNakopad: TfrmNakopad
           Top = 8
           Width = 193
           Height = 20
+          PopupMenu = popGUIFind
           TabOrder = 0
           OnChange = edtGuiFindChange
         end
@@ -5063,5 +5064,19 @@ object frmNakopad: TfrmNakopad
     Filter = #12496#12483#12481#12501#12449#12452#12523'|*.bat|'#20840#12390'|*.*'
     Left = 272
     Top = 320
+  end
+  object popGUIFind: TPopupMenu
+    Left = 240
+    Top = 352
+    object popGUIFindCopy: TMenuItem
+      Caption = #12467#12500#12540
+      ShortCut = 16451
+      OnClick = popGUIFindCopyClick
+    end
+    object popGUIPaste: TMenuItem
+      Caption = #36028#12426#20184#12369
+      ShortCut = 16470
+      OnClick = popGUIPasteClick
+    end
   end
 end
