@@ -40,7 +40,8 @@ uses
   SHA1 in 'hi_unit\Sha1.pas',
   vnako_message in 'vnako_unit\vnako_message.pas',
   unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas',
-  nadesiko_version in 'nadesiko_version.pas';
+  nadesiko_version in 'nadesiko_version.pas',
+  frmFirstPageU in 'nakopad_unit\frmFirstPageU.pas' {frmFirst};
 
 {$R *.res}
 
@@ -48,5 +49,6 @@ begin
   Application.Initialize;
   Application.CreateForm(TfrmNakopad, frmNakopad);
   Application.CreateForm(TfrmMakeExe, frmMakeExe);
+  Application.CreateForm(TfrmFirst, frmFirst);
   Application.Run;
 end.

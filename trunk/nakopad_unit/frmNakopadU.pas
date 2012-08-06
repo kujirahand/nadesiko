@@ -9,7 +9,7 @@ uses
   IniFiles, ImgList, heRaStrings, Clipbrd, CsvUtils2, StdCtrls, nakopad_types,
   XPMan, NadesikoFountain, PerlFountain, JavaFountain, CppFountain, HTMLFountain,
   DelphiFountain, HimawariFountain, HViewEdt, AppEvnts, TrackBox,
-  unit_guiParts, Grids, ValEdit;
+  unit_guiParts, Grids, ValEdit, frmFirstPageU;
 
 const
   NAKO_VNAKO = 0;
@@ -395,6 +395,7 @@ type
     popGUIFind: TPopupMenu;
     popGUIFindCopy: TMenuItem;
     popGUIPaste: TMenuItem;
+    mnuFirstShow: TMenuItem;
     procedure mnuCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure mnuViewLeftPanelClick(Sender: TObject);
@@ -616,6 +617,7 @@ type
     procedure mnuInsDebugClick(Sender: TObject);
     procedure popGUIFindCopyClick(Sender: TObject);
     procedure popGUIPasteClick(Sender: TObject);
+    procedure mnuFirstShowClick(Sender: TObject);
   private
     { Private êÈåæ }
     ini: TIniFile;
@@ -647,6 +649,7 @@ type
     FGuiCancelInvalidate: Boolean;
     FDownPoint: TPoint;
     tmpGroupFilter: TStringList;
+    frmFirst: TfrmFirst;
     // setting
     procedure CreateVar;
     procedure FreeVar;
@@ -689,8 +692,6 @@ type
     procedure appendFileToStrings(fname: string; list:TStrings);
     procedure appendFileToStringsAppAndUser(fname: string; list:TStrings);
     procedure appendFileToCsvSheet(fname: string; list:TCsvSheet);
-    procedure appendFileToCsvSheetAppAndUser(fname: string; list:TCsvSheet);
-    procedure selectFileLoadAppOrUser(fname: string; list:TStrings);
     // for GUI design
     procedure parts_insertFromMenu(parts: TNGuiParts; name: string = '');
     function parts_insertCommand(guiType: string; name: string = ''):TNGuiParts;
@@ -721,11 +722,15 @@ type
     isDelux       : Boolean;
     procedure TangoSelect;
     procedure RunProgram(FlagWait: Boolean);
+    procedure appendFileToCsvSheetAppAndUser(fname: string; list:TCsvSheet);
+    procedure selectFileLoadAppOrUser(fname: string; list:TStrings);
+    procedure RunTool(path: string);
     property StatusInfo: string read FPanel0 write setPanel0;
     property StatusMemo: string read FPanel1 write setPanel1;
     property StatusMsg : string read FPanel2 write setPanel2;
     property TempFile: string read FTempFile;
     property ReportFile: string read GetReportFile;
+    property IniMain: TIniFile read ini;
   end;
 
 var
@@ -1050,6 +1055,9 @@ begin
 
   //
   pageLeft.ActivePage := sheetAction;
+
+  // first page
+  if False = (ini.ReadBool('frmFirst', 'NoMorePage', False)) then frmFirst.Show;
 end;
 
 procedure TfrmNakopad.SaveIni;
@@ -1128,6 +1136,8 @@ begin
   // Tab
   tabsMain.TabWidth := 130;
   tabsMain.Tabs.Text := '';
+  //
+  frmFirst := TfrmFirst.Create(Self);
 end;
 
 procedure TfrmNakopad.FreeVar;
@@ -3162,10 +3172,7 @@ begin
   s := lstAction.Items.Strings[lstAction.ItemIndex];
   cap   := getToken_s(s, ',');
   fname := Trim(s);
-  //
-  fname := Trim(AppPath+'tools\action\'+fname);
-  if not FileExists(fname) then Exit;
-  RunApp(AppPath+'vnako.exe "'+fname+'" -debug::'+IntToStr(Self.Handle));
+  RunTool(fname);
 end;
 
 procedure TfrmNakopad.mnuHokanClick(Sender: TObject);
@@ -6077,6 +6084,40 @@ end;
 procedure TfrmNakopad.popGUIPasteClick(Sender: TObject);
 begin
   edtGuiFind.PasteFromClipboard;
+end;
+
+procedure TfrmNakopad.mnuFirstShowClick(Sender: TObject);
+begin
+  frmFirst.Show;
+end;
+
+procedure TfrmNakopad.RunTool(path: string);
+var
+  fname: string;
+
+  procedure detect;
+  begin
+    // full path
+    fname := path;
+    if FileExists(fname) then Exit;
+    // check user path
+    fname := FUserDir + 'tools\' + path;
+    if FileExists(fname) then Exit;
+    //
+    fname := FUserDir + 'tools\action\' + path;
+    if FileExists(fname) then Exit;
+    // check app path
+    fname := AppPath + 'tools\' + path;
+    if FileExists(fname) then Exit;
+    fname := AppPath + 'tools\action\' + path;
+    if FileExists(fname) then Exit;
+    fname := '';
+  end;
+
+begin
+  detect;
+  if fname = '' then Exit;
+  RunApp(AppPath+'vnako.exe "'+fname+'" -debug::'+IntToStr(Self.Handle));
 end;
 
 end.
