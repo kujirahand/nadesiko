@@ -85,6 +85,7 @@ type
     dlgFont: TFontDialog;
     dlgColor: TColorDialog;
     dlgPrinter: TPrinterSetupDialog;
+    edtPropNormal: TEditorExProp;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure timerRunScriptTimer(Sender: TObject);
@@ -132,7 +133,6 @@ type
     procedure wmDevChange(var Msg: TMessage); message WM_DEVICECHANGE;
   public
     IsLiveTasktray: boolean;
-    edtPropNormal: TEditorProp;
     procedure InitTasktray;
     procedure FinishTasktray;
     procedure ChangeTrayIcon;
@@ -465,7 +465,6 @@ begin
   flagBokanSekkei := False;
 
   IsLiveTaskTray := False;
-  edtPropNormal := nil;
 
   //----------------------------------------------------------------------------
   // é©êgÇ™ïÍäÕÇ©Ç«Ç§Ç©îªíf

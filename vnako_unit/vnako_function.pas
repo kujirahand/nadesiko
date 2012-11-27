@@ -10,7 +10,7 @@ uses
   fileDrop, mmsystem, printers, Buttons, EasyMasks, shellapi,
   imm, ActiveX, MSHTML_TLB,
   // TEditor
-  HEdtProp, heFountain
+  EditorExProp, heFountain
   //
 {$IF RTLVersion >=15}
   ,XPMan
@@ -4905,7 +4905,7 @@ begin
         o := THiEditor.Create(parentObj);
         if Bokan.edtPropNormal = nil then
         begin
-          Bokan.edtPropNormal := TEditorProp.Create(Bokan);
+          Bokan.edtPropNormal := TEditorExProp.Create(Bokan);
           Bokan.edtPropNormal.ScrollBars := ssBoth;
         end;
         Bokan.edtPropNormal.Assign(o);
@@ -6316,12 +6316,12 @@ var
     if cmd = 'ファイルドロップ許可設定' then
     begin
       if hi_bool(v) then
-        // e.OnDropFiles := Bokan.eventTEditorDropFile
+        e.OnDropFiles := Bokan.eventTEditorDropFile
       else
-        //e.OnDropFiles := nil
+        e.OnDropFiles := nil
       ;
     end else
-    //if cmd = 'ファイルドロップ許可取得' then Result := hi_newBool(Assigned(e.OnDropFiles)) else
+    if cmd = 'ファイルドロップ許可取得' then Result := hi_newBool(Assigned(e.OnDropFiles)) else
     ;
   end;
   procedure _VCL_GUI_GRID;
