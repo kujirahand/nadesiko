@@ -3186,7 +3186,7 @@ begin
   f := TfrmSay.Create(bokan);
   try
     try
-      f.Close;
+      f.Close;          
       GetDialogSetting(title, init, cancel, ime);
       limit := Trunc(1000*hi_float(nako_getVariable('ダイアログ表示時間')));
       //
