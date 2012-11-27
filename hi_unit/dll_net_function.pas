@@ -9,7 +9,7 @@ uses
   IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdFTPCommon,
   IdFTP, IdFTPList, IdHttp, IdTcpServer, IdSNTP, IdSMTP,
   IdMessage,
-  IdAllFTPListParsers,
+  //IdAllFTPListParsers,
   IdPOP3,
   IdReplyPOP3,
   IdSASLLogin,
@@ -334,7 +334,12 @@ begin
   _idftp.Host      := Trim(s.Values['ホスト']);
   if _idftp.Host = '' then _idftp.Host := Trim(s.Values['HOST']);
   _idftp.Port      := StrToIntDef(Trim(s.Values['PORT']), 21);
-  _idftp.Passive   := get_on_off(Trim(s.Values['PASV']));
+  if Trim(s.Values['PASV']) <> '' then
+  begin
+    _idftp.Passive   := get_on_off(Trim(s.Values['PASV']));
+  end else begin
+    _idftp.Passive := True;
+  end;
   _idftp.TransferType := ftBinary; // 重要
   
   if _idftp.Username = '' then raise Exception.Create('FTPの設定でIDが未設定です。');
