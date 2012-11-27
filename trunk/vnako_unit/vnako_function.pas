@@ -561,7 +561,7 @@ uses
   frmInputNumU, frmHukidasiU, jvIcon, clipbrd, memoXP, SPILib,
   MedianCut, unit_vista, frmListU, unit_nakopanel, GraphicEx,
   frmCalendarU, frmErrorU
-  , NadesikoFountain, DelphiFountain, HTMLFountain, PerlFountain,
+  , HViewEdt, NadesikoFountain, DelphiFountain, HTMLFountain, PerlFountain,
   CppFountain, JavaFountain;
 
 type
@@ -6291,8 +6291,20 @@ var
     if cmd = '強調語句取得' then begin if e.Fountain = nil then setResS(e.ReserveWordList.Text) else setResS(e.Fountain.ReserveWordList.Text) end else
     if cmd = 'オートインデント設定' then e.Caret.AutoIndent := hi_bool(v) else
     if cmd = 'オートインデント取得' then setRes(ord(e.Caret.AutoIndent))  else
-    //if cmd = '設定パネル表示' then begin EditEditorProp(bokan.edtPropNormal,nil); bokan.edtPropNormal.AssignTo(e); end else
-    //if cmd = 'カラーリングパネル表示' then begin EditEditorProp(bokan.edtPropNormal,nil); bokan.edtPropNormal.AssignTo(e); end else
+    if cmd = '設定パネル表示' then
+    begin
+      if EditEditorProp(bokan.edtPropNormal,nil) then
+      begin
+        bokan.edtPropNormal.AssignTo(e);
+      end;
+    end else
+    if cmd = 'カラーリングパネル表示' then
+    begin
+      if EditEditorProp(bokan.edtPropNormal,nil) then
+      begin
+        bokan.edtPropNormal.AssignTo(e);
+      end;
+    end else
     if cmd = '設定保存' then begin Bokan.edtPropNormal.Assign(e); Bokan.edtPropNormal.WriteIni(hi_strU(v),'TEditor','edit'); end else
     if cmd = '設定読込' then begin try Bokan.edtPropNormal.ReadIni(hi_strU(v),'TEditor','edit'); except end; Bokan.edtPropNormal.AssignTo(e); end else
     if cmd = 'しおり設定'     then begin e.PutMark(hi_int(v));  end else
