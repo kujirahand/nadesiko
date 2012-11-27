@@ -12,6 +12,7 @@ object frmNako: TfrmNako
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
+  Position = poDefaultPosOnly
   OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
