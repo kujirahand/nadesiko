@@ -1395,27 +1395,6 @@ function LoadPic(fname: string): TBitmap;
     end;
   end;
 
-  procedure _graphicex;
-  var
-    GraphicClass: TGraphicExGraphicClass;
-    Graphic: TGraphic;
-  begin
-    GraphicClass := FileFormatList.GraphicFromContent(fname);
-    if GraphicClass = nil then raise Exception.Create('未対応の画像フォーマット');
-    begin
-      Graphic := GraphicClass.Create;
-      try
-        Graphic.LoadFromFile(fname);
-        Result.Width := Graphic.Width;
-        Result.Height := Graphic.Height;
-        Result.PixelFormat := pf24bit;
-        Result.Canvas.Draw(0,0,Graphic);
-      finally
-        FreeAndNil(Graphic);
-      end;
-    end;
-  end;
-  
   procedure _susie;
   var spi: TSpiLib32;
   begin
@@ -1427,6 +1406,32 @@ function LoadPic(fname: string): TBitmap;
       spi.Free;
     end;
   end;
+
+  procedure _graphicex;
+  var
+    GraphicClass: TGraphicExGraphicClass;
+    Graphic: TGraphic;
+  begin
+    GraphicClass := FileFormatList.GraphicFromContent(fname);
+    if GraphicClass = nil then raise Exception.Create('未対応の画像フォーマット');
+    begin
+      Graphic := GraphicClass.Create;
+      try
+        try
+          Graphic.LoadFromFile(fname);
+          Result.Width := Graphic.Width;
+          Result.Height := Graphic.Height;
+          Result.PixelFormat := pf24bit;
+          Result.Canvas.Draw(0,0,Graphic);
+        except
+          _susie;
+        end;
+      finally
+        FreeAndNil(Graphic);
+      end;
+    end;
+  end;
+
 
 var
   ext: string;

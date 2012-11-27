@@ -1,10 +1,6 @@
 program vnako;
 
-
-
 {$UNDEF FMPMODE}
-
-
 
 uses
   SysUtils,
