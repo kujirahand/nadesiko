@@ -1403,6 +1403,7 @@ end;
 function sys_posM(args: THiArray): PHiValue;
 var
   s, a: PHiValue;
+  i: Integer;
 begin
   Result := hi_var_new;
 
@@ -1411,8 +1412,13 @@ begin
   a := args.FindKey(token_a);
 
   // (2) データの処理
+  i := PosA(hi_str(a), hi_str(s));
+  if i > 0 then
+  begin
+    i := JLength(Copy(hi_str(s), 1, i-1)) + 1;
+  end;
   // (3) 戻り値を設定
-  hi_setInt(Result, PosA(hi_str(a), hi_str(s)));
+  hi_setInt(Result, i);
 end;
 
 function sys_posB(args: THiArray): PHiValue;

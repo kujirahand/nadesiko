@@ -85,13 +85,20 @@ var
   
   procedure errLoad;
   begin
-      nako_eval('「===========================================================」と表示。');
-      nako_eval('『日本語プログラミング言語「なでしこ」』と表示。');
-      nako_eval('「===========================================================」と表示。');
-      nako_eval('「プログラムを実行ファイル(gnako.exe)へドロップしてください。」と表示。');
-      nako_eval('「」と表示。');
-      nako_eval('「> ナデシコバージョン = {ナデシコバージョン}」と表示。');
-      nako_eval('「> ナデシコ最終更新日 = {ナデシコ最終更新日}」と表示。');
+      nako_eval('「+==========================================================」と表示。');
+      nako_eval('「|」と表示');
+      nako_eval('『|　　　　日本語プログラミング言語「なでしこ」』と表示。');
+      nako_eval('「|」と表示');
+      nako_eval('「+==========================================================」と表示。');
+      nako_eval('「|」と表示。');
+      nako_eval('「| プログラムを実行ファイル(gnako.exe)へドロップしてください。」と表示。');
+      nako_eval('「|」と表示。');
+      nako_eval('「|」と表示。');
+      nako_eval('「|」と表示。');
+      nako_eval('「| -> ナデシコバージョン = {ナデシコバージョン}」と表示。');
+      nako_eval('「| -> ナデシコ最終更新日 = {ナデシコ最終更新日}」と表示。');
+      nako_eval('「|」と表示。');
+      nako_eval('「|」と表示。');
   end;
 
   function _checkArg: Integer;
@@ -149,8 +156,10 @@ begin
   try
     _dnako_loader := TDnakoLoader.Create(bokan.WindowHandle);
   except
-    MessageBox(0, 'DNAKO.DLL のロードに失敗しました。',
-      'ランタイムエラー', MB_ICONERROR or MB_OK);
+    MessageBox(0,
+      'DNAKO.DLL のロードに失敗しました。',
+      'ランタイムエラー',
+      MB_ICONERROR or MB_OK);
     Halt;
   end;
   try
