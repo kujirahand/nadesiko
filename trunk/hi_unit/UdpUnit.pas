@@ -185,7 +185,7 @@ procedure TKUdpSocket.WndProc(var Message: TMessage);
       // 受信に成功！ ... イベントに受信データを渡す
       if Assigned(FOnRecieve) then
       begin
-        FOnRecieve(Self, @RecvBuf[1], len);
+        FOnRecieve(Self, @RecvBuf[1], cnt);
       end;
     end;
   end;
