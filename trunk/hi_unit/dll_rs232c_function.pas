@@ -209,7 +209,7 @@ end;
 
 procedure Trs232cN.FFOnPACKET(Sender: TObject);
 var
-  s, e: string;
+  s: string;
   p: PHiValue;
   c: Char;
   max_data_len: integer;
@@ -229,10 +229,10 @@ begin
     if (max_data_len >= packetsize) then begin
       s := Copy(rxdata_packet,1,packetsize);
 
-      //
-      e := self.instanceName + '→受信データ=『' + s + '』;';
-      nako_evalEx(PChar(e), p);
-      nako_var_free(p);
+      // 受信データをセット
+      p := nako_getGroupMember(PAnsiChar(self.instanceName),PAnsiChar('受信データ'));
+      if p <> nil then nako_bin2var(PAnsiChar(s),Length(s),p);
+
       OnEvent('パケット受信した時');
 
       rxdata_packet := '';
@@ -244,7 +244,7 @@ end;
 
 procedure Trs232cN.FFOnRXCHAR(Sender: TObject);
 var
-  s, e: string;
+  s: string;
   p: PHiValue;
   c: Char;
 begin
@@ -263,9 +263,9 @@ begin
   if s = '' then
     Exit;
 
-  e := self.instanceName + '→受信データ=『' + s + '』;';
-  nako_evalEx(PChar(e), p);
-  nako_var_free(p);
+  // 受信データをセット
+  p := nako_getGroupMember(PAnsiChar(InstanceName),PAnsiChar('受信データ'));
+  if p <> nil then nako_bin2var(PAnsiChar(s),Length(s),p);
 
   OnEvent('受信した時');
 end;
@@ -287,7 +287,7 @@ end;
 
 procedure Trs232cN.FFOnRXFLAG(Sender: TObject);
 var
-  s, e: string;
+  s: string;
   p: PHiValue;
 begin
   if rxdatalen > 0 then
@@ -295,9 +295,9 @@ begin
     SetLength(s, rxdatalen);
     self.rsread(s[1], Length(s));
 
-    e := self.instanceName + '→受信データ=『' + s + '』;';
-    nako_evalEx(PChar(e), p);
-    nako_var_free(p);
+    // 受信データをセット
+    p := nako_getGroupMember(PAnsiChar(InstanceName),PAnsiChar('受信データ'));
+    if p <> nil then nako_bin2var(PAnsiChar(s),Length(s),p);
 
     OnEvent('イベント文字受信した時');
   end;
