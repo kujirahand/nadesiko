@@ -47,7 +47,6 @@ type
     procedure RecvData(Sender: TObject; pData: PChar; len: Integer);
     procedure SendReady(Sender: TObject);
   public
-    InstanceVar: PHiValue;
     InstanceName: string;
     udpid: Integer;
     procedure setEvent;
@@ -73,12 +72,11 @@ end;
 
 procedure TNakoTcpClient.TcpDoError(Sender: TObject; E: TKError);
 var
-  s: string;
   p: PHiValue;
 begin
-  s := InstanceName + '→エラーメッセージ＝『' + E.Message + '』;';
-  nako_evalEx(PAnsiChar(s), p);
-  nako_var_free(p);
+  p := nako_getGroupMember(PAnsiChar(InstanceName),PAnsiChar('エラーメッセージ'));
+  if p <> nil then nako_str2var(PAnsiChar(E.Message),p);
+
   DoEvent('エラー時');
 end;
 
@@ -94,7 +92,7 @@ begin
   if p.VType = varNil then Exit;
   nako_group_exec(InstanceVar, PChar(EventName));
   }
-  
+
   s := Self.InstanceName + 'の' + EventName + ';';
   p := nako_eval(PAnsiChar(s));
   if p <> nil then nako_var_free(p);
@@ -223,15 +221,15 @@ procedure TNakoTcpServer.TcpDoConnect(Sender: TObject;
   Target: TKTcpChildSock);
 var
   p: PHiValue;
-  s, ip: string;
+  ip: string;
 begin
   // 接続してきた相手のIPをセット
   ip := handle2ip(Target.Handle);
   Target.IpStr := ip;
 
-  s := InstanceName + '→相手IP=『' + ip + '』;';
-  nako_evalEx(PAnsiChar(s), p);
-  nako_var_free(p);
+  p := nako_getGroupMember(PAnsiChar(InstanceName),PAnsiChar('相手IP'));
+  if p <> nil then nako_str2var(PAnsiChar(ip),p);
+
   DoEvent('接続した時');
 end;
 
@@ -239,24 +237,23 @@ procedure TNakoTcpServer.TcpDoDisconnect(Sender: TObject;
   Target: TKTcpChildSock);
 var
   p: PHiValue;
-  s, ip: string;
+  ip: string;
 begin
   // 相手のIPをセット
   ip := handle2ip(Target.Handle);
-  s := InstanceName + '→相手IP=『' + ip + '』;';
-  nako_evalEx(PAnsiChar(s), p);
-  nako_var_free(p);
+  p := nako_getGroupMember(PAnsiChar(InstanceName),PAnsiChar('相手IP'));
+  if p <> nil then nako_str2var(PAnsiChar(ip),p);
+
   DoEvent('切断した時');
 end;
 
 procedure TNakoTcpServer.TcpDoError(Sender: TObject; E: TKError);
 var
-  s: string;
   p: PHiValue;
 begin
-  s := InstanceName + '→エラーメッセージ＝『' + E.Message + '』;';
-  nako_evalEx(PAnsiChar(s), p);
-  nako_var_free(p);
+  p := nako_getGroupMember(PAnsiChar(InstanceName),PAnsiChar('エラーメッセージ'));
+  if p <> nil then nako_str2var(PAnsiChar(E.Message),p);
+
   DoEvent('エラー時');
 end;
 
@@ -264,30 +261,30 @@ procedure TNakoTcpServer.TcpDoRcvReady(Sender: TObject;
   Target: TKTcpChildSock);
 var
   p: PHiValue;
-  s: string;
+  s, ip: string;
 begin
   // 相手のIPをセット
-  s := InstanceName + '→相手IP=『' + handle2ip(Target.Handle) + '』;';
-  nako_evalEx(PAnsiChar(s), p);
-  nako_var_free(p);
+  ip := handle2ip(Target.Handle);
+  p := nako_getGroupMember(PAnsiChar(InstanceName),PAnsiChar('相手IP'));
+  if p <> nil then nako_str2var(PAnsiChar(ip),p);
   // 受信データをセット
-  s := InstanceName + '→受信データ=『' + Target.RecvString + '』;';
-  nako_evalEx(PANsiChar(s), p);
-  nako_var_free(p);
+  s := Target.RecvString;
+  p := nako_getGroupMember(PAnsiChar(InstanceName),PAnsiChar('受信データ'));
+  if p <> nil then nako_bin2var(PAnsiChar(s),Length(s),p);
   //
   DoEvent('受信した時');
 end;
 
 procedure TNakoTcpServer.TcpSendEmpty(Sender: TObject; Target:TKTcpChildSock);
 var
-  s: string;
+  ip: string;
   p: PHiValue;
 begin
   // 相手のIPをセット
-  s := InstanceName + '→相手IP=『' + handle2ip(Target.Handle) + '』;';
-  nako_evalEx(PAnsiChar(s), p);
-  nako_var_free(p);
-  
+  ip := handle2ip(Target.Handle);
+  p := nako_getGroupMember(PAnsiChar(InstanceName),PAnsiChar('相手IP'));
+  if p <> nil then nako_str2var(PAnsiChar(ip),p);
+
   DoEvent('送信完了した時');
 end;
 
@@ -317,8 +314,10 @@ begin
   if len <= 0 then Exit;
   SetLength(s, len);
   Move(pData^, s[1], len);
-  p := nako_group_findMember(InstanceVar, '受信データ');
-  if p <> nil then hi_setStr(p, s);
+
+  p := nako_getGroupMember(PAnsiChar(InstanceName),PAnsiChar('受信データ'));
+  if p <> nil then nako_bin2var(PAnsiChar(s),len,p);
+
   DoEvent('受信した時');
 end;
 
