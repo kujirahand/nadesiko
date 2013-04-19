@@ -12,8 +12,10 @@ uses
   // TEditor
   EditorExProp, heFountain
   //
-{$IF RTLVersion >=15}
+{$IF RTLVersion >=20}
   ,XPMan
+{$ELSEIF RTLVersion >=15}
+  ,XPMan,gldpng
 {$ELSE}
   ,pngimage
 {$IFEND}
@@ -1502,8 +1504,10 @@ var
   procedure _png ;
   begin
     bmp.PixelFormat := pf24bit;
-{$IF RTLVersion >=15}
+{$IF RTLVersion >=20}
     g := TPNGGraphic.Create;
+{$ELSEIF RTLVersion >=15}
+    g := TGldPng.Create;
 {$ELSE}
     g := TPNGObject.Create;
 {$IFEND}
