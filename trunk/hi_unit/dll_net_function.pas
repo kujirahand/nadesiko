@@ -1357,7 +1357,7 @@ const
       fname := tmpDir + fs.Strings[i];
       txtFile := ChangeFileExt(fname, '.txt');
       if FileExists(txtFile) then Continue;
-      
+
       try
         txt := '';
         eml := TEml.Create(nil);
@@ -1435,6 +1435,7 @@ begin
     _analize;
     msgids.SaveToFile(tmpDir + FILE_MSGIDS);
     Result := hi_newInt(cnt);
+    pop3.DisconnectNotifyPeer;
   finally
     FreeAndNil(pop3);
   end;
@@ -1686,6 +1687,7 @@ begin
     getPop3InfoIndy(pop3);
     pop3.Connect;
     _recv;
+    pop3.DisconnectNotifyPeer;
     Result := hi_newInt(StrToIntDef(NetDialog.ResultData, 0));
   finally
     FreeAndNil(pop3);
