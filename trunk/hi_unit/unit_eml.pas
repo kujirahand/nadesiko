@@ -585,6 +585,12 @@ begin
   while i <= Length(fname) do
   begin
     begin
+      if Ord(fname[i]) > $7F then
+      begin
+        Result := Result + fname[i]; Inc(i);
+        Result := Result + fname[i]; Inc(i);
+        continue;
+      end else
       if CharInSet(fname[i], fchars) then Result := Result + fname[i]
                                      else Result := Result + '_';
       Inc(i);
