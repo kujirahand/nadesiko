@@ -67,6 +67,8 @@ __UDPID=0
 　・{非公開}UDPID{=0}
 　・ポート{=60001}
 　・ホスト{=『225.0.0.0』}
+　・自ポート{=『』}  # 接続の時点で、1以上:その値 空:ポート同じ 0:自動
+　・自ホスト{=『』}  # 接続の時点で、空:ADDR_ANY IP:ネットワークIFのIP
 　・受信データ       # 受信したメッセージ
 　・エラーメッセージ # エラーの起きたときにセットされる
 　・{非公開}オブジェクト
@@ -74,7 +76,7 @@ __UDPID=0
 　　　UDPID = __UDPID; __UDPID = __UDPID + 1
 　　　UDP_COMMAND(UDPID,"create",自身→名前)
 　・接続～
-　　　UDP_COMMAND(UDPID,"connect","{ホスト}:{ポート}")
+　　　UDP_COMMAND(UDPID,"connect","{ホスト}:{ポート}:{自ホスト}:{自ポート}")
 　・切断～
 　　　UDP_COMMAND(UDPID,"disconnect",0)
 　・送信(Sを)～
