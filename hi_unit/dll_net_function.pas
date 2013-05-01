@@ -2004,7 +2004,27 @@ begin
         raise Exception.Create('ホスト名が解決できません。');
       end;
       //---
-      p.PortNo := StrToIntDef(s, 80);
+      try
+        p.PortNo := StrToIntDef(getToken_s(s, ':'), 80);
+      except on e: Exception do
+        raise Exception.Create('ポート番号が解決できません。');
+      end;
+      if s <> '' then
+      begin
+        try
+          p.OwnHost := getToken_s(s, ':');
+        except on e: Exception do
+          raise Exception.Create('自ホスト名が解決できません。');
+        end;
+        try
+          p.OwnPortNo := StrToIntDef(s, p.PortNo);
+        except on e: Exception do
+          p.OwnPortNo := p.PortNo;
+        end;
+      end else begin
+        p.OwnHost := '';
+        p.OwnPortNo := p.PortNo;
+      end;
       try
         p.Open;
       except on e: Exception do

@@ -27,6 +27,8 @@ type
     // 外部との対話用の接続管理
     FHost           : string;         // 接続先
     FPortNo         : Integer;
+    FOwnHost        : string;         // 自側Host
+    FOwnPortNo      : Integer;
     // イベント用
     FOnRecieve      : TKUdpSocketDataEvent;
     FOnSendReady    : TNotifyEvent;
@@ -46,6 +48,8 @@ type
     property OnRecieve      : TKUdpSocketDataEvent read FOnRecieve write FOnRecieve;
     property Host: string read FHost write FHost;
     property PortNo: Integer read FPortNo write FPortNo;
+    property OwnHost: string read FOwnHost write FOwnHost;
+    property OwnPortNo: Integer read FOwnPortNo write FOwnPortNo;
   end;
 
 implementation
@@ -124,9 +128,14 @@ begin
   end;
 
   // ポートの設定
-  FSockAddr.sin_port         := htons(FPortNo);
+  FSockAddr.sin_port         := htons(FOwnPortNo);
   FSockAddr.sin_family       := AF_INET;
-  FSockAddr.sin_addr.S_addr  := INADDR_ANY;
+  if FOwnHost = '' then
+  begin
+    FSockAddr.sin_addr.S_addr  := INADDR_ANY;
+  end else begin
+    FsockAddr.sin_addr.S_addr  := inet_addr(PAnsiChar(FOwnHost));
+  end;
   FillChar(FSockAddr.sin_zero, SizeOf(FSockAddr.sin_zero), 0); //隙間を埋める
   CheckError(
     bind(FSocketHandle, FSockAddr, SizeOf(FSockAddr)), 'bind');
