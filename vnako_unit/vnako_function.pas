@@ -316,6 +316,8 @@ type
     procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
     procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
     procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+  protected
+    procedure CreateParams(var Params: TCreateParams); override;
   public
     property HoverTime:Cardinal read FHoverTime write FHoverTime;
     property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
@@ -725,6 +727,18 @@ begin
     with TWMMouse(Msg) do
       FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
   end;
+end;
+
+// Vista/7/8のIntegralHeightが有効の時、Hegihtの値を無視して
+// 高さが拡張されてしまうバグへの対策
+procedure TComboBox.CreateParams(var Params: TCreateParams);
+var
+  Version: TOSVERSIONINFO;
+begin
+  inherited CreateParams(Params);
+  Version.dwOSVersionInfoSize := SizeOf(Version);
+  if GetVersionEx(Version) and (Version.dwMajorVersion > 5) then
+    Params.Style := Params.Style or CBS_NOINTEGRALHEIGHT;
 end;
 
 { TMemo }
