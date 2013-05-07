@@ -1753,9 +1753,8 @@ begin
   p := nako_getGroupMember(PAnsiChar(ginfo.name), EVENT_FILEDROP);
   if (p=nil)or(p.ptr=nil) then Exit; // イベントはなし
 
-  // TODO:変数の設定
-  //s := THiEditor(ginfo.obj).DropFileNames.Text;
-  s := 'NOT SIUPPORTED';
+  // 変数の設定
+  s := TEditorEx(ginfo.obj).DropFileNames.Text;
   p := nako_getGroupMember(PAnsiChar(ginfo.name), 'ドロップファイル');
   if (p<>nil) then hi_setStr(p, TrimA(s));
 
