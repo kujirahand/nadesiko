@@ -3,6 +3,7 @@ program vnako;
 {$UNDEF FMPMODE}
 
 uses
+  //ShareMem,
   FastMM4 in 'FastMM4.pas',
 
   SysUtils,
