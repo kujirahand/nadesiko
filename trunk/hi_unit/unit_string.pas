@@ -953,7 +953,7 @@ begin
   p := PChar(str);
   while p^ <> #0 do
   begin
-    s := getTokenStr(p, delimiter);
+    s := getTokenStrU(p, delimiter);
     Result.Add(s);
   end;
 end;
@@ -1000,7 +1000,7 @@ begin
     end else
     begin
       // c:\a\b\c
-      root := getToken_s(base, Delimiter);
+      root := getToken_sU(base, Delimiter);
       Result := root + soutai;
       Exit;
     end;

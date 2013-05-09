@@ -1,17 +1,17 @@
 library nakomidi;
 
 uses
-  Windows,
-  SysUtils,
-  Classes,
+  FastMM4 in 'FastMM4.pas',
+  Windows, SysUtils, Classes,
+  unit_string in 'hi_unit\unit_string.pas',
+  hima_types in 'hi_unit\hima_types.pas',
+  mt19937 in 'hi_unit\mt19937.pas',
+
   dnako_import in 'hi_unit\dnako_import.pas',
   dnako_import_types in 'hi_unit\dnako_import_types.pas',
   dll_plugin_helper in 'hi_unit\dll_plugin_helper.pas',
   dll_midi_function in 'hi_unit\dll_midi_function.pas',
-  mini_file_utils in 'hi_unit\mini_file_utils.pas',
-  unit_string in 'hi_unit\unit_string.pas',
-  hima_types in 'hi_unit\hima_types.pas',
-  mt19937 in 'hi_unit\mt19937.pas';
+  mini_file_utils in 'hi_unit\mini_file_utils.pas';
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

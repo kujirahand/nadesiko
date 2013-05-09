@@ -83,9 +83,6 @@ end;
 
 procedure TfrmList.edtMainKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
-var
-  s: string;
-  i,j: integer;
 begin
   if (Key = 40)or(Key = 13) then // down
   begin

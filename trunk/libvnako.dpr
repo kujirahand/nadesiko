@@ -5,16 +5,16 @@ library libvnako;
 // define "IS_LIBVNAKO"
 
 uses
-  Windows,
-  SysUtils,
-  Classes,
+  FastMM4 in 'FastMM4.pas',
+  Windows, SysUtils, Classes,
+  unit_string in 'hi_unit\unit_string.pas',
+  hima_types in 'hi_unit\hima_types.pas',
+  mt19937 in 'hi_unit\mt19937.pas',
+
   dnako_import in 'hi_unit\dnako_import.pas',
   dnako_import_types in 'hi_unit\dnako_import_types.pas',
   dll_plugin_helper in 'hi_unit\dll_plugin_helper.pas',
   mini_file_utils in 'hi_unit\mini_file_utils.pas',
-  unit_string in 'hi_unit\unit_string.pas',
-  hima_types in 'hi_unit\hima_types.pas',
-  mt19937 in 'hi_unit\mt19937.pas',
   ABitmap in 'vnako_unit\ABitmap.pas',
   ABitmapFilters in 'vnako_unit\ABitmapFilters.PAS',
   AnimeBox in 'vnako_unit\AnimeBox.pas',
@@ -59,6 +59,9 @@ uses
   wildcard in 'vnako_unit\wildcard.pas',
   frmNakoU in 'frmNakoU.pas' {frmNako},
   dnako_loader in 'hi_unit\dnako_loader.pas',
+  {$IFDEF DELUX_VERSION}
+  unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas',
+  {$ENDIF}
   unit_pack_files in 'hi_unit\unit_pack_files.pas',
   hima_stream in 'hi_unit\hima_stream.pas',
   activex_helper in 'vnako_unit\UIWebBrowser\activex_helper.pas',

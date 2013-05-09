@@ -3,6 +3,7 @@ program cnako;
 {$APPTYPE CONSOLE}
 
 uses
+  FastMM4 in 'FastMM4.pas',
   SysUtils,
   dnako_import in 'hi_unit\dnako_import.pas',
   dnako_import_types in 'hi_unit\dnako_import_types.pas',
