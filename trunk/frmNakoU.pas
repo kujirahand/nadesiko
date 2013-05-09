@@ -19,7 +19,6 @@ uses
 {$IF RTLVersion >=15}
   XPMan,
 {$IFEND}
-  IdBaseComponent, IdComponent, IdTCPServer,
   vnako_message,
   // TEditor Support
   EditorEx, heRaStrings, heClasses, HEdtProp, EditorExProp
@@ -441,13 +440,14 @@ begin
   // TVistaAltFix.Create(Self);
   //----------------------------------------------------------------------------
   // 初期化処理
-  ClientWidth  := 640;
-  ClientHeight := 400;
   FFlagFree := False;
 
   // 背景ビットマップ
   backBmp := TBitmap.Create;
-  
+
+  ClientWidth  := 640;
+  ClientHeight := 400;
+
   backBmp.Width := Self.ClientWidth;
   backBmp.Height := Self.ClientHeight;
   backBmp.Canvas.Brush.Color := clWhite;
@@ -1967,6 +1967,7 @@ begin
   FreeAndNil(freeObjList); // これをいちいち解放しなくても自動でGUIデータは解放される
   FFlagFree := True;
   FreeAndNil(_dnako_loader);
+  FreeAndNil(backBmp);
   if _dnako_success then
   begin
     // 終了時の例外を無視するように
