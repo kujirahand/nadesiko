@@ -12,14 +12,15 @@ uses
   // TEditor
   EditorExProp, heFountain
   //
-{$IF RTLVersion >=20}
-  ,XPMan
-{$ELSEIF RTLVersion >=15}
-  ,XPMan,gldpng
-{$ELSE}
-  ,pngimage
-{$IFEND}
+  // Delphi7    -> RTLVersion(15)
+  // Delphi2005 -> RTLVersion(17)
+  {$IF RTLVersion < 20}
+  ,XPMan, gldpng
+  {$ELSE}
+  ,XPMan, pngimage
+  {$IFEND}
   ;
+
 const
   EVENT_CLICK       = 'クリックした時';
   EVENT_DBLCLICK    = 'ダブルクリックした時';
