@@ -98,19 +98,19 @@ function UpperCaseEx(const str: string): string;
 function ExpandTab(s: string; tabCnt: Integer): string;
 function TrimCoupleFlag(s: string): string;
 
-{$IFDEF VER150}
+{$IF RTLVersion < 20}
 function CharInSet(c: Char; chars: TChars): Boolean;
-{$ENDIF}
+{$IFEND}
 
 
 implementation
 
-{$IFDEF VER150}
+{$IF RTLVersion < 20}
 function CharInSet(c: Char; chars: TChars): Boolean;
 begin
   if c in chars then Result := True else Result := False;
 end;
-{$ENDIF}
+{$IFEND}
 
 //------------------------------------------------------------------------------
 // PChar ŠÖ˜A

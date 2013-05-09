@@ -1838,7 +1838,6 @@ begin
     if i >= 1 then
     begin
       res := (p.Reply.Status = IP_SUCCESS);
-      //Result := hi_newBool(p.Reply.Status = IP_SUCCESS);
     end;
   finally
     p.Free;

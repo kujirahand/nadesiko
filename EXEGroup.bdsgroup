@@ -12,7 +12,6 @@
       <Projects Name="dnako.dll">dnako.bdsproj</Projects>
       <Projects Name="vnako.exe">vnako.bdsproj</Projects>
       <Projects Name="gnako.exe">gnako.bdsproj</Projects>
-      <Projects Name="vnako_fmp.exe">vnako_fmp.bdsproj</Projects>
       <Projects Name="cnako.exe">cnako.bdsproj</Projects>
       <Projects Name="nakofile.dll">nakofile.bdsproj</Projects>
       <Projects Name="nakolua.dll">nakolua.bdsproj</Projects>
@@ -23,12 +22,7 @@
       <Projects Name="nako_testunit.dll">nako_testunit.bdsproj</Projects>
       <Projects Name="nako_winscript.dll">nako_winscript.bdsproj</Projects>
       <Projects Name="nakors232c.dll">nakors232c.bdsproj</Projects>
-      <Projects Name="cnakoex.exe">cnakoex.bdsproj</Projects>
-      <Projects Name="nako_qrcode.dll">nako_qrcode.bdsproj</Projects>
-      <Projects Name="nako_filemaker.dll">nako_filemaker.bdsproj</Projects>
-      <Projects Name="nakomidi.dll">nakomidi.bdsproj</Projects>
-      <Projects Name="nako_ext01.dll">nako_ext01.bdsproj</Projects>
-      <Projects Name="Targets">dnako.dll vnako.exe gnako.exe vnako_fmp.exe cnako.exe nakofile.dll nakolua.dll nakostr.dll nakooffice.dll nakonet.dll nakoctrl.dll nako_testunit.dll nako_winscript.dll nakors232c.dll cnakoex.exe nako_qrcode.dll nako_filemaker.dll nakomidi.dll nako_ext01.dll</Projects>
+      <Projects Name="Targets">dnako.dll vnako.exe gnako.exe cnako.exe nakofile.dll nakolua.dll nakostr.dll nakooffice.dll nakonet.dll nakoctrl.dll nako_testunit.dll nako_winscript.dll nakors232c.dll</Projects>
     </Projects>
     <Dependencies/>
   </Default.Personality>
