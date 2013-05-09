@@ -131,7 +131,7 @@ var
   
   procedure _get_statusbar;
   var Buffer : PChar;
-      MemHdl,  i , PanelCount ,BufferSize ,TextLen : integer;
+      i , PanelCount ,BufferSize ,TextLen : integer;
       SimpleMode : Boolean;
       s : string;
   var

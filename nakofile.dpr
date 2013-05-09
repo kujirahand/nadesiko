@@ -1,18 +1,19 @@
 library nakofile;
 
 uses
-  Windows,
-  SysUtils,
-  Classes,
+  FastMM4 in 'FastMM4.pas',
+  Windows, SysUtils, Classes,
+  unit_string in 'hi_unit\unit_string.pas',
+  hima_types in 'hi_unit\hima_types.pas',
+  mt19937 in 'hi_unit\mt19937.pas',
+
   dll_file_function in 'hi_unit\dll_file_function.pas',
   dnako_import in 'hi_unit\dnako_import.pas',
   dnako_import_types in 'hi_unit\dnako_import_types.pas',
   dll_plugin_helper in 'hi_unit\dll_plugin_helper.pas',
   unit_file in 'hi_unit\unit_file.pas',
   unit_windows_api in 'hi_unit\unit_windows_api.pas',
-  unit_string in 'hi_unit\unit_string.pas',
   unit_pack_files in 'hi_unit\unit_pack_files.pas',
-  hima_types in 'hi_unit\hima_types.pas',
   hima_stream in 'hi_unit\hima_stream.pas',
   strunit in 'hi_unit\strunit.pas',
   mini_file_utils in 'hi_unit\mini_file_utils.pas',
@@ -22,7 +23,6 @@ uses
   Zip32 in 'hi_unit\Zip32.pas',
   LanUtil in 'hi_unit\LanUtil.pas',
   unit_text_file in 'hi_unit\unit_text_file.pas',
-  mt19937 in 'hi_unit\mt19937.pas',
   unit_kanrenduke in 'hi_unit\unit_kanrenduke.pas',
   EasyMasks in 'hi_unit\EasyMasks.pas',
   unit_blowfish in 'hi_unit\unit_blowfish.pas',

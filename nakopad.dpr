@@ -1,12 +1,16 @@
 program nakopad;
 
 uses
+  FastMM4 in 'FastMM4.pas',
+  Windows, SysUtils, Classes,
+  unit_string in 'hi_unit\unit_string.pas',
+  hima_types in 'hi_unit\hima_types.pas',
+  mt19937 in 'hi_unit\mt19937.pas',
+
   Forms,
   frmNakopadU in 'nakopad_unit\frmNakopadU.pas' {frmNakopad},
   gui_benri in 'vnako_unit\gui_benri.pas',
-  unit_string in 'hi_unit\unit_string.pas',
   StrUnit in 'hi_unit\strunit.pas',
-  hima_types in 'hi_unit\hima_types.pas',
   unit_file in 'hi_unit\unit_file.pas',
   unit_windows_api in 'hi_unit\unit_windows_api.pas',
   CsvUtils2 in 'vnako_unit\CsvUtils2.pas',
@@ -21,7 +25,6 @@ uses
   wcrypt2 in 'hi_unit\Wcrypt2.pas',
   unit_string2 in 'hi_unit\unit_string2.pas',
   md5 in 'hi_unit\md5.pas',
-  mt19937 in 'hi_unit\mt19937.pas',
   frmFindU in 'nakopad_unit\frmFindU.pas' {frmFind},
   frmReplaceU in 'nakopad_unit\frmReplaceU.pas' {frmReplace},
   unit_guiParts in 'nakopad_unit\unit_guiParts.pas',

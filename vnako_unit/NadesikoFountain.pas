@@ -108,26 +108,26 @@ procedure TNadesikoFountainParser.InitMethodTable;
 begin
   inherited InitMethodTable;
   // FMethodTable
-  SetMethodTable('#', CommenterProc);
-  SetMethodTable('$', HexPrefixProc);
-  SetMethodTable(';', PropertyCancelProc);
-  SetMethodTable(#39, CommenterProc);
-  SetMethodTable('/', SlashProc);
+  //SetMethodTable('#', CommenterProc);
+  //SetMethodTable('$', HexPrefixProc);
+  //SetMethodTable(';', PropertyCancelProc);
+  //SetMethodTable(#39, CommenterProc);
+  //SetMethodTable('/', SlashProc);
 
-  //FMethodTable['#'] := CommenterProc;
-  //FMethodTable['$'] := HexPrefixProc;
-  //FMethodTable[';'] := PropertyCancelProc;
-  //FMethodTable[#39] := CommenterProc;//SingleQuotationProc;
-  //FMethodTable['/'] := SlashProc;
+  FMethodTable['#'] := CommenterProc;
+  FMethodTable['$'] := HexPrefixProc;
+  FMethodTable[';'] := PropertyCancelProc;
+  FMethodTable[#39] := CommenterProc;//SingleQuotationProc;
+  FMethodTable['/'] := SlashProc;
 
   // FTokenMethodTable
-  SetMethodTable(toControlCode, ControlCodeProc);
-  SetMethodTable(toControlCodeHex, ControlCodeHexProc);
-  SetMethodTable(toAsm, AnkProc);
+  //SetMethodTable(toControlCode, ControlCodeProc);
+  //SetMethodTable(toControlCodeHex, ControlCodeHexProc);
+  //SetMethodTable(toAsm, AnkProc);
 
-  //FTokenMethodTable[toControlCode] := ControlCodeProc;
-  //FTokenMethodTable[toControlCodeHex] := ControlCodeHexProc;
-  //FTokenMethodTable[toAsm] := AnkProc;
+  FTokenMethodTable[toControlCode] := ControlCodeProc;
+  FTokenMethodTable[toControlCodeHex] := ControlCodeHexProc;
+  FTokenMethodTable[toAsm] := AnkProc;
 end;
 
 procedure TNadesikoFountainParser.CharCodeProc;
@@ -150,7 +150,7 @@ const
 begin
   FToken := toControlCodeHex;
 
-  while CharInSet(FP^, HEX_CHARS) do
+  while FP^ in HEX_CHARS do
     Inc(FP);
 end;
 
@@ -160,7 +160,7 @@ const
   NUM_CHARS = ['0'..'9'];
 begin
   FToken := toControlCode;
-  while CharInSet(FP^, NUM_CHARS) do
+  while FP^ in NUM_CHARS do
     Inc(FP);
 end;
 

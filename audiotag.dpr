@@ -1,15 +1,16 @@
 library audiotag;
 
 uses
-  Windows,
-  SysUtils,
-  Classes,
+  FastMM4 in 'FastMM4.pas',
+  Windows, SysUtils, Classes,
+  unit_string in 'hi_unit\unit_string.pas',
+  hima_types in 'hi_unit\hima_types.pas',
+  mt19937 in 'hi_unit\mt19937.pas',
+
   dll_plugin_helper in 'hi_unit\dll_plugin_helper.pas',
   dnako_import in 'hi_unit\dnako_import.pas',
   dnako_import_types in 'hi_unit\dnako_import_types.pas',
-  hima_types in 'hi_unit\hima_types.pas',
   dll_audiotag_function in 'hi_unit\dll_audiotag_function.pas',
-  unit_string in 'hi_unit\unit_string.pas',
   WAVfile in 'hi_unit\audiotag\WAVfile.pas',
   WMAfile in 'hi_unit\audiotag\WMAfile.pas',
   AACfile in 'hi_unit\audiotag\AACfile.pas',
@@ -29,8 +30,7 @@ uses
   sMediaTag in 'hi_unit\audiotag\sMediaTag.pas',
   jconvertex in 'hi_unit\jconvertex.pas',
   jconvert in 'hi_unit\jconvert.pas',
-  unit_string2 in 'hi_unit\unit_string2.pas',
-  mt19937 in 'hi_unit\mt19937.pas';
+  unit_string2 in 'hi_unit\unit_string2.pas';
 
 //------------------------------------------------------------------------------
 // Plug-in import function

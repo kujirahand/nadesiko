@@ -1,16 +1,17 @@
 library misc1;
 
 uses
-  Windows,
-  SysUtils,
+  FastMM4 in 'FastMM4.pas',
+  Windows, SysUtils, Classes,
+  unit_string in 'hi_unit\unit_string.pas',
+  hima_types in 'hi_unit\hima_types.pas',
+  mt19937 in 'hi_unit\mt19937.pas',
+
   dll_plugin_helper in 'hi_unit\dll_plugin_helper.pas',
   dnako_import in 'hi_unit\dnako_import.pas',
   dnako_import_types in 'hi_unit\dnako_import_types.pas',
   StrUnit in 'hi_unit\strunit.pas',
   CsvUtils2 in 'vnako_unit\CsvUtils2.pas',
-  unit_string in 'hi_unit\unit_string.pas',
-  hima_types in 'hi_unit\hima_types.pas',
-  mt19937 in 'hi_unit\mt19937.pas',
   wildcard in 'hi_unit\wildcard.pas';
 
 //------------------------------------------------------------------------------

@@ -1,21 +1,21 @@
 library nakoctrl;
 
 uses
-  Windows,
-  SysUtils,
-  Classes,
+  FastMM4 in 'FastMM4.pas',
+  Windows, SysUtils, Classes,
+  unit_string in 'hi_unit\unit_string.pas',
+  hima_types in 'hi_unit\hima_types.pas',
+  mt19937 in 'hi_unit\mt19937.pas',
+
   dll_plugin_helper in 'hi_unit\dll_plugin_helper.pas',
   dnako_import in 'hi_unit\dnako_import.pas',
   dnako_import_types in 'hi_unit\dnako_import_types.pas',
   StrUnit in 'hi_unit\strunit.pas',
-  hima_types in 'hi_unit\hima_types.pas',
-  unit_string in 'hi_unit\unit_string.pas',
   dll_ctrl_function in 'hi_unit\dll_ctrl_function.pas',
   vbfunc in 'hi_unit\vbfunc.pas',
   EasyMasks in 'hi_unit\EasyMasks.pas',
   WinRestartUnit in 'hi_unit\WinRestartUnit.pas',
   unit_ctrl in 'hi_unit\unit_ctrl.pas',
-  mt19937 in 'hi_unit\mt19937.pas',
   CpuUtils in 'hi_unit\CpuUtils.pas',
   unit_process32 in 'hi_unit\unit_process32.pas',
   HotKeyManager in 'hi_unit\HotKeyManager.pas',

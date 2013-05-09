@@ -1,17 +1,18 @@
 program gnako;
 
 uses
-  windows,
-  messages,
+  FastMM4 in 'FastMM4.pas',
+  Windows, SysUtils, Classes,
+  unit_string in 'hi_unit\unit_string.pas',
+  hima_types in 'hi_unit\hima_types.pas',
+  mt19937 in 'hi_unit\mt19937.pas',
+
   gnako_function in 'hi_unit\gnako_function.pas',
   gnako_window in 'hi_unit\gnako_window.pas',
-  unit_string in 'hi_unit\unit_string.pas',
   gnako_gdi in 'hi_unit\gnako_gdi.pas',
   dnako_import in 'hi_unit\dnako_import.pas',
   dnako_import_types in 'hi_unit\dnako_import_types.pas',
   dnako_loader in 'hi_unit\dnako_loader.pas',
-  hima_types in 'hi_unit\hima_types.pas',
-  mt19937 in 'hi_unit\mt19937.pas',
   EasyMasks in 'hi_unit\EasyMasks.pas',
   unit_pack_files in 'hi_unit\unit_pack_files.pas',
   hima_stream in 'hi_unit\hima_stream.pas',
@@ -32,7 +33,7 @@ begin
 end;
 
 var
-  wc    : TWndClass;
+  wc    : TWndClass; // TPersistentClass
   Msg   : TMsg;
 
 begin
@@ -47,7 +48,7 @@ begin
   wc.cbClsExtra      := 0;
   wc.cbWndExtra      := 0;
 
-  RegisterClass(wc);
+  Windows.RegisterClass(wc);
 
   // ウィンドウの作成
 

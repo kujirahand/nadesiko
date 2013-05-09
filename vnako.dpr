@@ -3,6 +3,8 @@ program vnako;
 {$UNDEF FMPMODE}
 
 uses
+  FastMM4 in 'FastMM4.pas',
+
   SysUtils,
   Classes,
   Forms,

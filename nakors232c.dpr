@@ -3,9 +3,11 @@ library nakors232c;
 // デバッグ＆プログラム修正の michio さんに感謝
 
 uses
-  Windows,
-  SysUtils,
-  Classes,
+  FastMM4 in 'FastMM4.pas',
+  Windows, SysUtils, Classes,
+  unit_string in 'hi_unit\unit_string.pas',
+  hima_types in 'hi_unit\hima_types.pas',
+  mt19937 in 'hi_unit\mt19937.pas',
   dll_plugin_helper in 'hi_unit\dll_plugin_helper.pas',
   dnako_import in 'hi_unit\dnako_import.pas',
   dnako_import_types in 'hi_unit\dnako_import_types.pas',

@@ -1,18 +1,19 @@
 library nakonet;
 
 uses
-  Windows,
-  SysUtils,
-  Classes,
+  FastMM4 in 'FastMM4.pas',
+  Windows, SysUtils, Classes,
+  unit_string in 'hi_unit\unit_string.pas',
+  hima_types in 'hi_unit\hima_types.pas',
+  mt19937 in 'hi_unit\mt19937.pas',
+
   nako_dialog_const in 'hi_unit\nako_dialog_const.pas',
   nako_dialog_function in 'hi_unit\nako_dialog_function.pas',
-  unit_string in 'hi_unit\unit_string.pas',
   dll_plugin_helper in 'hi_unit\dll_plugin_helper.pas',
   dnako_import in 'hi_unit\dnako_import.pas',
   dnako_import_types in 'hi_unit\dnako_import_types.pas',
   kskFtp in 'hi_unit\kskFtp.pas',
   dll_net_function in 'hi_unit\dll_net_function.pas',
-  hima_types in 'hi_unit\hima_types.pas',
   mini_file_utils in 'hi_unit\mini_file_utils.pas',
   unit_file in 'hi_unit\unit_file.pas',
   unit_windows_api in 'hi_unit\unit_windows_api.pas',
@@ -29,7 +30,6 @@ uses
   Icmp in 'hi_unit\Icmp.pas',
   KHttp in 'hi_unit\KHttp.pas',
   nadesiko_version in 'nadesiko_version.pas',
-  mt19937 in 'hi_unit\mt19937.pas',
   UdpUnit in 'hi_unit\UdpUnit.pas',
   unit_eml in 'hi_unit\unit_eml.pas',
   unit_kabin in 'hi_unit\unit_kabin.pas',
