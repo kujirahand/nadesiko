@@ -33,6 +33,8 @@ function getToSplitterCh(var p: PChar; splitter: TSysCharSet; var HasSplitter: B
 function getToSplitterB(var p: PChar; splitter: string): string;
 // 特定の区切り文字までを取得する（区切り文字は削除する）
 function getTokenCh(var p: PChar; ch: TSysCharSet): string;
+// 特定の区切り文字までを取得する（区切り文字は残す）
+function getTokenChB(var p: PChar; ch: TSysCharSet): string;
 // 特定の区切り文字までを取得する（区切り文字は削除する）
 function getTokenStr(var p: PChar; splitter: string): string;
 // 特定のCharsを取得する
@@ -213,6 +215,21 @@ begin
     if CharInSet(p^, ch) then
     begin
       Inc(p);
+      Break;
+    end;
+
+    Result := Result + p^; Inc(p);
+  end;
+end;
+
+// 特定の区切り文字までを取得する（区切り文字は残す）
+function getTokenChB(var p: PChar; ch: TSysCharSet): string;
+begin
+  Result := '';
+  while p^ <> #0 do
+  begin
+    if CharInSet(p^, ch) then
+    begin
       Break;
     end;
 

@@ -577,7 +577,7 @@ end;
 function CheckFilename(fname: string): string;
 const
   fchars: TSysCharSet = ['0'..'9','a'..'z','A'..'Z','!','#','$','%','(',')',
-                    '-','=','~','@','.','_', '\', ' ',':'];
+                    '-','=','~','@','.','_', '\', ' ',':','+'];
 var
   i: Integer;
 begin
@@ -631,6 +631,11 @@ begin
   if enc = 'quoted-printable' then
   begin
     StrWriteFile(fname, DecodeQuotedPrintable(Body.Text));
+  end else
+  if ctype = 'message' then
+  begin
+    // message/rfc822か、message/partial。とりあえず生で保存。
+    StrWriteFile(fname, Body.Text);
   end else
   begin
     raise Exception.Create('未定義のエンコード方式');
@@ -1001,6 +1006,7 @@ begin
   if sub = 'multipart'   then Self.EmlType := typeMixed       else
   if sub = 'application' then Self.EmlType := typeApplication else
   if sub = 'audio'       then Self.EmlType := typeApplication else
+  if sub = 'message'     then Self.EmlType := typeApplication else
   if sub = 'image'       then Self.EmlType := typeImage       else
                               Self.EmlType := typeText;
   // Read BODY
@@ -1133,6 +1139,12 @@ var
   mainVal: string;
   subKey: string;
   subVal: string;
+  subKeyIndex: Integer;
+  subValueExtend: boolean;
+  subValueEncode: string;
+  subValueLang: string;
+  oldSubKey: string;
+  oldSubVal: string;
 
   procedure skipSpace2(var p: PChar);
   begin
@@ -1155,13 +1167,48 @@ begin
   subkeys := TEmlHeader.Create;
   subkeys.Add('', mainVal);
 
+  oldSubKey:='';
   // サブキーの解析処理
   p := PChar(s);
   skipSpace2(p);
   while p^ <> #0 do
   begin
+    subValueExtend := false;
+    subKeyIndex := -1;
     // name
     subKey := getChars(p, ['a'..'z','A'..'Z','-','/','_']);
+    // *
+    if p^ = '*' then
+    begin
+      // * をスキップ
+      Inc(p);
+      if CharInSet(p^, ['0'..'9']) then
+      begin
+        // 連番をスキップ
+        subKeyIndex := StrToInt(getChars(p, ['0'..'9']));
+        if p^ = '*' then
+        begin
+          // * をスキップ
+          Inc(p);
+          subValueExtend := true;
+        end;
+      end else
+        subValueExtend := true;
+    end;
+
+    if (oldSubKey<>'') and ((oldSubKey<>subKey) or (subKeyIndex = -1)) then
+    begin
+      if subValueEncode<>'' then
+      begin
+        oldSubVal := '=?'+subValueEncode+'?B?'+EncodeBase64(oldSubVal)+'?=';
+      end else
+      begin
+        oldSubVal := '=?X-UNKNOWN?B?'+EncodeBase64(oldSubVal)+'?=';
+      end;
+      subkeys.Add(oldSubKey, oldSubVal);
+      oldSubKey:='';
+    end;
+
     // =
     skipSpace2(p);
     if p^ = '=' then // =' をスキップ
@@ -1172,6 +1219,22 @@ begin
       Continue;
     end;
     skipSpace2(p);
+    // nameの最後に'*'が付いていた場合の最初の断片はエンコードと言語がある
+    if (subKeyIndex=0) or (subKeyIndex=-1) then
+    begin
+      subValueEncode := '';
+      if subValueExtend then
+      begin
+        subValueEncode := getChars(p, ['0'..'9','a'..'z','A'..'Z','-','/','_']);
+        if p^ = #39 then
+        begin
+          inc(p);
+          subValueLang :=  getChars(p, ['0'..'9','a'..'z','A'..'Z','-','/','_']);
+          if p^ = #39 then
+            inc(p);
+        end;
+      end;
+    end;
     // "value"
     if p^ = '"' then
     begin
@@ -1179,11 +1242,41 @@ begin
       subVal := getTokenStr(p, '"'); // 改行があっても値を取得可能
     end else
     begin
-      subVal := getTokenCh(p, [';',#13,#10]);
+      subVal := getTokenChB(p, [';',#13,#10]);
     end;
-    while CharInSet(p^, [';',#13,#10,#9]) do Inc(p);
-    subkeys.Add(subKey, subVal);
+    // nameの最後に'*'が付いていた場合はエンコードしておく
+    if subValueExtend then
+    begin
+      subVal := DecodeQuotedPrintable(jReplace(subVal,'%','='));
+    end;
+    if p^ = ';' then
+    begin
+      while CharInSet(p^, [';',' ',#13,#10,#9]) do Inc(p);
+    end else
+      while CharInSet(p^, [';',#13,#10,#9]) do Inc(p);
+    if subKeyIndex = -1 then
+      subkeys.Add(subKey, subVal)
+    else
+    if subKeyIndex = 0 then
+    begin
+      oldSubKey:=subKey;
+      oldSubVal:=subVal;
+    end else
+      oldSubVal:=oldSubVal+subVal;
   end;
+
+  if oldSubKey<>'' then
+  begin
+    if subValueEncode<>'' then
+    begin
+      oldSubVal := '=?'+subValueEncode+'?B?'+EncodeBase64(oldSubVal)+'?=';
+    end else
+    begin
+      oldSubVal := '=?X-UNKNOWN?B?'+EncodeBase64(oldSubVal)+'?=';
+    end;
+    subkeys.Add(oldSubKey, oldSubVal);
+  end;
+
 end;
 
 function TEmlHeaderRec.getSubValue(key: string): string;
