@@ -29,6 +29,8 @@ type
     hParent: HWND;
     hProgress: HWND;
     WorkCount: Integer;
+    bMinMaxInitialized: boolean;
+    iPrevPercent: Integer;
   public
     target: string;
     ResultData: string;
@@ -37,7 +39,7 @@ type
     procedure WorkBegin(Sender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
     procedure WorkEnd(Sender: TObject; AWorkMode: TWorkMode);
     procedure Work(Sender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
-    function ShowDialog(stext, sinfo: AnsiString; Visible: Boolean): Boolean;
+    function ShowDialog(stext, sinfo: AnsiString; Visible: Boolean;hObj:THANDLE=0): Boolean;
     procedure setInfo(s: string);
     procedure setText(s: string);
     procedure Cancel;
@@ -1341,7 +1343,7 @@ const
     th.Resume;
     //
     if not NetDialog.ShowDialog(
-      'メールの受信を準備しています', 'メールの受信', bShow) then
+      'メールの受信を準備しています', 'メールの受信', bShow, th.Handle) then
     begin
       raise Exception.Create('メール受信に失敗。' + NetDialog.errormessage);
     end;
@@ -2832,7 +2834,7 @@ begin
   SetDlgWinText(hProgress, IDC_EDIT_TEXT, s);
 end;
 
-function TNetDialog.ShowDialog(stext, sinfo: AnsiString; Visible: Boolean): Boolean;
+function TNetDialog.ShowDialog(stext, sinfo: AnsiString; Visible: Boolean;hObj:THANDLE=0): Boolean;
 var
   msg: TMsg;
 begin
@@ -2864,7 +2866,14 @@ begin
     end else
     begin
       // アイドル
-      sleep(10);
+      //sleep(10);
+      if hObj = 0 then
+        WaitMessage()
+      else
+      begin
+        if MsgWaitForMultipleObjects(1,hObj,false,100,QS_ALLINPUT) = WAIT_OBJECT_0 then
+          hObj := 0;
+      end;
     end;
   end;
 
@@ -2903,34 +2912,51 @@ begin
 
   // download text
   s_max := IntToStr(Trunc(Self.WorkCount/1024));
-  if s_max = '0KB' then s_max := '不明';
+  if s_max = '0' then s_max := '不明';
   s := '通信中 (' + IntToStr(Trunc(AWorkCount/1024)) + '/' + s_max + ' KB) ' + target;
   setText(s);
 
-  // progress bar
-  SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1),
-    PBM_SETSTEP, 1, 0);
-  // range
-  SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1),
-    PBM_SETRANGE, 0, MakeLong(0, 100));
+  if not bMinMaxInitialized then
+  begin
+    // progress bar
+    SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1),
+      PBM_SETSTEP, 1, 0);
+    // range
+    SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1),
+      PBM_SETRANGE, 0, MakeLong(0, 100));
+    bMinMaxInitialized := true;
+  end;
   // set pos
+
   if w_max > 0 then
   begin
-    try
-      SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1),
-        PBM_SETPOS, w_per , LParam(BOOL(True)));
-    except
+    if iPrevPercent <> w_per then
+    begin
+      iPrevPercent := w_per;
+      try
+        SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1),
+          PBM_SETPOS, w_per , LParam(BOOL(True)));
+      except
+      end;
     end;
   end else
   begin
     if AWorkCount > 0 then
     begin
-      SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1),
-        PBM_SETPOS, 100 , LParam(BOOL(True)));
+      if iPrevPercent <> 100 then
+      begin
+        iPrevPercent := 100;
+        SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1),
+          PBM_SETPOS, 100 , LParam(BOOL(True)));
+      end;
     end else
     begin
-      SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1),
-        PBM_SETPOS, 0 , LParam(BOOL(True)));
+      if iPrevPercent <> 0 then
+      begin
+        iPrevPercent := 0;
+        SendMessage(GetDlgItem(hProgress, IDC_PROGRESS1),
+          PBM_SETPOS, 0 , LParam(BOOL(True)));
+      end;
     end;
   end;
 end;
@@ -2940,6 +2966,8 @@ begin
   hParent := nako_getMainWindowHandle;
   Self.WorkCount := AWorkCountMax;
   zero_progress_max_count := 0;
+  bMinMaxInitialized := false;
+  iPrevPercent := -1;
 end;
 
 procedure TNetDialog.WorkEnd(Sender: TObject; AWorkMode: TWorkMode);
