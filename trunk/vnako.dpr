@@ -5,6 +5,7 @@ program vnako;
 uses
   //ShareMem,
   FastMM4 in 'FastMM4.pas',
+  nadesiko_version in 'nadesiko_version.pas',
 
   SysUtils,
   Classes,
@@ -68,7 +69,6 @@ uses
   TrackBox in 'component\TrackBox.pas',
   frmListU in 'vnako_unit\frmListU.pas' {frmList},
   dnako_loader in 'hi_unit\dnako_loader.pas',
-  nadesiko_version in 'nadesiko_version.pas',
   unit_nakopanel in 'vnako_unit\unit_nakopanel.pas',
   GraphicEx in 'component\GraphicEx\GraphicEx.pas',
   vnako_message in 'vnako_unit\vnako_message.pas',

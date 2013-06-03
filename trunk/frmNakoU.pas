@@ -28,6 +28,24 @@ const
   WM_NotifyTasktray = WM_USER + 100;
 
 type
+  TNotifyIconDataVistaA = record
+    cbSize:Integer;
+    Wnd:HWND;
+    uID:Integer;
+    uFlags:Integer;
+    uCallbackMessage:Integer;
+    hIcon:HICON;
+    szTip:array[0..127] of char;
+    dwState:Integer;
+    dwStateMask:Integer;
+    szInfo:array[0..255] of char;
+    uTimeout:Integer;
+    szInfoTitle:array[0..63] of char;
+    dwInfoFlags:Integer;
+    guidItem:TGUID;
+    hBalloonIcon:HICON;
+  end;
+  
   THiEditor = class(TEditorEx)
   private
     FHoverTime : Cardinal;
@@ -127,16 +145,21 @@ type
 
   // タスクトレイへの常駐機能のため
   private
-    NotifyIcon: TNotifyIconData;
+    NotifyIcon: TNotifyIconDataVistaA;
+    NotifyIconSize: Integer; // V1(NT)=88 V2(2K)=488 V3(XP)=504 V4(Vista)=508
     procedure wmNotifyTasktray(var Msg: TMessage); message WM_NotifyTasktray;
     procedure wmDevChange(var Msg: TMessage); message WM_DEVICECHANGE;
   public
     IsLiveTasktray: boolean;
+    dwBalloonOption: Integer;
+    bBalloonRealtime: boolean;
     procedure InitTasktray;
     procedure FinishTasktray;
     procedure ChangeTrayIcon;
     procedure MovetoTasktray(HideForm:Boolean = True); // タスクトレイへ移動
     procedure LeaveTasktray(RestoreForm:Boolean = True);  // タスクトレイを離れる
+    procedure ShowBalloon(message:string); // バルーン表示
+    procedure HideBalloon(); // バルーン削除
   public
     property HoverTime:Cardinal read FHoverTime write FHoverTime;
     property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
@@ -1533,7 +1556,7 @@ begin
   if IsLiveTasktray = False then exit;
   with NotifyIcon do
   begin
-    cbSize := SizeOf(TNotifyIconData);
+    cbSize := SizeOf(TNotifyIconDataVistaA); // V4(Vista) 508B
     Wnd := Handle;
     uID := 1;
   end;
@@ -1545,20 +1568,38 @@ end;
 procedure TfrmNako.InitTasktray;
 begin
   if IsLiveTasktray then exit;
+  NotifyIconSize := 508; // V4(Vista)のサイズ
   with NotifyIcon do
   begin
-    cbSize := SizeOf(TNotifyIconData);
+    cbSize := NotifyIconSize;
     Wnd := Handle;
     uID := 1;
-    uFlags := NIF_ICON or NIF_MESSAGE or NIF_TIP;
+    uFlags := NIF_ICON or NIF_MESSAGE or NIF_TIP or $00000080; // NIF_SHOWTIP=$00000080
     uCallbackMessage := WM_NotifyTasktray;
     if Self.Icon.Handle > 0 then
       hIcon := Self.Icon.Handle
     else
       hIcon := Application.Icon.Handle;
-    StrLCopy(@szTip[0],PChar(Self.Caption), 63);
+    StrLCopy(@szTip[0],PChar(Self.Caption), 127);
   end;
-  Shell_NotifyIcon(NIM_ADD,@NotifyIcon);
+  if not Shell_NotifyIcon(NIM_ADD,@NotifyIcon) then
+  begin
+    NotifyIconSize := 504; // V3(XP)のサイズ
+    NotifyIcon.uFlags := NotifyIcon.uFlags and $ffffff7f; // NIF_SHOWTIP=$00000080
+    NotifyIcon.cbSize := NotifyIconSize;
+    if not Shell_NotifyIcon(NIM_ADD,@NotifyIcon) then
+    begin
+      NotifyIconSize := 488; // V2(2K)のサイズ
+      NotifyIcon.cbSize := NotifyIconSize;
+      if not Shell_NotifyIcon(NIM_ADD,@NotifyIcon) then
+      begin
+        NotifyIconSize := 88; // V1(NT)のサイズ
+        NotifyIcon.cbSize := NotifyIconSize;
+        StrLCopy(@(NotifyIcon.szTip[0]),PChar(Self.Caption), 63);
+        Shell_NotifyIcon(NIM_ADD,@NotifyIcon);
+      end;
+    end;
+  end;
   IsLiveTasktray := True;
 end;
 
@@ -1597,7 +1638,75 @@ begin
     WM_LBUTTONDOWN: doEvent(@GuiInfos[0], 'タスクトレイクリックした時');
     WM_RBUTTONDOWN: doEvent(@GuiInfos[0], 'タスクトレイ右クリックした時');
     WM_MOUSEMOVE:   doEvent(@GuiInfos[0], 'タスクトレイ通過した時');
+    1029:           doEvent(@GuiInfos[0], 'タスクトレイバルーンクリックした時');
   end;
+end;
+
+procedure TfrmNako.ShowBalloon(message:String);
+begin
+  if not IsLiveTasktray then exit;
+  if NotifyIconSize = 88 then exit;
+
+  with NotifyIcon do
+  begin
+    cbSize := NotifyIconSize;
+    Wnd := Handle;
+    uID := 1;
+    uFlags := NIF_ICON or NIF_MESSAGE or NIF_TIP or $00000010; // NIF_INFO=$00000010
+    if NotifyIconSize = 508 then
+    begin
+      uFlags := uFlags or $00000080; // NIF_SHOWTIP=$00000080
+      if bBalloonRealtime then
+        uFlags := uFlags or $00000040;  // NIF_REALTIME=$00000040
+    end;
+    uCallbackMessage := WM_NotifyTasktray;
+    if Self.Icon.Handle > 0 then
+      hIcon := Self.Icon.Handle
+    else
+      hIcon := Application.Icon.Handle;
+    if NotifyIconSize = 508 then
+      if (dwInfoFlags and $0000000f) = $00000004 then // NIIF_USER=$00000004
+        if Self.Icon.Handle > 0 then
+          hBalloonIcon := Self.Icon.Handle
+        else
+          hBalloonIcon := Application.Icon.Handle;
+    StrLCopy(@szTip[0],PChar(Self.Caption), 127);
+    StrLCopy(@szInfoTitle[0],PChar(Self.Caption), 63);
+    StrLCopy(@szInfo[0],PChar(message), 255);
+    dwInfoFlags := dwBalloonOption;
+    if NotifyIconSize = 488 then
+      dwInfoFlags := dwInfoFlags and $0000000f; // NIF_ICON_MASK=$0000000f
+  end;
+  Shell_NotifyIcon(NIM_MODIFY, @NotifyIcon);
+  IsLiveTasktray := True;
+end;
+
+procedure TfrmNako.hideBalloon();
+begin
+  if not IsLiveTasktray then exit;
+  if NotifyIconSize = 88 then exit;
+
+  with NotifyIcon do
+  begin
+    cbSize := NotifyIconSize;
+    Wnd := Handle;
+    uID := 1;
+    uFlags := NIF_ICON or NIF_MESSAGE or NIF_TIP or $00000010; // NIF_INFO=$00000010
+    if NotifyIconSize = 508 then
+      uFlags := uFlags or $00000080; // NIF_SHOWTIP=$00000080
+    if Self.Icon.Handle > 0 then
+      hIcon := Self.Icon.Handle
+    else
+      hIcon := Application.Icon.Handle;
+    StrLCopy(@szTip[0],PChar(Self.Caption), 127);
+    StrLCopy(@szInfoTitle[0],PChar(''), 63);
+    StrLCopy(@szInfo[0],PChar(''), 255);
+    dwInfoFlags := dwBalloonOption;
+    if NotifyIconSize = 488 then
+      dwInfoFlags := dwInfoFlags or $0000000f; // NIF_ICON_MASK=$0000000f
+  end;
+  Shell_NotifyIcon(NIM_MODIFY, @NotifyIcon);
+  IsLiveTasktray := True;
 end;
 
 procedure TfrmNako._WM_VNAKO_BREAK(var Msg: TMessage);
@@ -1664,16 +1773,21 @@ begin
 
   with NotifyIcon do
   begin
-    cbSize := SizeOf(TNotifyIconData);
+    cbSize := NotifyIconSize;
     Wnd := Handle;
     uID := 1;
     uFlags := NIF_ICON or NIF_MESSAGE or NIF_TIP;
+    if NotifyIconSize = 508 then
+      uFlags := uFlags or $00000080; // NIF_SHOWTIP=$00000080
     uCallbackMessage := WM_NotifyTasktray;
     if Self.Icon.Handle > 0 then
       hIcon := Self.Icon.Handle
     else
       hIcon := Application.Icon.Handle;
-    StrLCopy(@szTip[0],PChar(Self.Caption), 63);
+    if NotifyIconSize = 88 then
+      StrLCopy(@szTip[0],PChar(Self.Caption), 63)
+    else
+      StrLCopy(@szTip[0],PChar(Self.Caption), 127)
   end;
   Shell_NotifyIcon(NIM_MODIFY, @NotifyIcon);
   IsLiveTasktray := True;

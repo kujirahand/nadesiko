@@ -1491,7 +1491,7 @@ begin
     // sqlite3 の初期化
     if not sqlite3_loaded then
     begin
-      unit_sqlite3.sqlite3_init(FindDLLFile('sqlite3.dll'));
+      unit_sqlite3.sqlite3_init(FindDLLFile(SQLite3DLL));
     end;
     // データベースを開く
     GetVersionEx(Info);
@@ -1580,7 +1580,7 @@ function sys_sqlite3_checkInstall(args: DWORD): PHiValue; stdcall;
 var
   s: string;
 begin
-  s := FindDLLFile('sqlite3.dll');
+  s := FindDLLFile(SQLite3DLL);
   Result := hi_newBool(FileExists(s));  
 end;
 
