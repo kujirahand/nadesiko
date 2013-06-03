@@ -1,5 +1,5 @@
 object frmNako: TfrmNako
-  Left = 195
+  Left = 264
   Top = 133
   Width = 606
   Height = 407

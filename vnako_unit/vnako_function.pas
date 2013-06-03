@@ -6993,7 +6993,7 @@ var
     if cmd = 'POPUP'        then e.PopupMenu := TPopupMenu( hi_int(v) ) else
   end;
   procedure _VCL_GUI_FORM;
-  var e: TfrmNako; ico: TIcon; icoCreate: TjvIcon; s: string; bmp: TBitmap;
+  var e: TfrmNako; ico: TIcon; icoCreate: TjvIcon; s: string; bmp: TBitmap; opt:Integer;
   begin
     e := TfrmNako(obj);
     if cmd = '背景ハンドル' then begin Result := hi_var_new; hi_setInt(Result, Integer(e.BackCanvas.Handle)); end else
@@ -7058,6 +7058,36 @@ var
     if cmd = 'タスクトレイ出す' then e.LeaveTasktray(True)  else
     if cmd = 'タスクトレイ表示' then e.MovetoTasktray(False) else
     if cmd = 'タスクトレイ非表示' then e.LeaveTasktray(False) else
+    if cmd = 'タスクトレイバルーン表示' then e.showBalloon(hi_str(v)) else
+    if cmd = 'タスクトレイバルーン非表示' then e.hideBalloon() else
+    if cmd = 'タスクトレイバルーンオプションSET' then
+    begin
+      s := hi_str(v);
+      opt := 0;
+      if Pos('アイコン無し',  s) > 0            then opt := $00000000 { NIIF_NONE=$00000000 } else
+      if Pos('エラーアイコン',  s) > 0          then opt := $00000003 { NIIF_ERROR=$00000003 } else
+      if Pos('通知アイコン',  s) > 0            then opt := $00000001 { NIIF_INFO=$00000001 } else
+      if Pos('警告アイコン',  s) > 0            then opt := $00000002 { NIIF_WARNING=$00000002 } else
+      if Pos('アプリケーションアイコン',s) > 0  then opt := $00000004; { NIIF_USER=$00000004 }
+      if (Pos('音無し',  s) > 0) or (Pos('無音',  s) > 0)  then opt := opt + $00000010; { NIIF_NOSOUND=$00000010 }
+      e.dwBalloonOption := opt;
+      if Pos('リアルタイム',s) > 0  then e.bBalloonRealtime := true
+      else e.bBalloonRealtime := false;
+    end else
+    if cmd = 'タスクトレイバルーンオプションGET' then
+    begin
+      opt := e.dwBalloonOption;
+      s := '';
+      if (opt and $00000010) <> 0 then begin s:='/無音'; opt:=opt-$00000010; end;
+      if opt=$00000000 then s:='アイコン無し'+s;
+      if opt=$00000003 then s:='エラーアイコン'+s;
+      if opt=$00000002 then s:='警告アイコン'+s;
+      if opt=$00000001 then s:='通知アイコン'+s;
+      if opt=$00000004 then s:='アプリケーションアイコン'+s;
+      e.dwBalloonOption := opt;
+      if e.bBalloonRealtime then s:=s+'/リアルタイム';
+      Result := hi_var_new; hi_setStr(Result, s);
+    end else
     if cmd = '画像通り変形' then
     begin
       SetRgnFromBitmap(e, e.backBmp, True);
