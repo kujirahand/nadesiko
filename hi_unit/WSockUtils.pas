@@ -2,7 +2,7 @@ unit WSockUtils;
 
 interface
 uses
-  SysUtils, Classes, Windows, WinSock, messages, mmsystem;
+  SysUtils, Classes, Windows, WinSock, messages, mmsystem, openssl;
 
 type
   TKTcpProgressEvent = procedure (PerDone: Integer; msg: string;
@@ -18,6 +18,7 @@ type
     FConnected: Boolean;
     FPort: Integer;
     FHost: string;
+    FNegotiatedSSL: Boolean;
     FErrCode: Integer;
     FErrMsg: string;
     // 内部で使う変数
@@ -28,6 +29,8 @@ type
     FReadBuffer: string;
     FTimeout: Integer;
     FOnLog: TKTcpLog;
+    Fssl: PSSL;
+    Fctx: PSSL_CTX;
     function GetSelfIP: string;
     //function WSCheck(v: Integer; msg: string): Integer;
   public
@@ -35,6 +38,9 @@ type
     destructor Destroy; override;
     procedure Open; virtual;  // サーバーと接続
     procedure Close; virtual; // サーバーと切断
+    // SSL対応メソッド
+    function ConnectSSL: boolean; virtual;  // SSLのセッションを開始する
+    function ShutdownSSL: boolean; virtual; // SSLのセッションを終了する
     // 原始的なメソッド
     procedure send(s: string);
     function recv: string;
@@ -71,6 +77,8 @@ function GetHostEnt(server: string): PHostEnt;
 function GetComputerName: string;
 // WinSock のエラーを得る
 function GetSockErrorMsg(err: Integer): string;
+// OpenSSL のエラーを得る
+function GetOpenSSLErrorMsg(err: Integer): string;
 
 var
   WSAData: TWSAData;
@@ -92,6 +100,21 @@ begin
   SetLength(buf, 1024);
   Windows.GetComputerName(PChar(buf), sz);
   Result := string(PChar(buf));
+end;
+
+function GetOpenSSLErrorMsg(err: Integer): string;
+begin
+  case err of
+    SSL_ERROR_NONE:              Result := '[0] No Error';
+    SSL_ERROR_SSL:               Result := '[1] SSL Error';
+    SSL_ERROR_WANT_READ:         Result := '[2] WANT READ';
+    SSL_ERROR_WANT_WRITE:        Result := '[3] WANT WRITE';
+    SSL_ERROR_WANT_X509_LOOKUP:  Result := '[4] WANT X509 LOOKUP';
+    SSL_ERROR_SYSCALL:           Result := '[5] SYSCALL';
+    SSL_ERROR_ZERO_RETURN:       Result := '[6] ZERO RETURN';
+    SSL_ERROR_WANT_CONNECT:      Result := '[7] WANT CONNECT';
+    else                         Result := '[' + IntToStr(err) + '] エラー';
+  end;
 end;
 
 function GetSockErrorMsg(err: Integer): string;
@@ -215,11 +238,25 @@ end;
 
 procedure TKTcpClient.Close;
 begin
+  if FNegotiatedSSL then
+  begin
+    try
+      SSL_shutdown(Fssl);
+    except
+      ;
+    end;
+    FNegotiatedSSL := false;
+  end;
   if FSocket <> INVALID_SOCKET then
   begin
     shutdown(FSocket, SD_BOTH);
     closesocket(FSocket);
     FConnected := False;
+  end;
+  if Assigned(Fssl) then
+  begin
+    SSL_free(Fssl);
+    Fssl := nil;
   end;
 end;
 
@@ -234,11 +271,19 @@ begin
   FBufSize := 8 * 1024;
   FReadBuffer := '';
   FTimeout := 3000;
+  FNegotiatedSSL := False;
+  Fssl := nil;
+  Fctx := nil;
 end;
 
 destructor TKTcpClient.Destroy;
 begin
   Close;
+  if Assigned(Fctx) then
+  begin
+    SSL_CTX_free(Fctx);
+    Fctx := nil;
+  end;
   inherited;
 end;
 
@@ -287,6 +332,73 @@ begin
   FConnected := True;
 end;
 
+function TKTcpClient.ConnectSSL: boolean;
+var
+	ret : integer;
+	method : PSSL_METHOD;
+begin
+	result := false;
+	if FNegotiatedSSL then exit;
+	if not haveSSL then
+	begin
+		raise EKTcpClient.Create('SSLの機能は利用できません。');
+	end;
+	if not Assigned(Fctx) then
+	begin
+		method :=SSLv3_client_method();
+		if method = nil then
+			raise EKTcpClient.Create('SSLの初期化(method)に失敗しました。');
+		Fctx := SSL_CTX_new(method);
+		if Fctx = nil then
+			raise EKTcpClient.Create('SSLの初期化(ctx)に失敗しました。');
+	end;
+	if  not Assigned(Fssl) then
+	begin
+		Fssl := SSL_new(Fctx);
+		if Fssl = nil then
+			raise EKTcpClient.Create('SSLの初期化(ssl)に失敗しました。');
+		if SSL_set_fd(Fssl, FSocket) = 0 then
+			raise EKTcpClient.Create('SSLの初期化(setfd)に失敗しました。');
+	end;
+	ret := SSL_connect(Fssl);
+	if ret < 1 then
+	begin
+		FErrCode :=  SSL_get_error(Fssl,ret);
+		FErrMsg := GetOpenSSLErrorMsg(FErrCode);
+		if FErrCode = SSL_ERROR_SYSCALL then
+		begin
+			ret := WSAGetLastError;
+			FErrMsg := FErrMsg + ':'+GetSockErrorMsg(ret);
+		end;
+		raise EKTcpClient.Create('SSLを開始できません:' + FErrMsg);
+	end;
+	FNegotiatedSSL := true;
+	result := true;
+end;
+
+function TKTcpClient.ShutdownSSL: boolean;
+var
+	ret : Integer;
+begin
+	result := false;
+	if not FNegotiatedSSL then exit;
+	ret := SSL_shutdown(Fssl);
+	FNegotiatedSSL := false;
+	if ret < 0 then
+	begin
+		FErrCode :=  SSL_get_error(Fssl,ret);
+		FErrMsg := GetOpenSSLErrorMsg(FErrCode);
+		if FErrCode = SSL_ERROR_SYSCALL then
+		begin
+			ret := WSAGetLastError;
+			FErrMsg := FErrMsg + ':'+GetSockErrorMsg(ret);
+		end;
+		raise EKTcpClient.Create('SSLの終了時にエラー:' + FErrMsg);
+	end;
+	result := true;
+end;
+
+
 function TKTcpClient.recv: string;
 var
   buf: string;
@@ -302,13 +414,33 @@ begin
     ZeroMemory(@buf[1], Length(buf));
 
     // 受信処理
-    cnt := WinSock.recv(FSocket, buf[1], Length(buf)-1, 0);
-
-    // 正しく受信できたかチェック
-    if cnt = SOCKET_ERROR then
+    if FNegotiatedSSL then
     begin
-      cnt := WSAGetLastError;
-      raise EKTcpClient.Create('受信エラー:'+GetSockErrorMsg(cnt));
+      cnt := SSL_read(Fssl,buf[1],Length(buf)-1);
+      if cnt = 0 then
+      begin
+        ShutdownSSL;
+      end else
+      if cnt < 0 then
+      begin
+        FErrCode :=  SSL_get_error(Fssl,cnt);
+        FErrMsg := GetOpenSSLErrorMsg(FErrCode);
+        if FErrCode = SSL_ERROR_SYSCALL then
+        begin
+          cnt := WSAGetLastError;
+          FErrMsg := FErrMsg + ':'+GetSockErrorMsg(cnt);
+        end;
+        raise EKTcpClient.Create('SSL受信エラー:' + FErrMsg);
+      end;
+    end else begin
+      cnt := WinSock.recv(FSocket, buf[1], Length(buf)-1, 0);
+
+      // 正しく受信できたかチェック
+      if cnt = SOCKET_ERROR then
+      begin
+        cnt := WSAGetLastError;
+        raise EKTcpClient.Create('受信エラー:'+GetSockErrorMsg(cnt));
+      end;
     end;
     if cnt = 0 then Break;
 
@@ -371,13 +503,32 @@ begin
     end
     else
     begin
-      res := select(Self.FSocket,@fds,nil,nil,@time);
-      if res <= 0 then
+      if FNegotiatedSSL then
       begin
-        break;
+        if SSL_pending(Fssl) = 0 then
+        begin
+          FD_ZERO(fds);
+          FD_SET(FSocket, fds);
+          res := select(0,@fds,nil,nil,@time);
+          if res <= 0 then
+          begin
+            break;
+          end;
+        end;
+      end else begin
+        FD_ZERO(fds);
+        FD_SET(FSocket, fds);
+        res := select(0,@fds,nil,nil,@time);
+        if res <= 0 then
+        begin
+          break;
+        end;
       end;
     end;
     FReadBuffer := Self.recv;
+    // 空リターンはコネクション断のはず
+    if FReadBuffer = '' then
+      break;
   end;
 end;
 
@@ -441,6 +592,7 @@ var
   tmp, buf: string;
   total, cnt: Integer;
   FlagCancel: Boolean;
+  ret: integer;
 begin
   if s = '' then Exit;
   tmp := s;
@@ -461,10 +613,26 @@ begin
     // 切り取った分を削除
     System.Delete(s, 1, BUFFSIZE);
     // 送信
-    if WinSock.send(FSocket, buf[1], Length(buf), 0) = SOCKET_ERROR then
+    if FNegotiatedSSL then
     begin
-      err := WSAGetLastError;
-      raise EKTcpClient.Create('送信エラー:'+IntToStr(err));
+      ret := SSL_write(Fssl, buf[1], Length(buf));
+      if ret < 0 then
+      begin
+        FErrCode :=  SSL_get_error(Fssl,ret);
+        FErrMsg := GetOpenSSLErrorMsg(FErrCode);
+        if FErrCode = SSL_ERROR_SYSCALL then
+        begin
+          ret := WSAGetLastError;
+          FErrMsg := FErrMsg + ':'+GetSockErrorMsg(ret);
+        end;
+        raise EKTcpClient.Create('SSL送信エラー:' + FErrMsg);
+      end;
+    end else begin
+      if WinSock.send(FSocket, buf[1], Length(buf), 0) = SOCKET_ERROR then
+      begin
+        err := WSAGetLastError;
+        raise EKTcpClient.Create('送信エラー:'+IntToStr(err));
+      end;
     end;
     // 送信した分をカウントする
     cnt := cnt + Length(buf);

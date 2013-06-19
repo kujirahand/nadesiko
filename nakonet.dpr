@@ -2,11 +2,12 @@ library nakonet;
 
 uses
   FastMM4 in 'FastMM4.pas',
-  Windows, SysUtils, Classes,
+  Windows,
+  SysUtils,
+  Classes,
   unit_string in 'hi_unit\unit_string.pas',
   hima_types in 'hi_unit\hima_types.pas',
   mt19937 in 'hi_unit\mt19937.pas',
-
   nako_dialog_const in 'hi_unit\nako_dialog_const.pas',
   nako_dialog_function in 'hi_unit\nako_dialog_function.pas',
   dll_plugin_helper in 'hi_unit\dll_plugin_helper.pas',
@@ -35,7 +36,8 @@ uses
   unit_kabin in 'hi_unit\unit_kabin.pas',
   json in 'hi_unit\json.pas',
   unit_content_type in 'hi_unit\unit_content_type.pas',
-  unit_date in 'hi_unit\unit_date.pas';
+  unit_date in 'hi_unit\unit_date.pas',
+  openssl in 'hi_unit\openssl.pas';
 
 //------------------------------------------------------------------------------
 // Plug-in import function

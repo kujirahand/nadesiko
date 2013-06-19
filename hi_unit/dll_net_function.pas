@@ -2470,21 +2470,21 @@ var
   http: TKHttpClient;
   url, head,body: AnsiString;
 
-  function _method_https: PHiValue;
+  {function _method_https: PHiValue;
   begin
     raise Exception.Create('未サポートです。');
-  end;
+  end;}
 
 begin
   head := getArgStr(args, 0, True);
   body := getArgStr(args, 1, False);
   url  := getArgStr(args, 2);
 
-  if Copy(url,1,8) = 'https://' then
+  {if Copy(url,1,8) = 'https://' then
   begin
     Result := _method_https;
     Exit;
-  end;
+  end;}
 
   http := TKHttpClient.Create(nil);
   try
