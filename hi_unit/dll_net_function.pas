@@ -318,6 +318,8 @@ function sys_ftp_connect(args: DWORD): PHiValue; stdcall;
 var
   ps: PHiValue;
   s : TStringList;
+  ssloption : string;
+  SSLHandler: TIdSSLIOHandlerSocketOpenSSL;
 begin
   ps := nako_getFuncArg(args, 0);
   s  := TStringList.Create;
@@ -342,8 +344,57 @@ begin
   end else begin
     _idftp.Passive := True;
   end;
+  ssloption := Trim(s.Values['SSLオプション']);
+  if ssloption <> '' then
+  begin
+    SSLHandler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+    _idftp.IOHandler := SSLHandler;    //TIdSSLIOHandlerSocketOpenSSL
+    if (ssloption='ON') or (ssloption='ＯＮ') or (ssloption='オン') or (ssloption='はい') or (ssloption='1') or (ssloption='１') then
+    begin
+      _idftp.UseTLS := utUseExplicitTLS;
+    end else
+    if ssloption='EXPLICIT_TLS' then
+    begin
+      _idftp.UseTLS := utUseExplicitTLS;
+    end else
+    if ssloption='IMPLICIT_TLS' then
+    begin
+      _idftp.UseTLS := utUseImplicitTLS;
+    end else
+    if ssloption='REQUIRE_TLS' then
+    begin
+      _idftp.UseTLS := utUseRequireTLS;
+    end else begin
+      _idftp.UseTLS := utNoTLSSupport ;
+    end;
+    if Trim(s.Values['データ暗号化']) = '' then
+    begin
+      if _idftp.UseTLS = utNoTLSSupport then
+      begin
+        _idftp.DataPortProtection := ftpdpsClear;
+      end else begin
+        _idftp.DataPortProtection := ftpdpsPrivate;
+      end;
+    end else
+    if get_on_off(Trim(s.Values['データ暗号化'])) then
+    begin
+      _idftp.DataPortProtection := ftpdpsPrivate;
+    end else begin
+      _idftp.DataPortProtection := ftpdpsClear;
+    end;
+    if (_idftp.DataPortProtection = ftpdpsPrivate) and (_idftp.UseTLS = utNoTLSSupport) then raise Exception.Create('FTPデータ経路のみを暗号化することはできません。');
+  end else begin
+    if get_on_off(Trim(s.Values['データ暗号化'])) then
+    begin
+      _idftp.DataPortProtection := ftpdpsPrivate;
+    end else begin
+      _idftp.DataPortProtection := ftpdpsClear;
+    end;
+    if _idftp.DataPortProtection = ftpdpsPrivate then raise Exception.Create('FTPデータ経路のみを暗号化することはできません。');
+  end;
+
   _idftp.TransferType := ftBinary; // 重要
-  
+
   if _idftp.Username = '' then raise Exception.Create('FTPの設定でIDが未設定です。');
   if _idftp.Password = '' then raise Exception.Create('FTPの設定でPASSWORDが未設定です。');
   if _idftp.Host     = '' then raise Exception.Create('FTPの設定でHOSTが未設定です。');
@@ -1964,6 +2015,15 @@ begin
       i := StrToIntDef(value, 0);
       Result := hi_newStr(p.RecvStrByte(i));
     end else
+    {if cmd = 'ssl' then
+    begin
+      i := StrToIntDef(value, 0);
+      if i = 0 then
+        p.ActiveSSL := false
+      else
+        p.ActiveSSL := true;
+      Result := hi_newBool(p.ActiveSSL);
+    end else}
     ;
   end;
 end;
@@ -2690,9 +2750,10 @@ begin
   AddStrVar('HTTPオプション',   '',                4018, 'HTTPに関するオプションをハッシュ形式で設定する。BASIC認証は「BASIC認証=オン{~}ID=xxx{~}パスワード=xxx」と書く。他に、「UA=nadesiko{~}HTTP_VERSION=HTTP/1.1」。','HTTPおぷしょん');
   AddFunc  ('オンライン判定','',4019, sys_checkOnline, 'IEがオンラインかどうか判別し結果を1(オンライン)か0(オフライン)で返す。', 'おんらいんはんてい');
   AddFunc  ('インターネット接続判定','',4150, sys_IsInternetConnected, 'インターネットに接続しているかどうか判別し結果を1(オンライン)か0(オフライン)で返す。', 'いんたーねっとせつぞくはんてい');
+  //AddStrVar('HTTPダイジェスト認証情報',   '',                   -1, 'HTTPダイジェスト認証に関する情報をハッシュ形式で設定する。「realm={~}nonce={~}algorithm={~}qop={~}nc={~}cnonce=」と書く。','HTTPだいじぇすとにんしょうじょうほう');
 
   //-FTP
-  AddFunc  ('FTP接続',          'Sで',                        4020, sys_ftp_connect,        '接続情報「ホスト=xxx{~}ID=xxx{~}パスワード=xxx{~}PORT=xx{~}PASV=オン|オフ」でFTPに接続する', 'FTPせつぞく');
+  AddFunc  ('FTP接続',          'Sで',                        4020, sys_ftp_connect,        '接続情報「ホスト=xxx{~}ID=xxx{~}パスワード=xxx{~}PORT=xx{~}PASV=オン|オフ{~}SSLオプション=オン|オフ|IMPLICIT_TLS|REQUIRE_TLS|EXPLICIT_TLS{~}データ暗号化=オン|オフ」でFTPに接続する', 'FTPせつぞく');
   AddFunc  ('FTP切断',          '',                           4021, sys_ftp_disconnect,     'FTPの接続を切断する',                                      'FTPせつだん');
   AddFunc  ('FTPアップロード',  'AをBへ|AからBに',            4022, sys_ftp_upload,         'ローカルファイルAをリモードファイルBへアップロードする',   'FTPあっぷろーど');
   AddFunc  ('FTPフォルダアップロード',  'AをBへ|AからBに',    4038, sys_ftp_uploadDir,      'ローカルフォルダAをリモードフォルダBへアップロードする',   'FTPふぉるだあっぷろーど');
