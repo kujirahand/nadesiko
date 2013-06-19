@@ -69,18 +69,18 @@ type
   end;
 
 procedure SplitUrl(url:string;
-  var domain: string; var port: string; var dir: string);
+  var protocol: string; var domain: string; var port: string; var dir: string);
 
 implementation
 
 uses unit_string2, Registry, jconvert, md5;
 
 procedure SplitUrl(url:string;
-  var domain: string; var port: string; var dir: string);
+  var protocol: string; var domain: string; var port: string; var dir: string);
 var s: string;
 begin
   // http:// を落とす
-  getToken_s(url, '//');
+  protocol := getToken_s(url, '://');
   // dir までを取得
   s := getToken_s(url, '/');
   // domain 取得
@@ -120,6 +120,7 @@ var
   h: THttpHeadList; p: THttpHead;
   ret: string;
   len: Integer;
+  s: string;
 begin
   OpenUrl(url);
   try
@@ -169,6 +170,7 @@ begin
     p := h.Find('Content-Length');
     if p <> nil then
     begin
+      // Content-Lengthに従って受信する
       len := StrToIntDef(p.Value, -1);
       if len > 0 then
       begin
@@ -176,7 +178,30 @@ begin
         Result := Result + #13#10#13#10 + ret;
       end;
     end else
+    if (h.Find('Transfer-Encoding') <> nil) and (h.Find('Transfer-Encoding').value = 'chunked') then
     begin
+      // chunkにしたがって受信する
+      Result := Result + #13#10#13#10;
+      while true do
+      begin
+        // chunkサイズの行を取得
+        s := Self.RecvLn;
+        // パラメータを捨てる
+        s := getToken_s(s,';');
+        // サイズ(16進数)を取得
+        len := StrToIntDef('$'+s,-1);
+        // サイズが0なら終了マークなのでループを抜ける
+        if len = 0 then break;
+        // chunkサイズ分だけ受信する
+        ret := Self.RecvData(len);
+        Result := Result + ret;
+        // 直後に改行があるはずなので読取＆チェック
+        ret := Self.RecvLn;
+        if ret <> '' then break;
+      end;
+      // ヘッダと改行があるはずなので読み取る。ほんとはヘッダに加えるべき？
+      ret := RecvToCRLFCRLF;
+    end else begin
       ret := Self.RecvDataToEnd;
       Result := Result + #13#10#13#10 + ret;
     end;
@@ -276,7 +301,11 @@ procedure TKHttpClient.OpenUrl(var url: string);
 var
   proxyHost, proxyPort, tmpHost: string;
   tmpPort: Integer;
-  urlDomain, urlPort, urlDir: string;
+  defPort: Integer;
+  urlProtocol, urlDomain, urlPort, urlDir: string;
+  h: THttpHeadList;
+  enableSSL: boolean;
+  ret: string;
 begin
   // PROXY 設定を読む
   getProxySettingFromFProxy(proxyHost, proxyPort);
@@ -284,31 +313,70 @@ begin
   // URL にHOST情報を持っているか
   if Pos('//', url) > 0 then
   begin
-    SplitUrl(url, urlDomain, urlPort, urlDir);
+    SplitUrl(url, urlProtocol, urlDomain, urlPort, urlDir);
     if urlDir = '' then
     begin
       if Copy(url, Length(url), 1) <> '/' then url := url + '/';
     end;
   end;
 
+  enableSSL:=false;
+  tmpPort:=0;
+  if (urlProtocol<>'') and (urlDomain<>'') then
+  begin
+    if LowerCase(urlProtocol) = 'https' then
+    begin
+      defPort := 443;
+      // SSL on
+      enableSSL := true;
+    end else begin
+      defPort := 80;
+      // SSL off
+      enableSSL := false;
+    end;
+    tmpHost := urlDomain;
+    tmpPort := StrToIntDef(urlPort, defPort);
+  end;
   // PROXY以外でつなぐ
   if proxyHost = '' then
   begin
-    if urlDomain <> '' then Host := urlDomain;
-    if urlPort   <> '' then Port := StrToIntDef(urlPort, 80);
+    if tmpHost<>'' then
+    begin
+      Host := tmpHost;
+      Port := tmpPort;
+    end;
     url := urlDir;
     inherited Open;
   end else
   // PROXYでつなぐ
   begin
-    tmpHost := Host;
-    tmpPort := Port;
     Host := proxyHost;
     Port := StrToIntDef(proxyPort, 8080);
     inherited Open;
+    if  enableSSL then
+    begin
+      self.SendLn('CONNECT ' + tmpHost + ':' + IntToStr(tmpPort) + ' HTTP/1.1');
+      self.SendLn('Host: ' + tmpHost);
+      self.SendLn('');
+      ret := self.RecvToCRLFCRLF;
+      h := THttpHeadList.Create;
+      try
+        h.SetAsText(ret);
+        if h.Response <> 200 then
+        begin
+          raise Exception.Create('プロクシーサーバへの接続エラー' + h.RetCode);
+        end;
+      finally
+        h.free;
+      end;
+    end;
     // HOST を元に戻す
     Host := urlDomain;
     Port := StrToIntDef(urlPort, tmpPort);
+  end;
+  if  enableSSL then
+  begin
+    inherited ConnectSSL;
   end;
 end;
 
@@ -388,6 +456,7 @@ var
   h: THttpHeadList; p: THttpHead;
   ret: string;
   len: Integer;
+  s: string;
 begin
   try
     OpenUrl(url);
@@ -452,7 +521,31 @@ begin
         Result := Result + #13#10#13#10 + ret;
       end;
     end else
+    if (h.Find('Content-Encoding') <> nil) and (h.Find('Content-Encoding').value = 'chunked') then
     begin
+      // chunkにしたがって受信する
+      // とりあえず、ヘッダの後ろに改行追加
+      Result := Result + #13#10#13#10;
+      while true do
+      begin
+        // chunkサイズの行を取得
+        s := Self.RecvLn;
+        // パラメータを捨てる
+        s := getToken_s(s,';');
+        // サイズ(16進数)を取得
+        len := StrToIntDef('$'+s,-1);
+        // サイズが0なら終了マークなのでループを抜ける
+        if len = 0 then break;
+        // chunkサイズ分だけ受信する
+        ret := Self.RecvData(len);
+        Result := Result + ret;
+        // 直後に改行があるはずなので読取＆チェック
+        ret := Self.RecvLn;
+        if ret <> '' then break;
+      end;
+      // ヘッダと改行があるはずなので読み取る。ほんとはヘッダに加えるべき？
+      ret := RecvToCRLFCRLF;
+    end else begin
       ret := Self.RecvDataToEnd;
       Result := Result + #13#10#13#10 + ret;
     end;
