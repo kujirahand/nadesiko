@@ -2363,6 +2363,8 @@ var
   c        : TCanvas;
   p        : PAnsiChar;
   sx, sy   : AnsiString;
+  q        : PAnsiChar;
+  i        : Integer;
 begin
   // (1) à¯êîÇÃéÊìæ
   c  := getCanvas(nako_getFuncArg(h,0));
@@ -2375,11 +2377,24 @@ begin
   p := PAnsiChar(s);
   while p^ <> #0 do
   begin
-    sx := getTokenCh(p, [',',#13]);
-    sy := getTokenCh(p, [',',#13]);
-    x := Trunc(StrToFloatDef(string(sx), 0)); if p^ = #10 then Inc(p);
-    y := Trunc(StrToFloatDef(string(sy), 0)); if p^ = #10 then Inc(p);
-    
+    sx := getTokenCh(p, [',',#13]); if p^ = #10 then Inc(p);
+    sy := getTokenCh(p, [',',#13]); if p^ = #10 then Inc(p);
+    x := Trunc(StrToFloatDef(string(sx), 0));
+    y := Trunc(StrToFloatDef(string(sy), 0));
+
+    if cnt = 128 then
+    begin
+      i:=cnt+1;
+      q:=p;
+      while q^ <> #0 do
+      begin
+        getTokenCh(q,[',',#13]); if q^ = #10 then Inc(q);
+        getTokenCh(q,[',',#13]); if q^ = #10 then Inc(q);
+        inc(i);
+      end;
+      SetLength(pts,i);
+    end;
+
     pts[cnt].X := x;
     pts[cnt].Y := y;
     Inc(cnt);
