@@ -1,0 +1,20 @@
+●テスト_nakonet_HTTPSダウンロード
+　もしインターネット接続判定がオフならば戻る
+　###
+　URL=「https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js」
+　FILE=テンポラリフォルダ＆「jquery.min.js」
+　URLをFILEへHTTPダウンロード。
+　FILEを開く
+　「jQuery」が何文字目。
+　N=（それ>0）
+　Nと1でテスト実行
+
+●テスト_nakonet_HTTPSデータ取得
+　もしインターネット接続判定がオフならば戻る
+　###
+　URL=「https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js」
+　S=URLからHTTPデータ取得。
+　「jQuery」が何文字目。
+　N=（それ>0）
+　Nと1でテスト実行
+
