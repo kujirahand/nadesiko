@@ -120,9 +120,9 @@ end;
 
 function save_barcode_image(h: DWORD): PHiValue; stdcall;
 var
-  code: string;
+  code, c: string;
   fname: string;
-  bairitu, i, n, len, x: Integer;
+  bairitu, i, n, len, x1, x2, y1, y2: Integer;
   Position, Counter, LineWidth: Integer;
   bCustomer: Boolean;
   bmp: TBitmap;
@@ -134,17 +134,25 @@ begin
   Result  := nil;
   //
   bCustomer := False;
-  if Copy(code,1,7) = 'custom:' then
+  if Copy(code,1,9) = 'customer:' then
   begin
     bCustomer := true;
-    Delete(code, 1, 7);
+    Delete(code, 1, 9);
   end;
   len := Length(code);
   //
   bmp := TBitmap.Create;
   try
-    bmp.Width  := 30 * 2 + (bairitu+1) * len;
-    bmp.Height := bairitu * 30;
+    if not bCustomer then
+    begin
+      bmp.Width  := 30 * 2 + (bairitu+1) * len;
+      bmp.Height := bairitu * 30;
+    end else
+    begin
+      //bairitu := bairitu * 2;
+      bmp.Width  := (bairitu * 4 * len);
+      bmp.Height := 8 * (3 * bairitu);
+    end;
     with bmp.Canvas do
     begin
       Pen.Style := psSolid;
@@ -155,6 +163,7 @@ begin
     end;
     with bmp do
     begin
+      // 一般的なBARCODEの場合
       if not bCustomer then
       begin
         Position := 0;
@@ -180,16 +189,34 @@ begin
         end;
         //bmp.Width := 30 * 2 + Position + 1;
       end else
+      // カスタマーコードの場合
       begin
+        Canvas.Pen.Width := (bairitu);
+        n := bmp.Height div 3;
         for i := 0 to len - 1 do
         begin
-          if code[i+1] = '1' then
+          c := code[i + 1];
+          if c <> '0' then
           begin
-            x := i * bairitu;
-            Canvas.Rectangle(x,0, x+bairitu, bmp.Height);
+            x1 := i * bairitu * 3;
+            x2 := x1 + bairitu * 3;
+            // ０２３６７
+            // □□□■■　　
+            // □■■■■
+            // □□■□■　
+            case c[1] of
+              '2': begin y1 := n * 1; y2 := n * 2; end;
+              '3': begin y1 := n * 1; y2 := n * 3; end;
+              '6': begin y1 := n * 0; y2 := n * 2; end;
+              '7': begin y1 := n * 0; y2 := n * 3; end;
+              else begin y1 := 0; y2 := 0; end;
+            end;
+            Canvas.Rectangle(x1, y1, x2, y2);
+            //Canvas.MoveTo(x, y1);
+            //Canvas.LineTo(x, y2);
+            //if x2 > bmp.Width then raise Exception.Create('over');
           end;
         end;
-        bmp.Width := len * bairitu + 1;
       end;
     end;
     //
@@ -227,6 +254,7 @@ begin
   AddFunc('NW7バーコード文字列取得', '{=?}CODEをCH1,CH2のCDで', 6572, nw7_makeStr, 'CODEを0と1の文字列で取得する', 'NW7ばーこーどもじれつしゅとく');
   AddFunc('ITFバーコード文字列取得', '{=?}CODEをCDで', 6573, itf_makeStr, 'CODEをCD(チェックディジット=オン|オフ)で0と1の文字列で取得する', 'ITFばーこーどもじれつしゅとく');
   AddFunc('カスタマーバーコード文字列取得', 'CODEの|CODEを', 6574, customercode_makeStr, 'CODEを0と1の文字列で取得する', 'かすたまーばーこーどもじれつしゅとく');
+  AddFunc('カスタマバーコード文字列取得', 'CODEの|CODEを', 6577, customercode_makeStr, 'CODEを0と1の文字列で取得する', 'かすたまばーこーどもじれつしゅとく');
   AddFunc('CODE128文字列取得', 'CODEをSTで', 6575, code128_makeStr, 'CODEをST(開始文字)でバーコードを0と1の文字列で取得する', 'CODE128コードもじれつしゅとく');
   // </命令>
 end;
