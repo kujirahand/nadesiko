@@ -477,7 +477,7 @@ begin
 end;
 
 // 未実装のメソッド
-// AddFunc  ('エクセルシェイプ選択','{=?}Sの', 4737, excel_selectShape,'Excelで名前Sのシェイプを選択する。','えくせるしぇいぷせんたく');
+// AddFunc  ('エクセルグラフ挿入','{=?}RANGEからTYPEの', 4736, excel_insertChart,'Excelで「左上:右下」から種類TYPEのグラフを作成して挿入する。','えくせるぐらふそうにゅう');
 function excel_insertChart(h: DWORD): PHiValue; stdcall;
 var
   range, typeStr: string;
@@ -2035,8 +2035,8 @@ begin
   AddFunc  ('エクセル画像挿入','Fの', 4733, excel_insertPic,'Excelの選択中セルの場所に画像Fを挿入する。','えくせるがぞうそうにゅう');
   AddFunc  ('エクセル選択シェイプサイズ設定','W,Hに|Hへ', 4734, excel_shapeResize,'Excelの選択中シェイプのサイズをW,Hに変更する。','えくせるせんたくしぇいぷたくさいずせってい');
   AddFunc  ('エクセル選択シェイプ移動','X,Yに|Yへ', 4735, excel_shapeMove,'Excelの選択中シェイプの位置をX,Yに変更する。','えくせるせんたくしぇいぷいどう');
-  AddFunc  ('エクセルグラフ挿入','{=?}RANGEからTYPEの', 4736, excel_insertChart,'Excelで「左上:右下」から種類TYPEのグラフを作成して挿入する。','えくせるぐらふそうにゅう');
-  
+  AddFunc  ('エクセルシェイプ選択','{=?}Sの', 4737, excel_selectShape,'Excelで名前Sのシェイプを選択する。','えくせるしぇいぷせんたく');
+
   //-ワード(Word)
   AddFunc  ('ワード起動','{=1}Aで', 4330, word_open,'可視A(オンかオフ)でワードを起動する','わーどきどう');
   AddFunc  ('ワード終了','', 4331, word_close,'ワードを終了する','わーどしゅうりょう');
