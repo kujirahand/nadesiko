@@ -92,6 +92,8 @@ type
     function getLastRow(col:string):Integer;
     function getLastCol(row:string):Integer;
     procedure UniqueRow(col:string);
+    procedure InsertPic(f: string);
+    procedure SetShapeSize(w, h:Integer);
     procedure ProtectOn(sheet: string; password: string);
     procedure ProtectOff(sheet: string; password: string);
     property DisplayAlerts:Boolean read FDisplayAlerts write SetDisplayAlerts;
@@ -1096,6 +1098,26 @@ begin
     r := Unassigned;
   end;
 end;
+
+procedure TKExcel.InsertPic(f: string);
+var
+  r:Variant;
+begin
+  E_WorkSheet := E_Application.ActiveSheet;
+  r := E_WorkSheet.Pictures.Insert(f);
+  r.Select();
+  r := Unassigned;
+end;
+procedure TKExcel.SetShapeSize(w, h:Integer);
+begin
+  // E_WorkSheet := E_Application.ActiveSheet;
+  try
+    E_Application.Selection.ShapeRange.Height := h;
+    E_Application.Selection.ShapeRange.Width := w;
+  except
+  end;
+end;
+
 procedure TKExcel.ProtectOn(sheet: string; password: string);
 begin
   // Worksheet

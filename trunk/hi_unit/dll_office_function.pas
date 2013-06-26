@@ -316,6 +316,26 @@ begin
   Result := hi_newInt(excel.getLastCol(row));
 end;
 
+function excel_insertPic(h: DWORD): PHiValue; stdcall;
+var
+  f: string;
+begin
+  f := getArgStr(h, 0);
+  excel.InsertPic(f);
+  Result := nil;
+end;
+
+function excel_shapeResize(h: DWORD): PHiValue; stdcall;
+var
+  ww, hh: Integer;
+begin
+  ww := getArgInt(h, 0);
+  hh := getArgInt(h, 1);
+  excel.SetShapeSize(ww, hh);
+  Result := nil;
+end;
+
+
 function excel_getVersion(h: DWORD): PHiValue; stdcall;
 begin
   Result := hi_newInt(excel.Version);
@@ -1987,6 +2007,9 @@ begin
   AddFunc  ('エクセル選択範囲上下配置設定','Vに|Vへ', 4730, excel_selection_valign,'選択されているセルを、上・下・中央に寄せる','えくせるせんたくはんいじょうげはいちせってい');
   AddFunc  ('エクセル最下行取得','{=A}COLの|COLで', 4708, excel_getLastRow,'Excelの列名COL(ABC..で指定)の最下行を調べて返す。','えくせるさいかぎょうしゅとく');
   AddFunc  ('エクセル最右列取得','{=1}ROWの|ROWで', 4732, excel_getLastCol,'Excelの行番号ROW(123..で指定)の最右列を調べて返す。','えくせるさいうれつしゅとく');
+  AddFunc  ('エクセル画像挿入','Fの', 4733, excel_insertPic,'Excelの選択中セルの場所に画像Fを挿入する。','えくせるがぞうそうにゅう');
+  AddFunc  ('エクセル選択シェイプサイズ設定','W,Hに|Hへ', 4734, excel_shapeResize,'Excelの選択中シェイプのサイズをW,Hに変更する。','えくせるせんしぇいぷたくさいずせってい');
+
 
   //-ワード(Word)
   AddFunc  ('ワード起動','{=1}Aで', 4330, word_open,'可視A(オンかオフ)でワードを起動する','わーどきどう');
