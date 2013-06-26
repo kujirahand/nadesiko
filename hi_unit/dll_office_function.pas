@@ -468,6 +468,31 @@ begin
   Result := hi_newStr(excel.GetActiveSheetName);
 end;
 
+function excel_shapeMove(h: DWORD): PHiValue; stdcall;
+begin
+  excel.MoveShape(
+    getArgInt(h, 0),
+    getArgInt(h,1));
+  Result := nil;
+end;
+
+// 未実装のメソッド
+// AddFunc  ('エクセルシェイプ選択','{=?}Sの', 4737, excel_selectShape,'Excelで名前Sのシェイプを選択する。','えくせるしぇいぷせんたく');
+function excel_insertChart(h: DWORD): PHiValue; stdcall;
+var
+  range, typeStr: string;
+begin
+  range := getArgStr(h, 0, True);
+  typeStr := getArgStr(h, 1);
+  excel.InsertChart(range, typeStr);
+  Result := nil;
+end;
+
+function excel_selectShape(h: DWORD): PHiValue; stdcall;
+begin
+  excel.SelectShape(getArgStr(h, 0, True));
+  Result := nil;
+end;
 
 function word_checkInstall(h: DWORD): PHiValue; stdcall;
 var
@@ -2008,9 +2033,10 @@ begin
   AddFunc  ('エクセル最下行取得','{=A}COLの|COLで', 4708, excel_getLastRow,'Excelの列名COL(ABC..で指定)の最下行を調べて返す。','えくせるさいかぎょうしゅとく');
   AddFunc  ('エクセル最右列取得','{=1}ROWの|ROWで', 4732, excel_getLastCol,'Excelの行番号ROW(123..で指定)の最右列を調べて返す。','えくせるさいうれつしゅとく');
   AddFunc  ('エクセル画像挿入','Fの', 4733, excel_insertPic,'Excelの選択中セルの場所に画像Fを挿入する。','えくせるがぞうそうにゅう');
-  AddFunc  ('エクセル選択シェイプサイズ設定','W,Hに|Hへ', 4734, excel_shapeResize,'Excelの選択中シェイプのサイズをW,Hに変更する。','えくせるせんしぇいぷたくさいずせってい');
-
-
+  AddFunc  ('エクセル選択シェイプサイズ設定','W,Hに|Hへ', 4734, excel_shapeResize,'Excelの選択中シェイプのサイズをW,Hに変更する。','えくせるせんたくしぇいぷたくさいずせってい');
+  AddFunc  ('エクセル選択シェイプ移動','X,Yに|Yへ', 4735, excel_shapeMove,'Excelの選択中シェイプの位置をX,Yに変更する。','えくせるせんたくしぇいぷいどう');
+  AddFunc  ('エクセルグラフ挿入','{=?}RANGEからTYPEの', 4736, excel_insertChart,'Excelで「左上:右下」から種類TYPEのグラフを作成して挿入する。','えくせるぐらふそうにゅう');
+  
   //-ワード(Word)
   AddFunc  ('ワード起動','{=1}Aで', 4330, word_open,'可視A(オンかオフ)でワードを起動する','わーどきどう');
   AddFunc  ('ワード終了','', 4331, word_close,'ワードを終了する','わーどしゅうりょう');
