@@ -239,23 +239,23 @@ end;
 procedure ImportNakoFunction; stdcall;
 begin
   // なでしこシステムに関数を追加
-  // nako_qrcode.dll,6560-6579
+  // nako_qrcode.dll,6600-6620
   // <命令>
   //+バーコード[デラックス版のみ](nako_qrcode.dll)
   //-QRコード
-  AddFunc('QRコード作成', 'CODEをFILEへBAIRITUの', 6560, qr_make, 'CODEをFILEへ倍率BAIRITUの大きさで作成する。', 'QRコードさくせい');
-  AddFunc('QRコードオプション設定', 'Sの', 6561, qr_setOption,  '', 'QRこーどおぷしょんせってい');
-  AddFunc('QRコードバージョン設定', 'Vの', 6562, qr_setVersion, '', 'QRこーどばーじょんせってい');
-  AddFunc('QRコード文字列取得', 'CODEの|CODEを', 6563, qr_makeStr, 'CODEを0と1の文字列で取得する', 'QRこーどもじれつしゅとく');
+  AddFunc('QRコード作成', 'CODEをFILEへBAIRITUの', 6600, qr_make, 'CODEをFILEへ倍率BAIRITUの大きさで作成する。', 'QRコードさくせい');
+  AddFunc('QRコードオプション設定', 'Sの', 6601, qr_setOption,  '', 'QRこーどおぷしょんせってい');
+  AddFunc('QRコードバージョン設定', 'Vの', 6602, qr_setVersion, '', 'QRこーどばーじょんせってい');
+  AddFunc('QRコード文字列取得', 'CODEの|CODEを', 6603, qr_makeStr, 'CODEを0と1の文字列で取得する', 'QRこーどもじれつしゅとく');
   //-各種バーコード
-  AddFunc('バーコード画像保存', '{=?}CODESTRをFILEへBAIRITUで|FILEに', 6570, save_barcode_image, '各種アルゴリズムにより生成したバーコード文字列を画像としてFILEへ保存する', 'ばーこーどがぞうほぞん');
-  AddFunc('JANコード文字列取得', 'CODEの|CODEを', 6576, jan_makeStr, 'CODEを0と1の文字列で取得する', 'JANこーどもじれつしゅとく');
-  AddFunc('CODE39文字列取得', '{=?}CODEをCDで', 6571, code39_makeStr, 'CODEをCD(チェックディジット=オン|オフ)で0と1の文字列で取得する', 'CODE39もじれつしゅとく');
-  AddFunc('NW7バーコード文字列取得', '{=?}CODEをCH1,CH2のCDで', 6572, nw7_makeStr, 'CODEを0と1の文字列で取得する', 'NW7ばーこーどもじれつしゅとく');
-  AddFunc('ITFバーコード文字列取得', '{=?}CODEをCDで', 6573, itf_makeStr, 'CODEをCD(チェックディジット=オン|オフ)で0と1の文字列で取得する', 'ITFばーこーどもじれつしゅとく');
-  AddFunc('カスタマーバーコード文字列取得', 'CODEの|CODEを', 6574, customercode_makeStr, 'CODEを0と1の文字列で取得する', 'かすたまーばーこーどもじれつしゅとく');
-  AddFunc('カスタマバーコード文字列取得', 'CODEの|CODEを', 6577, customercode_makeStr, 'CODEを0と1の文字列で取得する', 'かすたまばーこーどもじれつしゅとく');
-  AddFunc('CODE128文字列取得', 'CODEをSTで', 6575, code128_makeStr, 'CODEをST(開始文字)でバーコードを0と1の文字列で取得する', 'CODE128コードもじれつしゅとく');
+  AddFunc('バーコード画像保存', '{=?}CODESTRをFILEへBAIRITUで|FILEに', 6610, save_barcode_image, '各種アルゴリズムにより生成したバーコード文字列を画像としてFILEへ保存する', 'ばーこーどがぞうほぞん');
+  AddFunc('JANコード文字列取得', 'CODEの|CODEを', 6611, jan_makeStr, 'CODEを0と1の文字列で取得する', 'JANこーどもじれつしゅとく');
+  AddFunc('CODE39文字列取得', '{=?}CODEをCDで', 6612, code39_makeStr, 'CODEをCD(チェックディジット=オン|オフ)で0と1の文字列で取得する', 'CODE39もじれつしゅとく');
+  AddFunc('NW7バーコード文字列取得', '{=?}CODEをCH1,CH2のCDで', 6613, nw7_makeStr, 'CODEを0と1の文字列で取得する', 'NW7ばーこーどもじれつしゅとく');
+  AddFunc('ITFバーコード文字列取得', '{=?}CODEをCDで', 6614, itf_makeStr, 'CODEをCD(チェックディジット=オン|オフ)で0と1の文字列で取得する', 'ITFばーこーどもじれつしゅとく');
+  AddFunc('カスタマーバーコード文字列取得', 'CODEの|CODEを', 6615, customercode_makeStr, 'CODEを0と1の文字列で取得する', 'かすたまーばーこーどもじれつしゅとく');
+  AddFunc('カスタマバーコード文字列取得', 'CODEの|CODEを', 6616, customercode_makeStr, 'CODEを0と1の文字列で取得する', 'かすたまばーこーどもじれつしゅとく');
+  AddFunc('CODE128文字列取得', 'CODEをSTで', 6617, code128_makeStr, 'CODEをST(開始文字)でバーコードを0と1の文字列で取得する', 'CODE128コードもじれつしゅとく');
   // </命令>
 end;
 

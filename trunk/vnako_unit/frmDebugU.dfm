@@ -1,9 +1,9 @@
 object frmDebug: TfrmDebug
   Left = 196
   Top = 130
+  Width = 466
+  Height = 378
   Caption = #12487#12496#12483#12464
-  ClientHeight = 319
-  ClientWidth = 433
   Color = clBtnFace
   Font.Charset = SHIFTJIS_CHARSET
   Font.Color = clWindowText
@@ -21,7 +21,7 @@ object frmDebug: TfrmDebug
   object Splitter1: TSplitter
     Left = 0
     Top = 185
-    Width = 433
+    Width = 450
     Height = 3
     Cursor = crVSplit
     Align = alTop
@@ -29,7 +29,7 @@ object frmDebug: TfrmDebug
   object panelBottom: TPanel
     Left = 0
     Top = 278
-    Width = 433
+    Width = 450
     Height = 41
     Align = alBottom
     TabOrder = 0
@@ -65,7 +65,7 @@ object frmDebug: TfrmDebug
   object grdVar: TStringGrid
     Left = 0
     Top = 33
-    Width = 433
+    Width = 450
     Height = 152
     Align = alTop
     ColCount = 3
@@ -84,7 +84,7 @@ object frmDebug: TfrmDebug
   object Panel2: TPanel
     Left = 0
     Top = 0
-    Width = 433
+    Width = 450
     Height = 33
     Align = alTop
     TabOrder = 2
@@ -124,14 +124,14 @@ object frmDebug: TfrmDebug
   object panelSrc: TPanel
     Left = 0
     Top = 188
-    Width = 433
+    Width = 450
     Height = 90
     Align = alClient
     TabOrder = 3
     object Panel4: TPanel
       Left = 1
       Top = 1
-      Width = 431
+      Width = 448
       Height = 19
       Align = alTop
       BevelOuter = bvLowered
@@ -157,7 +157,7 @@ object frmDebug: TfrmDebug
     object panelSrcEdit: TPanel
       Left = 1
       Top = 20
-      Width = 431
+      Width = 448
       Height = 69
       Align = alClient
       BevelOuter = bvNone
