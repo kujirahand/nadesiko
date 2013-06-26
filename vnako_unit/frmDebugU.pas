@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Grids, ExtCtrls, Menus, CsvUtils2, ComCtrls;
+  Dialogs, StdCtrls, Grids, ExtCtrls, Menus, CsvUtils2, ComCtrls,
+  EditorEx, NadesikoFountain;
 
 type
   TfrmDebug = class(TForm)
@@ -63,7 +64,7 @@ type
     scope: string;
   public
     { Public 宣言 }
-    edtMain:TMemo;
+    edtMain:TEditorEx;
     procedure EnumVar;
     procedure data2grid;
     procedure getSource;
@@ -153,17 +154,19 @@ procedure TfrmDebug.FormCreate(Sender: TObject);
 begin
   csvCmd := TCsvSheet.Create;
   scope := 'グローバルローカルユーザー';
-  edtMain := TMemo.Create(panelSrcEdit);
+  edtMain := TEditorEx.Create(panelSrcEdit);
   edtMain.Parent := panelSrcEdit;
   edtMain.Align := alClient;
-  //edtMain.Caret.TabSpaceCount := 4;
-  //edtMain.Marks.Underline.Visible := True;
-  //edtMain.Leftbar.Visible := False;
-  //edtMain.Margin.Left := 4;
+  edtMain.Caret.TabSpaceCount := 4;
+  edtMain.Marks.Underline.Visible := True;
+  edtMain.Leftbar.Visible := False;
+  edtMain.Margin.Left := 4;
   edtMain.ReadOnly := True;
   edtMain.Font.Size := 8;
   edtMain.Font.Name := 'ＭＳ ゴシック';
-  //edtMain.Fountain := TNadesikoFountain.Create(Self);
+  edtMain.Fountain := TNadesikoFountain.Create(Self);
+  edtMain.ExMarks.CurrentLine.Visible := True;
+  edtMain.ExMarks.CurrentLine.Color := RGB(255,200,200);
 end;
 
 procedure TfrmDebug.FormDestroy(Sender: TObject);

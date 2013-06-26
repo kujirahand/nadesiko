@@ -6,13 +6,14 @@
 ＤＢファイル＝「{ランタイムパス}tools\command.db」
 旧ユーザーメモ=「」
 ＃処理実行
-ＤＢファイルをファイル削除。
+もし、DBファイルが存在するならば
+　　ＤＢファイルをファイル削除。
 ＃DB存在＝DBファイルが存在するか？
 ＃「データベースを更新しますか？」と二択。
 ＃もし、それがはいならば
 コマンドＤＢ格納処理。
 ＃違えば
-　　ハンドル＝DBファイルをSQLITE開く。
+　　＃ハンドル＝DBファイルをSQLITE開く。
 ＃「ユーザーサンプルを更新しますか？」と二択。
 ＃もし、それがはいならば
 ＃　　ユーザーサンプルDB格納処理。
@@ -55,21 +56,20 @@
 　　# 登録されているか確認
 　　ハンドルで「select id from command where id={番号}」をSQLITE実行。
 　　空白除去。
-　　エラー監視
-　　　　もし、それが空ならば
-　　　　　　SQL＝「insert into command (id,name,args,desc,basname,」＆
-　　　　　　「ctype,kana,h1,h2)」＆
-　　　　　　「values({番号},"{名称}","{引数}",」＆
-　　　　　　「"{解説}","{英名}","{種類}","{カナ}","{大見出し}","{小見出し}")」
-　　　　　　ハンドルでSQLをSQLITE実行。
-　　　　違えば
-　　　　　　SQL＝「update command set name="{名称}",args="{引数}",」＆
-　　　　　　「desc="{解説}",basname="{英名}",ctype="{種類}",kana="{カナ}",」＆
-　　　　　　「h1="{大見出し}",h2="{小見出し}" 」＆
-　　　　　　「where id={番号};」
-　　　　　　ハンドルでSQLをSQLITE実行。
-　　エラーならば
-　　　　「エラー：」＆SQLを言う
+　　
+　　もし、それが空ならば
+　　　　SQL＝「insert into command (id,name,args,desc,basname,」＆
+　　　　「ctype,kana,h1,h2)」＆
+　　　　「values({番号},"{名称}","{引数}",」＆
+　　　　「"{解説}","{英名}","{種類}","{カナ}","{大見出し}","{小見出し}")」
+　　　　N=ハンドルでSQLをSQLITE実行。
+　　違えば
+　　　　SQL＝「update command set name="{名称}",args="{引数}",」＆
+　　　　「desc="{解説}",basname="{英名}",ctype="{種類}",kana="{カナ}",」＆
+　　　　「h1="{大見出し}",h2="{小見出し}" 」＆
+　　　　「where id={番号};」
+　　　　ハンドルでSQLをSQLITE実行。
+
 　　もし、回数％５０＝０ならば
 　　　　母艦のタイトルは「{番号}:{名称}」
 　　
