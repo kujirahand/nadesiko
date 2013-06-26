@@ -94,6 +94,9 @@ type
     procedure UniqueRow(col:string);
     procedure InsertPic(f: string);
     procedure SetShapeSize(w, h:Integer);
+    procedure MoveShape(x, y: Integer);
+    procedure SelectShape(name: string);
+    procedure InsertChart(range:string; typeStr:string);
     procedure ProtectOn(sheet: string; password: string);
     procedure ProtectOff(sheet: string; password: string);
     property DisplayAlerts:Boolean read FDisplayAlerts write SetDisplayAlerts;
@@ -1116,6 +1119,45 @@ begin
     E_Application.Selection.ShapeRange.Width := w;
   except
   end;
+end;
+
+procedure TKExcel.MoveShape(x, y: Integer);
+begin
+  try
+    E_Application.Selection.ShapeRange.Left := x;
+    E_Application.Selection.ShapeRange.Top := y;
+  except
+  end;
+end;
+
+procedure TKExcel.SelectShape(name: string);
+begin
+  try
+    E_Application.Selection.Shapes(name).Select;
+  except
+  end;
+end;
+
+procedure TKExcel.InsertChart(range:string; typeStr:string);
+var
+  r1, r2: Variant;
+  no: Integer;
+begin
+  raise Exception.Create('未実装のメソッドです');
+  //
+  // 2010と2003で実装方法を変えないといけないみたい
+  //
+  no := StrToIntDef(typeStr, 51);
+  E_WorkSheet := E_Application.ActiveSheet;
+
+  r1 := E_WorkSheet.Shapes.AddChart(no);
+  r1.Select;
+
+  r2 := E_Application.ActiveChart;
+  r2.SetSourceData(E_WorkSheet.Range(range)); // ここでエラー
+
+  r1 := Unassigned;
+  r2 := Unassigned;
 end;
 
 procedure TKExcel.ProtectOn(sheet: string; password: string);
