@@ -424,6 +424,7 @@ var
   OFN: tagOFNA;
   PATH, s, res: AnsiString;
   p: PAnsiChar;
+  b: Boolean;
 begin
   PATH := InitFile+#0;
   SetLength(PATH,MAX_PATH+5);
@@ -436,7 +437,7 @@ begin
   FillChar(OFN,SizeOf(OFN),0);
   with OFN do
   begin
-    lStructSize := SizeOf(OFN);
+    lStructSize := SizeOf(OFN); // 76:98/NT  88:2k-
     hWndOwner := hOwner;
     lpstrFilter := PAnsiChar(Filter);
     nFilterIndex := 1;
@@ -446,7 +447,13 @@ begin
     Flags := OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_EXPLORER or OFN_ALLOWMULTISELECT;
   end;
 
-  if GetOpenFileNameA(OFN) then
+  b := GetOpenFileNameA(OFN);
+  if ( not b ) and (CommDlgExtendedError() = CDERR_STRUCTSIZE) and (OFN.lStructSize > 76) then
+  begin
+    OFN.lStructSize := 76;
+    b := GetOpenFileNameA(OFN);
+  end;
+  if b then
   begin
     SetLength(res, OFN.nMaxFile);
     ZeroMemory(PAnsiChar(res), OFN.nMaxFile);
@@ -483,6 +490,7 @@ var
   PATH: AnsiString;
   ext, tmp: AnsiString;
   extList: THStringList;
+  b: Boolean;
 begin
   PATH := InitFile+#0;
   SetLength(PATH,MAX_PATH+5);
@@ -498,7 +506,7 @@ begin
   FillChar(OFN,SizeOf(OFN),0);
   with OFN do
   begin
-    lStructSize := 76; // for Delphi6
+    lStructSize := SizeOf(OFN); // 76:98/NT  88:2k-
     hWndOwner := hOwner;
     lpstrFilter := PAnsiChar(Filter);
     nFilterIndex := 1;
@@ -509,7 +517,13 @@ begin
     Flags := OFN_OVERWRITEPROMPT or OFN_HIDEREADONLY;
   end;
 
-  if GetSaveFileNameA(OFN) then
+  b := GetSaveFileNameA(OFN);
+  if ( not b ) and (CommDlgExtendedError() = CDERR_STRUCTSIZE) and (OFN.lStructSize > 76) then
+  begin
+    OFN.lStructSize := 76;
+    b := GetSaveFileNameA(OFN);
+  end;
+  if b then
   begin
     SetLength(Result, OFN.nMaxFile);
     ZeroMemory(PAnsiChar(Result), OFN.nMaxFile);
