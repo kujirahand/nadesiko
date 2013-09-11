@@ -37,7 +37,7 @@ begin
   T:=0;
   L:=0;
 
-  if BMP.Width > BMP.Height then begin
+  if BMP.Width*h2 > BMP.Height*w2 then begin
       W := w2;
       r := w2 / BMP.Width;
       H := Trunc( r * BMP.Height);
@@ -72,7 +72,7 @@ var
   r: Extended;
 begin
 
-  if BMP.Width > BMP.Height then begin
+  if BMP.Width*h2 > BMP.Height*w2 then begin
       W := w2;
       r := w2 / BMP.Width;
       H := Trunc( r * BMP.Height);
@@ -118,7 +118,7 @@ begin
   T:=0;
   L:=0;
 
-  if BMP.Width > BMP.Height then begin
+  if BMP.Width*h2 > BMP.Height*w2 then begin
       W:=W2;
       H:=W2*BMP.Height div BMP.Width;
       T:=(h2-H) div 2;
@@ -153,7 +153,7 @@ begin
   T:=0;
   L:=0;
 
-  if BMP.Width > BMP.Height then begin
+  if BMP.Width*h2 > BMP.Height*w2 then begin
       W:=W2;
       H:=W2*BMP.Height div BMP.Width;
       T:=(h2-H) div 2;
