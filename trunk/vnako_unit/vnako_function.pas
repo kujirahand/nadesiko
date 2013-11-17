@@ -7084,6 +7084,7 @@ var
       if Pos('通知アイコン',  s) > 0            then opt := $00000001 { NIIF_INFO=$00000001 } else
       if Pos('警告アイコン',  s) > 0            then opt := $00000002 { NIIF_WARNING=$00000002 } else
       if Pos('アプリケーションアイコン',s) > 0  then opt := $00000004; { NIIF_USER=$00000004 }
+      if (Pos('ラージアイコン',s) > 0) or (Pos('大きなアイコン',  s) > 0) then opt := opt + $00000020; { NIIF_LARGE_ICON=$00000020 }
       if (Pos('音無し',  s) > 0) or (Pos('無音',  s) > 0)  then opt := opt + $00000010; { NIIF_NOSOUND=$00000010 }
       e.dwBalloonOption := opt;
       if Pos('リアルタイム',s) > 0  then e.bBalloonRealtime := true
@@ -7094,6 +7095,7 @@ var
       opt := e.dwBalloonOption;
       s := '';
       if (opt and $00000010) <> 0 then begin s:='/無音'; opt:=opt-$00000010; end;
+      if (opt and $00000020) <> 0 then begin s:='/ラージアイコン'; opt:=opt-$00000020; end;
       if opt=$00000000 then s:='アイコン無し'+s;
       if opt=$00000003 then s:='エラーアイコン'+s;
       if opt=$00000002 then s:='警告アイコン'+s;

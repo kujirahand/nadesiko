@@ -1664,6 +1664,7 @@ begin
       hIcon := Self.Icon.Handle
     else
       hIcon := Application.Icon.Handle;
+    dwInfoFlags := dwBalloonOption;
     if NotifyIconSize = 508 then
       if (dwInfoFlags and $0000000f) = $00000004 then // NIIF_USER=$00000004
         if Self.Icon.Handle > 0 then
@@ -1673,7 +1674,6 @@ begin
     StrLCopy(@szTip[0],PChar(Self.Caption), 127);
     StrLCopy(@szInfoTitle[0],PChar(Self.Caption), 63);
     StrLCopy(@szInfo[0],PChar(message), 255);
-    dwInfoFlags := dwBalloonOption;
     if NotifyIconSize = 488 then
       dwInfoFlags := dwInfoFlags and $0000000f; // NIF_ICON_MASK=$0000000f
   end;
@@ -1694,6 +1694,8 @@ begin
     uFlags := NIF_ICON or NIF_MESSAGE or NIF_TIP or $00000010; // NIF_INFO=$00000010
     if NotifyIconSize = 508 then
       uFlags := uFlags or $00000080; // NIF_SHOWTIP=$00000080
+    uCallbackMessage := WM_NotifyTasktray;
+    dwInfoFlags := dwBalloonOption;
     if Self.Icon.Handle > 0 then
       hIcon := Self.Icon.Handle
     else
@@ -1701,9 +1703,8 @@ begin
     StrLCopy(@szTip[0],PChar(Self.Caption), 127);
     StrLCopy(@szInfoTitle[0],PChar(''), 63);
     StrLCopy(@szInfo[0],PChar(''), 255);
-    dwInfoFlags := dwBalloonOption;
     if NotifyIconSize = 488 then
-      dwInfoFlags := dwInfoFlags or $0000000f; // NIF_ICON_MASK=$0000000f
+      dwInfoFlags := dwInfoFlags and $0000000f; // NIF_ICON_MASK=$0000000f
   end;
   Shell_NotifyIcon(NIM_MODIFY, @NotifyIcon);
   IsLiveTasktray := True;
