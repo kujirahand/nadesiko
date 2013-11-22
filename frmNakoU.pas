@@ -153,6 +153,7 @@ type
     IsLiveTasktray: boolean;
     dwBalloonOption: Integer;
     bBalloonRealtime: boolean;
+    bBalloonHideTitle: boolean;
     procedure InitTasktray;
     procedure FinishTasktray;
     procedure ChangeTrayIcon;
@@ -1672,7 +1673,10 @@ begin
         else
           hBalloonIcon := Application.Icon.Handle;
     StrLCopy(@szTip[0],PChar(Self.Caption), 127);
-    StrLCopy(@szInfoTitle[0],PChar(Self.Caption), 63);
+    if bBalloonHideTitle then
+      StrLCopy(@szInfoTitle[0],PChar(''), 63)
+    else
+      StrLCopy(@szInfoTitle[0],PChar(Self.Caption), 63);
     StrLCopy(@szInfo[0],PChar(message), 255);
     if NotifyIconSize = 488 then
       dwInfoFlags := dwInfoFlags and $0000000f; // NIF_ICON_MASK=$0000000f
