@@ -7089,6 +7089,8 @@ var
       e.dwBalloonOption := opt;
       if Pos('リアルタイム',s) > 0  then e.bBalloonRealtime := true
       else e.bBalloonRealtime := false;
+      if (Pos('タイトル無し',s) > 0) or (Pos('タイトルなし',s) > 0)  then e.bBalloonHideTitle := true
+      else e.bBalloonHideTitle := false;
     end else
     if cmd = 'タスクトレイバルーンオプションGET' then
     begin
@@ -7103,6 +7105,7 @@ var
       if opt=$00000004 then s:='アプリケーションアイコン'+s;
       e.dwBalloonOption := opt;
       if e.bBalloonRealtime then s:=s+'/リアルタイム';
+      if e.bBalloonHideTitle then s:=s+'/タイトル無し';
       Result := hi_var_new; hi_setStr(Result, s);
     end else
     if cmd = '画像通り変形' then
