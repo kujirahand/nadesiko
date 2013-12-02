@@ -54,6 +54,8 @@ type
     function Post(url, head, data: string): string; overload;
     function Post(url: string; Data:THttpHeadList): string; overload;
     function Head(url: string): string; // ヘッダを取得する(http://nadesi.com/index.htm)と直接指定が可能
+    function Put(url, head, data: string): string;
+    function Delete(url, head: string): string;
     function RecvToCRLFCRLF: string;
     procedure GetProxySettingFromRegistry;
     procedure OpenUrl(var url: string); // PROXYに対応
@@ -566,6 +568,214 @@ begin
   b := Data.GetBoundary;
   head := 'Content-Type: multipart/form-data; boundary=' + b;
   Result := Self.Post(url, head, Data.GetAsText(b));
+end;
+
+function TKHttpClient.Put(url, head, data: string): string;
+var
+  h: THttpHeadList; p: THttpHead;
+  ret: string;
+  len: Integer;
+  s: string;
+begin
+  try
+    OpenUrl(url);
+  except on e: Exception do
+    raise Exception.Create('サーバーとの接続エラー。' + e.Message);
+  end;
+  try
+    if Pos('//', url) = 0 then
+    begin
+      if Copy(url, 1,1) <> '/' then url := '/' + url;
+    end;
+
+    // コマンドを送る
+    Self.SendLn('PUT ' + url + ' HTTP/1.1');
+    // Self.SendLn('Accept-Language: ja');
+    Self.SendLn('Host: ' + Self.Host);
+    // 追加ヘッダ
+    if head <> '' then // 追加ヘッダを足す
+    begin
+      Self.send(Trim(head) + #13#10);
+    end;
+    // 認証
+    case AuthMode of
+      httpBASIC:
+        begin
+          Self.SendLn('Authorization: Basic '+GetBasicAuth);
+        end;
+      httpDigest:
+        begin
+          raise Exception.Create('未対応');
+          Self.SendLn('Authorization: Digest '+GetDigestAuth(url, 'GET'));
+        end;
+    end;
+
+    if FUserAgent <> '' then Self.SendLn('User-Agent: ' + FUserAgent);
+
+    // 区切り
+    Self.SendLn('Content-Length:' + IntToStr(Length(Trim(data))));
+    Self.SendLn('');
+
+    // データを送信する
+    Self.send(Trim(data));
+    Self.send(#13#10#13#10);
+
+    // レスポンスを得る
+    ret := Self.RecvToCRLFCRLF; // head
+    h := THttpHeadList.Create;
+    h.SetAsText(ret);
+
+    // Set-Cookieがあるか？
+    CheckCookie(h);
+    Result := ret;
+
+    // Content-Length があるか？
+    p := h.Find('Content-Length');
+    if p <> nil then
+    begin
+      len := StrToIntDef(p.Value, -1);
+      if len > 0 then
+      begin
+        ret := Self.RecvData(len);
+        Result := Result + #13#10#13#10 + ret;
+      end;
+    end else
+    if (h.Find('Content-Encoding') <> nil) and (h.Find('Content-Encoding').value = 'chunked') then
+    begin
+      // chunkにしたがって受信する
+      // とりあえず、ヘッダの後ろに改行追加
+      Result := Result + #13#10#13#10;
+      while true do
+      begin
+        // chunkサイズの行を取得
+        s := Self.RecvLn;
+        // パラメータを捨てる
+        s := getToken_s(s,';');
+        // サイズ(16進数)を取得
+        len := StrToIntDef('$'+s,-1);
+        // サイズが0なら終了マークなのでループを抜ける
+        if len = 0 then break;
+        // chunkサイズ分だけ受信する
+        ret := Self.RecvData(len);
+        Result := Result + ret;
+        // 直後に改行があるはずなので読取＆チェック
+        ret := Self.RecvLn;
+        if ret <> '' then break;
+      end;
+      // ヘッダと改行があるはずなので読み取る。ほんとはヘッダに加えるべき？
+      ret := RecvToCRLFCRLF;
+    end else begin
+      ret := Self.RecvDataToEnd;
+      Result := Result + #13#10#13#10 + ret;
+    end;
+
+    // 読み残りをクリア
+    Self.ClearBuffer;
+
+  finally
+    Close;
+  end;
+
+end;
+
+function TKHttpClient.Delete(url, head: string): string;
+var
+  h: THttpHeadList; p: THttpHead;
+  ret: string;
+  len: Integer;
+  s: string;
+begin
+  OpenUrl(url);
+  try
+    if Pos('//', url) = 0 then
+    begin
+      if Copy(url, 1,1) <> '/' then url := '/' + url;
+    end;
+
+    // コマンドを送る
+    Self.SendLn('DELETE ' + url + ' HTTP/1.1');
+    // Self.SendLn('Accept-Language: ja');
+    Self.SendLn('Host: ' + Self.Host);
+    // 追加ヘッダ
+    if head <> '' then // 追加ヘッダを足す
+    begin
+      Self.send(Trim(head) + #13#10);
+    end;
+    // 認証
+    case AuthMode of
+      httpBASIC:
+        begin
+          Self.SendLn('Authorization: Basic '+GetBasicAuth);
+        end;
+      httpDigest:
+        begin
+          raise Exception.Create('未対応');
+          Self.SendLn('Authorization: Digest '+GetDigestAuth(url, 'GET'));
+        end;
+    end;
+
+    if FUserAgent <> '' then Self.SendLn('User-Agent: ' + FUserAgent);
+
+    // 区切り
+    Self.SendLn('');
+    Self.SendLn('');
+
+    // レスポンスを得る
+    ret := Self.RecvToCRLFCRLF; // head
+    h := THttpHeadList.Create;
+    h.SetAsText(ret);
+
+    // Set-Cookieがあるか？
+    CheckCookie(h);
+    Result := ret;
+
+    // Content-Length があるか？
+    p := h.Find('Content-Length');
+    if p <> nil then
+    begin
+      // Content-Lengthに従って受信する
+      len := StrToIntDef(p.Value, -1);
+      if len > 0 then
+      begin
+        ret := Self.RecvData(len);
+        Result := Result + #13#10#13#10 + ret;
+      end;
+    end else
+    if (h.Find('Transfer-Encoding') <> nil) and (h.Find('Transfer-Encoding').value = 'chunked') then
+    begin
+      // chunkにしたがって受信する
+      Result := Result + #13#10#13#10;
+      while true do
+      begin
+        // chunkサイズの行を取得
+        s := Self.RecvLn;
+        // パラメータを捨てる
+        s := getToken_s(s,';');
+        // サイズ(16進数)を取得
+        len := StrToIntDef('$'+s,-1);
+        // サイズが0なら終了マークなのでループを抜ける
+        if len = 0 then break;
+        // chunkサイズ分だけ受信する
+        ret := Self.RecvData(len);
+        Result := Result + ret;
+        // 直後に改行があるはずなので読取＆チェック
+        ret := Self.RecvLn;
+        if ret <> '' then break;
+      end;
+      // ヘッダと改行があるはずなので読み取る。ほんとはヘッダに加えるべき？
+      ret := RecvToCRLFCRLF;
+    end else begin
+      ret := Self.RecvDataToEnd;
+      Result := Result + #13#10#13#10 + ret;
+    end;
+
+    // 読み残りをクリア
+    Self.ClearBuffer;
+
+  finally
+    Close;
+  end;
+
 end;
 
 procedure TKHttpClient.CheckCookie(headList: THttpHeadList);
