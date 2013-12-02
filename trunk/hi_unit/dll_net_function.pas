@@ -2530,21 +2530,10 @@ var
   http: TKHttpClient;
   url, head,body: AnsiString;
 
-  {function _method_https: PHiValue;
-  begin
-    raise Exception.Create('未サポートです。');
-  end;}
-
 begin
   head := getArgStr(args, 0, True);
   body := getArgStr(args, 1, False);
   url  := getArgStr(args, 2);
-
-  {if Copy(url,1,8) = 'https://' then
-  begin
-    Result := _method_https;
-    Exit;
-  end;}
 
   http := TKHttpClient.Create(nil);
   try
@@ -2657,6 +2646,50 @@ begin
   end;
 end;
 
+
+function sys_http_delete(args: DWORD): PHiValue; stdcall;
+var
+  http: TKHttpClient;
+  url, head: AnsiString;
+begin
+  head := getArgStr(args, 0, True);
+  url  := getArgStr(args, 1);
+
+  http := TKHttpClient.Create(nil);
+  try
+    // http セッティングを得る
+    http.GetProxySettingFromRegistry;
+    http.Port := 80;
+    // post
+    Result := hi_newStr(http.Delete(url, head));
+  finally
+    http.Free;
+  end;
+end;
+
+function sys_http_put(args: DWORD): PHiValue; stdcall;
+var
+  http: TKHttpClient;
+  url, head,body: AnsiString;
+
+begin
+  head := getArgStr(args, 0, True);
+  body := getArgStr(args, 1, False);
+  url  := getArgStr(args, 2);
+
+  http := TKHttpClient.Create(nil);
+  try
+    // http セッティングを得る
+    http.GetProxySettingFromRegistry;
+    http.Port := 80;
+    // post
+    Result := hi_newStr(http.Put(url, head, body));
+  finally
+    http.Free;
+  end;
+end;
+
+
 function sys_ntp_sync(args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
@@ -2750,6 +2783,8 @@ begin
   AddStrVar('HTTPオプション',   '',                4018, 'HTTPに関するオプションをハッシュ形式で設定する。BASIC認証は「BASIC認証=オン{~}ID=xxx{~}パスワード=xxx」と書く。他に、「UA=nadesiko{~}HTTP_VERSION=HTTP/1.1」。','HTTPおぷしょん');
   AddFunc  ('オンライン判定','',4019, sys_checkOnline, 'IEがオンラインかどうか判別し結果を1(オンライン)か0(オフライン)で返す。', 'おんらいんはんてい');
   AddFunc  ('インターネット接続判定','',4150, sys_IsInternetConnected, 'インターネットに接続しているかどうか判別し結果を1(オンライン)か0(オフライン)で返す。', 'いんたーねっとせつぞくはんてい');
+  AddFunc  ('HTTPプット','{文字列=?}HEADとBODYをURLへ|BODYで',4151, sys_http_put, 'プットしたい内容のHEADとBODYをURLへポストしその結果を返す。', 'HTTPぷっと');
+  AddFunc  ('HTTPデリート','{文字列=?}HEADをURLへ|HEADで',      4152, sys_http_delete, '送信ヘッダHEADを指定してURLへDELETEコマンドを発行する。そしてその結果を返す。', 'HTTPでりーと');
   //AddStrVar('HTTPダイジェスト認証情報',   '',                   -1, 'HTTPダイジェスト認証に関する情報をハッシュ形式で設定する。「realm={~}nonce={~}algorithm={~}qop={~}nc={~}cnonce=」と書く。','HTTPだいじぇすとにんしょうじょうほう');
 
   //-FTP
