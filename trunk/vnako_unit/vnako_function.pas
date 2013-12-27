@@ -6246,11 +6246,21 @@ var
   var
     NowLine: Integer;
   begin
-    with Memo do
+    if stdctrls.TMemo(memo) is TMemoXp then
     begin
-      NowLine:=Perform(EM_LINEFROMCHAR,SelStart,0);
-      Perform(EM_LINESCROLL,0,ToLine-NowLine);
-      SelStart:=Perform(EM_LINEINDEX,ToLine-1,0);
+      with TMemoXp(Memo) do
+      begin
+        NowLine:=Perform(EM_LINEFROMCHAR,SelStartU,0);
+        Perform(EM_LINESCROLL,0,ToLine-NowLine);
+        SelStartU:=Perform(EM_LINEINDEX,ToLine,0);
+      end;
+    end else begin
+      with Memo do
+      begin
+        NowLine:=Perform(EM_LINEFROMCHAR,SelStart,0);
+        Perform(EM_LINESCROLL,0,ToLine-NowLine);
+        SelStart:=Perform(EM_LINEINDEX,ToLine,0);
+      end;
     end;
   end;
 
