@@ -119,7 +119,7 @@ var
   begin
     Result := True;
     Inc(i);
-    for j := 1 to n do
+    for j := 2 to n do
     begin
       if i > Length(s) then
       begin
@@ -156,28 +156,40 @@ begin
       Continue;
     end;
     // 第一バイトからバイト数をチェック
-    if (c and $C0) > 0 then
+    if (c and $E0) = $C0 then
     begin
       if chk(2) then Continue;
       f := False;
       break;
     end;
-    if (c and $E0) > 0 then
+    if (c and $F0) = $E0 then
     begin
       if chk(3) then Continue;
       f := False;
       Break;
     end;
-    if (c and $F0) > 0 then
+    if (c and $F8) = $F0 then
     begin
       if chk(4) then Continue;
+      f := False;
+      Break;
+    end;
+    if (c and $FC) = $F8 then
+    begin
+      if chk(5) then Continue;
+      f := False;
+      Break;
+    end;
+    if (c and $FE) = $FC then
+    begin
+      if chk(6) then Continue;
       f := False;
       Break;
     end;
     f := False;
     Break;
   end;
-  
+
   if f then
   begin
     // UTF-8
