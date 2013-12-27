@@ -35,9 +35,11 @@ type
     procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
   protected
     function GetSelStart: Integer; reintroduce; override;
+    function GetSelStartU: Integer; reintroduce;
     function GetSelLength: Integer; reintroduce; override;
     function GetSelText: string; reintroduce; override;
     procedure SetSelStart(Value: Integer); reintroduce; override;
+    procedure SetSelStartU(Value: Integer); reintroduce;
     procedure SetSelLength(Value: Integer); reintroduce; override;
     // CaretPos
     function GetCaretPos: TPoint; reintroduce; override;
@@ -49,6 +51,7 @@ type
     property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
   published
     property SelStart: Integer read GetSelStart write SetSelStart;
+    property SelStartU: Integer read GetSelStartU write SetSelStartU;
     property SelLength: Integer read GetSelLength write SetSelLength;
     property SelText: string read GetSelText write SetSelText;
     property CaretPos: TPoint read GetCaretPos write SetCaretPos;
@@ -219,6 +222,12 @@ begin
   if IsXP then Result := m2b(Result, Text);
 end;
 
+function TMemoXP.GetSelStartU: Integer;
+begin
+  Result := inherited GetSelStart;
+  if not IsXP then Result := b2m(Result, Text);
+end;
+
 function TMemoXP.GetSelText: string;
 var
   sel: TSelection;
@@ -269,6 +278,12 @@ end;
 procedure TMemoXP.SetSelStart(Value: Integer);
 begin
   if IsXP then Value := b2m(Value, Text);
+  inherited SetSelStart(Value);
+end;
+
+procedure TMemoXP.SetSelStartU(Value: Integer);
+begin
+  if not IsXP then Value := m2b(Value, Text);
   inherited SetSelStart(Value);
 end;
 
