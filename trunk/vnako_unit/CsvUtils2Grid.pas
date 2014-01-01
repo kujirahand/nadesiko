@@ -2,7 +2,11 @@ unit CsvUtils2Grid;
 
 interface
 uses
-  CsvUtils2, Grids;
+  CsvUtils2, Grids
+{$IF RTLVersion < 20}
+  ,TntGrids
+{$IFEND}
+  ;
 
 // グリッド列幅の自動調整
 procedure CsvGridAutoColWidth(grid: TDrawGrid; csv: TCsvSheet);
@@ -13,6 +17,16 @@ procedure CsvGridGetData(grid: TStringGrid; csv: TCsvSheet);
 // グリッドにデータを注入
 procedure CsvGridSetData(grid: TStringGrid; csv: TCsvSheet);
 
+{$IF RTLVersion < 20}
+// グリッド列幅の自動調整
+procedure CsvGridAutoColWidthUni(grid: TTntDrawGrid; csv: TCsvSheet);
+// グリッドを空にする
+procedure CsvGridClearGridUni(grid: TTntStringGrid);
+// グリッドからデータを得る
+procedure CsvGridGetDataUni(grid: TTntStringGrid; csv: TCsvSheet);
+// グリッドにデータを注入
+procedure CsvGridSetDataUni(grid: TTntStringGrid; csv: TCsvSheet);
+{$ELSE}
 // グリッド列幅の自動調整
 procedure CsvGridAutoColWidthUni(grid: TDrawGrid; csv: TCsvSheet);
 // グリッドを空にする
@@ -21,6 +35,7 @@ procedure CsvGridClearGridUni(grid: TStringGrid);
 procedure CsvGridGetDataUni(grid: TStringGrid; csv: TCsvSheet);
 // グリッドにデータを注入
 procedure CsvGridSetDataUni(grid: TStringGrid; csv: TCsvSheet);
+{$IFEND}
 
 implementation
 
@@ -42,7 +57,11 @@ begin
 end;
 
 // グリッドからデータを得る
+{$IF RTLVersion < 20}
+procedure CsvGridGetDataUni(grid: TTntStringGrid; csv: TCsvSheet);
+{$ELSE}
 procedure CsvGridGetDataUni(grid: TStringGrid; csv: TCsvSheet);
+{$IFEND}
 var
   c, r: Integer;
 begin
@@ -106,7 +125,11 @@ begin
 end;
 
 // グリッド列幅の自動調整
+{$IF RTLVersion < 20}
+procedure CsvGridAutoColWidthUni(grid: TTntDrawGrid; csv: TCsvSheet);
+{$ELSE}
 procedure CsvGridAutoColWidthUni(grid: TDrawGrid; csv: TCsvSheet);
+{$IFEND}
 var
   cols, rows: Integer;
 
@@ -171,7 +194,11 @@ end;
 
 
 // グリッドを空にする
+{$IF RTLVersion < 20}
+procedure CsvGridClearGridUni(grid: TTntStringGrid);
+{$ELSE}
 procedure CsvGridClearGridUni(grid: TStringGrid);
+{$IFEND}
 var
   x, y: Integer;
 begin
@@ -214,7 +241,11 @@ begin
 end;
 
 // グリッドにデータを注入
+{$IF RTLVersion < 20}
+procedure CsvGridSetDataUni(grid: TTntStringGrid; csv: TCsvSheet);
+{$ELSE}
 procedure CsvGridSetDataUni(grid: TStringGrid; csv: TCsvSheet);
+{$IFEND}
 var
   x, y, cols: Integer;
 begin
@@ -239,6 +270,5 @@ begin
     end;
   end;
 end;
-
 
 end.

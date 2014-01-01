@@ -1,7 +1,7 @@
 unit vnako_function;
 
 interface
-                                                           
+
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, Menus,ValEdit, Grids, ComCtrls, StrSortGrid,
@@ -14,8 +14,10 @@ uses
   //
   // Delphi7    -> RTLVersion(15)
   // Delphi2005 -> RTLVersion(17)
+  // Delphi2009 -> RTLVersion(20)
   {$IF RTLVersion < 20}
   ,XPMan, gldpng
+  ,TntStdCtrls,TntExtCtrls, TntGrids
   {$ELSE}
   ,XPMan, pngimage
   {$IFEND}
@@ -550,6 +552,136 @@ type
     property OnMouseHover:TMouseEvent  read FOnMouseHover write FOnMouseHover;
   end;
 
+{$IF RTLVersion < 20}
+  TTntButton = class(TntStdCtrls.TTntButton)
+ 	private
+   	FHoverTime : Cardinal;
+	  FOnMouseEnter : TNotifyEvent;
+ 	  FOnMouseLeave : TNotifyEvent;
+ 	  FOnMouseHover : TMouseEvent;
+ 	  procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+ 	  procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+ 	  procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+ 	public
+ 	  property HoverTime:Cardinal read FHoverTime write FHoverTime;
+ 	  property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+ 	  property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+ 	  property OnMouseHover:TMouseEvent read FOnMouseHover write FOnMouseHover;
+ 	end;
+
+ 	TTntEdit = class(TntStdCtrls.TTntEdit)
+ 	private
+ 	  FHoverTime : Cardinal;
+ 	  FOnMouseEnter : TNotifyEvent;
+ 	  FOnMouseLeave : TNotifyEvent;
+ 	  FOnMouseHover : TMouseEvent;
+ 	  procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+ 	  procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+ 	  procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+ 	public
+ 	  property HoverTime:Cardinal read FHoverTime write FHoverTime;
+ 	  property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+ 	  property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+ 	  property OnMouseHover:TMouseEvent read FOnMouseHover write FOnMouseHover;
+ 	end;
+
+ 	TTntMemo = class(TntStdCtrls.TTntMemo)
+ 	private
+ 	  FHoverTime : Cardinal;
+ 	  FOnMouseEnter : TNotifyEvent;
+ 	  FOnMouseLeave : TNotifyEvent;
+ 	  FOnMouseHover : TMouseEvent;
+ 	  procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+ 	  procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+ 	  procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+ 	public
+ 	  property HoverTime:Cardinal read FHoverTime write FHoverTime;
+ 	  property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+ 	  property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+ 	  property OnMouseHover:TMouseEvent read FOnMouseHover write FOnMouseHover;
+ 	end;
+
+ 	TTntListBox = class(TntStdCtrls.TTntListBox)
+ 	private
+ 	  FHoverTime : Cardinal;
+ 	  FOnMouseEnter : TNotifyEvent;
+ 	  FOnMouseLeave : TNotifyEvent;
+ 	  FOnMouseHover : TMouseEvent;
+ 	  procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+ 	  procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+ 	  procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+ 	public
+ 	  property HoverTime:Cardinal read FHoverTime write FHoverTime;
+ 	  property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+ 	  property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+ 	  property OnMouseHover:TMouseEvent read FOnMouseHover write FOnMouseHover;
+ 	end;
+
+ 	TTntComboBox = class(TntStdCtrls.TTntComboBox)
+ 	private
+ 	  FHoverTime : Cardinal;
+ 	  FOnMouseEnter : TNotifyEvent;
+ 	  FOnMouseLeave : TNotifyEvent;
+ 	  FOnMouseHover : TMouseEvent;
+ 	  procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+ 	  procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+ 	  procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+ 	public
+ 	  property HoverTime:Cardinal read FHoverTime write FHoverTime;
+ 	  property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+ 	  property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+ 	  property OnMouseHover:TMouseEvent read FOnMouseHover write FOnMouseHover;
+ 	end;
+
+ 	TTntCheckBox = class(TntStdCtrls.TTntCheckBox)
+ 	private
+ 	  FHoverTime : Cardinal;
+ 	  FOnMouseEnter : TNotifyEvent;
+ 	  FOnMouseLeave : TNotifyEvent;
+ 	  FOnMouseHover : TMouseEvent;
+ 	  procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+ 	  procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+ 	  procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+ 	public
+ 	  property HoverTime:Cardinal read FHoverTime write FHoverTime;
+ 	  property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+ 	  property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+ 	  property OnMouseHover:TMouseEvent read FOnMouseHover write FOnMouseHover;
+ 	end;
+
+ 	TTntStringGrid = class(TntGrids.TTntStringGrid)
+ 	private
+ 	  FHoverTime : Cardinal;
+ 	  FOnMouseEnter : TNotifyEvent;
+ 	  FOnMouseLeave : TNotifyEvent;
+ 	  FOnMouseHover : TMouseEvent;
+ 	  procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+ 	  procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+ 	  procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+ 	public
+ 	  property HoverTime:Cardinal read FHoverTime write FHoverTime;
+ 	  property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+ 	  property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+ 	  property OnMouseHover:TMouseEvent read FOnMouseHover write FOnMouseHover;
+ 	end;
+
+ 	TTntLabel = class(TntStdCtrls.TTntLabel)
+ 	private
+ 	  FHoverTime : Cardinal;
+ 	  FOnMouseEnter : TNotifyEvent;
+ 	  FOnMouseLeave : TNotifyEvent;
+ 	  FOnMouseHover : TMouseEvent;
+ 	  procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
+ 	  procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
+ 	  procedure WMMouseHover(var Msg: TMessage); message WM_MOUSEHOVER;
+ 	public
+ 	  property HoverTime:Cardinal read FHoverTime write FHoverTime;
+ 	  property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+ 	  property OnMouseLeave:TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseHover:TMouseEvent read FOnMouseHover write FOnMouseHover;
+  end;
+{$IFEND}
+
 implementation
 
 uses
@@ -743,7 +875,6 @@ begin
 end;
 
 { TMemo }
-
 procedure TMemo.CMMouseEnter(var Msg: TMessage);
 begin
   if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
@@ -815,7 +946,6 @@ end;
 
 
 { TTrackBox }
-
 procedure TTrackBox.CMMouseEnter(var Msg: TMessage);
 begin
   if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
@@ -839,7 +969,6 @@ begin
 end;
 
 { TValueListEditor }
-
 procedure TValueListEditor.CMMouseEnter(var Msg: TMessage);
 begin
   if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
@@ -863,7 +992,6 @@ begin
 end;
 
 { TToolButton }
-
 procedure TToolButton.CMMouseEnter(var Msg: TMessage);
 begin
   if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
@@ -1139,6 +1267,192 @@ begin
       FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
   end;
 end;
+
+{$IF RTLVersion < 20}
+{TTntButton}
+procedure TTntButton.CMMouseEnter(var Msg:TMessage);
+begin
+  if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+  	FOnMouseEnter(self);
+ 	_TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TTntButton.CMMouseLeave(var Msg:TMessage);
+begin
+ 	if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+   	FOnMouseLeave(Self);
+end;
+
+procedure TTntButton.WMMouseHover(var Msg:TMessage);
+begin
+	if Assigned(FOnMouseHover) then
+ 	begin
+   	with TWMMouse(Msg) do
+    	FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+  end;
+end;
+
+{TTntEdit}
+procedure TTntEdit.CMMouseEnter(var Msg:TMessage);
+begin
+	if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+   	FOnMouseEnter(self);
+	_TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TTntEdit.CMMouseLeave(var Msg:TMessage);
+begin
+ 	if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+  	FOnMouseLeave(Self);
+end;
+
+procedure TTntEdit.WMMouseHover(var Msg:TMessage);
+begin
+	if Assigned(FOnMouseHover) then
+ 	begin
+  	with TWMMouse(Msg) do
+    	FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+ 	end;
+end;
+
+{TTntMemo}
+procedure TTntMemo.CMMouseEnter(var Msg:TMessage);
+begin
+ 	if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+  	FOnMouseEnter(self);
+ 	_TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TTntMemo.CMMouseLeave(var Msg:TMessage);
+begin
+ 	if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+  	FOnMouseLeave(Self);
+end;
+
+procedure TTntMemo.WMMouseHover(var Msg:TMessage);
+begin
+ 	if Assigned(FOnMouseHover) then
+ 	begin
+ 	  with TWMMouse(Msg) do
+   	  FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+ 	end;
+end;
+
+{TTntListBox}
+procedure TTntListBox.CMMouseEnter(var Msg:TMessage);
+begin
+ 	if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+  	FOnMouseEnter(self);
+ 	_TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TTntListBox.CMMouseLeave(var Msg:TMessage);
+begin
+ 	if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+   	FOnMouseLeave(Self);
+end;
+
+procedure TTntListBox.WMMouseHover(var Msg:TMessage);
+begin
+ 	if Assigned(FOnMouseHover) then
+ 	begin
+  	with TWMMouse(Msg) do
+ 	    FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+ 	end;
+end;
+
+{TTntComboBox}
+procedure TTntComboBox.CMMouseEnter(var Msg:TMessage);
+begin
+ 	if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+   	FOnMouseEnter(self);
+ 	_TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TTntComboBox.CMMouseLeave(var Msg:TMessage);
+begin
+ 	if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+   	FOnMouseLeave(Self);
+end;
+
+procedure TTntComboBox.WMMouseHover(var Msg:TMessage);
+begin
+ 	if Assigned(FOnMouseHover) then
+ 	begin
+  	with TWMMouse(Msg) do
+ 	    FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+ 	end;
+end;
+
+{TTntCheckBox}
+procedure TTntCheckBox.CMMouseEnter(var Msg:TMessage);
+begin
+ 	if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+  	FOnMouseEnter(self);
+ 	_TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TTntCheckBox.CMMouseLeave(var Msg:TMessage);
+begin
+ 	if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+  	FOnMouseLeave(Self);
+end;
+
+procedure TTntCheckBox.WMMouseHover(var Msg:TMessage);
+begin
+if Assigned(FOnMouseHover) then
+ 	begin
+   	with TWMMouse(Msg) do
+ 	    FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+ 	end;
+end;
+
+{TTntStringGrid}
+procedure TTntStringGrid.CMMouseEnter(var Msg:TMessage);
+begin
+ 	if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+  	FOnMouseEnter(self);
+ 	_TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TTntStringGrid.CMMouseLeave(var Msg:TMessage);
+begin
+ 	if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+  	FOnMouseLeave(Self);
+end;
+
+procedure TTntStringGrid.WMMouseHover(var Msg:TMessage);
+begin
+ 	if Assigned(FOnMouseHover) then
+ 	begin
+  	with TWMMouse(Msg) do
+    	FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+ 	end;
+end;
+
+{TTntLabel}
+procedure TTntLabel.CMMouseEnter(var Msg:TMessage);
+begin
+ 	if (Msg.LParam = 0) and Assigned(FOnMouseEnter) then
+ 	  FOnMouseEnter(self);
+ 	//_TrackMouseEvent(Self.Handle,FHoverTime);
+end;
+
+procedure TTntLabel.CMMouseLeave(var Msg:TMessage);
+begin
+ 	if (Msg.LParam = 0) and Assigned(FOnMouseLeave) then
+ 	  FOnMouseLeave(Self);
+end;
+
+procedure TTntLabel.WMMouseHover(var Msg:TMessage);
+begin
+ 	if Assigned(FOnMouseHover) then
+ 	begin
+ 	  with TWMMouse(Msg) do
+  	  FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
+	end;
+end;
+{$IFEND}
 
 constructor TRingBufferString.Create(maxsize:integer);
 begin
@@ -5094,8 +5408,13 @@ begin
     // UNICODE COMPONENT
     VCL_GUI_UBUTTON:
       begin
+{$IF RTLVersion < 20}
+        o := TTntButton.Create(parentObj);
+        with TTntButton(o) do begin
+{$ELSE}
         o := TButton.Create(parentObj);
         with TButton(o) do begin
+{$IFEND}
           OnClick := Bokan.eventClick;
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
@@ -5111,8 +5430,13 @@ begin
       end;
     VCL_GUI_UEDIT        :
       begin
+{$IF RTLVersion < 20}
+        o := TTntEdit.Create(parentObj);
+        with TTntEdit(o) do begin
+{$ELSE}
         o := TEdit.Create(parentObj);
         with TEdit(o) do begin
+{$IFEND}
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
           OnChange    := Bokan.eventChange;
@@ -5133,8 +5457,13 @@ begin
       end;
     VCL_GUI_UMEMO        :
       begin
+{$IF RTLVersion < 20}
+        o := TTntMemo.Create(parentObj);
+        with TTntMemo(o) do begin
+{$ELSE}
         o := TMemo.Create(parentObj);
         with TMemo(o) do begin
+{$IFEND}
           ScrollBars := ssBoth;
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
@@ -5156,8 +5485,13 @@ begin
       end;
     VCL_GUI_ULIST        :
       begin
+{$IF RTLVersion < 20}
+        o := TTntListBox.Create(parentObj);
+        with TTntListBox(o) do begin
+{$ELSE}
         o := TListBox.Create(parentObj);
         with TListBox(o) do begin
+{$IFEND}
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
           OnMouseDown := Bokan.eventMouseDown;
@@ -5179,8 +5513,13 @@ begin
       end;
     VCL_GUI_UCOMBO       :
       begin
+{$IF RTLVersion < 20}
+        o := TTntComboBox.Create(parentObj);
+        with TTntComboBox(o) do begin
+{$ELSE}
         o := TComboBox.Create(parentObj);
         with TComboBox(o) do begin
+{$IFEND}
           AutoComplete := False;
           OnClick     := Bokan.eventClick;
           OnDblClick  := Bokan.eventDblClick;
@@ -5202,8 +5541,13 @@ begin
       end;
     VCL_GUI_UCHECK       :
       begin
+{$IF RTLVersion < 20}
+        o := TTntCheckBox.Create(parentObj);
+        with TTntCheckBox(o) do begin
+{$ELSE}
         o := TCheckBox.Create(parentObj);
         with TCheckBox(o) do begin
+{$IFEND}
           OnClick     := Bokan.eventClick;
           OnMouseDown := Bokan.eventMouseDown;
           OnMouseMove := Bokan.eventMouseMove;
@@ -5222,8 +5566,13 @@ begin
       end;
     VCL_GUI_URADIO       :
       begin
+{$IF RTLVersion < 20}
+        o := TTntRadioGroup.Create(parentObj);
+        with TTntRadioGroup(o) do begin
+{$ELSE}
         o := TRadioGroup.Create(parentObj);
         with TRadioGroup(o) do begin
+{$IFEND}
           OnClick   := Bokan.eventClick;
           OnDragOver  := Bokan.eventDragOver;
           OnDragDrop  := Bokan.eventDragDrop;
@@ -5234,8 +5583,13 @@ begin
       end;
     VCL_GUI_UGRID        :
       begin
+{$IF RTLVersion < 20}
+        o := TTntStringGrid.Create(parentObj);
+        with TTntStringGrid(o) do begin
+{$ELSE}
         o := TStringGrid.Create(parentObj);
         with TStringGrid(o) do begin
+{$IFEND}
           FixedCols := 0;
           DefaultColWidth := 32;
           DefaultRowHeight := Trunc(Bokan.Canvas.TextHeight('Z') * 1.5);
@@ -5259,8 +5613,13 @@ begin
       end;
     VCL_GUI_ULABEL       :
       begin
+{$IF RTLVersion < 20}
+        o := TTntLabel.Create(parentObj);
+        with TTntLabel(o) do begin
+{$ELSE}
         o := TLabel.Create(parentObj);
         with TLabel(o) do begin
+{$IFEND}
           AutoSize := False;
           Transparent := True;
           OnClick := Bokan.eventClick;
@@ -5349,11 +5708,21 @@ var
     end;
 
     function getGridTextUni: WideString;
-    var g: TStringGrid; i: Integer;
+    var
+{$IF RTLVersion < 20}
+      g: TTntStringGrid;
+{$ELSE}
+      g: TStringGrid;
+{$IFEND}
+      i: Integer;
     begin
       Result := '';
 
+{$IF RTLVersion < 20}
+      g := TTntStringGrid(obj);
+{$ELSE}
       g := TStringGrid(obj);
+{$IFEND}
       if goRowSelect in g.Options then
       begin
         if g.Row < 0 then Exit;
@@ -5413,6 +5782,21 @@ var
       VCL_GUI_BIT_BUTTON  : res := TBitBtn(obj).Caption;
       VCL_GUI_GROUPBOX    : res := TGroupBox(obj).Caption;
       // uni parts
+{$IF RTLVersion < 20}
+      VCL_GUI_UBUTTON     : res := uni2ansi(TTntButton(obj).Caption);
+      VCL_GUI_UEDIT :
+ 	      begin
+         	res := uni2ansi(TTntEdit(obj).Text);
+ 	        // ShowMessage(StrToHexStr(res)); // ok
+ 	      end;
+ 	    VCL_GUI_UMEMO : res := uni2ansi(TTntMemo(obj).Text);
+     	VCL_GUI_ULIST : if TTntListBox(obj).ItemIndex >= 0 then res := uni2ansi(TTntListBox(obj).Items.Strings[TTntListBox(obj).ItemIndex]);
+ 	    VCL_GUI_UCOMBO : res := uni2ansi(TTntComboBox(obj).Text);
+ 	    VCL_GUI_UCHECK : res := uni2ansi(TTntCheckBox(obj).Caption);
+ 	    VCL_GUI_URADIO : res := uni2ansi(TTntRadioGroup(obj).Caption);
+ 	    VCL_GUI_UGRID : res := uni2ansi(getGridTextUni);
+     	VCL_GUI_ULABEL : res := uni2ansi(TTntLabel(obj).Caption);
+{$ELSE}
       VCL_GUI_UBUTTON     : res := (TButton(obj).Caption);
       VCL_GUI_UEDIT       :
         begin
@@ -5426,7 +5810,7 @@ var
       VCL_GUI_URADIO      : res := (TRadioGroup(obj).Caption);
       VCL_GUI_UGRID       : res := (getGridTextUni);
       VCL_GUI_ULABEL      : res := (TLabel(obj).Caption);
-
+{$IFEND}
     end;
     if IsDialogConvNum then
     begin
@@ -5463,10 +5847,17 @@ var
       VCL_GUI_TREEVIEW    : res := THiTreeView(obj).ItemIndex;
       VCL_GUI_PROGRESS    : res := TProgressBar(obj).Position;
       // uni
+{$IF RTLVersion < 20}
+      VCL_GUI_ULIST : res := TTntListBox(obj).ItemIndex;
+    	VCL_GUI_UCOMBO : res := TTntComboBox(obj).ItemIndex;
+ 	    VCL_GUI_UGRID : res := TTntStringGrid(obj).Row;
+    	VCL_GUI_URADIO : res := TTntRadioGroup(obj).ItemIndex;
+{$ELSE}
       VCL_GUI_ULIST        : res := TListBox(obj).ItemIndex;
       VCL_GUI_UCOMBO       : res := TComboBox(obj).ItemIndex;
       VCL_GUI_UGRID        : res := TStringGrid(obj).Row;
       VCL_GUI_URADIO       : res := TRadioGroup(obj).ItemIndex;
+{$IFEND}
       else raise Exception.Create('定義されていません。');
     end;
     hi_setInt(Result, res);
@@ -5495,6 +5886,21 @@ var
         begin
           res := TreeToCsv(obj as THiTreeView);
         end;
+{$IF RTLVersion < 20}
+      VCL_GUI_ULIST : res := uni2ansi(TTntListBox(obj).Items.Text);
+ 	    VCL_GUI_UCOMBO: res := uni2ansi(TTntComboBox(obj).Items.Text);
+ 	    VCL_GUI_URADIO: res := uni2ansi(TTntRadioGroup(obj).Items.Text);
+ 	    VCL_GUI_UGRID:
+ 	      begin
+ 	        csv := TCsvSheet.Create;
+ 	        try
+ 	          CsvGridGetDataUni(TTntStringGrid(obj), csv);
+ 	          res := csv.AsText;
+ 	        finally
+ 	          csv.Free;
+ 	        end;
+ 	      end;
+{$ELSE}
       VCL_GUI_ULIST : res := (TListBox(obj).Items.Text);
       VCL_GUI_UCOMBO: res := (TComboBox(obj).Items.Text);
       VCL_GUI_URADIO: res := (TRadioGroup(obj).Items.Text);
@@ -5508,6 +5914,7 @@ var
             csv.Free;
           end;
         end;
+{$IFEND}
       else raise Exception.Create('定義されていません。');
     end;
     hi_setStrU(Result,res);
@@ -5530,9 +5937,15 @@ var
       VCL_GUI_SPINEDIT: res := TSpinEdit(obj).SelText;
       VCL_GUI_TEDITOR : res := THiEditor(obj).SelText;
       // uni
+{$IF RTLVersion < 20}
+      VCL_GUI_UEDIT : res := uni2ansi(TTntEdit(obj).SelText);
+ 	    VCL_GUI_UMEMO : res := uni2ansi(TTntMemo(obj).SelText);
+ 	    VCL_GUI_UCOMBO : res := uni2ansi(TTntComboBox(obj).SelText);
+{$ELSE}
       VCL_GUI_UEDIT    : res := (TEdit(obj).SelText);
       VCL_GUI_UMEMO    : res := (TMemo(obj).SelText);
       VCL_GUI_UCOMBO   : res := (TComboBox(obj).SelText);
+{$IFEND}
       else raise Exception.Create('定義されていません。');
     end;
     hi_setStrU(Result, res);
@@ -5547,9 +5960,15 @@ var
       VCL_GUI_SPINEDIT: res := TSpinEdit(obj).SelStart;
       VCL_GUI_TEDITOR : res := THiEditor(obj).SelStart;
       // uni
+{$IF RTLVersion < 20}
+ 	    VCL_GUI_UEDIT : res := TTntEdit(obj).SelStart;
+    	VCL_GUI_UMEMO : res := TTntMemo(obj).SelStart;
+     	VCL_GUI_UCOMBO : res := TTntComboBox(obj).SelStart;
+{$ELSE}
       VCL_GUI_UEDIT    : res := TEdit(obj).SelStart;
       VCL_GUI_UMEMO    : res := TMemo(obj).SelStart;
       VCL_GUI_UCOMBO   : res := TComboBox(obj).SelStart;
+{$IFEND}
       else raise Exception.Create('定義されていません。');
     end;
     hi_setInt(Result, res);
@@ -5563,9 +5982,15 @@ var
       VCL_GUI_COMBO   : res := TComboBox(obj).SelLength;
       VCL_GUI_SPINEDIT: res := TSpinEdit(obj).SelLength;
       VCL_GUI_TEDITOR : res := THiEditor(obj).SelLength;
+{$IF RTLVersion < 20}
+      VCL_GUI_UEDIT : res := TTntEdit(obj).SelLength;
+     	VCL_GUI_UMEMO : res := TTntMemo(obj).SelLength;
+    	VCL_GUI_UCOMBO : res := TTntComboBox(obj).SelLength;
+{$ELSE}
       VCL_GUI_UEDIT    : res := TEdit(obj).SelLength;
       VCL_GUI_UMEMO    : res := TMemo(obj).SelLength;
       VCL_GUI_UCOMBO   : res := TComboBox(obj).SelLength;
+{$IFEND}
       else raise Exception.Create('定義されていません。');
     end;
     hi_setInt(Result, res);
@@ -5692,9 +6117,20 @@ var
       end;
     end;
     procedure setGridTextUni(v: string);
-    var g: TStringGrid; c: TCsvSheet; i: Integer;
+    var
+{$IF RTLVersion < 20}
+      g: TTntStringGrid;
+{$ELSE}
+      g: TStringGrid;
+{$IFEND}
+      c: TCsvSheet;
+      i: Integer;
     begin
+{$IF RTLVersion < 20}
+      g := TTntStringGrid(obj);
+{$ELSE}
       g := TStringGrid(obj);
+{$IFEND}
       if goRowSelect in g.Options then
       begin
         if g.Row < 0 then Exit;
@@ -5711,7 +6147,7 @@ var
       end else
       begin
         if (g.Col >= 0) and (g.Row >= 0) then
-          g.Cells[g.Col, g.Row] := (v);
+          g.Cells[g.Col, g.Row] := ansi2uni(v);
       end;
     end;
 
@@ -5766,6 +6202,20 @@ var
       VCL_GUI_BIT_BUTTON  : TBitBtn(obj).Caption    := s;
       VCL_GUI_GROUPBOX    : TGroupBox(obj).Caption    := s;
       // uni
+{$IF RTLVersion < 20}
+      VCL_GUI_UBUTTON     : TTntButton(obj).Caption := ansi2uni(s);
+ 	    VCL_GUI_UEDIT       :
+ 	      begin
+ 	        TTntEdit(obj).Text := ansi2uni(s);
+ 	      end;
+ 	    VCL_GUI_UMEMO       : TTntMemo(obj).Text := ansi2uni(s);
+ 	    VCL_GUI_ULIST       : begin if TTntListBox(obj).ItemIndex >= 0 then TListBox(obj).Items[TTntListBox(obj).ItemIndex] := ansi2uni(s); end;
+ 	    VCL_GUI_UCOMBO      : TTntComboBox(obj).Text := ansi2uni(s);
+ 	    VCL_GUI_UCHECK      : TTntCheckBox(obj).Caption := ansi2uni(s);
+ 	    VCL_GUI_URADIO      : TTntRadioGroup(obj).Caption:= ansi2uni(s);
+ 	    VCL_GUI_UGRID       : setGridTextUni(s);
+     	VCL_GUI_ULABEL      : begin TTntLabel(obj).AutoSize := True; TTntLabel(obj).Caption := ansi2uni(s); TTntLabel(obj).AutoSize := False; end;
+{$ELSE}
       VCL_GUI_UBUTTON     : TButton(obj).Caption := (s);
       VCL_GUI_UEDIT       :
         begin
@@ -5778,6 +6228,7 @@ var
       VCL_GUI_URADIO      : TRadioGroup(obj).Caption:= (s);
       VCL_GUI_UGRID       : setGridTextUni(s);
       VCL_GUI_ULABEL      : begin TLabel(obj).AutoSize := True; TLabel(obj).Caption := (s); TLabel(obj).AutoSize := False; end;
+{$IFEND}
     end;
   end;
 
@@ -5798,11 +6249,19 @@ var
       VCL_GUI_TIMER       : TTimer(obj).Interval := i;
       VCL_GUI_PROGRESS    : TProgressBar(obj).Position := i;
       //
+{$IF RTLVersion < 20}
+      VCL_GUI_ULIST       : TTntListBox(obj).ItemIndex := i;
+ 	    VCL_GUI_UCOMBO      : TTntComboBox(obj).ItemIndex := i;
+ 	    VCL_GUI_UGRID       : TTntStringGrid(obj).Row := i;
+ 	    VCL_GUI_URADIO      : TTntRadioGroup(obj).ItemIndex := i;
+    	VCL_GUI_UCHECK      : TTntCheckBox(obj).Checked := (i<>0);
+{$ELSE}
       VCL_GUI_ULIST        : TListBox(obj).ItemIndex  := i;
       VCL_GUI_UCOMBO       : TComboBox(obj).ItemIndex := i;
       VCL_GUI_UGRID        : TStringGrid(obj).Row := i;
       VCL_GUI_URADIO       : TRadioGroup(obj).ItemIndex := i;
       VCL_GUI_UCHECK       : TCheckBox(obj).Checked := (i<>0);
+{$IFEND}
       else raise Exception.Create('定義されていません。');
     end;
   end;
@@ -5835,6 +6294,29 @@ var
         end;
       VCL_GUI_TREEVIEW    : CsvToTree( THiTreeView(obj), hi_strU(v), True);
       // uni
+{$IF RTLVersion < 20}
+      VCL_GUI_ULIST       : TTntListBox(obj).Items.Text := ansi2uni(hi_str(v));
+ 	    VCL_GUI_UCOMBO      : TTntComboBox(obj).Items.Text := ansi2uni(hi_str(v));
+ 	    VCL_GUI_URADIO      : TTntRadioGroup(obj).Items.Text := ansi2uni(hi_str(v));
+ 	    VCL_GUI_UGRID       :
+ 	      begin
+ 	        csv := TCsvSheet.Create;
+ 	        try
+ 	          csv.setTextW(Trim(ansi2uni(hi_str(v))), ',');
+ 	          with TTntStringGrid(obj) do
+ 	          begin
+ 	            if csv.Count >= 2 then
+ 	              RowCount := csv.Count
+ 	            else
+ 	              RowCount := 2;
+           	  CsvGridSetDataUni(TTntStringGrid(obj), csv);
+ 	            CsvGridAutoColWidthUni(TTntDrawGrid(obj), csv);
+ 	          end;
+ 	        finally
+ 	          csv.Free;
+ 	        end;
+        end;
+{$ELSE}
       VCL_GUI_ULIST       : TListBox(obj).Items.Text  := ansi2uni(hi_str(v));
       VCL_GUI_UCOMBO      : TComboBox(obj).Items.Text := ansi2uni(hi_str(v));
       VCL_GUI_URADIO      : TRadioGroup(obj).Items.Text := ansi2uni(hi_str(v));
@@ -5856,6 +6338,7 @@ var
             csv.Free;
           end;
         end;
+{$IFEND}
       else raise Exception.Create('定義されていません。');
     end;
   end;
@@ -5871,9 +6354,15 @@ var
       VCL_GUI_SPINEDIT: TSpinEdit(obj).SelText      := res;
       VCL_GUI_TEDITOR : THiEditor(obj).SelText        := res;
       // uni
+{$IF RTLVersion < 20}
+      VCL_GUI_UEDIT    : TTntEdit(obj).SelText         := ansi2uni(res);
+      VCL_GUI_UMEMO    : TTntMemo(obj).SelText         := ansi2uni(res);
+      VCL_GUI_UCOMBO   : TTntComboBox(obj).SelText     := ansi2uni(res);
+{$ELSE}
       VCL_GUI_UEDIT    : TEdit(obj).SelText       := (res);
       VCL_GUI_UMEMO    : TMemo(obj).SelText       := (res);
       VCL_GUI_UCOMBO   : TComboBox(obj).SelText   := (res);
+{$IFEND}
       else raise Exception.Create('定義されていません。');
     end;
   end;
@@ -5890,9 +6379,15 @@ var
         VCL_GUI_SPINEDIT: TSpinEdit(obj).SelStart  := res;
         VCL_GUI_TEDITOR : THiEditor(obj).SelStart    := res;
         // uni
+{$IF RTLVersion < 20}
+        VCL_GUI_UEDIT    : TTntEdit(obj).SelStart      := res;
+        VCL_GUI_UMEMO    : TTntMemo(obj).SelStart      := res;
+        VCL_GUI_UCOMBO   : TTntComboBox(obj).SelStart  := res;
+{$ELSE}
         VCL_GUI_UEDIT    : TEdit(obj).SelStart      := res;
         VCL_GUI_UMEMO    : TMemo(obj).SelStart      := res;
         VCL_GUI_UCOMBO   : TComboBox(obj).SelStart  := res;
+{$IFEND}
         else raise Exception.Create('定義されていません。');
       end;
     finally
@@ -5909,9 +6404,15 @@ var
       VCL_GUI_SPINEDIT: TSpinEdit(obj).SelLength  := res;
       VCL_GUI_TEDITOR : THiEditor(obj).SelLength    := res;
       // uni
+{$IF RTLVersion < 20}
+      VCL_GUI_UEDIT    : TTntEdit(obj).SelLength      := res;
+      VCL_GUI_UMEMO    : TTntMemo(obj).SelLength      := res;
+      VCL_GUI_UCOMBO   : TTntComboBox(obj).SelLength  := res;
+{$ELSE}
       VCL_GUI_UEDIT    : TEdit(obj).SelLength      := res;
       VCL_GUI_UMEMO    : TMemo(obj).SelLength      := res;
       VCL_GUI_UCOMBO   : TComboBox(obj).SelLength  := res;
+{$IFEND}
       else raise Exception.Create('定義されていません。');
     end;
   end;
