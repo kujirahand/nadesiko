@@ -76,6 +76,10 @@ uses
   CppFountain in 'component\hedit251\CppFountain.pas',
   JavaFountain in 'component\hedit251\JavaFountain.pas',
   PerlFountain in 'component\hedit251\PerlFountain.pas'
+{$IF RTLVersion < 20}
+  ,TntStdCtrls in 'component\TntUnicodeControls\TntStdCtrls.pas'
+  ,TntControls in 'component\TntUnicodeControls\TntControls.pas'
+{$IFEND}
 {$IFDEF DELUX_VERSION}
   ,unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas'
 {$ENDIF}
