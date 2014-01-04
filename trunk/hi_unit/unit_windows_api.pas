@@ -86,6 +86,7 @@ begin
                 0: Result := 'Windows Vista';
                 1: Result := 'Windows 7';
                 2: Result := 'Windows 8';
+                3: Result := 'Windows 8.1';
               end;
           end;
   end;//of case Major 
