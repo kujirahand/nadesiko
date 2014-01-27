@@ -480,6 +480,7 @@ begin
 
   freeObjList := TList.Create;
 
+  self.DoubleBuffered := True;
   self.Color := clWhite;
 
   flagNowClose := False;
