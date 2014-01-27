@@ -487,6 +487,7 @@ var
 function SyntaxTab(Level: Integer): AnsiString;
 function SyntaxClassToFuncName(name: string): AnsiString;
 
+
 implementation
 
 uses hima_string, hima_system, unit_string, Math, unit_text_file;
