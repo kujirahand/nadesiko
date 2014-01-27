@@ -78,7 +78,7 @@ type
 
   THimaFile = class(THObjectList)
   private
-    procedure Analize(src: AnsiString); //<--- トークンを区切る関数 ---------------- ***
+    procedure Analize(var src: AnsiString); //<--- トークンを区切る関数 ---------------- ***
   public
     Parent    : THimaFiles;
     Path, Filename : string;
@@ -171,6 +171,9 @@ procedure setJosiList(sys: TObject);
 
 // ファイルの検索
 function HiFindFile(var fname: string): Boolean;
+
+// 文字列を#0で埋めてから削除する
+procedure HiResetString(var source:string);
 
 
 const
@@ -307,7 +310,6 @@ uses unit_file_dnako, hima_system, unit_pack_files, mini_file_utils;
 var
   KuraidoriList: THiKuraidoriList;
 
-
 function HiFindFile(var fname: string): Boolean;
 var
   rawpath, path: string;
@@ -360,7 +362,7 @@ begin
   if check(path) then Exit;
   // Plug-ins dir
   if check(HiSystem.PluginsDir) then Exit;
-  
+
   // other
   path := FindDLLFile(fname);
   if FileExists(path) then
@@ -370,6 +372,15 @@ begin
   end;
 
   Result := False;
+end;
+
+// (セキュリティ対策)文字列を#0で埋めてから解放する
+procedure HiResetString(var source:string);
+var len: Integer;
+begin
+  len := Length(source);
+  FillMemory(PChar(source), len, 0);
+  source := '';
 end;
 
 // トークンを切り出す
@@ -744,7 +755,7 @@ begin
   CurBlock.NextBlock := nil;
 end;
 
-procedure THimaFile.Analize(src: AnsiString);
+procedure THimaFile.Analize(var src: AnsiString);
 var
   lineNo: Integer;
   indent: Integer;
@@ -1067,7 +1078,7 @@ end;
 
 procedure THimaFile.LoadFromFile(Filename: string);
 var
-  src: AnsiString;
+  src, srcC: AnsiString;
   fname, path: string;
 
 begin
@@ -1096,20 +1107,25 @@ begin
   end;
 
   // 一時解析
-  src := HimaSourceConverter(FileNo, src);
+  srcC := HimaSourceConverter(FileNo, src);
   try
-    Analize(src);
+    HiResetString(src);
+    Analize(srcC);
+    HiResetString(srcC);
   except on e: Exception do
     raise Exception.Create('トークンの解析中にエラー。'+e.Message);
   end;
 end;
 
 procedure THimaFile.SetSource(src: AnsiString);
+var r: String;
 begin
-  src := HimaSourceConverter(-1, src);
+  r := HimaSourceConverter(-1, src);
   Self.Filename := '';
   Self.Fileno := -1;
-  Analize(src);
+  HiResetString(src);
+  Analize(r);
+  HiResetString(r);
 end;
 
 function THimaFile.TopToken: THimaToken;

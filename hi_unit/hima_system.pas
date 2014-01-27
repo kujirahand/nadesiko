@@ -1954,6 +1954,7 @@ begin
   parser := THiParser.Create;
   try
     TopSyntaxNode := parser.Parse(f.TopToken);
+    HiResetString(Source);
   finally
     parser.Free;
   end;

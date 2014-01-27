@@ -20,7 +20,7 @@ type
   end;
 
 // クラスを使わないで整形
-function HimaSourceConverter(FileNo: Integer; src: AnsiString): AnsiString;
+function HimaSourceConverter(FileNo: Integer; var src: AnsiString): AnsiString;
 // 動詞の語尾変化を削除
 function DeleteGobi(key: AnsiString): AnsiString;
 // 文字コードの範囲内かどうか調べる
@@ -34,7 +34,7 @@ uses
   hima_error, hima_token;
 
 // クラスを使わないで整形
-function HimaSourceConverter(FileNo: Integer; src: AnsiString): AnsiString;
+function HimaSourceConverter(FileNo: Integer; var src: AnsiString): AnsiString;
 var
   h: THimaSourceConverter;
 begin

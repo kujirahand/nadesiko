@@ -3690,12 +3690,14 @@ end;
 
 function sys_ExistsVar(args: THiArray): PHiValue; stdcall;
 var
-  s   : PHiValue;
   id  : DWORD;
-  v   : PHiValue;
+  v,s : PHiValue;
+  s1,s2: string;
 begin
   s  := args.Items[0];
-  id := hi_tango2id(DeleteGobi(HimaSourceConverter(-1, hi_str(s))));
+  s1 := hi_str(s);
+  s2 := HimaSourceConverter(-1, s1);
+  id := hi_tango2id(DeleteGobi(s2));
   v  :=HiSystem.GetVariable(id);
   if v = nil then
   begin
