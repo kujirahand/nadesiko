@@ -6786,19 +6786,62 @@ var
       Result := t;
     end;
 
+    function _setDelphiColor: TFountain;
+    var t: TDelphiFountain;
+    begin
+      t := TDelphiFountain.Create(Bokan);
+      t.Comment.Color := clGrayText;
+      t.Str.Color := clBlue;
+      t.Int.Color := clGreen;
+      Result := t;
+    end;
+    function _setJava: TFountain;
+    var t: TJavaFountain;
+    begin
+      t := TJavaFountain.Create(Bokan);
+      t.Comment.Color := clGrayText;
+      t.Str.Color := clBlue;
+      t.Int.Color := clGreen;
+      Result := t;
+    end;
+    function _setCpp: TFountain;
+    var t: TCppFountain;
+    begin
+      t := TCppFountain.Create(Bokan);
+      t.Comment.Color := clGrayText;
+      t.Str.Color := clBlue;
+      t.Int.Color := clGreen;
+      t.PreProcessor.Color := clPurple;
+      Result := t;
+    end;
+    function _setPerl: TFountain;
+    var t: TPerlFountain;
+    begin
+      t := TPerlFountain.Create(Bokan);
+      t.Comment.Color := clGrayText;
+      t.DoubleQuotation.Color := clBlue;
+      t.Here.Color := clBlue;
+      t.Int.Color := clGreen;
+      t.PerlVar.Color := clMaroon;
+      t.Pattern.Color := clGreen;
+      Result := t;
+    end;
+
     procedure setcoloring;
     var s: string;
     begin
       // TODO
       s := UpperCase(hi_strU(v));
       if s = 'HTML'     then e.Fountain := _setHTMLColor else
-      if s = 'DELPHI'   then e.Fountain := TDelphiFountain.Create(Bokan) else
-      if s = 'PERL'     then e.Fountain := TPerlFountain.Create(Bokan) else
-      if s = 'CPP'      then e.Fountain := TCppFountain.Create(Bokan) else
-      if s = 'JAVA'     then e.Fountain := TJavaFountain.Create(Bokan) else
+      if s = 'DELPHI'   then e.Fountain := _setDelphiColor else
+      if s = 'CPP'      then e.Fountain := _setCpp else
+      if s = 'JAVA'     then e.Fountain := _setJava else
+      if s = 'PERL'     then e.Fountain := _setPerl else
       if s = 'なでしこ' then e.Fountain := TNadesikoFountain.Create(Bokan) else
       if (s = '')or(s = 'TEXT') then e.Fountain := nil else
       raise Exception.Create(s + 'はサポートしていません。HTML/DELPHI/PERL/CPP/JAVA/TEXT/なでしこのみ');
+      e.Fountain.Reserve.Color := clNavy;
+      e.Fountain.Reserve.Style := [fsBold];
     end;
 
   begin
