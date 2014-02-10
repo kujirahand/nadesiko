@@ -6840,8 +6840,11 @@ var
       if s = 'なでしこ' then e.Fountain := TNadesikoFountain.Create(Bokan) else
       if (s = '')or(s = 'TEXT') then e.Fountain := nil else
       raise Exception.Create(s + 'はサポートしていません。HTML/DELPHI/PERL/CPP/JAVA/TEXT/なでしこのみ');
-      e.Fountain.Reserve.Color := clNavy;
-      e.Fountain.Reserve.Style := [fsBold];
+      // 補足
+      if (e.Fountain <> nil) then begin
+        e.Fountain.Reserve.Color := clNavy;
+        e.Fountain.Reserve.Style := [fsBold];
+      end;
     end;
 
   begin
