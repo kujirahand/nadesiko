@@ -291,6 +291,7 @@ function sys_posB(args: THiArray): PHiValue; stdcall;
 function sys_midM(args: THiArray): PHiValue; stdcall;
 function sys_midB(args: THiArray): PHiValue; stdcall;
 function sys_mid_sjis(args: THiArray): PHiValue; stdcall;
+function sys_enumWord(args: THiArray): PHiValue; stdcall;
 function sys_insertM(args: THiArray): PHiValue; stdcall;
 function sys_insertB(args: THiArray): PHiValue; stdcall;
 function sys_deleteM(args: THiArray): PHiValue; stdcall;
@@ -1627,6 +1628,44 @@ begin
 
   // (3) ñﬂÇËílÇê›íË
   Result := hi_newStr(tmp);
+end;
+
+function sys_enumWord(args: THiArray): PHiValue; stdcall;
+var
+  s, a: string;
+  line, sub: WideString;
+  ra: PHiValue;
+  ts: TStringList;
+  i, c, cs: Integer;
+  pLine: PHiValue;
+begin
+  s := getArgStr(args, 0, True);
+  a := getArgStr(args, 1);
+
+  ra := hi_var_new;
+  hi_ary_create(ra);
+
+  ts := TStringList.Create;
+  try
+    ts.Text := s;
+    for i := 0 to ts.Count -1 do
+    begin
+      line := ts.Strings[i];
+      c := Pos(a, line);
+      if c <= 0 then continue;
+      cs := c - 5;
+      if cs < 1 then cs := 1;
+      sub := Copy(line, cs, 20);
+      pLine := hi_var_new;
+      hi_ary_create(pLine);
+      hi_ary(pLine).Add(hi_newInt(i));
+      hi_ary(pLine).Add(hi_newStr(sub));
+      hi_ary(ra).Add(pLine);
+    end;
+  finally
+    FreeAndNil(ts);
+  end;
+  Result := ra;
 end;
 
 function sys_insertM(args: THiArray): PHiValue;
