@@ -5,8 +5,9 @@
 母艦の可視はオフ。
 」
 # --- Vista の警告
-もし、OSが「Windows Vista」ならば
+もし、(OSバージョン>=6.0)ならば
 　　「"{ランタイムパス}vnako.exe" "{母艦パス}install2.nako"」を管理者権限実行。
 違えば
 　　「"{ランタイムパス}vnako.exe" "{母艦パス}install2.nako"」を起動。
 終わる。
+

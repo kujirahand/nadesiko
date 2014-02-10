@@ -2227,7 +2227,7 @@ begin
 
   v := Copy(v,1,7);
   if v = 'IMEオン' then Result := imOpen  else
-  if v = 'IMEオフ' then Result := imClose else
+  if v = 'IMEオフ' then Result := imDisable else
   if (v = 'IMEひら')or(v = 'IMEかな') then Result := imHira  else
   if (v = 'IMEカナ')or(v = 'IMEカタ') then Result := imKata  else
   if v = 'IME半角' then Result := imSKata else

@@ -376,10 +376,13 @@ end;
 
 // (セキュリティ対策)文字列を#0で埋めてから解放する
 procedure HiResetString(var source:string);
-var len: Integer;
+var i, len: Integer;
 begin
   len := Length(source);
-  FillMemory(PChar(source), len, 0);
+  for i := 1 to len do
+  begin
+    source[i] := #0;
+  end;
   source := '';
 end;
 
