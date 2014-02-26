@@ -1,4 +1,4 @@
-# nakotter ver.0.42
+# nakotter ver.0.43
 # http://www.undefin.net/nadesiko/nako/nakotter-ver.0.42.zip
 
 ！変数宣言は必要
@@ -134,6 +134,7 @@
 　　パラメータをURLパラメータ変換をURLエンコードを署名に追加
 　　基本パラメータ@『oauth_signature』 = 鍵で署名の非公開署名生成をURLエンコード
 　　HEADとは文字列 = 基本パラメータからヘッダ生成
+　　HEADに"{\13}{\10}" & `Content-Type: application/x-www-form-urlencoded` & "{\13}{\10}"を追加
 　　BODYとは文字列 = PARAMをURLパラメータ変換
 　　それは空。HEADとBODYをURLへHTTPポスト
 　・GET({文字列}URLへ{ハッシュ=?}PARAMで)～
@@ -214,8 +215,8 @@
 # Cf. http://apiwiki.twitter.com/Twitter-API-Documentation
 
 ■Nakotter
-　・{数値}バージョン{=0.42}
-　・{文字列}APIURL{="http://api.twitter.com/1/"}
+　・{数値}バージョン{=0.43}
+　・{文字列}APIURL{="https://api.twitter.com/1.1/"}
 　・{文字列}フォーマット{=".json"}
 　・{OAuth}oauth
 　・レスポンス処理
@@ -223,14 +224,16 @@
 　　URLとは文字列 = APIURL & 『statuses/home_timeline』 & フォーマット
 　　URLへPARAMでoauth.GET
 　　レスポンス処理。
-　・ユーザTL取得({ハッシュ=?}PARAMで{文字列}SCREEN_NAMEの)～
-　　URLとは文字列 = APIURL & 『statuses/user_timeline/』 & SCREEN_NAME & フォーマット
-　　URLへPARAMでoauth.GET
+　・ユーザTL取得({ハッシュ=?}PARAMで{文字列}IDNAMEの)～
+　　URLとは文字列 = APIURL & 『statuses/user_timeline』 & フォーマット
+　　パラメータとはハッシュ = PARAM
+　　パラメータにIDNAMEをIDNAME設定
+　　URLへパラメータでoauth.GET
 　　レスポンス処理。
 　・返信取得({ハッシュ=?}PARAMで)～
 　　PARAMで返信一覧取得
 　・返信一覧取得({ハッシュ=?}PARAMで)～
-　　URLとは文字列 = APIURL & 『statuses/mentions』 & フォーマット
+　　URLとは文字列 = APIURL & 『statuses/mentions_timeline』 & フォーマット
 　　URLへPARAMでoauth.GET
 　　レスポンス処理。
 　・リツイート一覧取得({ハッシュ=?}PARAMで)～
@@ -256,10 +259,10 @@
 　　URLへoauth.POST
 　　レスポンス処理。
 　・リツイートしたユーザ一覧取得({ハッシュ=?}PARAMで{文字列}STATUS_IDを)～
-　　URLとは文字列 = APIURL & 『statuses/』 & STATUS_ID & 『/retweeted_by』 & フォーマット
+　　URLとは文字列 = APIURL & 『statuses/retweets/』 & STATUS_ID & フォーマット
 　　URLへPARAMでoauth.GET
 　　レスポンス処理。
-　・ユーザ列挙(SCREEN_NAMESで|SCREEN_NAMESの)～
+　・ユーザ列挙({文字列}SCREEN_NAMESで|SCREEN_NAMESの)～
 　　URLとは文字列 = APIURL & 『users/lookup』 & フォーマット
 　　PARAMとはハッシュ。
 　　もしSCREEN_NAMESの変数型確認が`配列`ならば
@@ -267,12 +270,20 @@
 　　PARAM@`screen_name` = SCREEN_NAMES
 　　URLへPARAMでoauth.GET
 　　レスポンス処理。
+　・IDユーザ列挙({文字列}USER_IDSで|USER_IDSの)～
+　　URLとは文字列 = APIURL & 『users/lookup』 & フォーマット
+　　PARAMとはハッシュ。
+　　もしUSER_IDSの変数型確認が`配列`ならば
+　　　USER_IDS = USER_IDSを`,`で配列結合
+　　PARAM@`user_id` = USER_IDS
+　　URLへPARAMでoauth.GET
+　　レスポンス処理。
 　・友達一覧取得({ハッシュ=?}PARAMで)～
-　　URLとは文字列 = APIURL & 『statuses/friends』 & フォーマット
+　　URLとは文字列 = APIURL & 『friends/ids』 & フォーマット
 　　URLへPARAMでoauth.GET
 　　レスポンス処理。
 　・フォロワー一覧取得({ハッシュ=?}PARAMで)～
-　　URLとは文字列 = APIURL & 『statuses/followers』 & フォーマット
+　　URLとは文字列 = APIURL & 『followers/ids』 & フォーマット
 　　URLへPARAMでoauth.GET
 　　レスポンス処理。
 　・受信DM一覧取得({ハッシュ=?}PARAMで)～
@@ -283,58 +294,72 @@
 　　URLとは文字列 = APIURL & 『direct_messages/sent』 & フォーマット
 　　URLへPARAMでoauth.GET
 　　レスポンス処理。
-　・DM送信({文字列}USERへ{文字列}STRと|USERにSTRの|STRを)～
+　・DM送信({文字列}IDNAMEへ{文字列}STRと|IDNAMEにSTRの|STRを)～
 　　URLとは文字列 = APIURL & 『direct_messages/new』 & フォーマット
 　　PARAMとはハッシュ。
-　　PARAM@`user` = USER
+　　PARAMにIDNAMEをIDNAME設定
 　　PARAM@`text` = STR
 　　URLへPARAMでoauth.POST
 　　レスポンス処理。
 　・DM削除({文字列}IDの|IDを)～
-　　URLとは文字列 = APIURL & 『direct_messages/destroy/』 & ID & フォーマット
-　　URLへoauth.POST
-　　レスポンス処理。
-　・フォロー({ハッシュ=?}PARAMで{文字列}SCREEN_NAMEを)～
-　　URLとは文字列 = APIURL & 『friendships/create/』 & SCREEN_NAME & フォーマット
+　　URLとは文字列 = APIURL & 『direct_messages/destroy』 & フォーマット
+　　PARAMとはハッシュ
+　　PARAM@`id` = ID
 　　URLへPARAMでoauth.POST
 　　レスポンス処理。
-　・リムーブ({ハッシュ=?}PARAMで{文字列}SCREEN_NAMEを)～
-　　URLとは文字列 = APIURL & 『friendships/destroy/』 & SCREEN_NAME & フォーマット
+　・フォロー({文字列}IDNAMEを)～
+　　URLとは文字列 = APIURL & 『friendships/create』 & フォーマット
+　　PARAMとはハッシュ。
+　　PARAMにIDNAMEをIDNAME設定
 　　URLへPARAMでoauth.POST
 　　レスポンス処理。
-　・フォロー関係取得({文字列}SOURCE_SCREEN_NAMEと{文字列}TARGET_SCREEN_NAMEの)～
+　・リムーブ({文字列}IDNAMEを)～
+　　URLとは文字列 = APIURL & 『friendships/destroy』 & フォーマット
+　　PARAMとはハッシュ。
+　　PARAMにIDNAMEをIDNAME設定
+　　URLへPARAMでoauth.POST
+　　レスポンス処理。
+　・フォロー関係取得({文字列}SOURCE_IDNAMEと{文字列}TARGET_IDNAMEの)～
 　　URLとは文字列 = APIURL & 『friendships/show』 & フォーマット
 　　PARAMとはハッシュ。
-　　PARAM@`source_screen_name` = SOURCE_SCREEN_NAME
-　　PARAM@`target_screen_name` = TARGET_SCREEN_NAME
+　　PARAMにSOURCE_IDNAMEを`source_`へIDNAME設定
+　　PARAMにTARGET_IDNAMEを`target_`へIDNAME設定
 　　URLへPARAMでoauth.GET
 　　レスポンス処理。
 　・ふぁぼり一覧取得({ハッシュ=?}PARAMで)～
-　　URLとは文字列 = APIURL & 『favorites』 & フォーマット
+　　URLとは文字列 = APIURL & 『favorites/list』 & フォーマット
 　　URLへPARAMでoauth.GET
 　　レスポンス処理。
 　・ふぁぼる({文字列}STATUS_IDを)～
-　　URLとは文字列 = APIURL & 『favorites/create/』 & STATUS_ID & フォーマット
-　　URLへoauth.POST
+　　URLとは文字列 = APIURL & 『favorites/create』 & フォーマット
+　　PARAMとはハッシュ
+　　PARAM@`id` = STATUS_ID
+　　URLへPARAMでoauth.POST
 　　レスポンス処理。
 　・ふぁぼり削除({文字列}STATUS_IDを|STATUS_IDの)～
-　　URLとは文字列 = APIURL & 『favorites/destroy/』 & STATUS_ID & フォーマット
-　　URLへoauth.POST
+　　URLとは文字列 = APIURL & 『favorites/destroy』 & フォーマット
+　　PARAMとはハッシュ
+　　PARAM@`id` = STATUS_ID
+　　URLへPARAMでoauth.POST
 　　レスポンス処理。
-　・ブロック({文字列}SCREEN_NAMEを)～
-　　URLとは文字列 = APIURL & 『blocks/create/』 & SCREEN_NAME & フォーマット
-　　URLへoauth.POST
+　・ブロック({文字列}IDNAMEを)～
+　　URLとは文字列 = APIURL & 『blocks/create』 & フォーマット
+　　PARAMとはハッシュ
+　　PARAMにIDNAMEをIDNAME設定
+　　URLへPARAMでoauth.POST
 　　レスポンス処理。
-　・ブロック解除({文字列}SCREEN_NAMEを|SCREEN_NAMEの)～
-　　URLとは文字列 = APIURL & 『blocks/destroy/』 & SCREEN_NAME & フォーマット
-　　URLへoauth.POST
+　・ブロック解除({文字列}IDNAMEを|IDNAMEの)～
+　　URLとは文字列 = APIURL & 『blocks/destroy』 & フォーマット
+　　PARAMとはハッシュ
+　　PARAMにIDNAMEをIDNAME設定
+　　URLへPARAMでoauth.POST
 　　レスポンス処理。
 　・ブロックユーザ一覧取得({ハッシュ=?}PARAMで)～
-　　URLとは文字列 = APIURL & 『blocks/blocking』 & フォーマット
+　　URLとは文字列 = APIURL & 『blocks/list』 & フォーマット
 　　URLへPARAMでoauth.GET
 　　レスポンス処理。
 　・API確認～
-　　URLとは文字列 = APIURL & 『help/test』 & フォーマット
+　　URLとは文字列 = APIURL & 『help/tos』 & フォーマット
 　　URLへoauth.GET
 　　レスポンス処理。
 　・返信する({文字列}STRと{文字列}STATUS_IDに|STATUS_IDへ)～
@@ -352,9 +377,9 @@
 　　ダイアログ数値変換 = TEMP
 　・作る～
 　　# Twitter OAuth API
-　　oauthのリクエストトークンURL      = 『http://twitter.com/oauth/request_token』
-　　oauthのアクセストークンURL        = 『http://twitter.com/oauth/access_token』
-　　oauthの認証URL                    = 『http://twitter.com/oauth/authorize』
+　　oauthのリクエストトークンURL      = 『https://api.twitter.com/oauth/request_token』
+　　oauthのアクセストークンURL        = 『https://api.twitter.com/oauth/access_token』
+　　oauthの認証URL                    = 『https://api.twitter.com/oauth/authorize』
 　　# Nakotter コンシューマ
 　　oauthのコンシューマのトークンキー = 『』
 　　oauthのコンシューマのシークレット = 『』
@@ -369,6 +394,11 @@
 　　　　JSONデータ修正_nako_v_1_533
 　　#違えば
 　　#　レスポンス処理は～レスポンス部分をJSONデコード
+　・IDNAME設定({参照渡し ハッシュ}PARAMに{文字列}IDNAMEを{文字列=``}PREFIXへ)～
+　　もし、IDNAMEが`^[0-9]+$`に正規表現一致ならば、
+　　　PARAM@"{PREFIX}user_id" = IDNAME
+　　違えば、
+　　　PARAM@"{PREFIX}screen_name" = IDNAME
 
 ●レスポンス部分
 　　STRとは文字列 = それ
