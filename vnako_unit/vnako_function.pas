@@ -7026,12 +7026,32 @@ var
     ;
   end;
   procedure _VCL_GUI_TRACKBOX;
-  var e: TTrackBox;
+  var e: TTrackBox;s: AnsiString;
   begin
     e := TTrackBox(obj);
     if cmd = 'SETCOLOR' then e.TrackColor := RGB2Color( hi_int(v) ) else
     if cmd = 'GETCOLOR' then Result := hi_newInt(Color2RGB( e.TrackColor) ) else
     if cmd = 'POPUP' then e.PopupMenu := TPopupMenu( hi_int(v) ) else
+    if cmd = '枠線スタイル設定' then //外側/中間
+    begin
+      s := hi_str(v);
+      if Pos('間',s) > 0 then e.TrackStyle := 0;
+      if Pos('外',s) > 0 then e.TrackStyle := 1;
+    end else
+    if cmd = '枠線スタイル取得' then
+    begin
+      if e.TrackStyle = 0 then Result := hi_newStr('中間') else
+      if e.TrackStyle = 1 then Result := hi_newStr('外側');
+    end else
+    if cmd = '枠線補正設定' then
+    begin
+      s := hi_str(v);
+      if (s = 'はい') or (s = 'あり') then e.TrackAdjustRD := True else e.TrackAdjustRD := False;
+    end else
+    if cmd = '枠線補正取得' then
+    begin
+      if e.TrackAdjustRD then Result := hi_newStr('あり') else Result := hi_newStr('なし');
+    end else
     ;
   end;
   

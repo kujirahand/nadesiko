@@ -27,6 +27,8 @@ type
     FTrLine: Boolean;
     FTrSize: Boolean;
     FTrPos: TTrackInf;
+    FTrAdjustRD: Boolean;
+    FTrStyle: Integer;
     //イベント
     FOnTrackChange: TTrNotifyEvent;
     //内部
@@ -70,6 +72,8 @@ type
     //property TrackVisible : Boolean read FTrVisible write SetTrVisible;
     property TrackLineVisible : Boolean read FTrLine write SetTrLine;
     property TrackSizeEnable : Boolean read FTrSize write SetTrSize;
+    property TrackAdjustRD : Boolean read FTrAdjustRD write FTrAdjustRD;
+    property TrackStyle : Integer read FTrStyle write FTrStyle;
 
     //イベント
     property OnTrackChange :TTrNotifyEvent read FOnTrackChange write FOnTrackChange;
@@ -133,10 +137,18 @@ end;
 //Trackpositionプロパティ（Read）
 function TTrackBox.GetTrackPos: TTrackInf;
 begin
-  Result.Left   := Left+2 ;
-  Result.Top    := Top +2 ;
-  Result.Width  := Width -4 ;
-  Result.Height := Height-4 ;
+  if FTrStyle = 1 then
+  begin
+    Result.Left   := Left   ;
+    Result.Top    := Top    ;
+    Result.Width  := Width  ;
+    Result.Height := Height ;
+  end else begin
+    Result.Left   := Left+2 ;
+    Result.Top    := Top +2 ;
+    Result.Width  := Width -4 ;
+    Result.Height := Height-4 ;
+  end;
 end;
 
 //Trackpositionプロパティ（Write）
@@ -148,10 +160,18 @@ begin
     FTrPos.Top  := Val.Top;
     FTrPos.Width := Val.Width;
     FTrPos.Height := Val.Height;
+  if FTrStyle = 1 then
+  begin
+    Left := FTrpos.Left;
+    Top  := FTrpos.Top;
+    Width := FTrpos.Width;
+    Height := FTrpos.Height;
+  end else begin
     Left := FTrpos.Left -2;
     Top  := FTrpos.Top -2;
     Width := FTrpos.Width + 4;
     Height := FTrpos.Height +4;
+  end;
 //    end;
 end;
 
@@ -160,10 +180,18 @@ end;
 //*********
 procedure TTrackBox.TrackChange(Sender: TObject; SZf: Boolean);
 begin
-  FTrPos.Left := Left +2;
-  FTrPos.Top  := Top +2;
-  FTrPos.Width := Width -4;
-  FTrPos.Height := Height -4;
+  if FTrStyle = 1 then
+  begin
+    FTrPos.Left := Left;
+    FTrPos.Top  := Top;
+    FTrPos.Width := Width;
+    FTrPos.Height := Height;
+  end else begin
+    FTrPos.Left := Left +2;
+    FTrPos.Top  := Top +2;
+    FTrPos.Width := Width -4;
+    FTrPos.Height := Height -4;
+  end;
   if Assigned(FOnTrackChange) then FOnTrackChange(Self,SZf);
 end;
 //TrackChange(self,true)で呼び出す
@@ -184,6 +212,8 @@ begin
   //FTrVisible := True;
   FTrLine  := True;
   FTrSize  := True;
+  FTrStyle := 0;
+  FTrAdjustRD := True;
   FTrPos.Left := Left +2;
   FTrPos.Top  := Top +2;
   FTrPos.Width := Width -4;
@@ -208,7 +238,7 @@ begin
   h := Height;
   //H_num := 8;
   X_off := X; Y_off := Y;
-      if
+      if ((FTrStyle = 0) or (FTrStyle = 1)) and (
        ((X >= 0) and (X <= H_Size) and (Y >= 0) and (Y <= H_size)) or
        ((X >= (w-H_Size)div 2) and (X <= (w-H_Size)div 2 +H_Size) and (Y >= 0) and (Y <= H_Size)) or
        ((X >= w-H_Size) and (X <= w) and (Y >= 0) and (Y <= H_size)) or
@@ -216,7 +246,7 @@ begin
        ((X >= w-H_Size) and (X <= w) and (Y >= h-H_Size) and (Y <= h)) or
        ((X >= (w-H_Size)div 2) and (X <= (w-H_Size)div 2 +H_Size) and (Y >= h-H_Size) and (Y <= h)) or
        ((X >= 0) and (X <= H_Size) and (Y >= h-H_Size) and (Y <= h)) or
-       ((X >= 0) and (X <= H_Size) and (Y >= (h-H_Size)div 2) and (Y <= (h-H_Size)div 2+H_Size)) then
+       ((X >= 0) and (X <= H_Size) and (Y >= (h-H_Size)div 2) and (Y <= (h-H_Size)div 2+H_Size))) then
     //if (H_num < 8) then
        TPhase := 1
     else
@@ -430,15 +460,42 @@ begin
     Rectangle(0,h-H_Size,H_Size,h);
     Rectangle(0,(h-H_Size)div 2,H_Size,(h-H_Size)div 2+H_Size);
     if (FTrLine = True) then
+    begin
+      if FTrStyle = 1 then
       begin
-      MoveTo(H_Cent,H_Cent);
-      LineTo(w-H_Cent,H_Cent);
-      LineTo(w-H_Cent,h-H_Cent);
-      LineTo(H_Cent,h-H_Cent);
-      LineTo(H_Cent,H_Cent);
+        if FTrAdjustRD then
+        begin
+          MoveTo(0,0);
+          LineTo(w-1,0);
+          LineTo(w-1,h-1);
+          LineTo(0,h-1);
+          LineTo(0,0);
+        end else begin
+          MoveTo(0,0);
+          LineTo(w,0);
+          LineTo(w,h);
+          LineTo(0,h);
+          LineTo(0,0);
+        end;
+      end else begin
+        if FTrAdjustRD then
+        begin
+          MoveTo(H_Cent,H_Cent);
+          LineTo(w-H_Cent-1,H_Cent);
+          LineTo(w-H_Cent-1,h-H_Cent-1);
+          LineTo(H_Cent,h-H_Cent-1);
+          LineTo(H_Cent,H_Cent);
+        end else begin
+          MoveTo(H_Cent,H_Cent);
+          LineTo(w-H_Cent,H_Cent);
+          LineTo(w-H_Cent,h-H_Cent);
+          LineTo(H_Cent,h-H_Cent);
+          LineTo(H_Cent,H_Cent);
+        end;
       end;
     end;
-   BringToFront;
+  end;
+  BringToFront;
 end;
 
 end.
