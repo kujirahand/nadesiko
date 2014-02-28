@@ -908,6 +908,7 @@ begin
   begin
     Value.LinkNext := nil; // ŽŸ‚Í nil
     FTable[no] := Value;
+    Inc(FCount);
   end else
   begin
     p := FTable[no];
