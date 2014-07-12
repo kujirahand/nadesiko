@@ -46,10 +46,13 @@ type
     procedure ChangePic(nodeid_v: string);
     procedure ChangeSelectPic(nodeid_v: string);
     procedure DeleteID(id: string);
+    procedure ExpandAllID(id: string);
+    procedure CollapseAllID(id: string);
     procedure ExpandID(id: string);
     procedure CollapseID(id: string);
     function GetParentID(id: string): string;
     function GetChildrenID(id: string): string;
+    function GetExpanded(id: string): boolean;
     procedure Clear; virtual;
     property HoverTime:Cardinal read FHoverTime write FHoverTime;
     property OnMouseEnter:TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
@@ -220,6 +223,15 @@ var
 begin
   n := list.FindIDNode(id);
   if n = nil then Exit;
+  n.Obj.Collapse(False);
+end;
+
+procedure THiTreeView.CollapseAllID(id: string);
+var
+  n: THiTreeNode;
+begin
+  n := list.FindIDNode(id);
+  if n = nil then Exit;
   n.Obj.Collapse(True);
 end;
 
@@ -275,6 +287,15 @@ var
 begin
   n := list.FindIDNode(id);
   if n = nil then Exit;
+  n.Obj.Expand(False);
+end;
+
+procedure THiTreeView.ExpandAllID(id: string);
+var
+  n: THiTreeNode;
+begin
+  n := list.FindIDNode(id);
+  if n = nil then Exit;
   n.Obj.Expand(True);
 end;
 
@@ -301,6 +322,16 @@ begin
     Result := -1; Exit;
   end;
   Result := Self.list.FindID(THiTreeNode(Self.Selected.Data).IDStr);
+end;
+
+function THiTreeView.GetExpanded(id: string): Boolean;
+var
+  n: THiTreeNode;
+begin
+  Result := false;
+  n := list.FindIDNode(id);
+  if (n = nil) then Exit;
+  Result := n.Obj.Expanded; // äJï¬èÛë‘
 end;
 
 function THiTreeView.GetParentID(id: string): string;
