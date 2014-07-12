@@ -6643,9 +6643,18 @@ var
     else if cmd = '画像番号変更' then THiTreeView(obj).ChangePic(hi_strU(v))
     else if cmd = '選択画像番号変更' then THiTreeView(obj).ChangeSelectPic(hi_strU(v))
     else if cmd = 'ノード削除' then THiTreeView(obj).DeleteID(hi_strU(v))
-    else if cmd = 'ノード開く'   then THiTreeView(obj).ExpandID(hi_strU(v))
-    else if cmd = 'ノード閉じる' then THiTreeView(obj).CollapseID(hi_strU(v))
+    else if cmd = 'ノード開く'   then THiTreeView(obj).ExpandAllID(hi_strU(v))
+    else if cmd = 'ノード閉じる' then THiTreeView(obj).CollapseAllID(hi_strU(v))
+    else if cmd = 'ノード一段開く'   then THiTreeView(obj).ExpandID(hi_strU(v))
+    else if cmd = 'ノード一段閉じる' then THiTreeView(obj).CollapseID(hi_strU(v))
     else if cmd = 'ノード番号取得' then Result := hi_newInt(THiTreeView(obj).list.FindID(hi_strU(v)))
+    else if cmd = 'ノード開閉取得' then
+    begin
+      if THiTreeView(obj).GetExpanded(hi_strU(v)) then
+        Result := hi_newStrU('開')
+      else
+        Result := hi_newStrU('閉');
+    end
     else if cmd = '親ノード取得'   then Result := hi_newStrU(THiTreeView(obj).GetParentID(hi_strU(v)))
     else if cmd = '子ノード取得'   then Result := hi_newStrU(THiTreeView(obj).GetChildrenID(hi_strU(v)))
     else
