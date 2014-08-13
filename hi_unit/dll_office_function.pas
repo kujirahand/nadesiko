@@ -66,9 +66,13 @@ begin
 end;
 
 function excel_workbooks_add(h: DWORD): PHiValue; stdcall;
+var
+  b: Variant;
 begin
   Result := nil;
-  excel.WorkBookAdd;
+  b := excel.WorkBookAdd;
+  if not VarIsNull(b) then
+    Result := hi_newStr(b.Name);
 end;
 
 function excel_worksheet_add(h: DWORD): PHiValue; stdcall;
@@ -80,10 +84,13 @@ end;
 function excel_file_open(h: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
+  b: Variant;
 begin
   Result := nil;
   s := nako_getFuncArg(h, 0);
-  excel.FileOpen(hi_str(s));
+  b := excel.FileOpen(hi_str(s));
+  if not VarIsNull(b) then
+    Result := hi_newStr(b.Name);
 end;
 
 function excel_file_save(h: DWORD): PHiValue; stdcall;

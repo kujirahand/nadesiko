@@ -26,7 +26,7 @@ type
     procedure Close(AlertOff: Boolean = True);
     function GetActiveWorkBook: Variant;
     function GetActiveSheet: Variant;
-    procedure WorkBookAdd;
+    function WorkBookAdd: Variant;
     procedure WorkBookActiveClose;
     procedure WorkBookActive(Index: Integer);
     procedure WorkBookActiveS(bookname:string);
@@ -47,7 +47,7 @@ type
     procedure SheetRename(sh1, sh2: string);
     procedure WorkSheetMoveLast(sheet: string);
     procedure WorkSheetMoveTop(sheet: string);
-    procedure FileOpen(fname: string);
+    function FileOpen(fname: string): Variant;
     procedure FileSave(fname: string);
     procedure FileSaveAsCsv(fname: string);
     procedure FileSaveAsTsv(fname: string);
@@ -412,7 +412,7 @@ begin
   inherited;
 end;
 
-procedure TKExcel.FileOpen(fname: string);
+function TKExcel.FileOpen(fname: string):Variant;
 var
   path, old: string;
 begin
@@ -420,7 +420,7 @@ begin
   path := ExtractFilePath(fname);
   if path <> '' then ChDir(path);
 
-  E_Application.Workbooks.Open(fname);
+  Result := E_Application.Workbooks.Open(fname);
 
   ChDir(old);
 end;
@@ -561,7 +561,7 @@ begin
 
   E_Application         := E_Excel.Application;
   E_Application.Visible := Visible;
-  
+
 
   // Visible Çï€éù
   FVisible := E_Application.Visible;
@@ -658,9 +658,10 @@ begin
   Result := E_WorkSheet.Name;
 end;
 
-procedure TKExcel.WorkBookAdd;
+function TKExcel.WorkBookAdd: Variant;
 begin
   E_WorkBook := E_Application.WorkBooks.Add;
+  Result := E_WorkBook;
 end;
 
 function TKExcel.GetActiveWorkBook: Variant;
