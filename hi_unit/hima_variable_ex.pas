@@ -1962,7 +1962,7 @@ begin
   hi_var_copyData(A, pa);
   hi_var_copyData(B, pb);
 
-  res := HiSystem.Eval(sort_custom_str);
+  res := HiSystem.Eval(Copy(sort_custom_str,1,Length(sort_custom_str)));
   Result := hi_int(res);
   hi_var_free(res);
 end;
@@ -2190,10 +2190,10 @@ var
   opt: AnsiString;
 begin
   Result := False;
+  opt := TrimA(hi_str(HiSystem.GetVariableS('ê≥ãKï\åªèCè¸éq')));
   if param < 0 then
   begin
     hi_ary_create(v);
-    opt := TrimA(hi_str(HiSystem.GetVariableS('ê≥ãKï\åªèCè¸éq')));
     for i := 0 to hi_ary(v).Count - 1 do
     begin
       if bregMatch(hi_str(hi_ary(v).GetValue(i)), _pickup_key, opt, nil) then
