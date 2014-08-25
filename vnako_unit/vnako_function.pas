@@ -6161,16 +6161,20 @@ var
       bar := TStatusbar(obj);
       sl := TStringList.Create;
       sl.Text := s;
-      for i:=0 to sl.count-1 do
-      begin
-        if i >= bar.Panels.Count then
-          panel := bar.Panels.Add
-        else
-          panel := bar.Panels.Items[i];
-        panel.Text := sl.Strings[i];
+      try
+        for i:=0 to sl.count-1 do
+        begin
+          if i >= bar.Panels.Count then
+            panel := bar.Panels.Add
+          else
+            panel := bar.Panels.Items[i];
+          panel.Text := sl.Strings[i];
+        end;
+        for i := sl.count to bar.Panels.Count - 1 do
+          bar.Panels.Delete(bar.Panels.Count - 1);
+      finally
+        sl.Free;
       end;
-      for i := sl.count to bar.Panels.Count-1 do
-        bar.Panels.Delete(bar.Panels.Count - 1);
     end;
 
   begin
