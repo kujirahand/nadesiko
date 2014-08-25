@@ -3,10 +3,8 @@ program vnako;
 {$UNDEF FMPMODE}
 
 uses
-  //ShareMem,
   FastMM4 in 'FastMM4.pas',
   nadesiko_version in 'nadesiko_version.pas',
-
   SysUtils,
   Classes,
   Forms,
@@ -63,7 +61,6 @@ uses
   BigBitmap in 'vnako_unit\BigBitmap.pas',
   DIBUtils in 'vnako_unit\DIBUtils.pas',
   BitmapUtils in 'vnako_unit\BitmapUtils.pas',
-  ErrDef in 'vnako_unit\ErrDef.pas',
   unit_vista in 'vnako_unit\unit_vista.pas',
   MSHTML_TLB in 'vnako_unit\UIWebBrowser\MSHTML_TLB.pas',
   TrackBox in 'component\TrackBox.pas',
@@ -75,15 +72,17 @@ uses
   frmCalendarU in 'vnako_unit\frmCalendarU.pas' {frmCalendar},
   CppFountain in 'component\hedit251\CppFountain.pas',
   JavaFountain in 'component\hedit251\JavaFountain.pas',
-  PerlFountain in 'component\hedit251\PerlFountain.pas'
-{$IF RTLVersion < 20}
-  ,TntStdCtrls in 'component\TntUnicodeControls\TntStdCtrls.pas'
-  ,TntControls in 'component\TntUnicodeControls\TntControls.pas'
-{$IFEND}
-{$IFDEF DELUX_VERSION}
-  ,unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas'
-{$ENDIF}
-  ;
+  PerlFountain in 'component\hedit251\PerlFountain.pas',
+  {$IF RTLVersion < 20}
+    TntStdCtrls in 'component\TntUnicodeControls\TntStdCtrls.pas',
+    TntControls in 'component\TntUnicodeControls\TntControls.pas',
+    VistaAltFixUnit in 'component\VistaAltFixUnit.pas',
+  {$IFEND}
+
+  {$IFDEF DELUX_VERSION}
+    unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas',
+  {$ENDIF}
+  ErrDef in 'vnako_unit\ErrDef.pas';
 
 {$R *.res}
 

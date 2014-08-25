@@ -17,11 +17,12 @@ uses
   TrackBox,Buttons,
   // XPManifest
 {$IF RTLVersion >=15}
-  XPMan,
+  XPMan, VistaAltFixUnit,
 {$IFEND}
   vnako_message,
   // TEditor Support
-  EditorEx, heRaStrings, heClasses, HEdtProp, EditorExProp
+  heClasses, HEdtProp, EditorExProp,
+  EditorEx, heRaStrings
   ;
 
 const
@@ -103,6 +104,7 @@ type
     dlgColor: TColorDialog;
     dlgPrinter: TPrinterSetupDialog;
     edtPropNormal: TEditorExProp;
+    XPManifest: TXPManifest;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure timerRunScriptTimer(Sender: TObject);
@@ -461,7 +463,9 @@ var
 begin
   //----------------------------------------------------------------------------
   // Windows Vista ALT ÉLÅ[ÇÃñ‚ëË
-  // TVistaAltFix.Create(Self);
+  {$IF RTLVersion < 20}
+  TVistaAltFix.Create(Self);
+  {$IFEND}
   //----------------------------------------------------------------------------
   // èâä˙âªèàóù
   FFlagFree := False;
