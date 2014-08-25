@@ -36,7 +36,8 @@ uses
     ShellAPI,
     SHlObj;
 
-  const UnitVersion = 6.0;
+  // const UnitVersion = 6.0;
+  const UnitVersion = 8.0;
 
 {$R-}
 
