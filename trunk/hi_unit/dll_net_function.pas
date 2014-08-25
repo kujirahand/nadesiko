@@ -1253,7 +1253,12 @@ var
   i: Integer;
   function _CheckId(ch: string): string;
   begin
-    if Pos(string(ch), '<>/?"%\;:''`') > 0 then
+    if Length(ch) <= 0 then
+    begin
+      Result := ch; Exit;
+    end;
+    // Windowsのファイル名として使えるもののみ選ぶ
+    if not (ch[1] in ['A'..'Z','a'..'z','0'..'9','!','%','(',')','#']) then
     begin
       ch := '%' + IntToHex(Ord(ch[1]), 2);
     end;
