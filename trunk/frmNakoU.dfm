@@ -213,4 +213,8 @@ object frmNako: TfrmNako
     Left = 112
     Top = 40
   end
+  object XPManifest: TXPManifest
+    Left = 208
+    Top = 40
+  end
 end
