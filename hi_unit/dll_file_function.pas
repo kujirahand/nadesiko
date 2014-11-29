@@ -607,6 +607,7 @@ var
   path: string;
   g: TStringList;
   i: Integer;
+  option: string;
 begin
   // (1) 引数の取得
   s := nako_getFuncArg(args, 0);
@@ -614,7 +615,11 @@ begin
            else path := hi_str(s);
 
   // (2) データの処理
-  unit_file.MainWindowHandle := nako_getMainWindowHandle;
+  option := hi_strU(nako_getVariable('ファイル列挙オプション'));
+  if Pos('タイトル経過表示',option) > 0 then
+    unit_file.MainWindowHandle := nako_getMainWindowHandle
+  else
+    unit_file.MainWindowHandle := 0;
   g := EnumAllFiles(path);
 
   // (3) 結果の代入
@@ -636,6 +641,7 @@ var
   tmp, path, basepath: AnsiString;
   g: TStringList;
   i,len: Integer;
+  option: string;
 begin
   // (1) 引数の取得
   s := nako_getFuncArg(args, 0);
@@ -643,7 +649,11 @@ begin
            else path := hi_str(s);
 
   // (2) データの処理
-  unit_file.MainWindowHandle := nako_getMainWindowHandle;
+  option := hi_strU(nako_getVariable('ファイル列挙オプション'));
+  if Pos('タイトル経過表示',option) > 0 then
+    unit_file.MainWindowHandle := nako_getMainWindowHandle
+  else
+    unit_file.MainWindowHandle := 0;
   g := EnumAllFiles(path, basepath);
   len := Length(basepath);
 
@@ -2939,6 +2949,9 @@ begin
   AddFunc  ('全ファイル列挙','{文字列=?}Sの|Sを|Sで', 536, sys_enumAllFiles,'パスSにあるファイルをサブフォルダも含め配列形式で返す。「;」で区切って複数の拡張子を指定可能。','ぜんふぁいるれっきょ');
   AddFunc  ('全フォルダ列挙','{文字列=?}Sの|Sを|Sで', 680, sys_enumAllDir,'パスSにあるフォルダも再帰的に検索して配列形式で返す。','ぜんふぉるだれっきょ');
   AddFunc  ('全ファイル相対パス列挙','{文字列=?}Sの|Sを|Sで', 679, sys_enumAllFilesRelative,'パスSにあるファイルをサブフォルダを含めて（パスSからの相対指定で）配列形式で返す。','ぜんふぁいるそうたいぱすれっきょ');
+  AddStrVar('ファイル列挙オプション','タイトル経過表示', 691, '全が付くファイル列挙のオプション(タイトル経過表示/経過表示なし)','ふぁいるれっきょおぷしょん');
+
+
   //-コピー移動削除
   AddFunc  ('ファイルコピー','AからBへ|AをBに',540,sys_fileCopy,  'ファイルAからBへコピーする。','ふぁいるこぴー');
   AddFunc  ('ファイル移動',  'AからBへ|AをBに',541,sys_fileRename,  'ファイルAからBへ移動する。','ふぁいるいどう');
@@ -3082,7 +3095,6 @@ begin
   //-なでしこパス
   AddStrVar('ランタイムパス',{''}RuntimeDir, 616, 'なでしこの実行ファイルのパス','らんたいむぱす');
   AddStrVar('母艦パス',{''}'', 617, '実行したプログラムのパス','ぼかんぱす');
-
 
   //+LAN(nakofile.dll)
   //-コンピューター情報
