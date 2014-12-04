@@ -161,6 +161,7 @@ TBRegExp=class(TObject)
     function GetLastCommand: AnsiString;
     function GetText: AnsiString;
     procedure CheckCommand(const Command: AnsiString);
+    function GetBRegExpOutpuStr: AnsiString;
   public
     hDll:THandle;
     constructor Create;
@@ -188,12 +189,14 @@ implementation
 
 uses Masks, unit_string, mini_file_utils;
 
+
 function bregMatch(s, pat, opt: AnsiString; matches: TStringList = nil): Boolean;
 var
   re: TBRegExp;
   i: Integer;
 begin
   re := TBRegExp.Create;
+
   // レポートに追加
   // load check
   if re.hDll = 0 then raise Exception.Create('Bregexp.dllがありません。WEBより入手してください。');
@@ -225,10 +228,10 @@ begin
     if matches = nil then Exit;
     for i := 0 to re.GetCount - 1 do
     begin
-      matches.Add(string(re.GetStrings(i)));
+      matches.Add(AnsiString(re.GetStrings(i)));
     end;
   finally
-    re.Free;
+    FreeAndNil(re);
   end;
 
 end;
@@ -305,6 +308,7 @@ begin
     SetLength(ErrorString, StrLen(PAnsiChar(ErrorString)));
     if ErrorString<>'' then
         raise EBRegExpError.Create(string(ErrorString));
+
     if Result then Mode:= brxMatch;
     pTargetString:= PAnsiChar(TargetString);
 end;
@@ -313,10 +317,11 @@ end;
 
 function TBRegExp.Subst(const Command: AnsiString;
                         var TargetString: AnsiString): Boolean;
-var TextBuffer: AnsiString;
-var ErrorString: AnsiString;
+var
+    TextBuffer: AnsiString;
+    ErrorString: AnsiString;
     ep,sp: PPAnsiChar;
-    i: Integer;
+    i, len: Integer;
 begin
     TextBuffer := '';
     CheckCommand(Command);
@@ -333,19 +338,21 @@ begin
         pBRegExp,
         PAnsiChar(ErrorString));
     SetLength(ErrorString,StrLen(PAnsiChar(ErrorString)));
-    if ErrorString<>'' then 
+    if ErrorString<>'' then
         raise EBRegExpError.Create(string(ErrorString));
 
     if Result then begin // ( ) の結果を正しく返すため
         sp:=pBRegExp^.startp;
         ep:=pBRegExp^.endp;
+        len := Integer(TextBuffer) - Integer(TargetString);
         for i:=0 to GetMatchCount-1 do begin
-            Inc(ep^, Integer(TextBuffer)-Integer(TargetString));
-            Inc(sp^, Integer(TextBuffer)-Integer(TargetString));
+            Inc(ep^, len);
+            Inc(sp^, len);
             Inc(sp);
             Inc(ep);
         end;
-        TargetString:= pBRegExp^.outp;
+        //
+        TargetString := GetBRegExpOutpuStr;
         Mode:=brxMatch;
     end;
 end;
@@ -370,7 +377,7 @@ begin
     SetLength(ErrorString,StrLen(PAnsiChar(ErrorString)));
     if ErrorString<>'' then
         raise EBRegExpError.Create(string(ErrorString));
-    if Result then TargetString:=pBRegExp^.outp;
+    if Result then TargetString:=GetBRegExpOutpuStr;
 end;
 
 //=====================================================================
@@ -432,7 +439,7 @@ begin
     Result:=0;
     case Mode of
     brxNone:
-        {raise EBRegExpError.Create('no count now')};//by Mine エラーは出したくないので
+        {raise EBRegExpError.Create('no count now')};// エラーは出さない
     brxMatch:
         Result:=GetMatchCount;
     brxSplit:
@@ -444,14 +451,24 @@ end;
 
 function TBRegExp.GetMatchCount: Integer;
 begin
-    Result:= pBRegExp^.nparens+1;
+    if (pBRegExp <> nil) then
+    begin
+      Result:= pBRegExp^.nparens+1;
+    end else begin
+      Result := 0;
+    end;
 end;
 
 //=====================================================================
 
 function TBRegExp.GetSplitCount: Integer;
 begin
-    Result:=pBRegExp^.splitctr;
+    if (pBRegExp <> nil) then
+    begin
+      Result:=pBRegExp^.splitctr;
+    end else begin
+      Result := 0;
+    end;
 end;
 
 //=====================================================================
@@ -472,15 +489,18 @@ end;
 //=====================================================================
 
 function TBRegExp.GetMatchStrings(index:Integer): AnsiString;
-var sp,ep: PPAnsiChar;
+var
+  sp,ep: PPAnsiChar;
+  len: Integer;
 begin
     Result:='';
     if (index<0) or (index>=GetMatchCount) then
         raise EBRegExpError.Create('index out of range');
     sp:=pBRegExp^.startp; Inc(sp, index);
     ep:=pBRegExp^.endp;   Inc(ep, index);
-    SetLength(Result,Integer(ep^)-Integer(sp^));
-    Move(sp^^,PAnsiChar(Result)^,Integer(ep^)-Integer(sp^));
+    len := Integer(ep^) - Integer(sp^) + 1;
+    SetLength(Result, len);
+    Move(sp^^, Result[1], len);
 end;
 
 //=====================================================================
@@ -551,6 +571,18 @@ begin
       end;
   end;
 end;
+
+function TBRegExp.GetBRegExpOutpuStr: AnsiString;
+var
+  len: Integer;
+  tmp: AnsiString;
+begin
+  len := (pBregExp^.outendp - pBregExp^.outp) + 1;
+  SetLength(tmp, len);
+  Move(pBregExp^.outp^, tmp[1], len);
+  Result := tmp;
+end;
+
 
 end.
 

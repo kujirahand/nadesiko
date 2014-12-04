@@ -1,6 +1,6 @@
 object frmNako: TfrmNako
-  Left = 346
-  Top = 133
+  Left = 347
+  Top = 143
   Width = 606
   Height = 407
   Caption = #12394#12391#12375#12371
