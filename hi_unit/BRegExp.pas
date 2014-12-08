@@ -137,13 +137,13 @@ TBRegExpMode=(brxNone, brxMatch, brxSplit);
 TBRegExp=class(TObject)
   private
     BMatch:function(str, target, targetendp: PAnsiChar;
-                var rxp: pTBRegExpRec; msg: PAnsiChar): Boolean; cdecl;
+                var rxp: pTBRegExpRec; msg: PAnsiChar): Integer; cdecl;
     BSubst:function(str, target, targetendp: PAnsiChar;
-                var rxp: pTBRegExpRec; msg: PAnsiChar): Boolean; cdecl;
+                var rxp: pTBRegExpRec; msg: PAnsiChar): Integer; cdecl;
     BTrans:function(str, target, targetendp: PAnsiChar;
-                var rxp: pTBRegExpRec; msg: PAnsiChar): Boolean; cdecl;
+                var rxp: pTBRegExpRec; msg: PAnsiChar): Integer; cdecl;
     BSplit:function(str, target, targetendp: PAnsiChar; limit: Integer;
-                var rxp: pTBRegExpRec; msg: PAnsiChar): Boolean; cdecl;
+                var rxp: pTBRegExpRec; msg: PAnsiChar): Integer; cdecl;
     BRegFree:procedure(rx: pTBRegExpRec); cdecl;
     BRegExpVersion:function: PAnsiChar; cdecl;
   private
@@ -188,6 +188,8 @@ function bregMatch(s, pat, opt: AnsiString; matches: TStringList = nil): Boolean
 implementation
 
 uses Masks, unit_string, mini_file_utils;
+
+const CBOOL_FALSE = 0;
 
 
 function bregMatch(s, pat, opt: AnsiString; matches: TStringList = nil): Boolean;
@@ -296,14 +298,14 @@ begin
             PAnsiChar(@i),
             PAnsiChar(@i)+1,    
             pBRegExp,
-            PAnsiChar(ErrorString));
+            PAnsiChar(ErrorString)) <> CBOOL_FALSE;
     end else begin
         Result:=BMatch(
             PAnsiChar(Command),
             PAnsiChar(TargetString),
             PAnsiChar(TargetString)+Length(TargetString),
             pBRegExp,
-            PAnsiChar(ErrorString));
+            PAnsiChar(ErrorString)) <> CBOOL_FALSE;
     end;
     SetLength(ErrorString, StrLen(PAnsiChar(ErrorString)));
     if ErrorString<>'' then
@@ -336,7 +338,7 @@ begin
         PAnsiChar(TargetString),
         PAnsiChar(TargetString)+Length(TargetString),
         pBRegExp,
-        PAnsiChar(ErrorString));
+        PAnsiChar(ErrorString)) <> CBOOL_FALSE;
     SetLength(ErrorString,StrLen(PAnsiChar(ErrorString)));
     if ErrorString<>'' then
         raise EBRegExpError.Create(string(ErrorString));
@@ -373,7 +375,7 @@ begin
         PAnsiChar(TargetString),
         PAnsiChar(TargetString)+Length(TargetString),
         pBRegExp,
-        PAnsiChar(ErrorString));
+        PAnsiChar(ErrorString)) <> CBOOL_FALSE;
     SetLength(ErrorString,StrLen(PAnsiChar(ErrorString)));
     if ErrorString<>'' then
         raise EBRegExpError.Create(string(ErrorString));
@@ -398,7 +400,7 @@ begin
             PAnsiChar(t)+1,
             Limit,
             pBRegExp,
-            PAnsiChar(ErrorString));
+            PAnsiChar(ErrorString)) <> CBOOL_FALSE;
     end else begin
         Result:=BSplit(
             PAnsiChar(Command),
@@ -406,7 +408,7 @@ begin
             PAnsiChar(TargetString)+Length(TargetString),
             Limit,
             pBRegExp,
-            PAnsiChar(ErrorString));
+            PAnsiChar(ErrorString)) <> CBOOL_FALSE;
     end;
     SetLength(ErrorString,StrLen(PAnsiChar(ErrorString)));
     if ErrorString<>'' then
