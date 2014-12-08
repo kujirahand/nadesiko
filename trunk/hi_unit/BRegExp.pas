@@ -498,7 +498,7 @@ begin
         raise EBRegExpError.Create('index out of range');
     sp:=pBRegExp^.startp; Inc(sp, index);
     ep:=pBRegExp^.endp;   Inc(ep, index);
-    len := Integer(ep^) - Integer(sp^) + 1;
+    len := Integer(ep^) - Integer(sp^);
     SetLength(Result, len);
     Move(sp^^, Result[1], len);
 end;
@@ -580,7 +580,7 @@ begin
   len := (pBregExp^.outendp - pBregExp^.outp) + 1;
   SetLength(tmp, len);
   Move(pBregExp^.outp^, tmp[1], len);
-  Result := tmp;
+  Result := Copy(tmp, 1, StrLen(PChar(tmp)));
 end;
 
 
