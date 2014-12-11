@@ -306,7 +306,9 @@ begin
     if kinsoku = 'dafault' then kinsoku := GYOUTOU_KINSI;
 
     len := Length(line);
-    SetLength(Result, len + (len div cnt) * 3);
+    // (len div 2)+1‚Í#10or#13‚ª#13#10‚É’uŠ·‚³‚ê‚éê‡‚ÌÅ‘å‘‰Á•ª
+    // (len div cnt)*3‚Í©“®Ü‚è•Ô‚µ‚É‚æ‚é‰üs•ª
+    SetLength(Result, len + (len div 2)+1 + (len div cnt) * 3);
 
     pr := PChar(Result); pr_s := pr;
     p  := PChar(line);

@@ -579,10 +579,10 @@ var
   len: Integer;
   tmp: AnsiString;
 begin
-  len := (pBregExp^.outendp - pBregExp^.outp) + 1;
+  len := (pBregExp^.outendp - pBregExp^.outp);
   SetLength(tmp, len);
   Move(pBregExp^.outp^, tmp[1], len);
-  Result := Copy(tmp, 1, StrLen(PChar(tmp)));
+  Result := tmp;
 end;
 
 
