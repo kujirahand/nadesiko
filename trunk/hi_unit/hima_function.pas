@@ -2948,12 +2948,7 @@ begin
       
       // (3) Œ‹‰Ê‚ðÝ’è
       if re.Count = 0 then Exit;
-      if re.Count = 1 then
-      begin
-        hi_setStr(Result, ret);
-        //Result := hi_newStr(re.Text);
-      end else
-      if re.Count > 1 then
+      if re.Count > 0 then
       begin
         hi_ary_create(Result);
         for i := 0 to re.Count - 1 do
