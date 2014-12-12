@@ -15,7 +15,6 @@ object frmHukidasi: TfrmHukidasi
   KeyPreview = True
   OldCreateOrder = False
   PopupMenu = popMain
-  Position = poMainFormCenter
   OnClick = FormClick
   OnClose = FormClose
   OnCreate = FormCreate
