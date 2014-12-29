@@ -345,7 +345,7 @@ begin
 	end;
 	if not Assigned(Fctx) then
 	begin
-		method :=SSLv3_client_method();
+		method :=SSLv23_client_method();
 		if method = nil then
 			raise EKTcpClient.Create('SSL‚Ì‰Šú‰»(method)‚É¸”s‚µ‚Ü‚µ‚½B');
 		Fctx := SSL_CTX_new(method);
