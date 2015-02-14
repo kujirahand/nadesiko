@@ -37,7 +37,7 @@ object frmNakopad: TfrmNakopad
     OnChanging = pageLeftChanging
     object sheetAction: TTabSheet
       Caption = #34892#21205
-      object Panel2: TPanel
+      object panelActionBody: TPanel
         Left = 0
         Top = 0
         Width = 209
@@ -45,7 +45,7 @@ object frmNakopad: TfrmNakopad
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        object Splitter2: TSplitter
+        object splitterActPanel: TSplitter
           Left = 0
           Top = 264
           Width = 209
@@ -66,24 +66,27 @@ object frmNakopad: TfrmNakopad
           OnDblClick = lstActionDblClick
           OnDrawItem = lstActionDrawItem
         end
-        object edtAction: TRichEdit
+        object webAction: TUIWebBrowser
           Left = 0
           Top = 267
           Width = 209
           Height = 156
           Align = alClient
-          Color = clBtnFace
-          Font.Charset = SHIFTJIS_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -12
-          Font.Name = #65325#65331' '#12468#12471#12483#12463
-          Font.Style = []
-          ParentFont = False
-          PlainText = True
-          PopupMenu = popupActDesc
-          ReadOnly = True
-          ScrollBars = ssVertical
           TabOrder = 1
+          IeNoContext = False
+          IeNO3DBORDER = False
+          IeSCROLL_hidden = False
+          IeDontSCRIPT = False
+          IeEnableAccelerator = True
+          IeNoBehavior = False
+          IeAutoComplete = False
+          DownLoadControl = [CS_Images, CS_Videos, CS_BGSounds]
+          ControlData = {
+            4C0000009A150000201000000000000000000000000000000000000000000000
+            000000004C000000000000000000000001000000E0D057007335CF11AE690800
+            2B2E12620A000000000000004C0000000114020000000000C000000000000046
+            8000000000000000000000000000000000000000000000000000000000000000
+            00000000000000000100000000000000000000000000000000000000}
         end
       end
     end
@@ -111,7 +114,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 12
+            ItemHeight = 0
             PopupMenu = popFind
             TabOrder = 0
             OnEnter = cmbFindEnter
@@ -210,7 +213,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 12
+            ItemHeight = 0
             PopupMenu = popFind
             TabOrder = 2
             OnEnter = cmbGroupEnter
@@ -392,7 +395,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 12
+            ItemHeight = 0
             PopupMenu = popFind
             TabOrder = 2
             OnEnter = cmbCmdEnter
@@ -511,7 +514,7 @@ object frmNakopad: TfrmNakopad
           Width = 193
           Height = 20
           AutoComplete = False
-          ItemHeight = 12
+          ItemHeight = 0
           PopupMenu = popFind
           TabOrder = 1
           OnEnter = cmbVarEnter
@@ -5082,5 +5085,12 @@ object frmNakopad: TfrmNakopad
       ShortCut = 16470
       OnClick = popGUIPasteClick
     end
+  end
+  object timerShowWeb: TTimer
+    Enabled = False
+    Interval = 10000
+    OnTimer = timerShowWebTimer
+    Left = 368
+    Top = 160
   end
 end
