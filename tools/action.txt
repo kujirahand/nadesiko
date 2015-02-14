@@ -1,4 +1,5 @@
 +なでしこについて
+最新ニュース,news.nako
 なでしことは？,about.nako
 デモを見る,demo.nako
 なでしこWEBサイト,web.nako

@@ -2915,7 +2915,7 @@ function sys_reSplit(args: THiArray): PHiValue; stdcall;
 var
   a, b: PHiValue;
   re: TBRegExp;
-  pat, s, ret: AnsiString;
+  pat, s: AnsiString;
   i: Integer;
 begin
   Result := hi_var_new;

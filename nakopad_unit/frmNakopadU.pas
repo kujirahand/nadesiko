@@ -9,7 +9,8 @@ uses
   IniFiles, ImgList, heRaStrings, Clipbrd, CsvUtils2, StdCtrls, nakopad_types,
   XPMan, NadesikoFountain, PerlFountain, JavaFountain, CppFountain, HTMLFountain,
   DelphiFountain, HimawariFountain, HViewEdt, AppEvnts, TrackBox,
-  unit_guiParts, Grids, ValEdit, frmFirstPageU;
+  unit_guiParts, Grids, ValEdit, frmFirstPageU, OleCtrls, SHDocVw,
+  UIWebBrowser, Buttons;
 
 const
   NAKO_VNAKO = 0;
@@ -135,7 +136,7 @@ type
     N20: TMenuItem;
     mnuKanrenduke: TMenuItem;
     Panel1: TPanel;
-    Panel2: TPanel;
+    panelActionBody: TPanel;
     Panel3: TPanel;
     cmbFind: TComboBox;
     btnFind: TButton;
@@ -189,8 +190,7 @@ type
     popTabListIns: TMenuItem;
     N25: TMenuItem;
     lstAction: TListBox;
-    Splitter2: TSplitter;
-    edtAction: TRichEdit;
+    splitterActPanel: TSplitter;
     XPManifest1: TXPManifest;
     mnuHokan: TMenuItem;
     popCmd: TPopupMenu;
@@ -396,6 +396,8 @@ type
     popGUIFindCopy: TMenuItem;
     popGUIPaste: TMenuItem;
     mnuFirstShow: TMenuItem;
+    webAction: TUIWebBrowser;
+    timerShowWeb: TTimer;
     procedure mnuCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure mnuViewLeftPanelClick(Sender: TObject);
@@ -618,6 +620,7 @@ type
     procedure popGUIFindCopyClick(Sender: TObject);
     procedure popGUIPasteClick(Sender: TObject);
     procedure mnuFirstShowClick(Sender: TObject);
+    procedure timerShowWebTimer(Sender: TObject);
   private
     { Private 宣言 }
     ini: TIniFile;
@@ -743,13 +746,15 @@ const
 // 動詞の語尾変化を削除
 function DeleteGobi(key: string): string;
 function DeleteJosi(key: string): string;
+function IsGlobalOffline: boolean;
+
 
 implementation
 
 uses gui_benri, unit_string, unit_windows_api, StrUnit, Math,
   wildcard, frmMakeExeU, jconvert, jconvertex, MSCryptUnit, frmFindU,
   frmReplaceU, md5, unit_file, nkf, unit_blowfish, SHA1, vnako_message,
-  nadesiko_version;
+  nadesiko_version, wininet;
 
 {$R *.dfm}
 
@@ -3140,6 +3145,8 @@ var
   cap, fname: string;
 
   function showDescript(path: string): Boolean;
+  var
+    tempPath: string;
   begin
     Result := False;
     fname := path + 'tools\action\' + fname;
@@ -3148,7 +3155,19 @@ var
     ReadTextFile(fname, s);
     getToken_s(s, '/*');
     s := getToken_s(s, '*/');
-    edtAction.Lines.Text := Trim(s) + #13#10#13#10 + '→リストをダブルクリックすると実行できます。';
+    s := trim(s);
+    if (Copy(s, 1, 4) = 'WEB=') then
+    begin
+      System.Delete(s, 1, 4);
+      webAction.Navigate(s);
+      Result := True;
+      Exit;
+    end;
+    s := JReplace(Trim(s), #13#10, '<br>', True);
+    tempPath := TempDir + 'tmp_nakopad_action.html';
+    FileSaveAll('<html><meata chrset="Shift_JIS"><body>' + s + '</body></html>', tempPath);
+    //edtAction.Lines.Text := Trim(s) + #13#10#13#10 + '→リストをダブルクリックすると実行できます。';
+    webAction.Navigate('file://' + tempPath);
     Result := True;
   end;
 
@@ -3463,6 +3482,7 @@ var
   ini_key: string;
 begin
   SetColorMode;
+  panelOtehon.Visible := False;
   ws := TWindowState( ini.ReadInteger('pad', 'WindowState', Ord(wsNormal)) );
   if ws = wsMaximized then
   begin
@@ -3497,6 +3517,8 @@ begin
   begin
     changeProLicense(True);
   end;
+
+  timerShowWeb.Enabled := True;
 end;
 
 procedure TfrmNakopad.pageLeftChange(Sender: TObject);
@@ -4382,7 +4404,7 @@ end;
 
 procedure TfrmNakopad.popActDescCopyClick(Sender: TObject);
 begin
-  edtAction.CopyToClipboard;
+  // edtAction.CopyToClipboard;
 end;
 
 procedure TfrmNakopad.popActDescMoreClick(Sender: TObject);
@@ -6118,6 +6140,28 @@ begin
   detect;
   if fname = '' then Exit;
   RunApp(AppPath+'vnako.exe "'+fname+'" -debug::'+IntToStr(Self.Handle));
+end;
+
+function IsGlobalOffline: boolean;
+var
+  State, Size: DWORD;
+begin
+  Result := False;
+  State := 0;
+  Size := SizeOf(DWORD);
+  if InternetQueryOption(nil, INTERNET_OPTION_CONNECTED_STATE, @State, Size) then
+    if (State and INTERNET_STATE_DISCONNECTED_BY_USER) <> 0 then
+      Result := True;
+end;
+
+
+procedure TfrmNakopad.timerShowWebTimer(Sender: TObject);
+begin
+  // if IsGlobalOffline then Exit;
+  //
+  timerShowWeb.Enabled := False;
+  webAction.Navigate('http://nadesi.com/top/index.php?NakopadEntry');
+
 end;
 
 end.
