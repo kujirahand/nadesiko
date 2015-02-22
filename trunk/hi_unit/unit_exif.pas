@@ -22,6 +22,12 @@ const
   DQT    = JPEG_MARKER + #$DB;
   DHT    = JPEG_MARKER + #$C4;
   SOF0   = JPEG_MARKER + #$C0;
+
+  BLOCK_IFD_BASE = 0;
+  BLOCK_IFD_SUB = 1;
+  BLOCK_IFD_IIFD = 2;
+  BLOCK_IFD_GPS = 3;
+
   
   // === JPEG STRUCTURE
   // SOI
@@ -71,6 +77,7 @@ const
   //
   EXIF_TAG_SUBIFD = $8769;
   EXIF_INTEROPERABILITY_OFFSET = $A005;
+  //EXIF_TAG_GPSINFO = $8825;
   //
   EXIF_TAG_EXIF_IMAGE_WIDTH   = $0A002;
   EXIF_TAG_EXIF_IMAGE_HTIGHT  = $0A003;
@@ -228,17 +235,19 @@ type
     FValues: array of TKTiffIFDValue;
     FNextIFD: TKTiffIFD;
     FSubIFD: TKTiffIFD;
+    FGpsIFD: TKTiffIFD;
+    FBlock: Integer;
     FIFD_StartPos: DWORD;
   public
     offset: DWORD;
     stream: TMemoryStream;
     info:   TKJpegInfo;
-    constructor Create(info: TKJpegInfo; Offset: DWORD); // Tiff ヘッダの直後にしておくこと
+    constructor Create(info: TKJpegInfo; Offset: DWORD; Block: Integer); // Tiff ヘッダの直後にしておくこと
     destructor Destroy; override;
-    function FindValue(TagNo: WORD): PKTiffIFDValue;
+    function FindValue(TagNo: WORD; Block: Integer): PKTiffIFDValue;
   public
     procedure WriteValues; // 書き換えたデータを上書きする(書き換えはOKだが、要素を追加してはならない)
-    function getValue(TagNo: WORD): TKTiffIFDValueIO; // 解放が必要
+    function getValue(TagNo: WORD; Block: Integer): TKTiffIFDValueIO; // 解放が必要
     property Count: DWORD read FIFDCount;
     property NextIFD: TKTiffIFD read FNextIFD;
   end;
@@ -262,8 +271,12 @@ type
     function checkWord(w: Word): Word;
     function checkDWord(w: DWord): DWord;
   public
+    function getValueChar: Short;
+    function getValueByte: Byte;
+    function getValueShort: Short;
     function getValueUShort: WORD;
     function getValueULong: DWORD;
+    function getValueLong: Integer;
     function getAscii: string;
     function toString: string;
     procedure setFromString(s: string);
@@ -279,6 +292,7 @@ type
     offset: Int64;
     order: TKExifByteOrder;
     EntryCount: Word;
+    FBlock  : Integer;
     FNextIFD: DWORD;
     procedure ReadEntry;
     function readWord: WORD;
@@ -289,17 +303,19 @@ type
   public
     list: TList;  // list of TKIFDEntry
     debugOut: TKJepgDebugOutProc;
-    constructor Create(stream:TMemoryStream; Offset:Int64; ByteOrder: TKExifByteOrder; debugOut: TKJepgDebugOutProc);
+    constructor Create(stream:TMemoryStream; Block: Integer; Offset:Int64; ByteOrder: TKExifByteOrder; debugOut: TKJepgDebugOutProc);
     destructor Destroy; override;
     procedure clear;
-    function findTag(tagNo: Integer): TKIFDEntry;
-    function getTagValue(tagNo: Integer): DWORD;
+    function findTag(tagNo: Integer): TKIFDEntry;overload;
+    function findTag(tagNo: Integer; Block: Integer): TKIFDEntry;overload;
+    function getTagValue(tagNo: Integer): DWORD;overload;
+    function getTagValue(tagNo: Integer; Block: Integer): DWORD;overload;
     function getThumbnail: TMemoryStream;
     procedure writeEntry(mem: TMemoryStream; offset: Int64; ExtDat: string; isLast: Boolean; subifd_pos: Int64 = 0);
     procedure writeEntryApp1(mem: TMemoryStream; offset: Int64; thumb: TMemoryStream; isLast: Boolean);
     function getTagList: string;
     procedure setTagList(tags: string);
-    function getExifIndexFromTagNo(TagNo: Integer): Integer;
+    function getExifIndexFromTagNo(TagNo: Integer; Block: Integer): Integer;
     function getExifIndexFromTagName(TagName: string): Integer;
   published
     property NextIFD: DWORD read FNextIFD;
@@ -404,9 +420,9 @@ type
     procedure SwapExifSegmentStr(exifstr: string);
     function RemoveExif:Boolean;
     procedure RewriteValues;
-    function GetExifValueAsString(TagNo: Integer): string;
-    function GetExifValueAsUShort(TagNo: Integer): Integer;
-    function GetExifValueAsRation(TagNo: Integer): TKExifRationValue;
+    function GetExifValueAsString(TagNo: Integer; Block: Integer): string;
+    function GetExifValueAsUShort(TagNo: Integer; Block: Integer): Integer;
+    function GetExifValueAsRation(TagNo: Integer; Block: Integer): TKExifRationValue;
   public
     function CheckSOI: Boolean;
     function HasExif: Boolean;
@@ -950,8 +966,8 @@ begin
     Result := 0;
     Exit;
   end;
-  f := TiffIFD.getValue(EXIF_TAG_DATETIMEORIGINAL);
-  if f = nil  then f := TiffIFD.getValue(EXIF_TAG_DATETIME);
+  f := TiffIFD.getValue(EXIF_TAG_DATETIMEORIGINAL,BLOCK_IFD_SUB);
+  if f = nil  then f := TiffIFD.getValue(EXIF_TAG_DATETIME,BLOCK_IFD_BASE);
   if f <> nil then
   begin
     if f.DataFormat = TV_TYPE_ASCII then
@@ -971,11 +987,11 @@ end;
 
 
 function TKJpegInfo.GetExifValueAsRation(
-  TagNo: Integer): TKExifRationValue;
+  TagNo, Block: Integer): TKExifRationValue;
 var
   f: TKTiffIFDValueIO;
 begin
-  f := TiffIFD.getValue(TagNo);
+  f := TiffIFD.getValue(TagNo, Block);
   if f <> nil then
   begin
     if f.DataFormat = TV_TYPE_URATION then
@@ -994,11 +1010,11 @@ begin
   end;
 end;
 
-function TKJpegInfo.GetExifValueAsString(TagNo: Integer): string;
+function TKJpegInfo.GetExifValueAsString(TagNo, Block: Integer): string;
 var
   f: TKTiffIFDValueIO;
 begin
-  f := TiffIFD.getValue(TagNo);
+  f := TiffIFD.getValue(TagNo,Block);
   if f <> nil then
   begin
     if f.DataFormat = TV_TYPE_ASCII then
@@ -1012,11 +1028,11 @@ begin
   end;
 end;
 
-function TKJpegInfo.GetExifValueAsUShort(TagNo: Integer): Integer;
+function TKJpegInfo.GetExifValueAsUShort(TagNo, Block: Integer): Integer;
 var
   f: TKTiffIFDValueIO;
 begin
-  f := TiffIFD.getValue(TagNo);
+  f := TiffIFD.getValue(TagNo, Block);
   if f <> nil then
   begin
     if f.DataFormat = TV_TYPE_USHORT then
@@ -1039,7 +1055,7 @@ var
   d: Extended;
   s: string;
 begin
-  r := GetExifValueAsRation(EXIF_TAG_EXPOSURETIME);
+  r := GetExifValueAsRation(EXIF_TAG_EXPOSURETIME,BLOCK_IFD_SUB);
   if r.numerator = 0 then
   begin
     Result := '';
@@ -1056,7 +1072,7 @@ end;
 
 function TKJpegInfo.GetFNumber: TKExifRationValue;
 begin
-  Result := GetExifValueAsRation(EXIF_TAG_FNUMBER);
+  Result := GetExifValueAsRation(EXIF_TAG_FNUMBER,BLOCK_IFD_SUB);
 end;
 
 function TKJpegInfo.GetFNumberStr: string;
@@ -1077,7 +1093,7 @@ function TKJpegInfo.GetImageHeight: DWORD;
 var
   f: TKTiffIFDValueIO;
 begin
-  f := TiffIFD.getValue(EXIF_TAG_EXIF_IMAGE_HTIGHT);
+  f := TiffIFD.getValue(EXIF_TAG_EXIF_IMAGE_HTIGHT,BLOCK_IFD_SUB);
   if f <> nil then
   begin
     if f.DataFormat = TV_TYPE_USHORT then
@@ -1098,7 +1114,7 @@ function TKJpegInfo.GetImageOrientation: WORD;
 var
   f: TKTiffIFDValueIO;
 begin
-  f := TiffIFD.getValue(EXIF_TAG_ORIENTATION);
+  f := TiffIFD.getValue(EXIF_TAG_ORIENTATION,BLOCK_IFD_BASE);
   if f <> nil then
   begin
     Result := f.ValueUShort;
@@ -1113,7 +1129,7 @@ function TKJpegInfo.GetImageWidth: DWORD;
 var
   f: TKTiffIFDValueIO;
 begin
-  f := TiffIFD.getValue(EXIF_TAG_EXIF_IMAGE_WIDTH);
+  f := TiffIFD.getValue(EXIF_TAG_EXIF_IMAGE_WIDTH,BLOCK_IFD_SUB);
   if f <> nil then
   begin
     if f.DataFormat = TV_TYPE_USHORT then
@@ -1132,22 +1148,22 @@ end;
 
 function TKJpegInfo.GetISOSpeedRatings: Integer;
 begin
-  Result := GetExifValueAsUShort(EXIF_TAG_ISOSPEEDRATINGS);
+  Result := GetExifValueAsUShort(EXIF_TAG_ISOSPEEDRATINGS,BLOCK_IFD_SUB);
 end;
 
 function TKJpegInfo.GetMake: string;
 begin
-  Result := GetExifValueAsString(EXIF_TAG_Make);
+  Result := GetExifValueAsString(EXIF_TAG_Make,BLOCK_IFD_BASE);
 end;
 
 function TKJpegInfo.GetModel: string;
 begin
-  Result := GetExifValueAsString(EXIF_TAG_Model);
+  Result := GetExifValueAsString(EXIF_TAG_Model,BLOCK_IFD_BASE);
 end;
 
 function TKJpegInfo.GetOrientation: Integer;
 begin
-  Result := GetExifValueAsUShort(EXIF_TAG_ORIENTATION);
+  Result := GetExifValueAsUShort(EXIF_TAG_ORIENTATION,BLOCK_IFD_BASE);
 end;
 
 function TKJpegInfo.HasExif: Boolean;
@@ -1216,7 +1232,7 @@ begin
   try
     // Set First FID
     stream.Position := TiffOffset + CheckDWord(tiff.Offset);
-    TiffIFD := TKTiffIFD.Create(Self, TiffOffset);
+    TiffIFD := TKTiffIFD.Create(Self, TiffOffset,BLOCK_IFD_BASE);
   except
     Result := False;
     Exit;
@@ -1308,7 +1324,7 @@ procedure TKJpegInfo.SetImageHeight(const Value: DWORD);
 var
   f: TKTiffIFDValueIO;
 begin
-  f := TiffIFD.getValue(EXIF_TAG_EXIF_IMAGE_HTIGHT);
+  f := TiffIFD.getValue(EXIF_TAG_EXIF_IMAGE_HTIGHT,BLOCK_IFD_SUB);
   if f <> nil then
   begin
     if f.DataFormat = TV_TYPE_USHORT then
@@ -1326,7 +1342,7 @@ procedure TKJpegInfo.SetImageOrientation(const Value: WORD);
 var
   f: TKTiffIFDValueIO;
 begin
-  f := TiffIFD.getValue(EXIF_TAG_ORIENTATION);
+  f := TiffIFD.getValue(EXIF_TAG_ORIENTATION,BLOCK_IFD_BASE);
   if f <> nil then
   begin
     f.ValueUShort := Value;
@@ -1338,7 +1354,7 @@ procedure TKJpegInfo.SetImageWidth(const Value: DWORD);
 var
   f: TKTiffIFDValueIO;
 begin
-  f := TiffIFD.getValue(EXIF_TAG_EXIF_IMAGE_WIDTH);
+  f := TiffIFD.getValue(EXIF_TAG_EXIF_IMAGE_WIDTH,BLOCK_IFD_SUB);
   if f <> nil then
   begin
     if f.DataFormat = TV_TYPE_USHORT then
@@ -1434,7 +1450,7 @@ end;
 
 { TKTiffIFD }
 
-constructor TKTiffIFD.Create(info: TKJpegInfo; Offset: DWORD);
+constructor TKTiffIFD.Create(info: TKJpegInfo; Offset: DWORD; Block: Integer);
 var
   i: Integer;
   NextLink: DWORD;
@@ -1447,9 +1463,13 @@ begin
   Self.offset := Offset;
   FNextIFD    := nil;
   FSubIFD     := nil;
+  FGpsIFD     := nil;
+  FBlock      := BLOCK_IFD_BASE;
   FIFD_StartPos  := info.stream.Position;
   FIFDCount := 0;
 
+  // set block type
+  FBlock := Block;
   // Read Number of directory entory
   FIFDCount := info.ReadWordFromStream;
   if FIFDCount > 0 then
@@ -1470,9 +1490,20 @@ begin
       tmpPos := stream.Position;
       stream.Position := info.CheckDWord(FValues[i].Value) + Offset;
       try
-        FSubIFD := TKTiffIFD.Create(info, Offset);
+        FSubIFD := TKTiffIFD.Create(info, Offset, BLOCK_IFD_SUB);
       except
-        raise Exception.Create('Broken stream : Sub IFD Value');
+        raise Exception.Create('Broken stream : Sub IFD(exif) Value');
+      end;
+      stream.Position := tmpPos;
+    end;
+    if (FGpsIFD = nil) and (tagNo = EXIF_TAG_GPSINFO) then
+    begin
+      tmpPos := stream.Position;
+      stream.Position := info.CheckDWord(FValues[i].Value) + Offset;
+      try
+        FGpsIFD := TKTiffIFD.Create(info, Offset, BLOCK_IFD_GPS);
+      except
+        raise Exception.Create('Broken stream : Sub IFD(gps) Value');
       end;
       stream.Position := tmpPos;
     end;
@@ -1485,7 +1516,7 @@ begin
   if NextLink <> 0 then
   begin
     stream.Position := NextLink + Offset;
-    FNextIFD := TKTiffIFD.Create(info, Offset);
+    FNextIFD := TKTiffIFD.Create(info, Offset, BLOCK_IFD_BASE);
   end;
 
 end;
@@ -1493,11 +1524,12 @@ end;
 destructor TKTiffIFD.Destroy;
 begin
   if FNextIFD <> nil then FreeAndNil(FNextIFD);
+  if FGpsIFD  <> nil then FreeAndNil(FGpsIFD);
   if FSubIFD  <> nil then FreeAndNil(FSubIFD);
   inherited;
 end;
 
-function TKTiffIFD.FindValue(TagNo: WORD): PKTiffIFDValue;
+function TKTiffIFD.FindValue(TagNo: WORD; Block: Integer): PKTiffIFDValue;
 var
   i: Integer;
   v: PKTiffIFDValue;
@@ -1505,39 +1537,47 @@ var
 begin
   Result := nil;
 
-  for i := 0 to Count - 1 do
+  if ((Block =  BLOCK_IFD_GPS) and (FBlock =  BLOCK_IFD_GPS)) or
+     ((Block <> BLOCK_IFD_GPS) and (FBlock <> BLOCK_IFD_GPS)) then
   begin
-    v := @FValues[i];
-    tag := info.CheckWord(v^.TagNo);
-    if tag = TagNo then
+    for i := 0 to Count - 1 do
     begin
-      Result := v;
-      Break;
+      v := @FValues[i];
+      tag := info.CheckWord(v^.TagNo);
+      if tag = TagNo then
+      begin
+        Result := v;
+        Break;
+      end;
     end;
   end;
 
   // Find SUB
   if (Result = nil) and (FSubIFD <> nil) then
   begin
-    Result := FSubIFD.FindValue(TagNo);
+    Result := FSubIFD.FindValue(TagNo, Block);
+  end;
+  if (Result = nil) and (FGpsIFD <> nil) then
+  begin
+    Result := FGpsIFD.FindValue(TagNo, Block);
   end;
 
   if Result = nil then
   begin
     if FNextIFD <> nil then
     begin
-      Result := FNextIFD.FindValue(TagNo);
+      Result := FNextIFD.FindValue(TagNo, Block);
     end;
   end;
-  
+
 end;
 
-function TKTiffIFD.getValue(TagNo: WORD): TKTiffIFDValueIO;
+function TKTiffIFD.getValue(TagNo: WORD; Block: Integer): TKTiffIFDValueIO;
 var
   v: PKTiffIFDValue;
 begin
   // find
-  v := FindValue(TagNo);
+  v := FindValue(TagNo, Block);
   if v = nil then
   begin
     Result := nil;
@@ -1566,8 +1606,11 @@ begin
   // Skip Next Link
   info.ReadDWordFromStream;
 
-  // Write SubFID
+  // Write SubIFD
   if FSubIFD <> nil then FSubIFD.WriteValues;
+
+  // Write GpsIFD
+  if FGpsIFD <> nil then FGpsIFD.WriteValues;
 
   // Write Next Exif
   if FNextIFD <> nil then FNextIFD.WriteValues;
@@ -1622,6 +1665,8 @@ begin
   try
     info.stream.Position := info.TiffIFD.offset + NativeData;
     info.stream.Read(Result, 8);
+    info.CheckDWord(Result.numerator);
+    info.CheckDWord(Result.denominator);
   except
     Result.numerator  := 0;
     Result.denominator := 0;
@@ -1698,13 +1743,14 @@ begin
   list.Clear;
 end;
 
-constructor TKIFDIO.Create(stream:TMemoryStream; Offset:Int64; ByteOrder: TKExifByteOrder; debugOut: TKJepgDebugOutProc);
+constructor TKIFDIO.Create(stream:TMemoryStream; Block: Integer; Offset:Int64; ByteOrder: TKExifByteOrder; debugOut: TKJepgDebugOutProc);
 begin
   list := TList.Create;
   Self.stream := stream;
   Self.offset := Offset;
   Self.order  := ByteOrder;
   Self.debugOut := debugOut;
+  Self.FBlock := Block;
   // --- read
   ReadEntry;
 end;
@@ -1733,6 +1779,28 @@ begin
   end;
 end;
 
+function TKIFDIO.findTag(tagNo: Integer; Block: Integer): TKIFDEntry;
+var
+  i: Integer;
+  p: TKIFDEntry;
+begin
+  tagNo := checkWord(tagNo);
+  Result := nil;
+  if ((Block =  BLOCK_IFD_GPS) and (FBlock =  BLOCK_IFD_GPS)) or
+     ((Block <> BLOCK_IFD_GPS) and (FBlock <> BLOCK_IFD_GPS)) then
+  begin
+    for i := 0 to list.Count - 1 do
+    begin
+      p := TKIFDEntry(list.Items[i]);
+      if p = nil then Continue;
+      if p.value.TagNo = tagNo then
+      begin
+         Result := p; Exit;
+      end;
+    end;
+  end;
+end;
+
 function TKIFDIO.getTagValue(tagNo: Integer): DWORD;
 var
   entry: TKIFDEntry;
@@ -1740,6 +1808,19 @@ var
 begin
   Result := 0;
   entry := findTag(tagNo);
+  if entry = nil then Exit;
+  v := entry.value.Value;
+  if order = MM then v := SwapDWord(v);
+  Result := v;
+end;
+
+function TKIFDIO.getTagValue(tagNo: Integer; Block: Integer): DWORD;
+var
+  entry: TKIFDEntry;
+  v:DWORD;
+begin
+  Result := 0;
+  entry := findTag(tagNo,Block);
   if entry = nil then Exit;
   v := entry.value.Value;
   if order = MM then v := SwapDWord(v);
@@ -1793,6 +1874,7 @@ var
   procedure _readDataArea(p:TKIFDEntry);
   var
     data_size: Int64;
+    block: Integer;
   begin
     tag := checkWord(p.value.TagNo);
     typ := checkWord(p.value.DataType);
@@ -1801,11 +1883,17 @@ var
     // debug
     debug('@'+IntToStr(ent_pos)+':$' + IntToHex(tag, 2) + '(' + IntToStr(tag) + '),type=' + IntToStr(typ) + ',value=' + IntToStr(val)+',cnt='+IntToStr(p.value.DataCount));
     // Check Sub IFD
-    if (tag = EXIF_TAG_SUBIFD)or(tag = EXIF_INTEROPERABILITY_OFFSET) then
+    if (tag = EXIF_TAG_SUBIFD)or(tag = EXIF_INTEROPERABILITY_OFFSET)or(tag = EXIF_TAG_GPSINFO) then
     begin
-      if tag = EXIF_TAG_SUBIFD then debug('<subifd sub>') else debug('<subifd INTEROPERABILITY>');
+      if tag = EXIF_TAG_SUBIFD then debug('<subifd sub>')
+      else if tag = EXIF_TAG_GPSINFO then debug('<subifd GPSINFO>')
+      else debug('<subifd INTEROPERABILITY>');
+      if tag = EXIF_TAG_SUBIFD then block := BLOCK_IFD_SUB
+      else if tag = EXIF_TAG_GPSINFO then block := BLOCK_IFD_GPS
+      else block := BLOCK_IFD_IIFD;
+
       stream.Position := offset + val;
-      p.subIFD := TKIFDIO.Create(stream, Offset, order, debugOut);
+      p.subIFD := TKIFDIO.Create(stream, block, Offset, order, debugOut);
       debug('</subifd>');
     end else
     // Check Data Area
@@ -1836,6 +1924,8 @@ var
       if typ = TV_TYPE_URATION then
       begin
         GetRationType(s, ko, oya);
+        ko := CheckDWord(ko);
+        oya := CheckDWord(oya);
         debug('data:' + IntToStr((ko)) + '/' + IntToStr((oya)));
       end;
     end else
@@ -2086,10 +2176,11 @@ begin
   for i := 0 to list.Count - 1 do
   begin
     p := TKIFDEntry(list.Items[i]);
-    ei := getExifIndexFromTagNo(p.TagNo);
+    ei := getExifIndexFromTagNo(p.TagNo, FBlock);
     // 念のため含めない
     if (p.TagNo = EXIF_TAG_SUBIFD) or
-       (p.TagNo = EXIF_INTEROPERABILITY_OFFSET) then
+       (p.TagNo = EXIF_INTEROPERABILITY_OFFSET) or
+       (p.TagNo = EXIF_TAG_GPSINFO) then
     begin
       Continue;
     end;
@@ -2109,9 +2200,15 @@ begin
   begin
     Result := Result + sub.subIFD.getTagList;
   end;
+  // gps
+  sub := findTag(EXIF_TAG_GPSINFO);
+  if sub <> nil then
+  begin
+    Result := Result + sub.subIFD.getTagList;
+  end;
 end;
 
-function TKIFDIO.getExifIndexFromTagNo(TagNo: Integer): Integer;
+function TKIFDIO.getExifIndexFromTagNo(TagNo: Integer; Block: Integer): Integer;
 var
   i: Integer;
 begin
@@ -2120,8 +2217,16 @@ begin
   begin
     if F_EXIF_TAG[i] = TagNo then
     begin
-      Result := i;
-      Break;
+      if (Block = BLOCK_IFD_GPS) and (F_EXIF_PLACE[i] = F_GpsIFD) then
+      begin
+        Result := i;
+        Break;
+      end else
+      if (Block <> BLOCK_IFD_GPS) and (F_EXIF_PLACE[i] <> F_GpsIFD) then
+      begin
+        Result := i;
+        Break;
+      end;
     end;
   end;
 end;
@@ -2148,6 +2253,7 @@ var
   tagidx, tagno: Integer;
   line, tag: string;
   p, sub: TKIFDEntry;
+  block: Integer;
 begin
   taglist := TStringList.Create;
   try
@@ -2159,12 +2265,23 @@ begin
       tagidx := getExifIndexFromTagName(tag);
       if tagidx < 0 then continue;
       tagno := F_EXIF_TAG[tagidx];
-      p := findTag(tagno);
+      block := BLOCK_IFD_BASE;
+      if F_EXIF_PLACE[tagidx] = F_GpsIFD then
+      begin
+        block := BLOCK_IFD_GPS;
+      end;
+      p := findTag(tagno, block);
       if p = nil then Continue; //todo: 現在書き換えのみ対応
       p.setFromString(line);
     end;
     // sub
     sub := findTag(EXIF_TAG_SUBIFD);
+    if sub <> nil then
+    begin
+      sub.subIFD.setTagList(tags);
+    end;
+    // gps
+    sub := findTag(EXIF_TAG_GPSINFO);
     if sub <> nil then
     begin
       sub.subIFD.setTagList(tags);
@@ -2391,7 +2508,7 @@ begin
       debug('[ERROR]Maybe Broken');
       Break;
     end;
-    p := TKIFDIO.Create(stream, Offset, ByteOrder, debugOut);
+    p := TKIFDIO.Create(stream, BLOCK_IFD_BASE, Offset, ByteOrder, debugOut);
     list.Add(p);
     if p.NextIFD = 0 then Break;
     if ((Offset + p.NextIFD) >= stream.Size) then
@@ -2507,12 +2624,32 @@ begin
   Result := PChar(data);
 end;
 
+function TKIFDEntry.getValueByte: BYTE;
+begin
+  Result := value.Value;
+end;
+
+function TKIFDEntry.getValueChar: Short;
+begin
+  Result := value.Value;
+end;
+
 function TKIFDEntry.getValueUShort: WORD;
 begin
   Result := checkWord(value.Value);
 end;
 
+function TKIFDEntry.getValueShort: Short;
+begin
+  Result := checkWord(value.Value);
+end;
+
 function TKIFDEntry.getValueULong: DWORD;
+begin
+  Result := checkDWord(value.Value);
+end;
+
+function TKIFDEntry.getValueLong: Integer;
 begin
   Result := checkDWord(value.Value);
 end;
@@ -2559,24 +2696,36 @@ begin
       end;
     end;
   TV_TYPE_UNDEFINED,
-  TV_TYPE_UBYTE,
-  TV_TYPE_USHORT,
+  TV_TYPE_UBYTE:
+    begin
+      Result := IntToStr(getValueByte);
+    end;
+  TV_TYPE_USHORT:
+    begin
+      Result := IntToStr(getValueUShort);
+    end;
   TV_TYPE_ULONG:
     begin
-      Result := IntToStr(getValue);
+      Result := IntToStr(getValueULong);
     end;
-  TV_TYPE_SBYTE,
-  TV_TYPE_SSHORT,
+  TV_TYPE_SBYTE:
+    begin
+      Result := IntToStr(getValueChar);
+    end;
+  TV_TYPE_SSHORT:
+    begin
+      Result := IntToStr(getValueShort);
+    end;
   TV_TYPE_SLONG:
     begin
-      Result := IntToStr(getValue);
+      Result := IntToStr(getValueLong);
     end;
   TV_TYPE_URATION:
     begin
       for i := 0 to getCount -1 do
       begin
-        GetRationType(data, ko, oya);
-        Result := IntToStr(ko) + '/' + IntToStr(oya)+',';
+        GetRationType(Copy(data,i*8+1,i*8+8), ko, oya);
+        Result := Result + IntToStr(checkDWord(ko)) + '/' + IntToStr(checkDWord(oya))+',';
       end;
       if Result <> '' then Result := Copy(Result,1,Length(Result)-1);
     end;
@@ -2584,8 +2733,8 @@ begin
     begin
       for i := 0 to getCount -1 do
       begin
-        GetRationType(data, DWORD(iko), DWORD(ioya));
-        Result := IntToStr(iko) + '/' + IntToStr(ioya)+',';
+        GetRationType(Copy(data,i*8+1,i*8+8), DWORD(iko), DWORD(ioya));
+        Result := Result + IntToStr(checkDWord(iko)) + '/' + IntToStr(checkDWord(ioya))+',';
       end;
       if Result <> '' then Result := Copy(Result,1,Length(Result)-1);
     end;
