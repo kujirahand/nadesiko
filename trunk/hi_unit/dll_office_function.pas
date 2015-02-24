@@ -15,13 +15,23 @@ procedure PluginFin;
 implementation
 
 uses unit_sqlite, OpenOffice, mini_file_utils, unit_string, StrUnit,
-  unit_sqlite3;
+  unit_sqlite3, Variants;
 
 var
   _excel : TKExcel = nil;
   _word  : TKWord  = nil;
   ado   : TKAdo   = nil;
   ppt   : TKPowerPoint = nil;
+
+{$IFDEF VER150}
+function VarIsNull(v: Variant): Boolean;
+var
+  w: Word;
+begin
+  w := VarType(v);
+  Result := (w = varNull);
+end;
+{$ENDIF}
 
 function excel : TKExcel;
 begin
@@ -1262,6 +1272,7 @@ var
   f: string;
   h: TSqliteHandle;
 begin
+  // raise Exception.Create('SQLite2系のサポートは終了しました。SQLite3系の命令『SQLITE3開く』などを利用してください。');
   // SQLite の初期化
   SqliteInit(FindDLLFile('sqlite.dll'));
   //
