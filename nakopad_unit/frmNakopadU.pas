@@ -6160,7 +6160,7 @@ begin
   // if IsGlobalOffline then Exit;
   //
   timerShowWeb.Enabled := False;
-  webAction.Navigate('http://nadesi.com/top/index.php?NakopadEntry');
+  webAction.Navigate('http://nadesi.com/top/index.php?NakopadEntry&simple');
 
 end;
 
