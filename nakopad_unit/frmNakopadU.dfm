@@ -114,7 +114,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 0
+            ItemHeight = 12
             PopupMenu = popFind
             TabOrder = 0
             OnEnter = cmbFindEnter
@@ -213,7 +213,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 0
+            ItemHeight = 12
             PopupMenu = popFind
             TabOrder = 2
             OnEnter = cmbGroupEnter
@@ -395,7 +395,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 0
+            ItemHeight = 12
             PopupMenu = popFind
             TabOrder = 2
             OnEnter = cmbCmdEnter
@@ -514,7 +514,7 @@ object frmNakopad: TfrmNakopad
           Width = 193
           Height = 20
           AutoComplete = False
-          ItemHeight = 0
+          ItemHeight = 12
           PopupMenu = popFind
           TabOrder = 1
           OnEnter = cmbVarEnter
@@ -2297,6 +2297,11 @@ object frmNakopad: TfrmNakopad
           Checked = True
           OnClick = mnuViewSheetTreeClick
         end
+      end
+      object mnuShowNews: TMenuItem
+        Caption = #36215#21205#26178#12395#12491#12517#12540#12473#12434#34920#31034#12377#12427
+        Checked = True
+        OnClick = mnuShowNewsClick
       end
       object mnuImeOn: TMenuItem
         Caption = #36215#21205#26178'IME'#12434#12458#12531#12395

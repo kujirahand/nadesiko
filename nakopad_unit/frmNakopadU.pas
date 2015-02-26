@@ -398,6 +398,7 @@ type
     mnuFirstShow: TMenuItem;
     webAction: TUIWebBrowser;
     timerShowWeb: TTimer;
+    mnuShowNews: TMenuItem;
     procedure mnuCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure mnuViewLeftPanelClick(Sender: TObject);
@@ -621,6 +622,7 @@ type
     procedure popGUIPasteClick(Sender: TObject);
     procedure mnuFirstShowClick(Sender: TObject);
     procedure timerShowWebTimer(Sender: TObject);
+    procedure mnuShowNewsClick(Sender: TObject);
   private
     { Private êÈåæ }
     ini: TIniFile;
@@ -1063,6 +1065,13 @@ begin
 
   // first page
   if False = (ini.ReadBool('frmFirst', 'NoMorePage', False)) then frmFirst.Show;
+
+  // show news?
+  mnuShowNews.Checked := ini.ReadBool('Edit', 'ShowNews', True);
+  if mnuShowNews.Checked then
+  begin
+    timerShowWeb.Enabled := True;
+  end;
 end;
 
 procedure TfrmNakopad.SaveIni;
@@ -3517,8 +3526,6 @@ begin
   begin
     changeProLicense(True);
   end;
-
-  timerShowWeb.Enabled := True;
 end;
 
 procedure TfrmNakopad.pageLeftChange(Sender: TObject);
@@ -6162,6 +6169,12 @@ begin
   timerShowWeb.Enabled := False;
   webAction.Navigate('http://nadesi.com/top/index.php?NakopadEntry&simple');
 
+end;
+
+procedure TfrmNakopad.mnuShowNewsClick(Sender: TObject);
+begin
+  mnuShowNews.Checked := not mnuShowNews.Checked;
+  ini.WriteBool('Edit','ShowNews', mnuShowNews.Checked);
 end;
 
 end.
