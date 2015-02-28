@@ -114,7 +114,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 12
+            ItemHeight = 0
             PopupMenu = popFind
             TabOrder = 0
             OnEnter = cmbFindEnter
@@ -213,7 +213,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 12
+            ItemHeight = 0
             PopupMenu = popFind
             TabOrder = 2
             OnEnter = cmbGroupEnter
@@ -395,7 +395,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 12
+            ItemHeight = 0
             PopupMenu = popFind
             TabOrder = 2
             OnEnter = cmbCmdEnter
@@ -514,7 +514,7 @@ object frmNakopad: TfrmNakopad
           Width = 193
           Height = 20
           AutoComplete = False
-          ItemHeight = 12
+          ItemHeight = 0
           PopupMenu = popFind
           TabOrder = 1
           OnEnter = cmbVarEnter
@@ -3546,7 +3546,8 @@ object frmNakopad: TfrmNakopad
     Filter = 
       #12394#12391#12375#12371#12501#12449#12452#12523'(*.nako)|*.nako|'#12486#12461#12473#12488#12501#12449#12452#12523'(*.txt)|*.txt|'#12377#12409#12390'(*.*)|*.*|HTML|' +
       '*.htm;*.html|Delphi(*.pas;*.dpr)|*.pas;*.dpr|Perl(*.cgi;*.pl)|*.' +
-      'pl;*.cgi|Java|*.java|C++|*.cpp;*.c;*.h'
+      'pl;*.cgi|Java|*.java|C++(*.cpp;*.c;*.h)|*.cpp;*.c;*.h|PHP(*.php)' +
+      '|*.php|Template(*.tpl)|*.tpl'
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
     Left = 272
     Top = 160

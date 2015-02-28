@@ -145,6 +145,12 @@ begin
   end;
 end;
 
+function http_opt_getReferer: string;
+begin
+  Result := nako_http_opt_get('Referer');
+end;
+
+
 function http_opt_getHttpVersion: string;
 begin
   Result := nako_http_opt_get('HTTP_VERSION');
@@ -186,6 +192,7 @@ begin
     h.UserAgent     := AnsiString(http_opt_getUA);
     h.UseDialog     := hi_bool(pProgDialog);
     h.httpVersion   := AnsiString(http_opt_getHttpVersion);
+    h.Referer       := AnsiString(http_opt_getReferer);
     h.DownloadDialog(url);
     h.Stream.SaveToFile(string(local));
   finally
@@ -2808,7 +2815,7 @@ begin
   AddFunc  ('HTTPポスト','{文字列=?}HEADとBODYをURLへ|BODYで',4015, sys_http_post, 'ポストしたい内容のHEADとBODYをURLへポストしその結果を返す。', 'HTTPぽすと');
   AddFunc  ('HTTPゲット','{文字列=?}HEADをURLへ|HEADで',      4016, sys_http_get, '送信ヘッダHEADを指定してURLへGETコマンドを発行する。そしてその結果を返す。', 'HTTPげっと');
   AddFunc  ('HTTP簡易ポスト','URLへVALUESを|URLに',4017, sys_http_post_easy, 'ポストしたい値(ハッシュ形式)VALUESをURLへポストしその結果を返す。', 'HTTPかんいぽすと');
-  AddStrVar('HTTPオプション',   '',                4018, 'HTTPに関するオプションをハッシュ形式で設定する。BASIC認証は「BASIC認証=オン{~}ID=xxx{~}パスワード=xxx」と書く。他に、「UA=nadesiko{~}HTTP_VERSION=HTTP/1.1」。','HTTPおぷしょん');
+  AddStrVar('HTTPオプション',   '',                4018, 'HTTPに関するオプションをハッシュ形式で設定する。BASIC認証は「BASIC認証=オン{~}ID=xxx{~}パスワード=xxx」と書く。他に、「UA=nadesiko{~}HTTP_VERSION=HTTP/1.1{~}Referer=***」。','HTTPおぷしょん');
   AddFunc  ('オンライン判定','',4019, sys_checkOnline, 'IEがオンラインかどうか判別し結果を1(オンライン)か0(オフライン)で返す。', 'おんらいんはんてい');
   AddFunc  ('インターネット接続判定','',4150, sys_IsInternetConnected, 'インターネットに接続しているかどうか判別し結果を1(オンライン)か0(オフライン)で返す。', 'いんたーねっとせつぞくはんてい');
   AddFunc  ('HTTPプット','{文字列=?}HEADとBODYをURLへ|BODYで',4151, sys_http_put, 'プットしたい内容のHEADとBODYをURLへポストしその結果を返す。', 'HTTPぷっと');
