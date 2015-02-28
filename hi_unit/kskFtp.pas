@@ -152,6 +152,7 @@ type
     UseDialog: Boolean;
     UserAgent: AnsiString;
     httpVersion: AnsiString;
+    Referer: AnsiString;
     constructor Create;
     destructor Destroy; override;
     function DownloadDialog(const URL: AnsiString): Boolean;
@@ -994,6 +995,10 @@ begin
   if UseBasicAuth then
   begin
     head := 'Authorization: Basic ' + EncodeBase64(id + ':' + password) + #0;
+  end;
+  if Referer <> '' then
+  begin
+    head := 'Referer:' + Referer + #13#10 + head;
   end;
   downloader := THTTPSyncFileDownloader.Create(UserAgent, url, head, httpVersion,
     Stream, OnComplete, OnError, OnProgress);
