@@ -16,7 +16,8 @@ uses
   IdAttachmentFile,
   IdMessageParts,
   IdUserPassProvider, IdSSLOpenSSL, IdExplicitTLSClientServerBase,
-  IdLogFile;
+  IdLogFile,
+  IdURI;
 
 const
   NAKONET_DLL_VERSION = '1.511';
@@ -2762,6 +2763,28 @@ begin
   Result := hi_newStr(NAKONET_DLL_VERSION);
 end;
 
+function sys_show_map(args: DWORD): PHiValue; stdcall;
+var
+  uri, place: string;
+begin
+  place := getArgStr(args, 0, True);
+  uri := TIdURI.URLEncode('https://www.google.co.jp/maps/place/' + place);
+  OpenApp(uri);
+  Result := nil;
+end;
+
+function sys_show_route(args: DWORD): PHiValue; stdcall;
+var
+  uri, a, b: string;
+begin
+  // https://www.google.co.jp/maps/dir/A/B
+  a := getArgStr(args, 0, True);
+  b := getArgStr(args, 1);
+  uri := TIdURI.URLEncode('https://www.google.co.jp/maps/dir/' + a + '/' + b);
+  OpenApp(uri);
+  Result := nil;
+end;
+
 
 procedure RegistFunction;
 
@@ -2871,6 +2894,10 @@ begin
   //-JSON
   AddFunc  ('JSONエンコード','{=?}Vを|Vの',     4130, sys_json_encode, '値VをJSON形式に変換する', 'JSONえんこーど');
   AddFunc  ('JSONデコード','{=?}JSONを|JSONの', 4131, sys_json_decode, '文字列JSONを変数に変換する', 'JSONでこーど');
+
+  //-Webサービス
+  AddFunc  ('地図表示','{=?}Vを',          4139, sys_show_map, '場所Vを表示する', 'ちずひょうじ');
+  AddFunc  ('経路表示','{=?}AからBへ|Bに', 4140, sys_show_route, 'AからBへの経路を表示する', 'けいろひょうじ');
 
   //-nakonet.dll
   AddFunc  ('NAKONET_DLLバージョン','', 4132, get_nakonet_dll_version, 'nakonet.dllのバージョンを得る', 'NAKONET_DLLばーじょん');
