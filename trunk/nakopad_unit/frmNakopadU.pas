@@ -396,9 +396,12 @@ type
     popGUIFindCopy: TMenuItem;
     popGUIPaste: TMenuItem;
     mnuFirstShow: TMenuItem;
-    webAction: TUIWebBrowser;
     timerShowWeb: TTimer;
     mnuShowNews: TMenuItem;
+    pnlAction: TPanel;
+    Panel2: TPanel;
+    webAction: TUIWebBrowser;
+    btnActionOpenBrowser: TButton;
     procedure mnuCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure mnuViewLeftPanelClick(Sender: TObject);
@@ -623,6 +626,7 @@ type
     procedure mnuFirstShowClick(Sender: TObject);
     procedure timerShowWebTimer(Sender: TObject);
     procedure mnuShowNewsClick(Sender: TObject);
+    procedure btnActionOpenBrowserClick(Sender: TObject);
   private
     { Private êÈåæ }
     ini: TIniFile;
@@ -6175,6 +6179,21 @@ procedure TfrmNakopad.mnuShowNewsClick(Sender: TObject);
 begin
   mnuShowNews.Checked := not mnuShowNews.Checked;
   ini.WriteBool('Edit','ShowNews', mnuShowNews.Checked);
+end;
+
+procedure TfrmNakopad.btnActionOpenBrowserClick(Sender: TObject);
+var
+  url: string;
+begin
+  url := webAction.LocationURL;
+  if (Copy(url, 1, 4) = 'http') then
+  begin
+    OpenApp(url);
+  end else
+  begin
+    lstActionDblClick(nil);
+    //OpenApp(AppPath + 'tools');
+  end;
 end;
 
 end.
