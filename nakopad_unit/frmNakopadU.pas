@@ -10,7 +10,7 @@ uses
   XPMan, NadesikoFountain, PerlFountain, JavaFountain, CppFountain, HTMLFountain,
   DelphiFountain, HimawariFountain, HViewEdt, AppEvnts, TrackBox,
   unit_guiParts, Grids, ValEdit, frmFirstPageU, OleCtrls, SHDocVw,
-  UIWebBrowser, Buttons;
+  Buttons, UIWebBrowser;
 
 const
   NAKO_VNAKO = 0;
