@@ -2938,17 +2938,18 @@ end;
 
 procedure THiHash.SetFromString(const Value: AnsiString);
 var
-  p, p_last: PAnsiChar;
+  p: PAnsiChar;
   n, v: AnsiString;
   hv: PHiValue;
+  l: Integer;
 begin
   p := PAnsiChar(Value);
-  p_last := p + Length(Value);
-  while p < p_last do
+  l := Length(Value);
+  while l > 0 do
   begin
-    v := getTokenCh(p, [#13,#10]);
-    if p^ = #13 then Inc(p);
-    if p^ = #10 then Inc(p);
+    v := getTokenChB(p, l, [#13,#10]);
+    if p^ = #13 then begin Inc(p);Dec(l); end;
+    if p^ = #10 then begin Inc(p);Dec(l); end;
     n := getToken_s(v, '=');
     if (TrimA(v) = '')and(TrimA(n) = '') then Continue; // 不要なキーは作らない
     // key = n , value = v

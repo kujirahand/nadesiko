@@ -45,6 +45,9 @@ function getToken_sU(var s: string; splitter: string): string;
 // 特定の区切り文字までを取得する（区切り文字は削除する）
 function getTokenChW(var p: PAnsiChar; ch: TChars): AnsiString;
 
+// 特定の区切り文字までを取得する（区切り文字は削除する）対バイナリ用
+function getTokenChB(var p: PAnsiChar; var l: integer;ch: TChars): AnsiString;
+
 
 //------------------------------------------------------------------------------
 // 検索取り出し
@@ -472,6 +475,24 @@ begin
     end;
 
     Result := Result + p^; Inc(p);
+  end;
+end;
+
+// 特定の区切り文字までを取得する（区切り文字は削除する）
+function getTokenChB(var p: PAnsiChar; var l: Integer;ch: TChars): AnsiString;
+begin
+  Result := '';
+  while l > 0 do
+  begin
+    if p^ in ch then
+    begin
+      Inc(p);
+      Dec(l);
+      Break;
+    end;
+
+    Result := Result + p^; Inc(p);
+    Dec(l);
   end;
 end;
 
