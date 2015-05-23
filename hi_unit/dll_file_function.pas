@@ -543,7 +543,7 @@ begin
   // (2) データの処理
   try
     a := hi_str(s);
-    if Pos('\', a) > 0  then ForceDirectories(a)
+    if PosA('\', a) > 0  then ForceDirectories(a)
                         else MkDir(a);
   except on e: Exception do
     raise Exception.Create('フォルダ『' + hi_str(s) + '』が作成できません。理由は,' + e.Message);
@@ -717,7 +717,7 @@ begin
   if s=nil then path := CheckPathYen( GetCurrentDir )
            else path := hi_str(s);
 
-  if Copy(path, Length(path), 1) = '\' then path := path + '*';
+  if CopyA(path, JLength(path), 1) = '\' then path := path + '*';
 
   // (2) データの処理
   g := EnumDirs(path);
@@ -1019,8 +1019,8 @@ begin
   b := nako_getFuncArg(args, 1);
   sa := hi_str(a);
   sb := hi_str(b);
-  if Copy(sa,Length(sa),1) = '\' then System.Delete(sa,Length(sa),1);
-  if Copy(sb,Length(sb),1) = '\' then System.Delete(sb,Length(sb),1);
+  if CopyA(sa,JLength(sa),1) = '\' then System.Delete(sa,Length(sa),1);
+  if CopyA(sb,JLength(sb),1) = '\' then System.Delete(sb,Length(sb),1);
 
   if DirectoryExists(sb) = False then
   begin
