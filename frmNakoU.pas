@@ -1649,6 +1649,9 @@ begin
 end;
 
 procedure TfrmNako.ShowBalloon(message:String);
+var
+  trayIconInfo   : TIconInfo;
+  tBM :tagBitmap;
 begin
   if not IsLiveTasktray then exit;
   if NotifyIconSize = 88 then exit;
@@ -1677,6 +1680,28 @@ begin
           hBalloonIcon := Self.Icon.Handle
         else
           hBalloonIcon := Application.Icon.Handle;
+    if (dwInfoFlags and $0000000f) = $00000004 then // NIIF_USER=$00000004
+    begin
+      if NotifyIconSize = 508 then
+        GetIconInfo(hBalloonIcon, trayIconInfo)
+      else
+        GetIconInfo(hIcon, trayIconInfo);
+      GetObject(trayIconInfo.hbmColor, Sizeof(tBM), @tBM);
+      if (GetSystemMetrics(SM_CXSMICON) = tBM.bmWidth) and
+         (GetSystemMetrics(SM_CYSMICON) = tBM.bmHeight) then
+        dwInfoFlags := dwInfoFlags and $ffffffdf  // NIIF_LARGE_ICON=$00000020
+      else
+      if (GetSystemMetrics(SM_CXICON) = tBM.bmWidth) and
+         (GetSystemMetrics(SM_CYICON) = tBM.bmHeight) then
+        dwInfoFlags := dwInfoFlags or  $00000020  // NIIF_LARGE_ICON=$00000020
+      else
+      begin
+        dwInfoFlags := dwInfoFlags or  $fffffffb; // NIIF_USER=$00000004
+        dwInfoFlags := dwInfoFlags and $ffffffdf; // NIIF_LARGE_ICON=$00000020
+        if NotifyIconSize = 508 then
+          hBalloonIcon := 0;
+      end;
+    end;
     StrLCopy(@szTip[0],PChar(Self.Caption), 127);
     if bBalloonHideTitle then
       StrLCopy(@szInfoTitle[0],PChar(''), 63)
@@ -1691,6 +1716,9 @@ begin
 end;
 
 procedure TfrmNako.hideBalloon();
+var
+  trayIconInfo   : TIconInfo;
+  tBM :tagBitmap;
 begin
   if not IsLiveTasktray then exit;
   if NotifyIconSize = 88 then exit;
@@ -1709,6 +1737,28 @@ begin
       hIcon := Self.Icon.Handle
     else
       hIcon := Application.Icon.Handle;
+    if (dwInfoFlags and $0000000f) = $00000004 then // NIIF_USER=$00000004
+    begin
+      if NotifyIconSize = 508 then
+        GetIconInfo(hBalloonIcon, trayIconInfo)
+      else
+        GetIconInfo(hIcon, trayIconInfo);
+      GetObject(trayIconInfo.hbmColor, Sizeof(tBM), @tBM);
+      if (GetSystemMetrics(SM_CXSMICON) = tBM.bmWidth) and
+         (GetSystemMetrics(SM_CYSMICON) = tBM.bmHeight) then
+        dwInfoFlags := dwInfoFlags and $ffffffdf  // NIIF_LARGE_ICON=$00000020
+      else
+      if (GetSystemMetrics(SM_CXICON) = tBM.bmWidth) and
+         (GetSystemMetrics(SM_CYICON) = tBM.bmHeight) then
+        dwInfoFlags := dwInfoFlags or  $00000020  // NIIF_LARGE_ICON=$00000020
+      else
+      begin
+        dwInfoFlags := dwInfoFlags or  $fffffffb; // NIIF_USER=$00000004
+        dwInfoFlags := dwInfoFlags and $ffffffdf; // NIIF_LARGE_ICON=$00000020
+        if NotifyIconSize = 508 then
+          hBalloonIcon := 0;
+      end;
+    end;
     StrLCopy(@szTip[0],PChar(Self.Caption), 127);
     StrLCopy(@szInfoTitle[0],PChar(''), 63);
     StrLCopy(@szInfo[0],PChar(''), 255);
