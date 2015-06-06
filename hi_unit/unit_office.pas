@@ -93,6 +93,7 @@ type
     function getLastCol(row:string):Integer;
     procedure UniqueRow(col:string);
     procedure InsertPic(f: string);
+    procedure AddPicture(f: string; asLink: Boolean);
     procedure SetShapeSize(w, h:Integer);
     procedure MoveShape(x, y: Integer);
     procedure SelectShape(name: string);
@@ -1109,6 +1110,21 @@ var
 begin
   E_WorkSheet := E_Application.ActiveSheet;
   r := E_WorkSheet.Pictures.Insert(f);
+  r.Select();
+  r := Unassigned;
+end;
+procedure TKExcel.AddPicture(f: string; asLink: Boolean);
+var
+  r:Variant;
+begin
+  E_WorkSheet := E_Application.ActiveSheet;
+  r := E_WorkSheet.Shapes.AddPicture(f,
+    asLink,       // FileToLink
+    not asLink, // SaveWithDocument
+    E_Application.Selection.Left, E_Application.Selection.Top,
+    50,50);
+  r.ScaleHeight(1,true);
+  r.ScaleWidth(1,true);
   r.Select();
   r := Unassigned;
 end;

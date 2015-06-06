@@ -338,7 +338,16 @@ var
   f: string;
 begin
   f := getArgStr(h, 0);
-  excel.InsertPic(f);
+  excel.addPicture(f, false);
+  Result := nil;
+end;
+
+function excel_insertPicLink(h: DWORD): PHiValue; stdcall;
+var
+  f: string;
+begin
+  f := getArgStr(h, 0);
+  excel.addPicture(f, true);
   Result := nil;
 end;
 
@@ -2054,6 +2063,7 @@ begin
   AddFunc  ('エクセル選択シェイプサイズ設定','W,Hに|Hへ', 4734, excel_shapeResize,'Excelの選択中シェイプのサイズをW,Hに変更する。','えくせるせんたくしぇいぷたくさいずせってい');
   AddFunc  ('エクセル選択シェイプ移動','X,Yに|Yへ', 4735, excel_shapeMove,'Excelの選択中シェイプの位置をX,Yに変更する。','えくせるせんたくしぇいぷいどう');
   AddFunc  ('エクセルシェイプ選択','{=?}Sの', 4737, excel_selectShape,'Excelで名前Sのシェイプを選択する。','えくせるしぇいぷせんたく');
+  AddFunc  ('エクセル画像リンク挿入','Fの', -1, excel_insertPicLink,'Excelの選択中セルの場所に画像Fをリンクで挿入する。','えくせるがぞうりんくそうにゅう');
 
   //-ワード(Word)
   AddFunc  ('ワード起動','{=1}Aで', 4330, word_open,'可視A(オンかオフ)でワードを起動する','わーどきどう');
