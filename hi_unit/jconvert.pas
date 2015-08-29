@@ -1593,26 +1593,28 @@ var
 begin
   // エンコードが必要かチェックする
   flgEncode := False;
-  i := 1;
-  while i <= Length(s) do
+
+  for i := 1 to Length(s) do
   begin
-    // 7 bit 以外ならエンコードする
-    if Ord(s[i]) >= $7F then
-    begin
-      flgEncode := True;
-      Break;
-    end;
-    Inc(i);
+    if s[i] >= #$7F then begin flgEncode := True; Break; end;
   end;
+
   // エンコードが不要？
   if not flgEncode then
   begin
     Result := s;
     Exit;
   end;
-  Result := '';
-  // エンコードが必要
+
+  // 改行が不要？
+  if Length(s) <= 24 then
+  begin
+    Result := ' =?ISO-2022-JP?B?' + EncodeBase64(sjis2jis83(s)) + '?=';
+    Exit;
+  end;
+
   // SJISで32バイト以上なら行に区切る
+  Result := '';
   bs := s;
   while Length(bs) > 24 do
   begin

@@ -2502,6 +2502,14 @@ begin
   end;
 end;
 
+function sys_mail_convHeader(args: DWORD): PHiValue; stdcall;
+var
+  s: AnsiString;
+begin
+  s := getArgStr(args, 0, True);
+  Result := hi_newStr(CreateHeaderStringEx(s));
+end;
+
 
 function sys_http_head2hash(args: DWORD): PHiValue; stdcall;
 var
@@ -2881,6 +2889,7 @@ begin
   AddFunc  ('EML添付ファイル保存','AをFへ|Fに',4084,sys_eml_getAttach,'EMLファイルのA番目(1~n)のパートを取り出してFへ保存する。', 'EMLてんぷふぁいるほぞん');
   AddFunc  ('EML全テキスト取得','',4085,sys_eml_getAllText,'EMLファイルに含まれるテキストを全部取得して返す。', 'EMLぜんてきすとしゅとく');
   AddFunc  ('EMLヘッダ取得','',4086,sys_eml_getHeader,'EMLファイルのヘッダをハッシュ形式にして返す', 'EMLへっだしゅとく');
+  AddFunc  ('メールヘッダエンコード','{=?}Sを',4087,sys_mail_convHeader,'メールヘッダ用に文字列Sを変換する', 'めーるへっだえんこーど');
 
   //-TCP/IP
   AddFunc  ('IPアドレス取得','{=?}Sの|Sで|Sから', 4073, sys_get_ip, 'ドメインSのIPアドレスを取得する', 'IPあどれすしゅとく');

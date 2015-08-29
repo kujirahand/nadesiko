@@ -517,8 +517,19 @@ begin
   i := 0;
   while p^ <> #0 do
   begin
+    if (i+1) > count then Break;
+
+    if p^ in LeadBytes then
     begin
-      if (i+1) > count then Break;
+      Result := Result + p^;
+      Inc(i); Inc(p);
+      if p^ <> #0 then
+      begin
+        Result := Result + p^;
+        Inc(i); Inc(p);
+      end;
+    end else
+    begin
       Result := Result + p^;
       Inc(i); Inc(p);
     end;

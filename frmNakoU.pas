@@ -587,6 +587,9 @@ var
   begin
     if flag_out_error then Exit;
     flag_out_error := True;
+
+    if s = '' then
+    begin
       s :=  '「===========================================================」と表示。'#13#10+
             '『日本語プログラミング言語「なでしこ」』と表示。'#13#10+
             '「===========================================================」と表示。'#13#10+
@@ -594,11 +597,12 @@ var
             '「　」と表示。'#13#10+
             '「> ナデシコバージョン = {ナデシコバージョン}」と表示。'#13#10+
             '「> ナデシコ最終更新日 = {ナデシコ最終更新日}」と表示。'#13#10;
-      try
-        nako_eval_str2(AnsiString(s));
-      except
-        ShowWarn(s);
-      end;
+    end;
+    try
+      nako_eval_str2(AnsiString(s));
+    except
+      ShowWarn(s);
+    end;
   end;
 
 
