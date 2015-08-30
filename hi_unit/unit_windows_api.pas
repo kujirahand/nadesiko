@@ -20,6 +20,9 @@ function getWinVersionN: AnsiString;
 
 implementation
 
+uses
+  Registry;
+
 function getWinVersionN: AnsiString;
 var
   i: TOSVersionInfo;
@@ -43,6 +46,24 @@ var
   //s: AnsiString;
   major,minor: LongInt;
   Info: TOSVersionInfo;
+
+  function getFromRegistry(def:string): string;
+  var
+    reg: TRegistry;
+  begin
+    Result := def;
+    reg := TRegistry.Create;
+    try
+      reg.RootKey := HKEY_LOCAL_MACHINE;
+      if reg.OpenKeyReadOnly('SOFTWARE\Microsoft\Windows NT\CurrentVersion') then
+      begin
+        Result := reg.ReadString('ProductName');
+      end;
+    finally
+      reg.Free;
+    end;
+  end;
+
 begin
   Info.dwOSVersionInfoSize := SizeOf(Info);
   GetVersionEx(Info);
@@ -87,10 +108,11 @@ begin
                 1: Result := 'Windows 7';
                 2: Result := 'Windows 8';
                 3: Result := 'Windows 8.1';
-                4: Result := 'Windows 10';
               end;
+              // è⁄ç◊Ç»ílÇìæÇÈ
+              Result := getFromRegistry(Result);
           end;
-  end;//of case Major 
+  end;//of case Major
 end;
 
 
