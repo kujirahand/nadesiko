@@ -1,88 +1,18 @@
+# æ—¥æœ¬èªžãƒ—ãƒ­ã‚°ãƒ©ãƒŸãƒ³ã‚°è¨€èªžã€Œãªã§ã—ã“ã€
 
-# “ú–{ŒêƒvƒƒOƒ‰ƒ~ƒ“ƒOŒ¾Œêu‚È‚Å‚µ‚±v
+ - ã€ã‚½ãƒ•ãƒˆåã€‘æ—¥æœ¬èªžãƒ—ãƒ­ã‚°ãƒ©ãƒŸãƒ³ã‚°è¨€èªžã€Œãªã§ã—ã“ã€
+ - ã€é–‹ç™ºä¸»ä½“ã€‘ãã˜ã‚‰ã¯ã‚“ã© ã‚¯ã‚¸ãƒ©é£›è¡Œæœº
+ - ã€å…±åŒé–‹ç™ºã€‘ãªã§ã—ã“å‹ã®ä¼š ( https://github.com/kujirahand/nadesiko )
+ - ã€é€£ çµ¡ å…ˆã€‘http://kujirahand.com/
+ - ã€å…¬å¼WEB ã€‘http://nadesi.com/
+ - ã€å¯¾å¿œ  OSã€‘Windows 98/Me/2000/XP/2003/Vista/7/8/8.1/10
 
--yƒ\ƒtƒg–¼z“ú–{ŒêƒvƒƒOƒ‰ƒ~ƒ“ƒOŒ¾Œêu‚È‚Å‚µ‚±v
--yŠJ”­Žå‘Ìz‚­‚¶‚ç‚Í‚ñ‚Ç ƒNƒWƒ‰”òsŠ÷
--y‹¤“¯ŠJ”­z‚È‚Å‚µ‚±—F‚Ì‰ï ( https://github.com/kujirahand/nadesiko )
--y˜A — æzhttp://kujirahand.com/
--yŒöŽ®WEB zhttp://nadesi.com/
--y‘Î‰ž  OSzWindows 98/Me/2000/XP/2003/Vista/7/8/8.1/10
+# æ¦‚è¦
 
-# ŠT—v
+ã€€æ—¥æœ¬èªžãƒ—ãƒ­ã‚°ãƒ©ãƒŸãƒ³ã‚°è¨€èªžã€Œãªã§ã—ã“ã€ã¨ã¯ã€æ—¥æœ¬èªžã§ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã‚’ä½œã‚‹ã“ã¨ãŒå‡ºæ¥ã‚‹ãƒ—ãƒ­ã‚°ãƒ©ãƒŸãƒ³ã‚°è¨€èªžã§ã™ã€‚
 
-@“ú–{ŒêƒvƒƒOƒ‰ƒ~ƒ“ƒOŒ¾Œêu‚È‚Å‚µ‚±v‚Æ‚ÍA“ú–{Œê‚ÅƒvƒƒOƒ‰ƒ€‚ðì‚é‚±‚Æ‚ªo—ˆ‚éƒvƒƒOƒ‰ƒ~ƒ“ƒOŒ¾Œê‚Å‚·B
+ãªã§ã—ã“ã¯ä»¥ä¸‹ã®ï¼“ç‚¹ã«ç‰¹åŒ–ã—ãŸè¨€èªžã§ã™ã€‚
 
-‚È‚Å‚µ‚±‚ÍˆÈ‰º‚Ì‚R“_‚É“Á‰»‚µ‚½Œ¾Œê‚Å‚·B
-
-- ƒvƒƒOƒ‰ƒ~ƒ“ƒOŒ¾Œê‚Ì“ü–å—p‚É
-- Ž––±ì‹Æ‚Ì‚½‚ß‚Ìƒ}ƒNƒi’èŒ^ì‹Æ‚É“Á‰»j
-- ƒvƒƒOƒ‰ƒ~ƒ“ƒO‚ÌŠy‚µ‚³‚ð‘ÌŒ±‚Å‚«‚é‚æ‚¤‚É
-
-
-# ƒCƒ“ƒXƒg[ƒ‹
-
-@ƒA[ƒJƒCƒu‚Ì"SetupNako.exe"‚ðŽÀs‚µ‚Ä‚­‚¾‚³‚¢B
-
-@ŠÖ˜A•t‚¯‚âƒVƒ‡[ƒgƒJƒbƒg‚È‚ÇŠJ”­‚É•K—v‚Èƒc[ƒ‹‚ªˆê’Ê‚èƒCƒ“ƒXƒg[ƒ‹‚³‚ê‚Ü‚·B
-@‚Ü‚½Aƒo[ƒWƒ‡ƒ“ƒAƒbƒv‚µ‚½‚Æ‚«‚àƒCƒ“ƒXƒg[ƒ‹î•ñ‚ð’²‚×‚ÄV‚µ‚¢ƒtƒ@ƒCƒ‹‚Åã‘‚«‚µ‚Ä‚­‚ê‚é‚Ì‚Å•Ö—˜‚Å‚·B
-
-
-# ƒAƒ“ƒCƒ“ƒXƒg[ƒ‹
-
-ƒRƒ“ƒgƒ[ƒ‹ƒpƒlƒ‹‚ÌƒvƒƒOƒ‰ƒ€‚Ì’Ç‰Á‚Æíœ‚Å‚È‚Å‚µ‚±‚ðƒAƒ“ƒCƒ“ƒXƒg[ƒ‹‚µ‚Ä‚­‚¾‚³‚¢B
-
-
-#y«•ïƒtƒ@ƒCƒ‹z
-
--ReadMe.txt    ...  ŠÈˆÕà–¾‘‚±‚Ìƒtƒ@ƒCƒ‹
--SetupNako.exe ...  ŠÈ’PƒCƒ“ƒXƒg[ƒ‹—pƒvƒƒOƒ‰ƒ€
--History.txt   ...  —š—ðƒtƒ@ƒCƒ‹
--licence.txt   ...  ƒ‰ƒCƒZƒ“ƒX‚ÉŠÖ‚·‚éî•ñ
--vnako.exe     ...  ƒŠƒbƒ`GUI”Å‚È‚Å‚µ‚±iƒEƒBƒ“ƒhƒE”Åj
--gnako.exe     ...  GUI”Å‚È‚Å‚µ‚±iƒEƒBƒ“ƒhƒE”Åj
--cnako.exe     ...  ƒRƒ“ƒ\[ƒ‹”Å‚È‚Å‚µ‚±i32bitƒRƒ“ƒ\[ƒ‹j
--dnako.dll     ...  ‚È‚Å‚µ‚±ƒCƒ“ƒ^ƒvƒŠƒ^DLL
--<doc>         ...  ƒ}ƒjƒ…ƒAƒ‹ƒtƒHƒ‹ƒ_
--<tools>       ...  •Ö—˜‚Èƒc[ƒ‹ƒ‰ƒCƒuƒ‰ƒŠ‚ðŽû‚ß‚½ƒtƒHƒ‹ƒ_
--<sample>      ...  ƒTƒ“ƒvƒ‹‚ª“ü‚Á‚Ä‚¢‚éƒtƒHƒ‹ƒ_
--<lib>         ...  ‚È‚Å‚µ‚±ƒ‰ƒCƒuƒ‰ƒŠ‚ª“ü‚Á‚Ä‚¢‚éƒtƒHƒ‹ƒ_(*.nako)
--<plug-ins>    ...  ƒtƒ@ƒCƒ‹/•¶Žš—ñˆ—‚Ìƒvƒ‰ƒOƒCƒ“DLL‚ª‚ ‚éƒtƒHƒ‹ƒ_
-
-
-##yŠJ”­Žx‰‡‚µ‚Ä‚­‚¾‚³‚é‘S‚Ä‚ÌŠF—l‚ÉŠ´ŽÓ’v‚µ‚Ü‚·z
-
-- Œã‰‡
-- IPA–¢“¥ƒ†[ƒX(http://www.ipa.go.jp/)
-- ƒvƒƒWƒFƒNƒgŽx‰‡‘gD
-- ‚Ñ‚¬‚Ë‚Á‚Æ‚³‚ñ(http://www.begi.net/)
-
-- ‚È‚Å‚µ‚±ƒAƒCƒRƒ“ì¬‚È‚Ç
-- “e—F‚³‚ñihttp://toto.mods.jp/j
-- ‚È‚Å‚µ‚±ƒƒSƒ}[ƒNì¬
-- ˆÉ˜¬“c‚³‚ñihttp://www.artfolio.org/ipg/j
-
-- ŠJ”­Žx‰‡
-- EZNavi‚³‚ñASWinX‚³‚ñA‚Í‚¶‚ßAƒ†[ƒU[‚ÌŠF—l‚Ì‹¦—Í‚ÉŠ´ŽÓ‚µ‚Ü‚·B
-
-
-##y•K—v‚É‰ž‚¶‚Ä•Ê“rƒ_ƒEƒ“ƒ[ƒh‚ª•K—v‚Èƒtƒ@ƒCƒ‹z
-
-ˆÈ‰º‚ÌƒTƒCƒg‚æ‚èƒ_ƒEƒ“ƒ[ƒh‚µ‚ÄA‚È‚Å‚µ‚±‚Æ“¯‚¶ƒtƒHƒ‹ƒ_‚©ƒVƒXƒeƒ€ƒfƒBƒŒƒNƒgƒŠ‚ÉƒRƒs[‚µ‚Ä‚­‚¾‚³‚¢B
-
-- cab32.dll    ...  CABŒ`Ž®‚Ìˆ³k‰ð“€DLL
-- http://www.csdinc.co.jp/archiver/lib/cab32.html
-
-ˆÈ‰º‚Ìƒtƒ@ƒCƒ‹‚Í‚c‚k‚kìŽÒ—l‚Ì‚²DˆÓ‚É‚æ‚è“¯«‚³‚¹‚Ä‚¢‚½‚¾‚¢‚Ä‚Ü‚·B<licence> ƒtƒHƒ‹ƒ_‚É’˜ìŒ •\Ž¦‚ª‚ ‚è‚Ü‚·B
-
-- BREGEXP.DLL  ...  PERLŒÝŠ·³‹K•\Œ»DLL
-- http://www.hi-ho.ne.jp/babaq/bregexp.html
-
-- UNLHA32.DLL  ...  LZHŒ`Ž®‚Ìˆ³k‰ð“€DLL
-- http://www2.nsknet.or.jp/~micco/mysoft/unlha32.htm
-
-- 7-zip32.dll  ...  ZIPŒ`Ž®‚Ìˆ³k‰ð“€DLL
-- http://www.csdinc.co.jp/archiver/lib/7-zip32.html
-
-- Yz1.dll ... YZ1Œ`Ž®‚Ìˆ³k‰ð“€DLL
-- http://www.csdinc.co.jp/archiver/lib/yz1.html
-
+ - ãƒ—ãƒ­ã‚°ãƒ©ãƒŸãƒ³ã‚°è¨€èªžã®å…¥é–€ç”¨ã«
+ - äº‹å‹™ä½œæ¥­ã®ãŸã‚ã®ãƒžã‚¯ãƒ­ï¼ˆå®šåž‹ä½œæ¥­ã«ç‰¹åŒ–ï¼‰
+ - ãƒ—ãƒ­ã‚°ãƒ©ãƒŸãƒ³ã‚°ã®æ¥½ã—ã•ã‚’ä½“é¨“ã§ãã‚‹ã‚ˆã†ã«
