@@ -152,6 +152,7 @@ type
     procedure wmNotifyTasktray(var Msg: TMessage); message WM_NotifyTasktray;
     procedure wmDevChange(var Msg: TMessage); message WM_DEVICECHANGE;
   public
+    FTempX, FTempY: Integer; // スタイル変更において座標が正しく設定されない問題(@761)
     IsLiveTasktray: boolean;
     dwBalloonOption: Integer;
     bBalloonRealtime: boolean;
@@ -189,6 +190,7 @@ type
     property BackCanvas: TCanvas read GetBackCanvas;
     procedure Redraw;
     procedure setStyle(s: AnsiString);
+    procedure RecoverXY;
     // event
     procedure eventClick(Sender: TObject);
     procedure eventChange(Sender: TObject);
@@ -495,6 +497,8 @@ begin
 
   IsLiveTaskTray := False;
 
+  FTempX := MaxInt;
+  FTempY := MaxInt;
   //----------------------------------------------------------------------------
   // 自身が母艦かどうか判断
   if FlagBokan = False then
@@ -917,6 +921,10 @@ begin
     nako_group_exec(nako_getVariable('母艦'), '表示した時');
   end;
 
+  if FTempX <> MaxInt then
+  begin
+    Self.RecoverXY;
+  end;
   self.Invalidate;
 end;
 
@@ -1373,6 +1381,8 @@ end;
 
 procedure TfrmNako.setStyle(s: AnsiString);
 begin
+  FTempX := Self.Left;
+  FTempY  := Self.Top;
   if s = '枠なし' then self.BorderStyle := bsNone else
   if s = '枠固定' then self.BorderStyle := bsSingle else
   if s = '枠可変' then self.BorderStyle := bsSizeable else
@@ -2031,6 +2041,12 @@ begin
     with TWMMouse(Msg) do
       FOnMouseHover(Self,mbLeft,KeysToShiftState(Keys),XPos,YPos);
   end;
+end;
+
+procedure TfrmNako.RecoverXY;
+begin
+  Self.Left := FTempX;
+  Self.Top := FTempY;
 end;
 
 { THiListView }

@@ -6520,10 +6520,10 @@ begin
   end;
   try
     case prop of
-      VCL_PROP_X      : if obj is TControl then TControl(obj).Left   := hi_int(v);
-      VCL_PROP_Y      : if obj is TControl then TControl(obj).Top    := hi_int(v);
-      VCL_PROP_W      : if obj is TControl then TControl(obj).Width  := hi_int(v);
-      VCL_PROP_H      : if obj is TControl then TControl(obj).Height := hi_int(v);
+      VCL_PROP_X      : if obj is TControl then begin TControl(obj).Left   := hi_int(v); if obj is TfrmNako then TfrmNako(obj).FTempX := hi_int(v); end;
+      VCL_PROP_Y      : if obj is TControl then begin TControl(obj).Top    := hi_int(v); if obj is TfrmNako then TfrmNako(obj).FTempY := hi_int(v); end;
+      VCL_PROP_W      : if obj is TControl then begin TControl(obj).Width  := hi_int(v); end;
+      VCL_PROP_H      : if obj is TControl then begin TControl(obj).Height := hi_int(v); end;
       VCL_PROP_TEXT   : _setText;
       VCL_PROP_VALUE  : _setValue;
       VCL_PROP_ITEM   : _setItem;
@@ -7602,7 +7602,7 @@ var
   begin
     e := TfrmNako(obj);
     if cmd = '背景ハンドル' then begin Result := hi_var_new; hi_setInt(Result, Integer(e.BackCanvas.Handle)); end else
-    if cmd = '表示'         then begin e.Show; e.Invalidate; end else
+    if cmd = '表示'         then begin e.Show; e.Invalidate; e.RecoverXY; end else
     if cmd = 'POPUP'        then e.PopupMenu := TPopupMenu( hi_int(v) ) else
     if cmd = '文字書体GET' then begin Result := hi_var_new; hi_setStrU(Result, e.Font.Name); end else
     if cmd = '文字書体SET' then setFontName(e.Font, hi_strU(v)) else
