@@ -277,9 +277,9 @@ var
   osInfo: OSVERSIONINFO;
 begin
   Result := False;
-  osInfo.dwOSVersionInfoSize:=sizeof(OSVERSIONINFO);
+  osInfo.dwOSVersionInfoSize := sizeof(OSVERSIONINFO);
   if not GetVersionEx(osInfo) then Exit;
-  Result := osInfo.dwMajorVersion >= 6;
+  Result := (osInfo.dwMajorVersion = 6) or (osInfo.dwMajorVersion > 6);
 end;
 
 function isWindowsSeven: Boolean;

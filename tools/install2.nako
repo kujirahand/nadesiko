@@ -113,7 +113,8 @@ ICONパスは「{ランタイムパス}tools\nako.ico」
 
 
 ●SHChangeNotify(a,b,c,d)=DLL("shell32.dll","void SHChangeNotify(DWORD, DWORD, char*, char*)")
+/*
 ●関連付け反映
 　　SHChangeNotify($08000000,$2000,"","");
-
+*/
 

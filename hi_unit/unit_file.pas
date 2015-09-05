@@ -151,17 +151,21 @@ uses
 
 procedure RunAsAdmin(hWnd: THandle; aFile: AnsiString; aParameters: AnsiString);
 var
-  sei: TShellExecuteInfoA;
+  sei: TShellExecuteInfoW;
+  afile2: WideString;
+  aparam: WideString;
 begin
+  afile2 := aFile;
+  aparam := aParameters;
   ZeroMemory(@sei, SizeOf(sei));
   sei.cbSize := SizeOf(sei);
   sei.Wnd := hWnd;
   sei.fMask := SEE_MASK_FLAG_DDEWAIT or SEE_MASK_FLAG_NO_UI;
   sei.lpVerb := 'runas';
-  sei.lpFile := PAnsiChar(aFile);
-  sei.lpParameters := PAnsiChar(aParameters);
+  sei.lpFile := PWideChar(afile2);
+  sei.lpParameters := PWideChar(aParam);
   sei.nShow := SW_SHOWNORMAL;
-  if not ShellExecuteEx(@sei) then
+  if not ShellExecuteExW(@sei) then
     raise Exception.Create('ãNìÆÇ…é∏îsÇµÇ‹ÇµÇΩÅB(' + string(aFile) + ')');
 end;
 
