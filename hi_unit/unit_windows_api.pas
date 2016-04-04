@@ -112,6 +112,9 @@ begin
               // Ú×‚È’l‚ğ“¾‚é
               Result := getFromRegistry(Result);
           end;
+      else begin
+        Result := getFromRegistry(Result);
+      end;
   end;//of case Major
 end;
 

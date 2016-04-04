@@ -454,13 +454,11 @@ begin
 end;
 
 function Use7zip32: Boolean;
+var
+  s: string;
 begin
-  Result := True;
-  if FileExists(AppPath + 'plug-ins\' + SevenZipDllName) then Exit;
-  if FileExists(AppPath + SevenZipDllName) then Exit;
-  if FileExists(WinDir + SevenZipDllName) then Exit;
-  if FileExists(SysDir + SevenZipDllName) then Exit;
-  Result := False;
+  s := FindDLLFile(SevenZipDllName);
+  Result := (s <> '');
 end;
 
 procedure zip_compress(srcFile, desFile: string);

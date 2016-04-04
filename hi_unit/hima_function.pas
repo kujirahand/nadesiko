@@ -2728,7 +2728,7 @@ begin
   Result := hi_var_new;
 
   // (1) ˆø”‚Ìæ“¾
-  a := getArg(args, 0);
+  a   := args.FindKey(token_a); // must be FindKey (for Link problem : f81601f2add644dcf04d734030c3f0bd63426509)
 
   // (2) ƒf[ƒ^‚Ìˆ—
   s := hi_vtype2str(a);
