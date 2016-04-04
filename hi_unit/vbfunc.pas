@@ -29,6 +29,8 @@ function Shell(PathName: string; WindowStyle: Integer): Integer;
 function AppFind(Title, Name: string; ProcessId: Integer): THandle;
 function AppActivate(Title, Name: string; ProcessId: Integer): Boolean;
 function SendKeys(KeyStr: string; Wait: Boolean): Boolean;
+function SendKeysVBA(KeyStr: string; Wait: Boolean): Boolean;
+function SendKeysVB6(KeyStr: string; Wait: Boolean): Boolean;
 function SendChars(KeyStr: string; Wait: Boolean): Boolean;
 function WaitHandleActive(h: THandle; timeout:Integer=1000*2): Boolean;
 
@@ -309,8 +311,10 @@ end;
     SendKeys('ABC日本語DEF{ENTER}', True);
 ***********************************************************************)
 const
-  MAXSPECIALKEY = 51;  { 特殊キー構造体配列の要素数 }
-  VK_IME        = 25;  { IMEのオンオフを切り替える  }
+  MAXSPECIALKEY_VBA = 38;  { 特殊キー構造体配列の要素数 }
+  MAXSPECIALKEY_VB6 = 3;   { 特殊キー構造体配列の要素数 }
+  MAXSPECIALKEY_EXT = 31;  { 特殊キー構造体配列の要素数 }
+  VK_IME            = 25;  { IMEのオンオフを切り替える  }
 
 type
   TSpecialKey = record { 特殊キー構造体 }
@@ -320,41 +324,31 @@ type
 
 var
   { 特殊キー構造体配列 }
-  SpecialKeys: array [0..MAXSPECIALKEY] of TSpecialKey = (
-    (VKey: VK_CAPITAL;  Name: 'CAPSLOCK'),
-    (VKey: VK_NUMLOCK;  Name: 'NUMLOCK'),
-    (VKey: VK_SCROLL;   Name: 'SCROLLOCK'),
-    (VKey: VK_ESCAPE;   Name: 'ESCAPE'),
-    (VKey: VK_ESCAPE;   Name: 'ESC'),
-    (VKey: VK_RETURN;   Name: 'ENTER'),
-    (VKey: VK_RETURN;   Name: 'RETURN'),
-    (VKey: VK_HELP;     Name: 'HELP'),
-    (VKey: VK_SNAPSHOT; Name: 'PRTSC'),
-    (VKey: VK_SNAPSHOT; Name: 'PRINTSCREEN'),
-    (VKey: VK_TAB;      Name: 'TAB'),
-    (VKey: VK_CANCEL;   Name: 'BREAK'),
-    (VKey: VK_CLEAR;    Name: 'CLEAR'),
+  SpecialKeysVBA: array [0..MAXSPECIALKEY_VBA] of TSpecialKey = (
     (VKey: VK_BACK;     Name: 'BACKSPACE'),
     (VKey: VK_BACK;     Name: 'BS'),
-    (VKey: VK_BACK;     Name: 'BKSP'),
+    (VKey: VK_CANCEL;   Name: 'BREAK'),
+    (VKey: VK_CAPITAL;  Name: 'CAPSLOCK'),
+    (VKey: VK_CLEAR;    Name: 'CLEAR'),
     (VKey: VK_DELETE;   Name: 'DELETE'),
     (VKey: VK_DELETE;   Name: 'DEL'),
+    (VKey: VK_DOWN;     Name: 'DOWN'),
+    (VKey: VK_END;      Name: 'END'),
+    (VKey: VK_RETURN;   Name: 'ENTER'),
+    (VKey: VK_ESCAPE;   Name: 'ESCAPE'),
+    (VKey: VK_ESCAPE;   Name: 'ESC'),
+    (VKey: VK_HELP;     Name: 'HELP'),
+    (VKey: VK_HOME;     Name: 'HOME'),
     (VKey: VK_INSERT;   Name: 'INSERT'),
     (VKey: VK_LEFT;     Name: 'LEFT'),
-    (VKey: VK_RIGHT;    Name: 'RIGHT'),
-    (VKey: VK_UP;       Name: 'UP'),
-    (VKey: VK_DOWN;     Name: 'DOWN'),
-    (VKey: VK_PRIOR;    Name: 'PGUP'),
+    (VKey: VK_NUMLOCK;  Name: 'NUMLOCK'),
     (VKey: VK_NEXT;     Name: 'PGDN'),
-    (VKey: VK_HOME;     Name: 'HOME'),
-    (VKey: VK_END;      Name: 'END'),
-    (VKey: VK_CONTROL;  Name: 'CTRL'),
-    (VKey: VK_RCONTROL; Name: 'RCTRL'),
-    (VKey: VK_SHIFT;    Name: 'SHIFT'),
-    (VKey: VK_RSHIFT;   Name: 'RSHIFT'),
-    (VKey: VK_MENU;     Name: 'ALT'),
-    (VKey: VK_RMENU;    Name: 'RALT'),
-    (VKey: VK_PAUSE;    Name: 'PAUSE'),
+    (VKey: VK_PRIOR;    Name: 'PGUP'),
+    (VKey: VK_RETURN;   Name: 'RETURN'),
+    (VKey: VK_RIGHT;    Name: 'RIGHT'),
+    (VKey: VK_SCROLL;   Name: 'SCROLLOCK'),
+    (VKey: VK_TAB;      Name: 'TAB'),
+    (VKey: VK_UP;       Name: 'UP'),
     (VKey: VK_F1;       Name: 'F1'),
     (VKey: VK_F2;       Name: 'F2'),
     (VKey: VK_F3;       Name: 'F3'),
@@ -369,14 +363,57 @@ var
     (VKey: VK_F12;      Name: 'F12'),
     (VKey: VK_F13;      Name: 'F13'),
     (VKey: VK_F14;      Name: 'F14'),
-    (VKey: VK_F15;      Name: 'F15'),
-    (VKey: VK_F16;      Name: 'F16'),
+    (VKey: VK_F15;      Name: 'F15')
+  );
+
+
+
+  { 特殊キー構造体配列 }
+  SpecialKeysVB6: array [0..MAXSPECIALKEY_VB6] of TSpecialKey = (
+    (VKey: VK_BACK;     Name: 'BKSP'),
+    (VKey: VK_INSERT;   Name: 'INS'),
+    (VKey: VK_SNAPSHOT; Name: 'PRTSC'),
+    (VKey: VK_F16;      Name: 'F16')
+  );
+
+  { 特殊キー構造体配列 }
+  SpecialKeysExt: array [0..MAXSPECIALKEY_EXT] of TSpecialKey = (
+    (VKey: VK_SNAPSHOT; Name: 'PRINTSCREEN'),
+    (VKey: VK_CONTROL;  Name: 'CTRL'),
+    (VKey: VK_LCONTROL; Name: 'LCTRL'),
+    (VKey: VK_RCONTROL; Name: 'RCTRL'),
+    (VKey: VK_SHIFT;    Name: 'SHIFT'),
+    (VKey: VK_LSHIFT;   Name: 'LSHIFT'),
+    (VKey: VK_RSHIFT;   Name: 'RSHIFT'),
+    (VKey: VK_MENU;     Name: 'ALT'),
+    (VKey: VK_LMENU;    Name: 'LALT'),
+    (VKey: VK_RMENU;    Name: 'RALT'),
+    (VKey: VK_PAUSE;    Name: 'PAUSE'),
+    (VKey: VK_ADD;      Name: 'ADD'),
+    (VKey: VK_MULTIPLY; Name: 'MULTIPLY'),
+    (VKey: VK_SUBTRACT; Name: 'SUBTRACT'),
+    (VKey: VK_DIVIDE;   Name: 'DIVIDE'),
+    (VKey: VK_SEPARATOR;Name: 'SEPARATOR'),
+    (VKey: VK_DECIMAL;  Name: 'DECIMAL'),
+    (VKey: VK_NUMPAD0;  Name: 'NUMPAD0'),
+    (VKey: VK_NUMPAD1;  Name: 'NUMPAD1'),
+    (VKey: VK_NUMPAD2;  Name: 'NUMPAD2'),
+    (VKey: VK_NUMPAD3;  Name: 'NUMPAD3'),
+    (VKey: VK_NUMPAD4;  Name: 'NUMPAD4'),
+    (VKey: VK_NUMPAD5;  Name: 'NUMPAD5'),
+    (VKey: VK_NUMPAD6;  Name: 'NUMPAD6'),
+    (VKey: VK_NUMPAD7;  Name: 'NUMPAD7'),
+    (VKey: VK_NUMPAD8;  Name: 'NUMPAD8'),
+    (VKey: VK_NUMPAD9;  Name: 'NUMPAD9'),
     (VKey: VK_IME;      Name: 'IME'),
-    (VKey: VK_LWIN;     Name: 'WIN')
+    (VKey: VK_LWIN;     Name: 'WIN'),
+    (VKey: VK_CONVERT;     Name: 'CONVERT'),
+    (VKey: VK_NONCONVERT;  Name: 'NONCONVERT'),
+    (VKey: VK_APPS;  Name: 'APPS')
   );
 
 { 特殊キーの処理 }
-function SpecialKey(pStr: PChar): PChar;
+function SpecialKey(pStr: PChar;iMode: Integer): PChar;
 var
   Key: Word;
   Token, SpKey: PChar;
@@ -401,12 +438,34 @@ begin
   begin
     SpKey := StrAlloc(Token - pStr + 1);
     StrLCopy(SpKey, pStr, Token - pStr);
-    for i := 0 to MAXSPECIALKEY do
+    for i := 0 to MAXSPECIALKEY_VBA do
     begin
-      if StrIComp(SpKey, SpecialKeys[i].Name) = 0 then
+      if StrIComp(SpKey, SpecialKeysVBA[i].Name) = 0 then
       begin
-        Key := SpecialKeys[i].VKey;
+        Key := SpecialKeysVBA[i].VKey;
         Break;
+      end;
+    end;
+    if (key = 0) and (iMode >= 1) then
+    begin
+      for i := 0 to MAXSPECIALKEY_VB6 do
+      begin
+        if StrIComp(SpKey, SpecialKeysVB6[i].Name) = 0 then
+        begin
+          Key := SpecialKeysVB6[i].VKey;
+          Break;
+        end;
+      end;
+      if (key = 0) and (iMode >= 2) then
+      begin
+        for i := 0 to MAXSPECIALKEY_EXT do
+        begin
+          if StrIComp(SpKey, SpecialKeysEXT[i].Name) = 0 then
+          begin
+            Key := SpecialKeysEXT[i].VKey;
+            Break;
+          end;
+        end;
       end;
     end;
     if Key = 0 then
@@ -455,7 +514,7 @@ begin
 end;
 
 { ひとまとまりのキーストローク表現の処理 }
-function ProcessKeys(pStr: PChar): PChar;
+function ProcessKeys(pStr: PChar; iMode: Integer): PChar;
 var
   Chr: Char;
   Key: Word;
@@ -489,11 +548,11 @@ begin
   else
   begin
     case Chr of
-      '{': pStr := SpecialKey(pStr);
+      '{': pStr := SpecialKey(pStr,iMode);
       '(':
       begin
         while (Char(pStr^) <> #0) and (Char(pStr^) <> ')') do // by mine 2002/7/18
-          pStr := ProcessKeys(pStr);
+          pStr := ProcessKeys(pStr,iMode);
         if pStr^ = ')' then Inc(pStr); // by mine 2002/7/18
       end;
       '~':
@@ -512,7 +571,7 @@ begin
           else Key := 0;
         end;
         keybd_event(Key, 0, 0, 0);
-        pStr := ProcessKeys(pStr);
+        pStr := ProcessKeys(pStr,iMode);
         keybd_event(Key, 0, KEYEVENTF_KEYUP, 0);
       end;
       else
@@ -536,6 +595,34 @@ begin
 end;
 
 { SendKeys関数 }
+function SendKeysVBA(KeyStr: string; Wait: Boolean): Boolean;
+var
+  pStr: PChar;
+begin
+  pStr := PChar(KeyStr);       { ヌル文字列に変換       }
+  while Char(pStr^) <> #0 do   { 文字列終端まで繰り返す }
+  begin
+    pStr := ProcessKeys(pStr,0); { ひとまとまり単位で処理 }
+    sleep(10); // wait (2007/06/16)
+  end;
+  Result := True;
+end;
+
+{ SendKeys関数 }
+function SendKeysVB6(KeyStr: string; Wait: Boolean): Boolean;
+var
+  pStr: PChar;
+begin
+  pStr := PChar(KeyStr);       { ヌル文字列に変換       }
+  while Char(pStr^) <> #0 do   { 文字列終端まで繰り返す }
+  begin
+    pStr := ProcessKeys(pStr,1); { ひとまとまり単位で処理 }
+    sleep(10); // wait (2007/06/16)
+  end;
+  Result := True;
+end;
+
+{ SendKeys関数 }
 function SendKeys(KeyStr: string; Wait: Boolean): Boolean;
 var
   pStr: PChar;
@@ -543,7 +630,7 @@ begin
   pStr := PChar(KeyStr);       { ヌル文字列に変換       }
   while Char(pStr^) <> #0 do   { 文字列終端まで繰り返す }
   begin
-    pStr := ProcessKeys(pStr); { ひとまとまり単位で処理 }
+    pStr := ProcessKeys(pStr,2); { ひとまとまり単位で処理 }
     sleep(10); // wait (2007/06/16)
   end;
   Result := True;
