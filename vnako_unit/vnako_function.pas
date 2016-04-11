@@ -5347,6 +5347,9 @@ begin
           Font.Name     := fontname;
           Font.Size     := fontsize;
           Font.Charset  := DEFAULT_CHARSET;
+          //
+          FTempX := frmNako.Left + 100;
+          FTempY := frmNako.Top + 100;
         end;
       end;
     VCL_GUI_MAINMENU:

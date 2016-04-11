@@ -2005,6 +2005,7 @@ function THiParser.ReadKakko(var token: THimaToken): Boolean;
 var
   node: TSyntaxSentence;
   n: TSyntaxNode;
+  t: THimaToken;
 begin
   if token.TokenID <> token_kakko_begin then
   begin
@@ -2024,9 +2025,14 @@ begin
     // '(' .. ')' を取得する
     while token <> nil do
     begin
+      t := token;
       if token.TokenID = token_kakko_end then Break;
       ReadLine(token, n, False);
       if token = nil then NextBlock(token); // 改行を跨ぐ（）にも対応。
+      if t = token then
+      begin
+        raise EHimaSyntax.Create('カッコが対応していません。');
+      end;
     end;
     if (token = nil)or(token.TokenID <> token_kakko_end) then
       raise HException.Create(ERR_NOPAIR_KAKKO);
