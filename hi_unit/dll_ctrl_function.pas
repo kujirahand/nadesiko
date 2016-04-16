@@ -632,6 +632,46 @@ begin
   SetCursorPos(hi_int(px), hi_int(py));
 end;
 
+function cmd_mouse_tilt_l(h: DWORD): PHiValue; stdcall;
+begin
+  // 結果
+  Result := nil;
+  //
+  mouse_event($01000 {MOUSEEVENTF_HWHEEL},
+    MOUSEEVENTF_ABSOLUTE, MOUSEEVENTF_ABSOLUTE, $ffffffff, 0);
+end;
+
+function cmd_mouse_tilt_r(h: DWORD): PHiValue; stdcall;
+begin
+  // 結果
+  Result := nil;
+  //
+  mouse_event($01000 {MOUSEEVENTF_HWHEEL},
+    MOUSEEVENTF_ABSOLUTE, MOUSEEVENTF_ABSOLUTE, 1, 0);
+end;
+
+function cmd_mouse_wheel(h: DWORD): PHiValue; stdcall;
+var
+  d, py: PHiValue;
+  s: String;
+  y: Integer;
+begin
+  // 結果
+  Result := nil;
+  //
+  d := nako_getFuncArg(h, 0);
+  py := nako_getFuncArg(h, 1);
+
+  s := hi_str(d);
+  y := hi_int(py);
+
+  if (s='後') or (s='手前') or (s='逆') then
+    y := -y;
+
+  mouse_event(MOUSEEVENTF_WHEEL,
+    MOUSEEVENTF_ABSOLUTE, MOUSEEVENTF_ABSOLUTE, y, 0);
+end;
+
 function cmd_mouse_click(h: DWORD): PHiValue; stdcall;
 begin
   // 結果
@@ -829,7 +869,7 @@ type
   LPMEMORYSTATUS = PMemoryStatus; 
   {$EXTERNALSYM LPMEMORYSTATUS} 
   _MEMORYSTATUS = packed record 
-    dwLength       : DWORD; 
+    dwLength       : DWORD;
     dwMemoryLoad   : DWORD; 
     dwTotalPhys    : SIZE_T; 
     dwAvailPhys    : SIZE_T; 
@@ -838,7 +878,7 @@ type
     dwTotalVirtual : SIZE_T; 
     dwAvailVirtual : SIZE_T; 
   end; 
-  {$EXTERNALSYM _MEMORYSTATUS} 
+  {$EXTERNALSYM _MEMORYSTATUS}
   TMemoryStatus = _MEMORYSTATUS; 
   MEMORYSTATUS = _MEMORYSTATUS; 
   {$EXTERNALSYM MEMORYSTATUS} 
@@ -1122,6 +1162,9 @@ begin
   AddFunc('机上マウスY', '',                4222, cmd_getMouseY,    'デスクトップ上でのマウスY座標を返す','きじょうまうすY');
   AddFunc('マウスドラッグ', 'X1,Y1からX2,Y2へ|Y2まで',    4230, cmd_mouse_drag,   'マウスをドラッグする','まうすどらっぐ');
   AddFunc('マウス右ドラッグ', 'X1,Y1からX2,Y2へ|Y2まで',  4231, cmd_mouse_drag_r, 'マウスを右ドラッグする','まうすみぎどらっぐ');
+  AddFunc('マウスホイール回転', 'DIRへH|DIRに',      -1, cmd_mouse_wheel,       'マウスのホイールを向きDIR(前,後)へY動かす。','まうすほいーるかいてん');
+  AddFunc('マウス右チルト', '',             -1, cmd_mouse_tilt_r,  'マウスのホイールを右にチルトする。','まうすみぎちると');
+  AddFunc('マウス左チルト', '',             -1, cmd_mouse_tilt_l,  'マウスのホイールを左にチルトする。','まうすひだりちると');
 
   //-ウィンドウ操作
   AddFunc('窓アクティブ',  '{=?}Aを|Aの',         4204, cmd_active,   'タイトルAを持つウィンドウの窓をアクティブにする。(ワイルドカードで指定可能)','まどあくてぃぶ');

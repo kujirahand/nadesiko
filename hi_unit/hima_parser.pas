@@ -5718,7 +5718,7 @@ var
   res: THiArray;
   arg: THimaArg;
   i: Integer;
-  n: TSyntaxNode;
+  n, c: TSyntaxNode;
   v, tmp: PHiValue;
 
   procedure _getDefaultValue;
@@ -5759,6 +5759,7 @@ var
 begin
   res := THiArray.Create;
   res.ForStack := True;
+  c := HiSystem.CurNode;
 
   if Stack = nil then begin Result := res; Exit; end;
   // stack の値を配列に取得
@@ -5794,7 +5795,7 @@ begin
     begin
       hi_var_free(tmp);
     end;
-    
+
     // 名前をつける
     if v <> nil then v.VarID := arg.Name;
     // 型をチェック
@@ -5803,6 +5804,7 @@ begin
     res.Values[i] := v;
 
   end;
+  HiSystem.CurNode := c;
   Result := res;
 end;
 
