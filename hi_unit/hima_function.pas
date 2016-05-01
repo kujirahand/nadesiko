@@ -3577,7 +3577,7 @@ begin
   s := DeleteGobi(s);
   jumppoint_id := hi_tango2id(s);
   HiSystem.FJumpPoint := jumppoint_id;
-  HiSystem.ReturnLevel := HiSystem.CurNode.FindBreakLevel + 1;
+  HiSystem.ReturnLevel := HiSystem.CurNode.SyntaxLevel + 1;
   HiSystem.BreakType := btBreak;
 end;
 
