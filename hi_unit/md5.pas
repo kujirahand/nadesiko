@@ -33,6 +33,9 @@
 //                     implied warranty of any kind. Use it at your own risk.
 // -----------------------------------------------------------------------------------------------
 
+//コンパイルオプション
+{$OVERFLOWCHECKS OFF}
+
 unit md5;
 
 // -----------------------------------------------------------------------------------------------
@@ -61,6 +64,7 @@ procedure MD5Final(var Context: MD5Context; var Digest: MD5Digest);
 
 function MD5String(M: string): MD5Digest;
 function MD5File(N: string): MD5Digest;
+function MD5File2(N: string; var digest: MD5Digest): Boolean;
 function MD5Print(D: MD5Digest): string;
 //
 function MD5StringS(M: string): string;
@@ -71,6 +75,9 @@ function MD5Match(D1, D2: MD5Digest): boolean;
 // -----------------------------------------------------------------------------------------------
 IMPLEMENTATION
 // -----------------------------------------------------------------------------------------------
+
+function GetFileSizeEx(hFile: THandle; var lpFileSize: LARGE_INTEGER): BOOL; stdcall;
+  external kernel32 name 'GetFileSizeEx';
 
 var
 	PADDING: MD5Buffer = (
@@ -340,37 +347,91 @@ begin
   Result := MD5Print(MD5String(M));
 end;
 function MD5FileS(N: string): string;
+var
+  d: MD5Digest;
 begin
-  Result := MD5Print(MD5File(N));
+  if MD5File2(N,d) then
+    Result := MD5Print(d)
+  else
+    Result := '';
 end;
 
 // Create digest of file with given Name
 function MD5File(N: string): MD5Digest;
+begin
+  MD5File2(N, Result);
+end;
+
+function MD5File2(N: string; var digest: MD5Digest): Boolean;
 var
 	FileHandle: THandle;
 	MapHandle: THandle;
 	ViewPointer: pointer;
 	Context: MD5Context;
+  BufferSize, ReadSize: Cardinal;
+  i64FileSize, i64Offset: LARGE_INTEGER;
+  bNoError : Boolean;
 begin
+  bNoError := true;
 	MD5Init(Context);
 	FileHandle := CreateFile(pChar(N), GENERIC_READ, FILE_SHARE_READ or FILE_SHARE_WRITE,
 		nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, 0);
 	if FileHandle <> INVALID_HANDLE_VALUE then try
 		MapHandle := CreateFileMapping(FileHandle, nil, PAGE_READONLY, 0, 0, nil);
 		if MapHandle <> 0 then try
-			ViewPointer := MapViewOfFile(MapHandle, FILE_MAP_READ, 0, 0, 0);
-			if ViewPointer <> nil then try
-				MD5Update(Context, ViewPointer, GetFileSize(FileHandle, nil));
-			finally
-				UnmapViewOfFile(ViewPointer);
-			end;
+      if GetFileSizeEx(FileHandle, i64FileSize) then
+      begin
+        bufferSize := 1024*1024*1024;
+        i64Offset.QuadPart := 0;
+		  	while true do
+        begin
+          if i64FileSize.QuadPart < BufferSize then
+            ReadSize := i64FileSize.QuadPart
+          else
+            ReadSize := BufferSize;
+			    ViewPointer := MapViewOfFile(MapHandle, FILE_MAP_READ, i64Offset.HighPart, i64Offset.LowPart, ReadSize);
+			    if ViewPointer <> nil then try
+				    MD5Update(Context, ViewPointer, ReadSize);
+            i64Offset.QuadPart := i64Offset.QuadPart + BufferSize;
+            i64FileSize.QuadPart := i64FileSize.QuadPart - ReadSize;
+            if i64FileSize.QuadPart = 0 then
+              break
+			    finally
+				    UnmapViewOfFile(ViewPointer);
+		   	  end else begin
+            if GetLastError() = ERROR_NOT_ENOUGH_MEMORY then
+            begin
+              BufferSize := BufferSize div 2;
+              if BufferSize < 4096 then
+              begin
+                bNoError := false;
+                break;
+              end;
+            end else begin
+              bNoError := false;
+              break;
+            end;
+          end;
+        end;
+      end else begin
+			  ViewPointer := MapViewOfFile(MapHandle, FILE_MAP_READ, 0, 0, 0);
+			  if ViewPointer <> nil then try
+				  MD5Update(Context, ViewPointer, GetFileSize(FileHandle, nil));
+			  finally
+				  UnmapViewOfFile(ViewPointer);
+			  end else
+          bNoError := false;
+      end;
 		finally
 			CloseHandle(MapHandle);
-		end;
+		end else
+      bNoError := false;
 	finally
 		CloseHandle(FileHandle);
-	end;
-	MD5Final(Context, Result);
+	end else
+    bNoError := false;
+	MD5Final(Context, digest);
+  Result := bNoError;
 end;
 
 // Create hex representation of given Digest
