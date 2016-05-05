@@ -6,6 +6,9 @@
 * 160bit hash size                                *
 ***************************************************
 }
+//コンパイルオプション
+{$OVERFLOWCHECKS OFF}
+
 unit SHA1;
 
 interface
@@ -16,7 +19,7 @@ type
   TSHA1Digest= array[0..19] of byte;
   TSHA1Context= record
     Hash: array[0..4] of DWord;
-    Hi, Lo: integer;
+    Hi, Lo: Cardinal;
     Buffer: array[0..63] of byte;
     Index: integer;
   end;
@@ -36,6 +39,7 @@ procedure IncBlock(P: PByteArray; Len: integer);
 
 function SHA1String(s: string): TSHA1Digest;
 function SHA1File(N: string): TSHA1Digest;
+function SHA1File2(N: string; var digest: TSHA1Digest): Boolean;
 function SHA1StringBase64(s: string): string;
 function SHA1StringHex(s: string): string;
 function SHA1StringBin(s: string): string;
@@ -46,6 +50,9 @@ implementation
 
 uses jconvert;
 {$R-}
+
+function GetFileSizeEx(hFile: THandle; var lpFileSize: LARGE_INTEGER): BOOL; stdcall;
+  external kernel32 name 'GetFileSizeEx';
 
 //tool
 function LRot16(X: word; c: integer): word; assembler;
@@ -158,31 +165,80 @@ begin
 end;
 
 function SHA1File(N: string): TSHA1Digest;
+begin
+  SHA1File2(N,Result);
+end;
+
+function SHA1File2(N: string; var digest: TSHA1Digest): Boolean;
 var
 	FileHandle: THandle;
 	MapHandle: THandle;
 	ViewPointer: pointer;
 	Context: TSHA1Context;
+  BufferSize, ReadSize: Cardinal;
+  i64FileSize, i64Offset: LARGE_INTEGER;
+  bNoError : Boolean;
 begin
+  bNoError := true;
   SHA1Init(Context);
 	FileHandle := CreateFile(pChar(N), GENERIC_READ, FILE_SHARE_READ or FILE_SHARE_WRITE,
 		nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, 0);
 	if FileHandle <> INVALID_HANDLE_VALUE then try
 		MapHandle := CreateFileMapping(FileHandle, nil, PAGE_READONLY, 0, 0, nil);
 		if MapHandle <> 0 then try
-			ViewPointer := MapViewOfFile(MapHandle, FILE_MAP_READ, 0, 0, 0);
-			if ViewPointer <> nil then try
-				SHA1Update(Context, ViewPointer, GetFileSize(FileHandle, nil));
-			finally
-				UnmapViewOfFile(ViewPointer);
-			end;
+      if GetFileSizeEx(FileHandle, i64FileSize) then
+      begin
+        bufferSize := 1024*1024*1024;
+        i64Offset.QuadPart := 0;
+		  	while true do
+        begin
+          if i64FileSize.QuadPart < BufferSize then
+            ReadSize := i64FileSize.QuadPart
+          else
+            ReadSize := BufferSize;
+          ViewPointer := MapViewOfFile(MapHandle, FILE_MAP_READ, i64Offset.HighPart, i64Offset.LowPart, ReadSize);
+	    		if ViewPointer <> nil then try
+		    		SHA1Update(Context, ViewPointer, ReadSize);
+            i64Offset.QuadPart := i64Offset.QuadPart + BufferSize;
+            i64FileSize.QuadPart := i64FileSize.QuadPart - ReadSize;
+            if i64FileSize.QuadPart = 0 then
+              break
+	  		  finally
+		 	      UnmapViewOfFile(ViewPointer);
+		   	  end else begin
+            if GetLastError() = ERROR_NOT_ENOUGH_MEMORY then
+            begin
+              BufferSize := BufferSize div 2;
+              if BufferSize < 4096 then
+              begin
+                bNoError := false;
+                break;
+              end;
+            end else begin
+              bNoError := false;
+              break;
+            end;
+          end;
+        end;
+      end else begin
+        ViewPointer := MapViewOfFile(MapHandle, FILE_MAP_READ, 0, 0, 0);
+	  		if ViewPointer <> nil then try
+		  		SHA1Update(Context, ViewPointer, GetFileSize(FileHandle, nil));
+			  finally
+				  UnmapViewOfFile(ViewPointer);
+        end else
+          bNoError := false;
+      end;
 		finally
-			CloseHandle(MapHandle);
-		end;
+		  CloseHandle(MapHandle);
+    end else
+      bNoError := false;
 	finally
 		CloseHandle(FileHandle);
-	end;
-	SHA1Final(Context, Result);
+	end else
+    bNoError := false;
+	SHA1Final(Context, digest);
+  Result := bNoError;
 end;
 
 function SHA1StringHexFile(N: string): string;
@@ -190,11 +246,13 @@ var
   d: TSHA1Digest;
   i: Integer;
 begin
-  d := SHA1File(N);
   Result := '';
-  for i := 0 to 19 do
+  if SHA1File2(N, d) then
   begin
-    Result := Result + IntToHex(d[i], 2);
+    for i := 0 to 19 do
+    begin
+      Result := Result + IntToHex(d[i], 2);
+    end;
   end;
 end;
 
@@ -275,7 +333,8 @@ end;
 //******************************************************************************
 procedure SHA1UpdateLen(var Context: TSHA1Context; Len: integer);
 var
-  i, k: integer;
+  i: Cardinal;
+  k: integer;
 begin
   for k:= 0 to 7 do
   begin
