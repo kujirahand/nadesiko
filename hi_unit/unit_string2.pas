@@ -120,6 +120,11 @@ end;
 // PChar ‚©‚ç 1•¶šæ‚èo‚·
 function getOneChar(var p: PChar): string;
 begin
+  if p^ in LeadBytes then
+  begin
+    Result := p^ + (p+1)^;
+    Inc(p, 2);
+  end else
   begin
     Result := p^;
     Inc(p);
