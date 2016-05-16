@@ -1798,6 +1798,8 @@ var
         if hi_bool(p) then Exit;
       end;
     end;
+    // "__"から始まるファイルは取り込まない
+    if Copy(s,1,2) = '__' then Exit;
     // その他、二重取り込みチェック
     if dll.IndexOf((s)) < 0 then
     begin

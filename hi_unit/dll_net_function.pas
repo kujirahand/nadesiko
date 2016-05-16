@@ -37,9 +37,9 @@ type
     ResultData: string;
     errormessage: string;
     Status: TNetDialogStatus;
-    procedure WorkBegin(Sender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
+    procedure WorkBegin(Sender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Integer);
     procedure WorkEnd(Sender: TObject; AWorkMode: TWorkMode);
-    procedure Work(Sender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
+    procedure Work(Sender: TObject; AWorkMode: TWorkMode; AWorkCount: Integer);
     function ShowDialog(stext, sinfo: AnsiString; Visible: Boolean;hObj:THANDLE=0): Boolean;
     procedure setInfo(s: string);
     procedure setText(s: string);
@@ -336,7 +336,7 @@ begin
   _idftp := Tidftp.Create(nil);
   if _idftp_logfile <> nil then // logfile
   begin
-    _idftp.Intercept := _idftp_logfile;
+    // _idftp.Intercept := _idftp_logfile;
     _idftp_logfile.Active := True;
   end;
 
@@ -1223,14 +1223,14 @@ begin
   pop3.Username   := hi_strU(nako_getVariable('メールID'));
   pop3.Password   := hi_strU(nako_getVariable('メールパスワード'));
   option          := UpperCase(hi_strU(nako_getVariable('メールオプション')));
-  pop3.AuthType := patUserPass;
+  pop3.AuthType := atUserPass;
   if Pos('APOP',option) > 0 then
   begin
-    pop3.AuthType := patAPOP;
+    pop3.AuthType := atAPOP;
   end;
   if Pos('SASL', option) > 0 then
   begin
-    pop3.AuthType := patSASL;
+    pop3.AuthType := atSASL;
   end;
   if Pos('SSL', option) > 0 then
   begin
@@ -2261,9 +2261,9 @@ begin
   if smtp.Host = '' then raise Exception.Create('メールホストが空です。');
   // option
   option := UpperCase(hi_str(nako_getVariable('メールオプション')));
-  if Pos('LOGIN',    option) > 0 then smtp.AuthType := satDefault;
-  if Pos('PLAIN',    option) > 0 then smtp.AuthType := satDefault;
-  if Pos('SASL',     option) > 0 then smtp.AuthType := satSASL;
+  if Pos('LOGIN',    option) > 0 then smtp.AuthType := atDefault;
+  if Pos('PLAIN',    option) > 0 then smtp.AuthType := atDefault;
+  if Pos('SASL',     option) > 0 then smtp.AuthType := IdSMTP.atSASL;
   if Pos('SSL',      option) > 0 then
   begin
     Login     := TIdSASLLogin.Create(SMTP);
@@ -2272,7 +2272,7 @@ begin
     Provider.Username := smtp.Username;
     Provider.Password := smtp.Password;
     SMTP.SASLMechanisms.Add.SASL := Login;
-    SMTP.AuthType := satSASL;
+    SMTP.AuthType := IdSMTP.atSASL;
     SSLHandler := TIdSSLIOHandlerSocketOpenSSL.Create(SMTP);
     SMTP.IOHandler := SSLHandler;    //TIdSSLIOHandlerSocketOpenSSL
     //SMTP.UseTLS := utUseExplicitTLS; // Explict
@@ -3027,7 +3027,7 @@ end;
 
 var zero_progress_max_count: Integer;
 
-procedure TNetDialog.Work(Sender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
+procedure TNetDialog.Work(Sender: TObject; AWorkMode: TWorkMode; AWorkCount: Integer);
 var
   s: AnsiString;
   w_max, w_per: Integer;
@@ -3105,7 +3105,7 @@ begin
   end;
 end;
 
-procedure TNetDialog.WorkBegin(Sender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
+procedure TNetDialog.WorkBegin(Sender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Integer);
 begin
   hParent := nako_getMainWindowHandle;
   Self.WorkCount := AWorkCountMax;

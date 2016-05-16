@@ -60,7 +60,7 @@ uses
   frmNakoU in 'frmNakoU.pas' {frmNako},
   dnako_loader in 'hi_unit\dnako_loader.pas',
   {$IFDEF DELUX_VERSION}
-  unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas',
+  unit_pack_files_pro in '..\nadesiko1pro\pro_unit\unit_pack_files_pro.pas',
   {$ENDIF}
   unit_pack_files in 'hi_unit\unit_pack_files.pas',
   hima_stream in 'hi_unit\hima_stream.pas',
