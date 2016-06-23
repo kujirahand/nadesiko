@@ -16,6 +16,7 @@ const
   NAKO_VNAKO = 0;
   NAKO_GNAKO = 1;
   NAKO_CNAKO = 2;
+  NAKO_NNAKO = 3;
   GUI_TXT       = 'tools\gui.txt';
   COMMAND_TXT   = 'tools\command.txt';
   DIR_TOOLS     = 'tools\';
@@ -124,6 +125,7 @@ type
     mnuNakoV: TMenuItem;
     mnuNakoG: TMenuItem;
     mnuNakoC: TMenuItem;
+    mnuNakoN: TMenuItem;
     mnuPause: TMenuItem;
     mnuFind: TMenuItem;
     mnuFindNext: TMenuItem;
@@ -428,6 +430,7 @@ type
     procedure mnuNakoVClick(Sender: TObject);
     procedure mnuNakoGClick(Sender: TObject);
     procedure mnuNakoCClick(Sender: TObject);
+    procedure mnuNakoNClick(Sender: TObject);
     procedure mnuStopClick(Sender: TObject);
     procedure mnuPauseClick(Sender: TObject);
     procedure mnuFindClick(Sender: TObject);
@@ -980,6 +983,7 @@ begin
     NAKO_VNAKO: mnuNakoVClick(nil);
     NAKO_GNAKO: mnuNakoVClick(nil);
     NAKO_CNAKO: mnuNakoVClick(nil);
+    NAKO_NNAKO: mnuNakoVClick(nil);
     else        mnuNakoVClick(nil);
   end;
 
@@ -1684,6 +1688,13 @@ begin
   mnuClearCheck(Self);
   mnuNakoC.Checked := True;
   FNakoIndex := NAKO_CNAKO;
+end;
+
+procedure TfrmNakopad.mnuNakoNClick(Sender: TObject);
+begin
+  mnuClearCheck(Self);
+  mnuNakoN.Checked := True;
+  FNakoIndex := NAKO_NNAKO;
 end;
 
 var send_cmd: string;
@@ -5691,6 +5702,7 @@ begin
     NAKO_VNAKO : s := s + 'vnako';
     NAKO_GNAKO : s := s + 'gnako';
     NAKO_CNAKO : s := s + 'cnako';
+    NAKO_NNAKO : s := s + 'nnako';
   end;
 
   edtActive.Lines.Insert(
@@ -6092,6 +6104,11 @@ begin
   NAKO_CNAKO:
     begin
       exe := '"' + AppPath + 'cnako.exe" /w "' + FTempFile + '" -debug::' + IntToStr(Self.Handle);
+    end;
+  NAKO_NNAKO:
+    begin
+      exe := '"' + AppPath + 'nnako.exe" "' + FTempFile + '" -debug::' + IntToStr(Self.Handle);
+      if mnuDebugLineNo.Checked then exe := exe + ' -lineno';
     end;
   end;
 
