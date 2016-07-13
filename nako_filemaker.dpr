@@ -51,6 +51,12 @@ begin
   FMFile := FMDocs.Open(WideString(fname),WideString(userid),WideString(pass));
   Result := nil;
 end;
+function fmOpen2(h: DWORD): PHiValue; stdcall;
+begin
+  init_filemaker;
+  FMFile := FMDocs.Active;
+  Result := nil;
+end;
 
 function fmDoScript(h: DWORD): PHiValue; stdcall;
 var
@@ -58,6 +64,12 @@ var
   v: Variant;
 begin
   scr := getArgStr(h, 0, True);
+  if VarIsNull(FMApp) then
+  begin
+    init_filemaker;
+    FMFile := FMDocs.Active;
+  end;
+
   v := FMFile.DoFMScript(scr);
   //
   Result := nil;
@@ -106,6 +118,7 @@ begin
   AddFunc('FILEMAKERスクリプト実行','{=?}SCRIPTを',7351,fmDoScript,'FileMakerのスクリプトを実行する(「FILEMAKER開く」で開いておく必要があります)','FILEMAKERすくりぷとじっこう');
   AddFunc('FILEMAKER終了','',7352,fmQuit,'FileMakerを終了させる','FILEMAKERしゅうりょう');
   AddFunc('FILEMAKERファイル閉じる','',7353,fmCloseDoc,'FileMakerのドキュメントを閉じる','FILEMAKERふぁいるとじる');
+  AddFunc('FILEMAKER利用','',7354,fmOpen2,'起動中のFileMakerを操作できるように準備する','FILEMAKERりよう');
   //</命令>
 end;
 

@@ -3702,6 +3702,9 @@ begin
     f := TfrmNako(o);
     f.Left := (Screen.WorkAreaWidth  - f.Width ) div 2 + Screen.WorkAreaLeft ;
     f.Top  := (Screen.WorkAreaHeight - f.Height) div 2 + Screen.WorkAreaTop  ;
+
+    f.FTempX := f.Left;
+    f.FTempY := f.Top;
   end else
   if o is TControl then
   begin

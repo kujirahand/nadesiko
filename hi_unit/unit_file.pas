@@ -532,7 +532,7 @@ var
     if FindFirst(string(path), FaAnyFile, rec) = 0 then
     begin
       repeat
-        if not ((rec.Attr and FaDirectory)>0) then
+        if not ((rec.Attr and FaDirectory) > 0) then
         begin
           Result.Add(rec.Name);
         end;

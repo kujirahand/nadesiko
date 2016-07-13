@@ -1784,7 +1784,7 @@ var
   PluginInit: procedure (h: DWORD); stdcall;
 
   procedure chkDLL(name: string);
-  var s: string; p: PHiValue;
+  var s, exe: string; p: PHiValue;
   begin
     s := UpperCase(ExtractFileName(name));
     // 自身は取り込み不要
@@ -1793,13 +1793,20 @@ var
     if s = 'LIBVNAKO.DLL' then
     begin
       p := HiSystem.GetVariable(hi_tango2id('noload_libvnako'));
-      if p <> nil then 
+      if p <> nil then
       begin
         if hi_bool(p) then Exit;
       end;
     end;
-    // "__"から始まるファイルは取り込まない
-    if Copy(s,1,2) = '__' then Exit;
+    // FileMakerから実行するとき、NAKONET.DLLは使えない
+    if s = 'NAKONET.DLL' then
+    begin
+      exe := ExtractFileName(ParamStr(0));
+      if Pos('FileMaker Pro.exe', exe) > 0 then begin
+        Exit;
+      end;
+      //
+    end;
     // その他、二重取り込みチェック
     if dll.IndexOf((s)) < 0 then
     begin

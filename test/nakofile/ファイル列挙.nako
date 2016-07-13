@@ -1,0 +1,15 @@
+●テスト_NAKOFILE_ファイル列挙_A1
+　　TEMP=テンポラリフォルダ&"nakofile-test\"
+　　TEMPのフォルダ作成。
+　　＃長いファイルを作成
+　　FN=""
+　　64回、FN=FN&"変"
+　　FN=FN&".txt"
+　　TEMP&FNに「あああ」を保存。
+　　TEMP&"abc.txt"に「いいい」を保存
+　　TEMPのファイル列挙
+　　ソート
+　　トリムして、LISTに代入。
+　　LISTと「abc.txt{~}{FN}」でテスト実行。
+　　TEMPのフォルダ削除
+

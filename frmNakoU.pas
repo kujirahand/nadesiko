@@ -2045,8 +2045,8 @@ end;
 
 procedure TfrmNako.RecoverXY;
 begin
-  Self.Left := FTempX;
-  Self.Top := FTempY;
+  if FTempX < MaxInt then Self.Left := FTempX;
+  if FTempY < MaxInt then Self.Top := FTempY;
 end;
 
 { THiListView }
