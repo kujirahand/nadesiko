@@ -1997,22 +1997,9 @@ begin
 end;
 
 procedure TfrmNakopad.mnuKanrendukeClick(Sender: TObject);
-var
-  exe: string;
 begin
   ChDir(AppPath+'tools\');
   RunAsAdmin(0, AppPath + 'tools\exectext-install.exe', '');
-  {
-  if isVistaOr7 = True then
-  begin
-    // RunAsAdmin(Handle, '"' + AppPath + 'vnako.exe"', '"' + AppPath + 'tools\install.nako' + '"');
-    //RunAsAdmin(0, AppPath + 'tools\exectext-install.exe', '');
-  end else
-  begin
-    exe := AppPath + 'vnako.exe "' + AppPath + 'tools\install.nako"';
-    RunApp(exe);
-  end;
-  }
 end;
 
 procedure TfrmNakopad.MakeTools;

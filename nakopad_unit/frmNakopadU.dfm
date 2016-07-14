@@ -915,6 +915,7 @@ object frmNakopad: TfrmNakopad
           Caret.Style = csDefault
           Caret.TabIndent = False
           Caret.TabSpaceCount = 8
+          Caret.TokenEndStop = False
           Font.Charset = SHIFTJIS_CHARSET
           Font.Color = clBlack
           Font.Height = -12
@@ -1092,6 +1093,7 @@ object frmNakopad: TfrmNakopad
           Caret.Style = csDefault
           Caret.TabIndent = False
           Caret.TabSpaceCount = 8
+          Caret.TokenEndStop = False
           Font.Charset = SHIFTJIS_CHARSET
           Font.Color = clBlack
           Font.Height = -12
@@ -1281,6 +1283,7 @@ object frmNakopad: TfrmNakopad
             Caret.Style = csDefault
             Caret.TabIndent = False
             Caret.TabSpaceCount = 8
+            Caret.TokenEndStop = False
             Fountain = NadesikoFountain
             Font.Charset = SHIFTJIS_CHARSET
             Font.Color = clBlack
@@ -1484,6 +1487,7 @@ object frmNakopad: TfrmNakopad
               Caret.Style = csDefault
               Caret.TabIndent = False
               Caret.TabSpaceCount = 8
+              Caret.TokenEndStop = False
               Font.Charset = SHIFTJIS_CHARSET
               Font.Color = clBlack
               Font.Height = -12
@@ -2583,6 +2587,7 @@ object frmNakopad: TfrmNakopad
     Caret.Style = csDefault
     Caret.TabIndent = False
     Caret.TabSpaceCount = 4
+    Caret.TokenEndStop = False
     Font.Charset = SHIFTJIS_CHARSET
     Font.Color = clWindowText
     Font.Height = -15
