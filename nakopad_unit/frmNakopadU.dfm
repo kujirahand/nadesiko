@@ -2262,6 +2262,10 @@ object frmNakopad: TfrmNakopad
           Caption = #12467#12531#12477#12540#12523' - cnako.exe'
           OnClick = mnuNakoCClick
         end
+        object mnuNakoN: TMenuItem
+          Caption = 'simpleGUI - nnako.exe'
+          OnClick = mnuNakoNClick
+        end
         object N59: TMenuItem
           Caption = '-'
         end
