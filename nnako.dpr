@@ -22,6 +22,8 @@ uses
   {$ENDIF}
   ;
 
+{$R gnako.res}
+
 var
   _nako_loader: TDnakoLoader;
   debugmode: Boolean = False;
