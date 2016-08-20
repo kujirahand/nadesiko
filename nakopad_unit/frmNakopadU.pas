@@ -9,7 +9,7 @@ uses
   IniFiles, ImgList, heRaStrings, Clipbrd, CsvUtils2, StdCtrls, nakopad_types,
   XPMan, NadesikoFountain, PerlFountain, JavaFountain, CppFountain, HTMLFountain,
   DelphiFountain, HimawariFountain, HViewEdt, AppEvnts, TrackBox,
-  unit_guiParts, Grids, ValEdit, frmFirstPageU, OleCtrls, SHDocVw,
+  unit_guiParts, Grids, ValEdit, OleCtrls, SHDocVw,
   Buttons, UIWebBrowser;
 
 const
@@ -397,7 +397,6 @@ type
     popGUIFind: TPopupMenu;
     popGUIFindCopy: TMenuItem;
     popGUIPaste: TMenuItem;
-    mnuFirstShow: TMenuItem;
     timerShowWeb: TTimer;
     mnuShowNews: TMenuItem;
     pnlAction: TPanel;
@@ -626,7 +625,6 @@ type
     procedure mnuInsDebugClick(Sender: TObject);
     procedure popGUIFindCopyClick(Sender: TObject);
     procedure popGUIPasteClick(Sender: TObject);
-    procedure mnuFirstShowClick(Sender: TObject);
     procedure timerShowWebTimer(Sender: TObject);
     procedure mnuShowNewsClick(Sender: TObject);
     procedure btnActionOpenBrowserClick(Sender: TObject);
@@ -661,11 +659,9 @@ type
     FGuiCancelInvalidate: Boolean;
     FDownPoint: TPoint;
     tmpGroupFilter: TStringList;
-    frmFirst: TfrmFirst;
     // setting
     procedure CreateVar;
     procedure FreeVar;
-    procedure CheckOldVersion;
     procedure LoadIni;
     procedure SaveIni;
     procedure setEditImeMode;
@@ -1072,7 +1068,11 @@ begin
   pageLeft.ActivePage := sheetAction;
 
   // first page
-  if False = (ini.ReadBool('frmFirst', 'NoMorePage', False)) then frmFirst.Show;
+  if False = (ini.ReadBool('frmFirst', 'NoMorePage', False)) then
+  begin
+    ini.WriteBool('frmFirst', 'NoMorePage', True);
+    edtActive.Lines.LoadFromFile(AppPath + 'tools\FirstTime.nako');
+  end;
 
   // show news?
   mnuShowNews.Checked := ini.ReadBool('Edit', 'ShowNews', True);
@@ -1127,7 +1127,6 @@ begin
   FIniName    := FUserDir + 'nakopad.ini';
   ForceDirectories(FUserDir);
   ForceDirectories(FUserDir + DIR_TOOLS);
-  CheckOldVersion;
 
   ini         := TIniFile.Create(FIniName);
   RecentFiles := TStringList.Create;
@@ -1158,8 +1157,6 @@ begin
   // Tab
   tabsMain.TabWidth := 130;
   tabsMain.Tabs.Text := '';
-  //
-  frmFirst := TfrmFirst.Create(Self);
 end;
 
 procedure TfrmNakopad.FreeVar;
@@ -5461,19 +5458,6 @@ begin
   OpenApp(AppPath + 'history.txt');
 end;
 
-procedure TfrmNakopad.CheckOldVersion;
-var
-  oldini: String;
-begin
-  // IniFile
-  oldini := ChangeFileExt(ParamStr(0), '.ini');
-  if FileExists(oldini) then
-  begin
-    CopyFile(PChar(oldini), PChar(FIniName), False);
-    DeleteFile(PChar(oldini));
-  end;
-  //
-end;
 
 procedure TfrmNakopad.track_fix;
 var
@@ -6126,11 +6110,6 @@ end;
 procedure TfrmNakopad.popGUIPasteClick(Sender: TObject);
 begin
   edtGuiFind.PasteFromClipboard;
-end;
-
-procedure TfrmNakopad.mnuFirstShowClick(Sender: TObject);
-begin
-  frmFirst.Show;
 end;
 
 procedure TfrmNakopad.RunTool(path: string);

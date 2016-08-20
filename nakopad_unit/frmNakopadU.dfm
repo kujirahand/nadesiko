@@ -140,7 +140,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 0
+            ItemHeight = 12
             PopupMenu = popFind
             TabOrder = 0
             OnEnter = cmbFindEnter
@@ -239,7 +239,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 0
+            ItemHeight = 12
             PopupMenu = popFind
             TabOrder = 2
             OnEnter = cmbGroupEnter
@@ -421,7 +421,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 0
+            ItemHeight = 12
             PopupMenu = popFind
             TabOrder = 2
             OnEnter = cmbCmdEnter
@@ -540,7 +540,7 @@ object frmNakopad: TfrmNakopad
           Width = 193
           Height = 20
           AutoComplete = False
-          ItemHeight = 0
+          ItemHeight = 12
           PopupMenu = popFind
           TabOrder = 1
           OnEnter = cmbVarEnter
@@ -2112,10 +2112,6 @@ object frmNakopad: TfrmNakopad
       object mnuDiffView: TMenuItem
         Caption = #12362#25163#26412#34920#31034#29992#12456#12487#12451#12479
         OnClick = mnuDiffViewClick
-      end
-      object mnuFirstShow: TMenuItem
-        Caption = #12394#12391#12375#12371#12398#12399#12376#12417#12395
-        OnClick = mnuFirstShowClick
       end
     end
     object R1: TMenuItem
