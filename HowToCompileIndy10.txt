@@ -1,0 +1,19 @@
+# download
+
+https://indy.fulgan.com/ZIP/
+
+# how to compile
+
+http://ht-deko.com/tech034.html
+
+# memo
+
+上記サイトではバッチファイルのコンパイルを勧めていないが、
+Indy10がなかなかうまくコンパイルできなかったので、
+D7用にコンパイルして、バイナリをLib\Indyに追加してIDEでパスを通した。
+Win7では、コンパイル時、管理者権限をつけてバッチファイルを実行する必要があった。
+
+
+
+
+

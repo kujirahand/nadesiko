@@ -40,6 +40,8 @@ type
     procedure WorkBegin(Sender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Integer);
     procedure WorkEnd(Sender: TObject; AWorkMode: TWorkMode);
     procedure Work(Sender: TObject; AWorkMode: TWorkMode; AWorkCount: Integer);
+    procedure WorkBegin64(Sender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Int64);
+    procedure Work64(Sender: TObject; AWorkMode: TWorkMode; AWorkCount: Int64);
     function ShowDialog(stext, sinfo: AnsiString; Visible: Boolean;hObj:THANDLE=0): Boolean;
     procedure setInfo(s: string);
     procedure setText(s: string);
@@ -408,8 +410,8 @@ begin
   if _idftp.Host     = '' then raise Exception.Create('FTPの設定でHOSTが未設定です。');
   try
     _idftp.Connect;
-    _idftp.OnWorkBegin := NetDialog.WorkBegin;
-    _idftp.OnWork      := NetDialog.Work;
+    _idftp.OnWorkBegin := NetDialog.WorkBegin64;
+    _idftp.OnWork      := NetDialog.Work64;
     _idftp.OnWorkEnd   := NetDialog.WorkEnd;
   except
     on e: Exception do
@@ -1223,14 +1225,14 @@ begin
   pop3.Username   := hi_strU(nako_getVariable('メールID'));
   pop3.Password   := hi_strU(nako_getVariable('メールパスワード'));
   option          := UpperCase(hi_strU(nako_getVariable('メールオプション')));
-  pop3.AuthType := atUserPass;
+  pop3.AuthType := patUserPass;
   if Pos('APOP',option) > 0 then
   begin
-    pop3.AuthType := atAPOP;
+    pop3.AuthType := patAPOP;
   end;
   if Pos('SASL', option) > 0 then
   begin
-    pop3.AuthType := atSASL;
+    pop3.AuthType := patSASL;
   end;
   if Pos('SSL', option) > 0 then
   begin
@@ -1392,8 +1394,8 @@ const
   var bShow: Boolean;
   begin
     //
-    pop3.OnWorkBegin := NetDialog.WorkBegin;
-    pop3.OnWork      := NetDialog.Work;
+    pop3.OnWorkBegin := NetDialog.WorkBegin64;
+    pop3.OnWork      := NetDialog.Work64;
     pop3.OnWorkEnd   := NetDialog.WorkEnd;
     bShow := hi_bool(nako_getVariable('経過ダイアログ'));
     //
@@ -1663,8 +1665,8 @@ var
   procedure _recv;
   var bShow: Boolean;
   begin
-    pop3.OnWorkBegin := NetDialog.WorkBegin;
-    pop3.OnWork      := NetDialog.Work;
+    pop3.OnWorkBegin := NetDialog.WorkBegin64;
+    pop3.OnWork      := NetDialog.Work64;
     pop3.OnWorkEnd   := NetDialog.WorkEnd;
     bShow := hi_bool(nako_getVariable('経過ダイアログ'));
     //
@@ -1728,8 +1730,8 @@ var
   var bShow: Boolean;
   begin
     //
-    pop3.OnWorkBegin := NetDialog.WorkBegin;
-    pop3.OnWork      := NetDialog.Work;
+    pop3.OnWorkBegin := NetDialog.WorkBegin64;
+    pop3.OnWork      := NetDialog.Work64;
     pop3.OnWorkEnd   := NetDialog.WorkEnd;
     bShow := hi_bool(nako_getVariable('経過ダイアログ'));
     //
@@ -2261,9 +2263,9 @@ begin
   if smtp.Host = '' then raise Exception.Create('メールホストが空です。');
   // option
   option := UpperCase(hi_str(nako_getVariable('メールオプション')));
-  if Pos('LOGIN',    option) > 0 then smtp.AuthType := atDefault;
-  if Pos('PLAIN',    option) > 0 then smtp.AuthType := atDefault;
-  if Pos('SASL',     option) > 0 then smtp.AuthType := IdSMTP.atSASL;
+  if Pos('LOGIN',    option) > 0 then smtp.AuthType := satDefault;
+  if Pos('PLAIN',    option) > 0 then smtp.AuthType := satDefault;
+  if Pos('SASL',     option) > 0 then smtp.AuthType := satSASL;
   if Pos('SSL',      option) > 0 then
   begin
     Login     := TIdSASLLogin.Create(SMTP);
@@ -2272,8 +2274,9 @@ begin
     Provider.Username := smtp.Username;
     Provider.Password := smtp.Password;
     SMTP.SASLMechanisms.Add.SASL := Login;
-    SMTP.AuthType := IdSMTP.atSASL;
+    SMTP.AuthType := IdSMTP.satSASL;
     SSLHandler := TIdSSLIOHandlerSocketOpenSSL.Create(SMTP);
+    SSLHandler.SSLOptions.Method := sslvSSLv23;
     SMTP.IOHandler := SSLHandler;    //TIdSSLIOHandlerSocketOpenSSL
     //SMTP.UseTLS := utUseExplicitTLS; // Explict
     SMTP.UseTLS := utUseImplicitTLS; // Explict
@@ -2356,8 +2359,8 @@ begin
     end;
     // -------------------------------------------------------------------------
     // 実際に送信
-    smtp.OnWorkBegin  := NetDialog.WorkBegin;
-    smtp.OnWork       := NetDialog.Work;
+    smtp.OnWorkBegin  := NetDialog.WorkBegin64;
+    smtp.OnWork       := NetDialog.Work64;
     smtp.OnWorkEnd    := NetDialog.WorkEnd;
     th := TNetThread.Create(True);
     th.arg0 := smtp;
@@ -3105,7 +3108,23 @@ begin
   end;
 end;
 
+procedure TNetDialog.Work64(Sender: TObject; AWorkMode: TWorkMode;
+  AWorkCount: Int64);
+begin
+  Work(Sender, AWorkMode, Integer(AWorkCOunt));
+end;
+
 procedure TNetDialog.WorkBegin(Sender: TObject; AWorkMode: TWorkMode; AWorkCountMax: Integer);
+begin
+  hParent := nako_getMainWindowHandle;
+  Self.WorkCount := AWorkCountMax;
+  zero_progress_max_count := 0;
+  bMinMaxInitialized := false;
+  iPrevPercent := -1;
+end;
+
+procedure TNetDialog.WorkBegin64(Sender: TObject; AWorkMode: TWorkMode;
+  AWorkCountMax: Int64);
 begin
   hParent := nako_getMainWindowHandle;
   Self.WorkCount := AWorkCountMax;
@@ -3118,6 +3137,7 @@ procedure TNetDialog.WorkEnd(Sender: TObject; AWorkMode: TWorkMode);
 begin
   Work(Self, AWorkMode, Self.WorkCount);
 end;
+
 
 { TNetThread }
 
