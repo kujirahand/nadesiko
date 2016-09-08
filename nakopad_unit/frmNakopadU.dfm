@@ -739,14 +739,14 @@ object frmNakopad: TfrmNakopad
       OnClick = mnuOpenClick
     end
     object ToolButton3: TToolButton
-      Left = 69
+      Left = 71
       Top = 0
       Caption = 'ToolButton3'
       ImageIndex = 2
       OnClick = mnuSaveClick
     end
     object ToolButton4: TToolButton
-      Left = 96
+      Left = 98
       Top = 0
       Width = 8
       Caption = 'ToolButton4'
@@ -754,14 +754,14 @@ object frmNakopad: TfrmNakopad
       Style = tbsSeparator
     end
     object ToolButton5: TToolButton
-      Left = 104
+      Left = 106
       Top = 0
       Caption = 'ToolButton5'
       ImageIndex = 3
       OnClick = mnuUndoClick
     end
     object ToolButton13: TToolButton
-      Left = 131
+      Left = 133
       Top = 0
       Width = 8
       Caption = 'ToolButton13'
@@ -769,28 +769,28 @@ object frmNakopad: TfrmNakopad
       Style = tbsSeparator
     end
     object ToolButton6: TToolButton
-      Left = 139
+      Left = 141
       Top = 0
       Caption = 'ToolButton6'
       ImageIndex = 4
       OnClick = mnuCutClick
     end
     object ToolButton7: TToolButton
-      Left = 166
+      Left = 168
       Top = 0
       Caption = 'ToolButton7'
       ImageIndex = 5
       OnClick = mnuCopyClick
     end
     object ToolButton8: TToolButton
-      Left = 193
+      Left = 195
       Top = 0
       Caption = 'ToolButton8'
       ImageIndex = 6
       OnClick = mnuPasteClick
     end
     object ToolButton9: TToolButton
-      Left = 220
+      Left = 222
       Top = 0
       Width = 9
       Caption = 'ToolButton9'
@@ -798,28 +798,28 @@ object frmNakopad: TfrmNakopad
       Style = tbsSeparator
     end
     object toolRun: TToolButton
-      Left = 229
+      Left = 231
       Top = 0
       Caption = 'toolRun'
       ImageIndex = 7
       OnClick = mnuRunClick
     end
     object toolStop: TToolButton
-      Left = 256
+      Left = 258
       Top = 0
       Caption = 'toolStop'
       ImageIndex = 8
       OnClick = mnuStopClick
     end
     object toolPause: TToolButton
-      Left = 283
+      Left = 285
       Top = 0
       Caption = 'toolPause'
       ImageIndex = 9
       OnClick = mnuPauseClick
     end
     object ToolButton14: TToolButton
-      Left = 310
+      Left = 312
       Top = 0
       Width = 8
       Caption = 'ToolButton14'
@@ -915,7 +915,6 @@ object frmNakopad: TfrmNakopad
           Caret.Style = csDefault
           Caret.TabIndent = False
           Caret.TabSpaceCount = 8
-          Caret.TokenEndStop = False
           Font.Charset = SHIFTJIS_CHARSET
           Font.Color = clBlack
           Font.Height = -12
@@ -1093,7 +1092,6 @@ object frmNakopad: TfrmNakopad
           Caret.Style = csDefault
           Caret.TabIndent = False
           Caret.TabSpaceCount = 8
-          Caret.TokenEndStop = False
           Font.Charset = SHIFTJIS_CHARSET
           Font.Color = clBlack
           Font.Height = -12
@@ -1283,7 +1281,6 @@ object frmNakopad: TfrmNakopad
             Caret.Style = csDefault
             Caret.TabIndent = False
             Caret.TabSpaceCount = 8
-            Caret.TokenEndStop = False
             Fountain = NadesikoFountain
             Font.Charset = SHIFTJIS_CHARSET
             Font.Color = clBlack
@@ -1487,7 +1484,6 @@ object frmNakopad: TfrmNakopad
               Caret.Style = csDefault
               Caret.TabIndent = False
               Caret.TabSpaceCount = 8
-              Caret.TokenEndStop = False
               Font.Charset = SHIFTJIS_CHARSET
               Font.Color = clBlack
               Font.Height = -12
@@ -2248,29 +2244,39 @@ object frmNakopad: TfrmNakopad
     end
     object S1: TMenuItem
       Caption = #35373#23450'(&O)'
-      object N17: TMenuItem
+      object mnuSelectNakoType: TMenuItem
         Caption = #12394#12391#12375#12371#23455#34892#26041#24335'...'
         object mnuNakoV: TMenuItem
           Caption = #27161#28310'GUI - vnako.exe'
+          GroupIndex = 23
+          RadioItem = True
           OnClick = mnuNakoVClick
         end
         object mnuNakoG: TMenuItem
           Caption = #31777#26131'GUI - gnako.exe'
+          GroupIndex = 23
+          RadioItem = True
           OnClick = mnuNakoGClick
         end
         object mnuNakoC: TMenuItem
           Caption = #12467#12531#12477#12540#12523' - cnako.exe'
+          GroupIndex = 23
+          RadioItem = True
           OnClick = mnuNakoCClick
         end
         object mnuNakoN: TMenuItem
           Caption = 'simpleGUI - nnako.exe'
+          GroupIndex = 23
+          RadioItem = True
           OnClick = mnuNakoNClick
         end
         object N59: TMenuItem
           Caption = '-'
+          GroupIndex = 23
         end
         object mnuInsRunMode: TMenuItem
           Caption = #29694#22312#12398#23455#34892#12514#12540#12489#12434#12459#12540#12477#12523#20301#32622#12395#25407#20837
+          GroupIndex = 23
           OnClick = mnuInsRunModeClick
         end
       end
@@ -2583,7 +2589,6 @@ object frmNakopad: TfrmNakopad
     Caret.Style = csDefault
     Caret.TabIndent = False
     Caret.TabSpaceCount = 4
-    Caret.TokenEndStop = False
     Font.Charset = SHIFTJIS_CHARSET
     Font.Color = clWindowText
     Font.Height = -15

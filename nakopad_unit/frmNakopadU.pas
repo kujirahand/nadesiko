@@ -121,7 +121,7 @@ type
     mnuRun: TMenuItem;
     mnuStop: TMenuItem;
     N16: TMenuItem;
-    N17: TMenuItem;
+    mnuSelectNakoType: TMenuItem;
     mnuNakoV: TMenuItem;
     mnuNakoG: TMenuItem;
     mnuNakoC: TMenuItem;
@@ -722,6 +722,7 @@ type
     procedure getGUIPartsList;
     procedure DeleteNakopadTempFile;
     function GetReportFile: string;
+    procedure clearNakoTypeInMenu;
   public
     { Public êÈåæ }
     edtActive     : TEditorEx;
@@ -1659,37 +1660,30 @@ begin
   RunProgram(False);
 end;
 
-procedure mnuClearCheck(e: TfrmNakopad);
-begin
-  e.mnuNakoV.Checked := False;
-  e.mnuNakoG.Checked := False;
-  e.mnuNakoC.Checked := False;
-end;
-
 procedure TfrmNakopad.mnuNakoVClick(Sender: TObject);
 begin
-  mnuClearCheck(Self);
+  clearNakoTypeInMenu;
   mnuNakoV.Checked := True;
   FNakoIndex := NAKO_VNAKO;
 end;
 
 procedure TfrmNakopad.mnuNakoGClick(Sender: TObject);
 begin
-  mnuClearCheck(Self);
+  clearNakoTypeInMenu;
   mnuNakoG.Checked := True;
   FNakoIndex := NAKO_GNAKO;
 end;
 
 procedure TfrmNakopad.mnuNakoCClick(Sender: TObject);
 begin
-  mnuClearCheck(Self);
+  clearNakoTypeInMenu;
   mnuNakoC.Checked := True;
   FNakoIndex := NAKO_CNAKO;
 end;
 
 procedure TfrmNakopad.mnuNakoNClick(Sender: TObject);
 begin
-  mnuClearCheck(Self);
+  clearNakoTypeInMenu;
   mnuNakoN.Checked := True;
   FNakoIndex := NAKO_NNAKO;
 end;
@@ -6182,6 +6176,14 @@ begin
     lstActionDblClick(nil);
     //OpenApp(AppPath + 'tools');
   end;
+end;
+
+procedure TfrmNakopad.clearNakoTypeInMenu;
+begin
+  mnuNakoV.Checked := False;
+  mnuNakoG.Checked := False;
+  mnuNakoC.Checked := False;
+  mnuNakoN.Checked := False;
 end;
 
 end.
