@@ -1219,8 +1219,7 @@ var
   tmp: AnsiString;
 begin
   if s = '' then begin Result := False; Exit; end;
-  if Length(s) > 12 then begin Result := False; Exit; end;
-
+  
   Result := True;
   tmp := convToHalf(s);
 
