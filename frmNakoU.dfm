@@ -81,7 +81,6 @@ object frmNako: TfrmNako
     Caret.Style = csDefault
     Caret.TabIndent = False
     Caret.TabSpaceCount = 8
-    Caret.TokenEndStop = False
     Font.Charset = SHIFTJIS_CHARSET
     Font.Color = clWindowText
     Font.Height = -12
