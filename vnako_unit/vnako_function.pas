@@ -4871,7 +4871,7 @@ begin
       end;
     VCL_GUI_COMBO       :
       begin
-        o := TComboBox.Create(parentObj);
+        o := TComboBox.Create(parentObj);       
         with TComboBox(o) do begin
           AutoComplete := False;
           OnClick     := Bokan.eventClick;
@@ -5353,6 +5353,7 @@ begin
           //
           FTempX := frmNako.Left + 100;
           FTempY := frmNako.Top + 100;
+          timerFormWakeUp.Enabled := True;
         end;
       end;
     VCL_GUI_MAINMENU:
@@ -6471,6 +6472,10 @@ var
       begin
         Application.ShowMainForm := b;
       end;
+    end else
+    if obj is TfrmNako then begin
+      TFrmNako(obj).RecoverXY;
+      TFrmNako(obj).Visible := b;
     end else
     if obj is TControl  then TControl(obj).Visible  := b else
     if obj is TMenuItem then TMenuItem(obj).Visible := b;

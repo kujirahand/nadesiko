@@ -105,6 +105,7 @@ type
     dlgPrinter: TPrinterSetupDialog;
     edtPropNormal: TEditorExProp;
     XPManifest: TXPManifest;
+    timerFormWakeUp: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure timerRunScriptTimer(Sender: TObject);
@@ -118,6 +119,7 @@ type
     procedure AppEventDeactivate(Sender: TObject);
     procedure AppEventMinimize(Sender: TObject);
     procedure AppEventRestore(Sender: TObject);
+    procedure timerFormWakeUpTimer(Sender: TObject);
   private
     { Private 宣言 }
     FFlagFree: Boolean;
@@ -2049,8 +2051,8 @@ end;
 
 procedure TfrmNako.RecoverXY;
 begin
-  if FTempX < MaxInt then Self.Left := FTempX;
-  if FTempY < MaxInt then Self.Top := FTempY;
+  if FTempX <> Self.Left then Self.Left := FTempX;
+  if FTempY <> Self.Top  then Self.Top := FTempY;
 end;
 
 { THiListView }
@@ -2239,6 +2241,13 @@ begin
   ginfo := GuiInfos[ 0 ];
   doEvent(@ginfo, EVENT_RESTORE);
   Self.Invalidate; // Vista で画面のコンポーネントが消える問題に対処
+end;
+
+procedure TfrmNako.timerFormWakeUpTimer(Sender: TObject);
+begin
+  timerFormWakeUp.Enabled := False;
+  Self.RecoverXY;
+  Self.Invalidate;
 end;
 
 initialization

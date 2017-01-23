@@ -216,4 +216,11 @@ object frmNako: TfrmNako
     Left = 208
     Top = 40
   end
+  object timerFormWakeUp: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = timerFormWakeupTimer
+    Left = 176
+    Top = 72
+  end
 end
