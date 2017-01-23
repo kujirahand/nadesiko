@@ -418,7 +418,10 @@ begin
   f := CreateFileA(PAnsiChar(Filename), GENERIC_WRITE, 0, nil,
     CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN,0);
   if f = INVALID_HANDLE_VALUE then
+  begin
+    CloseHandle(f); f := 0;
     raise EInOutError.Create(string('ファイル"' + Filename + '"が開けません。') + GetLastErrorStr);
+  end;
   try
     // set pointer
     SetFilePointer(f, 0, nil, FILE_BEGIN); // 初めからゼロの位置に
@@ -429,6 +432,7 @@ begin
     begin
       if not WriteFile(f, s[1], size, rsize, nil) then
       begin // 失敗
+        Closehandle(f); f := 0;
         raise EInOutError.Create(string('ファイル"' + Filename + '"の読み取りに失敗しました。') + GetLastErrorStr);
       end;
     end;
