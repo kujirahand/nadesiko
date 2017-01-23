@@ -9,7 +9,7 @@ uses
   // Delphi Unit
   SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, Menus, ValEdit, Grids, ComCtrls, Spin,
-  AppEvnts, ShellAPI,
+  AppEvnts, ShellAPI, Math,
   // nadesiko unit
   dnako_loader, unit_pack_files, hima_types, dnako_import_types,
   unit_string, vnako_function, unit_tree_list,
@@ -124,6 +124,7 @@ type
     DebugEditorHandle: Integer;
     FDragPoint: TPoint;
     FHoverTime : Cardinal;
+    SaveFPUMask: TFPUExceptionMask; // 不正な浮動小数点数演算命令エラー回避のため
     FOnMouseEnter : TNotifyEvent;
     FOnMouseLeave : TNotifyEvent;
     FOnMouseHover : TMouseEvent;
@@ -463,6 +464,9 @@ procedure TfrmNako.FormCreate(Sender: TObject);
 var
   p: PHiValue;
 begin
+  // 不正な浮動小数点数演算命令エラーを回避する
+  SaveFPUMask := Math.GetExceptionMask;
+  Math.SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide, exOverflow, exUnderflow, exPrecision]);
   //----------------------------------------------------------------------------
   // Windows Vista ALT キーの問題
   {$IF RTLVersion < 20}
@@ -2158,6 +2162,7 @@ end;
 
 procedure TfrmNako.FormDestroy(Sender: TObject);
 begin
+  Math.SetExceptionMask(SaveFPUMask);
   FreeAndNil(freeObjList); // これをいちいち解放しなくても自動でGUIデータは解放される
   FFlagFree := True;
   FreeAndNil(_dnako_loader);
