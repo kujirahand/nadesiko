@@ -75,27 +75,39 @@ object frmNakopad: TfrmNakopad
           TabOrder = 1
           object Panel2: TPanel
             Left = 1
-            Top = 131
+            Top = 139
             Width = 207
-            Height = 24
+            Height = 16
             Align = alBottom
-            BevelOuter = bvNone
+            BevelInner = bvSpace
+            BevelOuter = bvLowered
             TabOrder = 0
             object btnActionOpenBrowser: TButton
-              Left = 0
-              Top = 0
+              Left = 1
+              Top = 1
               Width = 33
-              Height = 25
+              Height = 15
+              Hint = #12502#12521#12454#12470#12391#38283#12367
               Caption = #9633
               TabOrder = 0
               OnClick = btnActionOpenBrowserClick
+            end
+            object btnWebBack: TButton
+              Left = 33
+              Top = 1
+              Width = 33
+              Height = 15
+              Hint = #25147#12427
+              Caption = #8592
+              TabOrder = 1
+              OnClick = btnWebBackClick
             end
           end
           object webAction: TUIWebBrowser
             Left = 1
             Top = 1
             Width = 207
-            Height = 130
+            Height = 138
             Align = alClient
             TabOrder = 1
             IeNoContext = False
@@ -105,11 +117,11 @@ object frmNakopad: TfrmNakopad
             IeEnableAccelerator = True
             IeNoBehavior = False
             IeAutoComplete = False
-            DownLoadControl = [CS_Images, CS_Videos, CS_BGSounds]
+            DownLoadControl = [CS_Images, CS_NoScripts, CS_NoJava, CS_NoActiveXRun, cs_NoActiveXDownLoad, CS_Silent]
             ControlData = {
-              4C00000065150000700D00000000000000000000000000000000000000000000
+              4C00000065150000430E00000000000000000000000000000000000000000000
               000000004C000000000000000000000001000000E0D057007335CF11AE690800
-              2B2E12620A000000000000004C0000000114020000000000C000000000000046
+              2B2E126202000000000000004C0000000114020000000000C000000000000046
               8000000000000000000000000000000000000000000000000000000000000000
               00000000000000000100000000000000000000000000000000000000}
           end

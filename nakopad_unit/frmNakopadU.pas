@@ -403,6 +403,7 @@ type
     Panel2: TPanel;
     webAction: TUIWebBrowser;
     btnActionOpenBrowser: TButton;
+    btnWebBack: TButton;
     procedure mnuCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure mnuViewLeftPanelClick(Sender: TObject);
@@ -628,6 +629,7 @@ type
     procedure timerShowWebTimer(Sender: TObject);
     procedure mnuShowNewsClick(Sender: TObject);
     procedure btnActionOpenBrowserClick(Sender: TObject);
+    procedure btnWebBackClick(Sender: TObject);
   private
     { Private êÈåæ }
     ini: TIniFile;
@@ -6184,6 +6186,14 @@ begin
   mnuNakoG.Checked := False;
   mnuNakoC.Checked := False;
   mnuNakoN.Checked := False;
+end;
+
+procedure TfrmNakopad.btnWebBackClick(Sender: TObject);
+begin
+  try
+    webAction.GoBack;
+  except
+  end;
 end;
 
 end.

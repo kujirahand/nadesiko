@@ -6,7 +6,7 @@ uses
   Windows, messages, vbfunc, WinRestartUnit, Classes, ActiveX, mmsystem;
 
 const
-  NAKOCTRL_DLL_VERSION = '1.5072';
+  NAKOCTRL_DLL_VERSION = '1.5073';
 
 procedure RegistFunction;
 
@@ -510,6 +510,13 @@ begin
   // 結果
   Result := nil;
   WindowsPowerOff;
+end;
+
+function cmd_poweroff_update(h: DWORD): PHiValue; stdcall;
+begin
+  // 結果
+  Result := nil;
+  WindowsPowerOffUpdate;
 end;
 
 function cmd_showLogon(h: DWORD): PHiValue; stdcall;
@@ -1207,6 +1214,7 @@ begin
   AddFunc('WINDOWSログオフ',   '',     4270, cmd_logoff,    'WINDOWSをログオフする',  'WINDOWSろぐおふ');
   AddFunc('WINDOWSサスペンド', '',     4271, cmd_suspend,   'WINDOWSをサスペンド状態にする',  'WINDOWSさすぺんど');
   AddFunc('WINDOWSログオン画面表示', '',4272, cmd_showLogon,   'WINDOWSログオン画面を表示する(パスワードによるロックを行う)',  'WINDOWSろぐおんがめんひょうじ');
+  AddFunc('WINDOWS更新終了',   '',      4288, cmd_poweroff_update,  'WINDOWSの更新を行った上で終了する',  'WINDOWSこうしんしゅうりょう');
 
   //-バッテリ
   AddFunc('AC電源状態','',4252, cmd_ac_check,  'AC電源の状態を取得する。オン(=1)/オフ(=0)を返す。不明なら-1を返す。',  'ACでんげんじょうたい');
