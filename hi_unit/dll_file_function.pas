@@ -67,7 +67,7 @@ begin
   Result := hi_newStr(NAKOFILE_DLL_VERSION);
 end;
 
-function sys_saveAll(args: DWORD): PHiValue; stdcall;
+function nakofile_saveAll(args: DWORD): PHiValue; stdcall;
 var
   s, f: PHiValue;
   fname, str: string;
@@ -86,7 +86,7 @@ begin
   Result := nil;
 end;
 
-function sys_saveAllAdd(args: DWORD): PHiValue; stdcall;
+function nakofile_saveAllAdd(args: DWORD): PHiValue; stdcall;
 var
   s, f: PHiValue;
   fname, str, ss: string;
@@ -112,7 +112,7 @@ begin
   Result := nil;
 end;
 
-function sys_loadAll(args: DWORD): PHiValue; stdcall;
+function nakofile_loadAll(args: DWORD): PHiValue; stdcall;
 var
   v, f: PHiValue;
   fname, str: string;
@@ -140,7 +140,7 @@ begin
   if v <> nil then nako_varCopyData(Result, v);
 end;
 
-function sys_loadEveryLine(args: DWORD): PHiValue; stdcall;
+function nakofile_loadEveryLine(args: DWORD): PHiValue; stdcall;
 var
   v, f: PHiValue;
   fname, s: string;
@@ -170,7 +170,7 @@ begin
   end;
 end;
 
-function sys_CloseEveryLine(args: DWORD): PHiValue; stdcall;
+function nakofile_CloseEveryLine(args: DWORD): PHiValue; stdcall;
 var
   ph: PHiValue;
   h: TKTextFileStream;
@@ -185,7 +185,7 @@ begin
   Result := nil;
 end;
 
-function sys_pathFlagAdd(args: DWORD): PHiValue; stdcall;
+function nakofile_pathFlagAdd(args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue; str: string;
 begin
@@ -201,7 +201,7 @@ begin
   Result := hi_newStr(str);
 end;
 
-function sys_pathFlagDel(args: DWORD): PHiValue; stdcall;
+function nakofile_pathFlagDel(args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue; str: string;
 begin
@@ -218,7 +218,7 @@ begin
   Result := hi_newStr(str);
 end;
 
-function sys_StrtoFileName(args: DWORD): PHiValue; stdcall;
+function nakofile_StrtoFileName(args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue; str, ret: string;
   i: Integer;
@@ -268,7 +268,7 @@ $　　#　　%　　@　　!　　^
 end;
 
 
-function sys_StrtoFileNameUnix(args: DWORD): PHiValue; stdcall;
+function nakofile_StrtoFileNameUnix(args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue; str, ret, ch: string;
   i: Integer;
@@ -314,7 +314,7 @@ begin
   Result := hi_newStr(ret);
 end;
 
-function sys_exec(args: DWORD): PHiValue; stdcall;
+function nakofile_exec(args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue; str: string;
 begin
@@ -335,7 +335,7 @@ begin
 end;
 
 
-function sys_exec_wait(args: DWORD): PHiValue; stdcall;
+function nakofile_exec_wait(args: DWORD): PHiValue; stdcall;
 var
   fname: string;
 begin
@@ -350,7 +350,7 @@ begin
   Result := nil;
 end;
 
-function sys_exec_wait_sec(args: DWORD): PHiValue; stdcall;
+function nakofile_exec_wait_sec(args: DWORD): PHiValue; stdcall;
 var
   fname: string;
   sec: Integer;
@@ -371,7 +371,7 @@ begin
 end;
 
 
-function sys_exec_open_hide(args: DWORD): PHiValue; stdcall;
+function nakofile_exec_open_hide(args: DWORD): PHiValue; stdcall;
 var
   fname: string;
 begin
@@ -391,7 +391,7 @@ begin
 end;
 
 
-function sys_exec_wait_hide(args: DWORD): PHiValue; stdcall;
+function nakofile_exec_wait_hide(args: DWORD): PHiValue; stdcall;
 var
   fname: string;
 begin
@@ -405,7 +405,7 @@ begin
   Result := nil;
 end;
 
-function sys_exec_command(args: DWORD): PHiValue; stdcall;
+function nakofile_exec_command(args: DWORD): PHiValue; stdcall;
 const
   BUF_LEN = 8192;
 var
@@ -469,7 +469,7 @@ begin
   Result := hi_newStr(res);
 end;
 
-function sys_exec_admin(args: DWORD): PHiValue; stdcall;
+function nakofile_exec_admin(args: DWORD): PHiValue; stdcall;
 var
   s: string;
   f, arg: string;
@@ -490,7 +490,7 @@ begin
   Result := nil;
 end;
 
-function sys_exec_exp(args: DWORD): PHiValue; stdcall;
+function nakofile_exec_exp(args: DWORD): PHiValue; stdcall;
 var
   s: string;
   h: HWND;
@@ -509,7 +509,7 @@ begin
   Result := nil;
 end;
 
-function sys_setCurDir(args: DWORD): PHiValue; stdcall;
+function nakofile_setCurDir(args: DWORD): PHiValue; stdcall;
 var s: PHiValue;
 begin
   // (1) 引数の取得
@@ -521,7 +521,7 @@ begin
   Result := nil;
 end;
 
-function sys_getCurDir(args: DWORD): PHiValue; stdcall;
+function nakofile_getCurDir(args: DWORD): PHiValue; stdcall;
 var
   s: string;
 begin
@@ -533,7 +533,7 @@ begin
   hi_setStr(Result, s);
 end;
 
-function sys_makeDir(args: DWORD): PHiValue; stdcall;
+function nakofile_makeDir(args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
   a: string;
@@ -552,7 +552,7 @@ begin
   Result := nil;
 end;
 
-function sys_removeDir(args: DWORD): PHiValue; stdcall;
+function nakofile_removeDir(args: DWORD): PHiValue; stdcall;
 var ps: PHiValue; s: string;
 begin
   // (1) 引数の取得
@@ -571,7 +571,7 @@ begin
 end;
 
 
-function sys_enumFiles(args: DWORD): PHiValue; stdcall;
+function nakofile_enumFiles(args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
   path, f: string;
@@ -601,7 +601,7 @@ begin
   g.Free;
 end;
 
-function sys_enumAllFiles(args: DWORD): PHiValue; stdcall;
+function nakofile_enumAllFiles(args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
   path: string;
@@ -635,7 +635,7 @@ begin
   FreeAndNil(g);
 end;
 
-function sys_enumAllFilesRelative(args: DWORD): PHiValue; stdcall;
+function nakofile_enumAllFilesRelative(args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
   tmp, path, basepath: AnsiString;
@@ -672,7 +672,7 @@ begin
   FreeAndNil(g);
 end;
 
-function sys_enumAllDir(args: DWORD): PHiValue; stdcall;
+function nakofile_enumAllDir(args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
   path: string;
@@ -702,7 +702,7 @@ begin
 end;
 
 
-function sys_enumDirs (args: DWORD): PHiValue; stdcall;
+function nakofile_enumDirs (args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
   path, n: string;
@@ -730,7 +730,7 @@ begin
 
 end;
 
-function sys_FileExists (args: DWORD): PHiValue; stdcall;
+function nakofile_FileExists (args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
   fname: string;
@@ -764,7 +764,7 @@ begin
   SetErrorMode(0);
 end;
 
-function sys_ExistsDir (args: DWORD): PHiValue; stdcall;
+function nakofile_ExistsDir (args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
   fname: string;
@@ -777,14 +777,14 @@ begin
   Result := hi_newBool(DirectoryExists(fname));
 end;
 
-function sys_getLongFileName(args: DWORD): PHiValue; stdcall;
+function nakofile_getLongFileName(args: DWORD): PHiValue; stdcall;
 var
   fname: string;
 begin
   fname := getArgStr(args, 0, True);
   Result := hi_newStr(ShortToLongFileName(fname));
 end;
-function sys_getShortFileName(args: DWORD): PHiValue; stdcall;
+function nakofile_getShortFileName(args: DWORD): PHiValue; stdcall;
 var
   fname: string;
 begin
@@ -793,7 +793,7 @@ begin
 end;
 
 
-function sys_fileCopy(args: DWORD): PHiValue; stdcall;
+function nakofile_fileCopy(args: DWORD): PHiValue; stdcall;
 var
   pa, pb: PHiValue;
   sa, sb: string;
@@ -842,7 +842,7 @@ begin
   Result := nil;
 end;
 
-function sys_fileCopyEx(args: DWORD): PHiValue; stdcall;
+function nakofile_fileCopyEx(args: DWORD): PHiValue; stdcall;
 var
   extList: TStringList;
   blackList: TStringList;
@@ -1008,7 +1008,7 @@ begin
   Result := nil;
 end;
 
-function sys_dirCopy(args: DWORD): PHiValue; stdcall;
+function nakofile_dirCopy(args: DWORD): PHiValue; stdcall;
 var
   a, b: PHiValue;
   sa,sb: string;
@@ -1038,7 +1038,7 @@ begin
   Result := nil;
 end;
 
-function sys_fileRename(args: DWORD): PHiValue; stdcall;
+function nakofile_fileRename(args: DWORD): PHiValue; stdcall;
 var
   a, b: PHiValue;
   sa, sb, dir: string;
@@ -1087,7 +1087,7 @@ begin
   Result := nil;
 end;
 
-function sys_fileDelete(args: DWORD): PHiValue; stdcall;
+function nakofile_fileDelete(args: DWORD): PHiValue; stdcall;
 var
   a: PHiValue;
 begin
@@ -1105,7 +1105,7 @@ begin
   Result := nil;
 end;
 
-function sys_fileDeleteAll(args: DWORD): PHiValue; stdcall;
+function nakofile_fileDeleteAll(args: DWORD): PHiValue; stdcall;
 var
   a: PHiValue;
 begin
@@ -1124,413 +1124,8 @@ begin
 end;
 
 
-procedure RegSetRoot(r: TRegistry; hiv: string);
-begin
-  if hiv = 'HKEY_CLASSES_ROOT'  then r.RootKey := HKEY_CLASSES_ROOT else
-  if hiv = 'HKEY_CURRENT_USER'  then r.RootKey := HKEY_CURRENT_USER else
-  if hiv = 'HKEY_LOCAL_MACHINE' then r.RootKey := HKEY_LOCAL_MACHINE else
-  if hiv = 'HKEY_USERS'         then r.RootKey := HKEY_USERS else
-  if hiv = 'HKEY_PERFORMANCE_DATA'  then r.RootKey := HKEY_PERFORMANCE_DATA else
-  if hiv = 'HKEY_CURRENT_CONFIG'    then r.RootKey := HKEY_CURRENT_CONFIG else
-  if hiv = 'HKEY_DYN_DATA'    then r.RootKey := HKEY_DYN_DATA       else
-  raise Exception.Create('レジストリパス"'+hiv+'"は開けません。');
-end;
 
-function sys_registry_open(args: DWORD): PHiValue; stdcall;
-var
-  a: PHiValue;
-  r: TRegistry;
-  path: string;
-  hiv: string;
-begin
-  a := nako_getFuncArg(args, 0);
-
-  path := hi_str(a);
-  hiv  := getToken_s(path, '\'); path := '\'+ path;
-
-  r := TRegistry.Create;
-
-  RegSetRoot(r, hiv);
-  r.OpenKey(path, True);
-
-  Result := hi_var_new;
-  hi_setInt(Result, Integer(r));
-end;
-
-function sys_registry_write(args: DWORD): PHiValue; stdcall;
-var
-  h,s,a: PHiValue;
-  r: TRegistry;
-begin
-  //HでSのAを
-  h := nako_getFuncArg(args, 0);
-  s := nako_getFuncArg(args, 1);
-  a := nako_getFuncArg(args, 2);
-
-  r := TRegistry(hi_int(h));
-  r.WriteString(hi_str(s), hi_str(a));
-
-  Result := nil;
-end;
-
-function sys_reg_easy_write(args: DWORD): PHiValue; stdcall;
-var
-  key, hiv, value, s: string;
-  r: TRegistry;
-begin
-  // KEYのVにSを
-  key   := getArgStr(args, 0, True);
-  value := getArgStr(args, 1);
-  s     := getArgStr(args, 2);
-  //
-  r := TRegistry.Create;
-  try
-    hiv := GetToken('\', key); key := '\' + key;
-    RegSetRoot(r, hiv);
-    if r.OpenKey(key, True) then
-    begin
-      r.WriteString(value, s);
-    end;
-  finally
-    r.Free;
-  end;
-  Result := nil;
-end;
-
-function sys_reg_easy_read(args: DWORD): PHiValue; stdcall;
-var
-  key, hiv, value, s: string;
-  r: TRegistry;
-begin
-  // KEYのVから
-  key   := getArgStr(args, 0, True);
-  value := getArgStr(args, 1);
-  s     := getArgStr(args, 2);
-  //
-  Result := nil;
-  r := TRegistry.Create;
-  try
-    hiv := GetToken('\', key); key := '\' + key;
-    RegSetRoot(r, hiv);
-    if r.OpenKey(key, False) then
-    begin
-      Result := hi_newStr(r.ReadString(value));
-    end;
-  finally
-    r.Free;
-  end;
-end;
-
-function sys_registry_writeInt(args: DWORD): PHiValue; stdcall;
-var
-  h,s,a: PHiValue;
-  r: TRegistry;
-begin
-  //HでSのAを
-  h := nako_getFuncArg(args, 0);
-  s := nako_getFuncArg(args, 1);
-  a := nako_getFuncArg(args, 2);
-
-  r := TRegistry(hi_int(h));
-  r.WriteInteger(hi_str(s), hi_int(a));
-
-  Result := nil;
-end;
-
-function sys_registry_deleteKey(args: DWORD): PHiValue; stdcall;
-var
-  h,s: PHiValue;
-  r: TRegistry;
-begin
-  //HでSの
-  h := nako_getFuncArg(args, 0);
-  s := nako_getFuncArg(args, 1);
-
-  r := TRegistry(hi_int(h));
-  r.DeleteKey(hi_str(s));
-
-  Result := nil;
-end;
-
-function sys_registry_deleteVal(args: DWORD): PHiValue; stdcall;
-var
-  h,s: PHiValue;
-  r: TRegistry;
-begin
-  //HでSの
-  h := nako_getFuncArg(args, 0);
-  s := nako_getFuncArg(args, 1);
-
-  r := TRegistry(hi_int(h));
-  r.DeleteValue(hi_str(s));
-
-  Result := nil;
-end;
-
-function sys_registry_EnumKeys(args: DWORD): PHiValue; stdcall;
-var
-  h: PHiValue;
-  r: TRegistry;
-  sl: TStringList;
-begin
-  //HでSの
-  h := nako_getFuncArg(args, 0);
-
-  r := TRegistry(hi_int(h));
-  sl := TStringList.Create;
-  r.GetKeyNames(sl);
-
-  Result := hi_newStr(sl.Text);
-  sl.Free;
-end;
-
-function sys_registry_EnumValues(args: DWORD): PHiValue; stdcall;
-var
-  h: PHiValue;
-  r: TRegistry;
-  sl: TStringList;
-begin
-  //HでSの
-  h := nako_getFuncArg(args, 0);
-
-  r := TRegistry(hi_int(h));
-  sl := TStringList.Create;
-  r.GetValueNames(sl);
-
-  Result := hi_newStr(sl.Text);
-  sl.Free;
-end;
-
-function sys_registry_KeyExists(args: DWORD): PHiValue; stdcall;
-var
-  s: PHiValue;
-  r: TRegistry;
-  path, hiv: string;
-begin
-  s := nako_getFuncArg(args, 0);
-
-  path := hi_str(s);
-  hiv  := getToken_s(path, '\'); path := '\'+ path;
-
-  r := TRegistry.Create;
-  try
-    RegSetRoot(r, hiv);
-    Result := hi_var_new;
-    hi_setBool(Result, r.KeyExists(path));
-  finally
-    r.Free;
-  end;
-end;
-
-function sys_SHChangeNotify(args: DWORD): PHiValue; stdcall;
-begin
-  Result := nil;
-  SHChangeNotify(
-    SHCNE_ASSOCCHANGED,
-    SHCNF_FLUSHNOWAIT,
-    nil,
-    nil);
-end;
-
-
-const
-  KEY_TILE_WALLPAPER  = 'TileWallpaper';
-  KEY_STYLE_WALLPAPER = 'WallpaperStyle';
-
-function sys_ChangeWallpaper(args: DWORD): PHiValue; stdcall;
-var
-  fname: string;
-begin
-  Result := nil;
-  // ---
-  fname := getArgStr(args, 0, True);
-  if fname = '' then fname := #0;
-  // wallpaper
-  SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, PChar(fname),
-    SPIF_UPDATEINIFILE or SPIF_SENDWININICHANGE);
-end;
-
-function sys_ChangeWallpaperStyle(args: DWORD): PHiValue; stdcall;
-var
-  pat, fname: string;
-  reg: TRegistry;
-begin
-  Result := nil;
-  // ---
-  pat := getArgStr(args, 0, True);
-  // ---
-  //***HKEY_CURRENT_USER\Control Panel\Desktop
-  // style
-  reg := TRegistry.Create;
-  try
-    reg.RootKey := HKEY_CURRENT_USER;
-    reg.OpenKey('Control Panel\Desktop',False);
-    if pat = '中央' then
-    begin
-      reg.WriteString(KEY_TILE_WALLPAPER,  '0');
-      reg.WriteString(KEY_STYLE_WALLPAPER, '0');
-    end else
-    if pat = 'タイル' then
-    begin
-      reg.WriteString(KEY_TILE_WALLPAPER,  '1');
-      reg.WriteString(KEY_STYLE_WALLPAPER, '0');
-    end else
-    if pat = '拡大' then
-    begin
-      reg.WriteString(KEY_TILE_WALLPAPER,  '0');
-      reg.WriteString(KEY_STYLE_WALLPAPER, '2');
-    end else
-    begin
-      // 中央
-      reg.WriteString(KEY_TILE_WALLPAPER,  '0');
-      reg.WriteString(KEY_STYLE_WALLPAPER, '0');
-    end;
-    fname := reg.ReadString('Wallpaper');
-    if fname = '' then fname := #0;
-    // wallpaper
-    SystemParametersInfo(SPI_SETDESKWALLPAPER, 0, PChar(fname),
-      SPIF_UPDATEINIFILE or SPIF_SENDWININICHANGE);
-
-  finally
-    reg.Free;
-  end;
-end;
-
-
-function sys_getWallpaper(args: DWORD): PHiValue; stdcall;
-var
-  fname: string;
-  reg: TRegistry;
-begin
-
-  reg := TRegistry.Create;
-  try
-    reg.RootKey := HKEY_CURRENT_USER;
-    reg.OpenKey('Control Panel\Desktop',False);
-    fname := reg.ReadString('Wallpaper');
-    Result := hi_newStr(fname);
-
-  finally
-    reg.Free;
-  end;
-end;
-
-
-function sys_getWallpaperStyle(args: DWORD): PHiValue; stdcall;
-var
-  s, pat, tile, style: string;
-  reg: TRegistry;
-begin
-
-  reg := TRegistry.Create;
-  try
-    reg.RootKey := HKEY_CURRENT_USER;
-    reg.OpenKey('Control Panel\Desktop',False);
-
-    tile  := reg.ReadString(KEY_TILE_WALLPAPER);
-    style := reg.ReadString(KEY_STYLE_WALLPAPER);
-
-    s := tile + style;
-    if s = '00' then pat := '中央'    else
-    if s = '10' then pat := 'タイル'  else
-    if s = '02' then pat := '拡大'    else pat := '中央';
-
-    Result := hi_newStr(pat);
-
-  finally
-    reg.Free;
-  end;
-end;
-
-function sys_registry_read(args: DWORD): PHiValue; stdcall;
-var
-  h, s: PHiValue;
-  r: TRegistry;
-begin
-  //HでSの
-  h := nako_getFuncArg(args, 0);
-  s := nako_getFuncArg(args, 1);
-
-  r := TRegistry(hi_int(h));
-
-  Result := hi_var_new;
-  hi_setStr(Result, r.ReadString(hi_str(s)));
-end;
-
-function sys_registry_readInt(args: DWORD): PHiValue; stdcall;
-var
-  h, s: PHiValue;
-  r: TRegistry;
-begin
-  //HでSの
-  h := nako_getFuncArg(args, 0);
-  s := nako_getFuncArg(args, 1);
-
-  r := TRegistry(hi_int(h));
-  Result := hi_var_new;
-  hi_setInt(Result, r.ReadInteger(hi_str(s)));
-end;
-
-
-function sys_registry_read_bin(args: DWORD): PHiValue; stdcall;
-var
-  h: Integer;
-  s, buf: string;
-  cnt: Integer;
-  r: TRegistry;
-begin
-  //H, S, CNT
-  h   := getArgInt(args, 0, True);
-  s   := getArgStr(args, 1, False);
-  cnt := getArgInt(args, 2, False);
-  //
-  SetLength(buf, cnt);
-  //
-  r := TRegistry(Pointer(h));
-  r.ReadBinaryData(s, buf[1], cnt);
-  //
-  Result := hi_newStr(buf);
-end;
-function sys_registry_write_bin(args: DWORD): PHiValue; stdcall;
-var
-  h   : Integer;
-  s   : string;
-  v   : string;
-  cnt : Integer;
-  r   : TRegistry;
-begin
-  // HでSにVをCNTで
-  h   := getArgInt(args, 0, True);
-  s   := getArgStr(args, 1, False);
-  v   := getArgStr(args, 2, False);
-  cnt := getArgInt(args, 3, False);
-  //
-  if (Length(v) < cnt) then
-  begin
-    cnt := Length(v);
-  end;
-  //
-  Result := nil;
-  r := TRegistry(Pointer(h));
-  r.WriteBinaryData(s, v[1], cnt);
-end;
-
-
-function sys_registry_close(args: DWORD): PHiValue; stdcall;
-var
-  a: PHiValue;
-  r: TRegistry;
-begin
-  a := nako_getFuncArg(args, 0);
-
-  r := TRegistry(hi_int(a));
-  r.CloseKey;
-  r.Free;
-
-  Result := nil;
-end;
-
-function sys_shortcut(args: DWORD): PHiValue; stdcall;
+function nakofile_shortcut(args: DWORD): PHiValue; stdcall;
 var
   a, b: PHiValue;
 begin
@@ -1540,7 +1135,7 @@ begin
   Result := nil;
 end;
 
-function sys_shortcut_ex(args: DWORD): PHiValue; stdcall;
+function nakofile_shortcut_ex(args: DWORD): PHiValue; stdcall;
 var
   a, b, c, p: PHiValue;
   Arg,Comment,Key,Icon,WorkingDir,Win:String;
@@ -1606,7 +1201,7 @@ begin
   Result := nil;
 end;
 
-function sys_get_shortcut(args: DWORD): PHiValue; stdcall;
+function nakofile_get_shortcut(args: DWORD): PHiValue; stdcall;
 var
   a: PHiValue;
 begin
@@ -1615,70 +1210,8 @@ begin
 end;
 
 
-function sys_ini_open(args: DWORD): PHiValue; stdcall;
-var
-  s: PHiValue; ss: string;
-  i: TIniFile;
-begin
-  // 1)引数
-  s := nako_getFuncArg(args, 0);
 
-  // パスが省略されたら、母艦パスにする
-  ss := hi_str(s);
-  dll_plugin_helper._getEmbedFile(ss); // もし可能なら実行ファイルから取り出す
-
-  if ExtractFileDrive(ss) = '' then
-  begin
-    if not FileExists(ExpandFileName(WinDir + ss)) then
-      ss :=ExpandFileName(hi_str(nako_getVariable('母艦パス')) + ss);
-  end;
-
-  // 2)INI
-  i := TIniFile.Create(ss);
-  // 3)結果
-  Result := hi_newInt(Integer(i));
-end;
-function sys_ini_close(args: DWORD): PHiValue; stdcall;
-var
-  h: PHiValue;
-begin
-  // 1)引数
-  h := nako_getFuncArg(args, 0);
-  // 2)INI
-  TIniFile(hi_int(h)).Free;
-  // 3)結果
-  Result := nil;
-end;
-function sys_ini_read(args: DWORD): PHiValue; stdcall;
-var
-  h,a,b: PHiValue;
-  s: string;
-begin
-  // 1)引数
-  h := nako_getFuncArg(args, 0);
-  a := nako_getFuncArg(args, 1);
-  b := nako_getFuncArg(args, 2);
-  // 2)INI
-  s := TIniFile(hi_int(h)).ReadString(hi_str(a),hi_str(b), '');
-  // 3)結果
-  Result := hi_newStr(s);
-end;
-function sys_ini_write(args: DWORD): PHiValue; stdcall;
-var
-  h,a,b,s: PHiValue;
-begin
-  // 1)引数
-  h := nako_getFuncArg(args, 0);
-  a := nako_getFuncArg(args, 1);
-  b := nako_getFuncArg(args, 2);
-  s := nako_getFuncArg(args, 3);
-  // 2)INI
-  TIniFile(hi_int(h)).WriteString(hi_str(a),hi_str(b),hi_str(s));
-  // 3)結果
-  Result := nil;
-end;
-
-function sys_sp_path(args: DWORD): PHiValue; stdcall;
+function nakofile_sp_path(args: DWORD): PHiValue; stdcall;
 begin
   Result := hi_newStr(GetSpecialFolder(getArgInt(args,0,True)));
 end;
@@ -1733,7 +1266,7 @@ end;
 
 
 
-function sys_getOE5(args: DWORD): PHiValue; stdcall;
+function nakofile_getOE5(args: DWORD): PHiValue; stdcall;
 var
   r: TRegistry;
   s: TStringList;
@@ -1771,7 +1304,7 @@ end;
 
 
 
-function sys_getBecky2(args: DWORD): PHiValue; stdcall;
+function nakofile_getBecky2(args: DWORD): PHiValue; stdcall;
 var
   r: TRegistry;
   s: TStringList;
@@ -1793,12 +1326,12 @@ begin
   end;
 end;
 
-function sys_expandEnv(args: DWORD): PHiValue; stdcall;
+function nakofile_expandEnv(args: DWORD): PHiValue; stdcall;
 begin
   Result := hi_newStr( ExpandEnvironmentStrDelphi( getArgStr(args,0,True) ) );
 end;
 
-function sys_getFileSize(args: DWORD): PHiValue; stdcall;
+function nakofile_getFileSize(args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
   F: TSearchRec;
@@ -1826,7 +1359,7 @@ begin
   end;
 end;
 
-function sys_getFileDate(args: DWORD): PHiValue; stdcall;
+function nakofile_getFileDate(args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
   F: TSearchRec;
@@ -1850,7 +1383,7 @@ begin
 end;
 
 
-function sys_getCreateFileDate(args: DWORD): PHiValue; stdcall;
+function nakofile_getCreateFileDate(args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
   tCreation, tLastAccess, tLastWrite:TDateTime;
@@ -1869,7 +1402,7 @@ begin
   end;
 end;
 
-function sys_getLastAccessFileDate(args: DWORD): PHiValue; stdcall;
+function nakofile_getLastAccessFileDate(args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
   tCreation, tLastAccess, tLastWrite:TDateTime;
@@ -1888,7 +1421,7 @@ begin
   end;
 end;
 
-function sys_getWriteFileDate(args: DWORD): PHiValue; stdcall;
+function nakofile_getWriteFileDate(args: DWORD): PHiValue; stdcall;
 var
   s: PHiValue;
   tCreation, tLastAccess, tLastWrite:TDateTime;
@@ -1907,7 +1440,7 @@ begin
   end;
 end;
 
-function sys_setFileDateCreate(args: DWORD): PHiValue; stdcall;
+function nakofile_setFileDateCreate(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
   fname, fdate: string;
@@ -1936,7 +1469,7 @@ begin
   end;
 end;
 
-function sys_setFileDateWrite(args: DWORD): PHiValue; stdcall;
+function nakofile_setFileDateWrite(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
   fname, fdate: string;
@@ -1965,7 +1498,7 @@ begin
   end;
 end;
 
-function sys_setFileDateLastAccess(args: DWORD): PHiValue; stdcall;
+function nakofile_setFileDateLastAccess(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue;
   fname, fdate: string;
@@ -1994,7 +1527,7 @@ begin
   end;
 end;
 
-function sys_getFileAttr(args: DWORD): PHiValue; stdcall;
+function nakofile_getFileAttr(args: DWORD): PHiValue; stdcall;
 var f: PHiValue; fname: string;
 begin
   f := nako_getFuncArg(args, 0);
@@ -2003,7 +1536,7 @@ begin
   Result := hi_newInt(GetFileAttributes(PChar(fname)));
 end;
 
-function sys_setFileAttr(args: DWORD): PHiValue; stdcall;
+function nakofile_setFileAttr(args: DWORD): PHiValue; stdcall;
 var f, s: PHiValue; fname: string;
 begin
   f := nako_getFuncArg(args, 0);
@@ -2015,7 +1548,7 @@ begin
 end;
 
 
-function sys_getLogicalDrives(args: DWORD): PHiValue; stdcall;
+function nakofile_getLogicalDrives(args: DWORD): PHiValue; stdcall;
 var
   bufsize: DWORD;
   buf: string;
@@ -2031,7 +1564,7 @@ begin
   Result := hi_newStr(buf);
 end;
 
-function sys_getDriveType(args: DWORD): PHiValue; stdcall;
+function nakofile_getDriveType(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue; sp, r: string;
   u: UINT;
@@ -2056,7 +1589,7 @@ begin
   Result := hi_newStr(r);
 end;
 
-function sys_getDiskSize(args: DWORD): PHiValue; stdcall;
+function nakofile_getDiskSize(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue; sp: string;
   iFree, iTotal: TLargeInteger;
@@ -2079,7 +1612,7 @@ begin
   SetErrorMode(0);
 
 end;
-function sys_getDiskFreeSize(args: DWORD): PHiValue; stdcall;
+function nakofile_getDiskFreeSize(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue; sp: string;
   iFree, iTotal: Int64;
@@ -2098,7 +1631,7 @@ begin
   end;
   Result := hi_newFloat(iFree);
 end;
-function sys_getVolumeName(args: DWORD): PHiValue; stdcall;
+function nakofile_getVolumeName(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue; sp: string;
 begin
@@ -2107,7 +1640,7 @@ begin
   sp := hi_str(p);
   Result := hi_newStr(getVolumeName(sp));
 end;
-function sys_getSerialNo(args: DWORD): PHiValue; stdcall;
+function nakofile_getSerialNo(args: DWORD): PHiValue; stdcall;
 var
   p: PHiValue; sp: string;
 begin
@@ -2117,19 +1650,19 @@ begin
   Result := hi_newInt(getSerialNo(sp));
 end;
 
-function sys_showHotplugDlg(args: DWORD): PHiValue; stdcall;
+function nakofile_showHotplugDlg(args: DWORD): PHiValue; stdcall;
 begin
   RunApp('rundll32 shell32.dll,Control_RunDLL hotplug.dll');
   Result := nil;
 end;
 
-function sys_shell_association(args: DWORD): PHiValue; stdcall;
+function nakofile_shell_association(args: DWORD): PHiValue; stdcall;
 begin
   Result := nil;
   SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_FLUSH, nil, nil);
 end;
 
-function sys_shell_updatedir(args: DWORD): PHiValue; stdcall;
+function nakofile_shell_updatedir(args: DWORD): PHiValue; stdcall;
 var
   dir: string;
 begin
@@ -2138,7 +1671,7 @@ begin
   SHChangeNotify(SHCNE_UPDATEDIR, SHCNF_PATH, PChar(dir), nil);
 end;
 
-function sys_file_h_open(args: DWORD): PHiValue; stdcall;
+function nakofile_file_h_open(args: DWORD): PHiValue; stdcall;
 var
   a, b: PHiValue;
   f: TFileStream;
@@ -2184,7 +1717,7 @@ begin
   Result := hi_newInt(Integer(f));
 end;
 
-function sys_file_h_read(args: DWORD): PHiValue; stdcall;
+function nakofile_file_h_read(args: DWORD): PHiValue; stdcall;
 var
   ph, pcnt: PHiValue;
   s: string;
@@ -2204,7 +1737,7 @@ begin
   Result := hi_newStr(s);
 end;
 
-function sys_file_h_write(args: DWORD): PHiValue; stdcall;
+function nakofile_file_h_write(args: DWORD): PHiValue; stdcall;
 var
   ph, ps: PHiValue;
   s: string;
@@ -2224,7 +1757,7 @@ begin
   Result := nil;
 end;
 
-function sys_file_h_close(args: DWORD): PHiValue; stdcall;
+function nakofile_file_h_close(args: DWORD): PHiValue; stdcall;
 var
   ph: PHiValue;
   h : TFileStream;
@@ -2237,7 +1770,7 @@ begin
   Result := nil;
 end;
 
-function sys_file_h_getpos(args: DWORD): PHiValue; stdcall;
+function nakofile_file_h_getpos(args: DWORD): PHiValue; stdcall;
 var
   ph: PHiValue;
   h : TFileStream;
@@ -2248,7 +1781,7 @@ begin
   Result := hi_newInt( h.Position );
 end;
 
-function sys_file_h_setpos(args: DWORD): PHiValue; stdcall;
+function nakofile_file_h_setpos(args: DWORD): PHiValue; stdcall;
 var
   ph, pi: PHiValue;
   h : TFileStream;
@@ -2265,7 +1798,7 @@ begin
   Result := nil;
 end;
 
-function sys_file_h_size(args: DWORD): PHiValue; stdcall;
+function nakofile_file_h_size(args: DWORD): PHiValue; stdcall;
 var
   ph: PHiValue;
   h : TFileStream;
@@ -2276,7 +1809,7 @@ begin
   Result := hi_newInt(h.Size);
 end;
 
-function sys_file_h_writeLine(args: DWORD): PHiValue; stdcall;
+function nakofile_file_h_writeLine(args: DWORD): PHiValue; stdcall;
 var
   ph: PHiValue;
   h: TFileStream;
@@ -2290,7 +1823,7 @@ begin
   Result := nil;
 end;
 
-function sys_file_h_readLine(args: DWORD): PHiValue; stdcall;
+function nakofile_file_h_readLine(args: DWORD): PHiValue; stdcall;
 const
   bufCount = 4096;
 var
@@ -2363,7 +1896,7 @@ begin
   Result := hi_newStr(res);
 end;
 
-function sys_compress(args: DWORD): PHiValue; stdcall;
+function nakofile_compress(args: DWORD): PHiValue; stdcall;
 var
   a, b: PHiValue;
   src, des, ext: string;
@@ -2389,7 +1922,7 @@ begin
   Result := nil;
 end;
 
-function sys_extract(args: DWORD): PHiValue; stdcall;
+function nakofile_extract(args: DWORD): PHiValue; stdcall;
 var
   a, b: PHiValue;
   src, des, ext: string;
@@ -2422,7 +1955,7 @@ begin
   Result := nil;
 end;
 
-function sys_compress_pass(args: DWORD): PHiValue; stdcall;
+function nakofile_compress_pass(args: DWORD): PHiValue; stdcall;
 var
   a, b: PHiValue;
   src, des, ext, pass: string;
@@ -2447,7 +1980,7 @@ begin
   Result := nil;
 end;
 
-function sys_extract_pass(args: DWORD): PHiValue; stdcall;
+function nakofile_extract_pass(args: DWORD): PHiValue; stdcall;
 var
   a, b: PHiValue;
   src, des, ext, pass: string;
@@ -2481,7 +2014,7 @@ begin
 end;
 
 
-function sys_archive_command(args: DWORD): PHiValue; stdcall;
+function nakofile_archive_command(args: DWORD): PHiValue; stdcall;
 var
   ext, cmd: string;
 begin
@@ -2502,7 +2035,7 @@ begin
 end;
 
 
-function sys_makesfx(args: DWORD): PHiValue; stdcall;
+function nakofile_makesfx(args: DWORD): PHiValue; stdcall;
 var
   a, b: PHiValue;
 begin
@@ -2517,103 +2050,11 @@ begin
   Result := nil;
 end;
 
-function sys_getUserName(args: DWORD): PHiValue; stdcall;
-begin
-  Result := hi_newStr(GetUserName);
-end;
 
-function sys_GetComputerName(args: DWORD): PHiValue; stdcall;
-begin
-  Result := hi_newStr(GetComputerName);
-end;
-
-function sys_LanEnumDomain(args: DWORD): PHiValue; stdcall;
-begin
-  Result := hi_newStr(LanEnumDomain);
-end;
-
-function sys_LanEnumComputer(args: DWORD): PHiValue; stdcall;
-var
-  a: PHiValue;
-begin
-  // (1) 引数の取得
-  a := nako_getFuncArg(args, 0);
-  if a = nil then
-  begin
-    Result := hi_newStr(LanEnumComputer('',True));
-  end else
-  begin
-    Result := hi_newStr(LanEnumComputer(hi_str(a),True));
-  end;
-end;
-
-function sys_LanEnumCommonDir(args: DWORD): PHiValue; stdcall;
-var
-  a: PHiValue;
-begin
-  // (1) 引数の取得
-  a := nako_getFuncArg(args, 0);
-  Result := hi_newStr(LanGetCommonResource(hi_str(a)));
-end;
-
-function sys_WNetAddConnection2(args: DWORD): PHiValue; stdcall;
-var
-  drv, dir, pass, user: string;
-begin
-  Result := nil;
-  drv := getArgStr(args, 0, True);
-  dir := getArgStr(args, 1);
-  user:= getArgStr(args, 2);
-  pass:= getArgStr(args, 3);
-  //
-  drv := Trim(drv);
-  drv := UpperCase(Copy(drv,1,1)) + ':';
-  dir := ExcludeTrailingPathDelimiter(dir);
-  //
-
-  try
-    if user = '' then
-      AddNetworkDrive(PChar(drv), PChar(dir), nil)
-    else
-      AddNetworkDrive(PChar(drv), PChar(dir), nil,PChar(pass),Pchar(user));
-  except
-    on e: Exception do
-      raise Exception.Create(Format('"%s"へ"%s"を割り当てできませんでした。' + e.Message,[drv,dir]));
-  end;
-end;
-
-function sys_WNetCancelConnection2(args: DWORD): PHiValue; stdcall;
-var
-  drv:String;
-begin
-  Result := nil;
-  drv := getArgStr(args, 0, True);
-  drv := UpperCase(Copy(drv,1,1)) + ':';
-  if WNetCancelConnection2(Pchar(drv),0,False) <> NO_ERROR then
-    raise Exception.Create(Format('"%s"の割り当てを解除できませんでした。' + GetLastErrorStr,[drv]));
-end;
-
-function sys_kanrenduke(args: DWORD): PHiValue; stdcall;
-var
-  ext, app: string;
-begin
-  Result := nil;
-  ext := getArgStr(args, 0, True);
-  app := getArgStr(args, 1, False);
-  Kanrenduke(ext, app);
-end;
-function sys_kanrendukekaijo(args: DWORD): PHiValue; stdcall;
-var
-  ext: string;
-begin
-  Result := nil;
-  ext := getArgStr(args, 0, True);
-  KanrendukeKaijo(ext);
-end;
 // 出力のために
 var outfile: TFileStream = nil;
 var outfile_name: string = '';
-function sys_set_outfile(args: DWORD): PHiValue; stdcall;
+function nakofile_set_outfile(args: DWORD): PHiValue; stdcall;
 var
   s: string;
 begin
@@ -2637,7 +2078,7 @@ begin
   end;
   outfile_name := s;
 end;
-function sys_get_outfile(args: DWORD): PHiValue; stdcall;
+function nakofile_get_outfile(args: DWORD): PHiValue; stdcall;
 begin
   Result := hi_newStr(outfile_name);
 end;
@@ -2648,7 +2089,7 @@ begin
     outfile := TFileStream.Create(outfile_name, fmCreate);
   end;
 end;
-function sys_outfile_write(args: DWORD): PHiValue; stdcall;
+function nakofile_outfile_write(args: DWORD): PHiValue; stdcall;
 var
   s: string;
 begin
@@ -2657,7 +2098,7 @@ begin
   check_outfile;
   if s <> '' then outfile.Write(s[1], Length(s));
 end;
-function sys_outfile_writeln(args: DWORD): PHiValue; stdcall;
+function nakofile_outfile_writeln(args: DWORD): PHiValue; stdcall;
 var
   s: string;
 begin
@@ -2666,7 +2107,7 @@ begin
   check_outfile;
   if s <> '' then outfile.Write(s[1], Length(s));
 end;
-function sys_outfile_clear(args: DWORD): PHiValue; stdcall;
+function nakofile_outfile_clear(args: DWORD): PHiValue; stdcall;
 begin
   Result := nil;
   outfile.Position := 0;
@@ -2674,221 +2115,62 @@ begin
 end;
 
 //--- GET DIRECTORY FUNCTION
-function sys_WinDir(args: DWORD): PHiValue; stdcall;
+function nakofile_WinDir(args: DWORD): PHiValue; stdcall;
 begin
   Result := hi_newStr(WinDir);
 end;
-function sys_SysDir(args: DWORD): PHiValue; stdcall;
+function nakofile_SysDir(args: DWORD): PHiValue; stdcall;
 begin
   Result := hi_newStr(SysDir);
 end;
-function sys_TempDir(args: DWORD): PHiValue; stdcall;
+function nakofile_TempDir(args: DWORD): PHiValue; stdcall;
 begin
   Result := hi_newStr(TempDir);
 end;
-function sys_DesktopDir(args: DWORD): PHiValue; stdcall;
+function nakofile_DesktopDir(args: DWORD): PHiValue; stdcall;
 begin
   Result := hi_newStr(DesktopDir);
 end;
-function sys_SendToDir(args: DWORD): PHiValue; stdcall;
+function nakofile_SendToDir(args: DWORD): PHiValue; stdcall;
 begin
   Result := hi_newStr(SendToDir);
 end;
-function sys_StartUpDir(args: DWORD): PHiValue; stdcall;
+function nakofile_StartUpDir(args: DWORD): PHiValue; stdcall;
 begin
   Result := hi_newStr(StartUpDir);
 end;
-function sys_RecentDir(args: DWORD): PHiValue; stdcall;
+function nakofile_RecentDir(args: DWORD): PHiValue; stdcall;
 begin
   Result := hi_newStr(RecentDir);
 end;
-function sys_ProgramsDir(args: DWORD): PHiValue; stdcall;
+function nakofile_ProgramsDir(args: DWORD): PHiValue; stdcall;
 begin
   Result := hi_newStr(ProgramsDir);
 end;
-function sys_MyDocumentDir(args: DWORD): PHiValue; stdcall;
+function nakofile_MyDocumentDir(args: DWORD): PHiValue; stdcall;
 begin
   Result := hi_newStr(MyDocumentDir);
 end;
-function sys_FavoritesDir(args: DWORD): PHiValue; stdcall;
+function nakofile_FavoritesDir(args: DWORD): PHiValue; stdcall;
 begin
   Result := hi_newStr(FavoritesDir);
 end;
-function sys_MyMusicDir(args: DWORD): PHiValue; stdcall;
+function nakofile_MyMusicDir(args: DWORD): PHiValue; stdcall;
 begin
   Result := hi_newStr(MyMusicDir);
 end;
-function sys_MyPictureDir(args: DWORD): PHiValue; stdcall;
+function nakofile_MyPictureDir(args: DWORD): PHiValue; stdcall;
 begin
   Result := hi_newStr(MyPictureDir);
 end;
-function sys_FontsDir(args: DWORD): PHiValue; stdcall;
+function nakofile_FontsDir(args: DWORD): PHiValue; stdcall;
 begin
   Result := hi_newStr(FontsDir);
 end;
-function sys_ProgramFilesDir(args: DWORD): PHiValue; stdcall;
+function nakofile_ProgramFilesDir(args: DWORD): PHiValue; stdcall;
 begin
   Result := hi_newStr(ProgramFilesDir);
 end;
-
-const
-  KEY_USER_DESKTOP = '\Control Panel\Desktop';
-
-function sys_getScr(args: DWORD): PHiValue; stdcall;
-var
-  reg: TRegistry;
-  scr: string;
-begin
-  Result := nil;
-  reg := TRegistry.Create;
-  try
-    reg.RootKey := HKEY_CURRENT_USER;
-    if reg.OpenKey(KEY_USER_DESKTOP, False) then
-    begin
-      scr := reg.ReadString('SCRNSAVE.EXE');
-      reg.CloseKey;
-      Result := hi_newStr(scr);
-    end;
-  finally
-    FreeAndNil(reg);
-  end;
-end;
-
-
-function sys_runScr(args: DWORD): PHiValue; stdcall;
-begin
-  Result := nil;
-  PostMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_SCREENSAVE, 0);
-end;
-
-function sys_setScr(args: DWORD): PHiValue; stdcall;
-var
-  reg: TRegistry;
-  scr: string;
-begin
-  Result := nil;
-  scr := getArgStr(args, 0, True);
-  reg := TRegistry.Create;
-  try
-    reg.RootKey := HKEY_CURRENT_USER;
-    if reg.OpenKey(KEY_USER_DESKTOP, True) then
-    begin
-      if scr = '' then
-      begin
-        reg.WriteString('SCRNSAVE.EXE', '');
-        reg.WriteInteger('ScreenSaveActive', 0);
-      end else
-      begin
-        reg.WriteString('SCRNSAVE.EXE', scr);
-        reg.WriteInteger('ScreenSaveActive', 1);
-      end;
-      reg.CloseKey;
-    end else
-    begin
-      raise Exception.Create('スクリーンセイバーを設定できません。');
-    end;
-  finally
-    FreeAndNil(reg);
-  end;
-end;
-
-function sys_getScrTime(args: DWORD): PHiValue; stdcall;
-var
-  reg: TRegistry;
-  timer: Integer;
-begin
-  Result := nil;
-  reg := TRegistry.Create;
-  try
-    reg.RootKey := HKEY_CURRENT_USER;
-    if reg.OpenKey(KEY_USER_DESKTOP, False) then
-    begin
-      timer := StrToIntDef(reg.ReadString('ScreenSaveTimeOut'), 0);
-      reg.CloseKey;
-      Result := hi_newInt(timer);
-    end;
-  finally
-    FreeAndNil(reg);
-  end;
-end;
-
-function sys_setScrTime(args: DWORD): PHiValue; stdcall;
-var
-  reg: TRegistry;
-  timer: String;
-begin
-  Result := nil;
-  timer := IntToStr(getArgInt(args, 0, True));
-  reg := TRegistry.Create;
-  try
-    reg.RootKey := HKEY_CURRENT_USER;
-    if reg.OpenKey(KEY_USER_DESKTOP, True) then
-    begin
-      reg.WriteString('ScreenSaveTimeOut', timer);
-      reg.CloseKey;
-    end else
-    begin
-      raise Exception.Create('スクリーンセイバー待ち時間を設定できません。');
-    end;
-  finally
-    FreeAndNil(reg);
-  end;
-end;
-
-
-//--- COM ----------------------------------------------------------------------
-// 作りかけ
-(*
-  //+COM(nakofile.dll)
-  AddFunc  ('OLE_CREATE','{=?}Sの', 638, sys_com_create,'COMのクラスSを生成して返す。','OLE_CREATE');
-  AddFunc  ('OLE_SET_PROP','{=?}HのNへVを', 637, sys_com_setProperty,'COMのNへVを代入する。','OLE_SET_PROP');
-  AddFunc  ('OLE_GET_PROP','{=?}HのNを', 636, sys_com_getProperty,'COMのNを取得して返す。','OLE_GET_PROP');
-
-function sys_com_create(args: DWORD): PHiValue; stdcall;
-begin
-  Result := nako_var_new(nil);
-  Result.int := Integer(CreateOleObject(getArgStr(args,0,True)));
-  Result.VType := varInt;
-end;
-
-function sys_com_setProperty(args: DWORD): PHiValue; stdcall;
-var
-  i: IDispatch;
-  n: string;
-  p, v: PHiValue;
-begin
-  // args
-  p := nako_getFuncArg(args, 0); if p = nil then p := nako_getSore;
-  //todo: IDispatchの受け渡しに失敗する
-  n := getArgStr(args,1);
-  v := nako_getFuncArg(args, 2);
-  if i = nil then raise Exception.Create('OLEオブジェクトが作成されていません。');
-  //
-  case v.VType of
-    varNil    : SetDispatchPropValue(i, n, Unassigned);
-    varInt    : SetDispatchPropValue(i, n, hi_int(v));
-    varFloat  : SetDispatchPropValue(i, n, hi_float(v));
-    varStr    : SetDispatchPropValue(i, n, hi_str(v));
-    else begin
-      SetDispatchPropValue(i, n, hi_str(v));
-    end;
-  end;
-  Result := nil;
-end;
-
-function sys_com_getProperty(args: DWORD): PHiValue; stdcall;
-var
-  i: IDispatch;
-  n: string;
-  v: OleVariant;
-begin
-  // args
-  i := IDispatch(getArgInt(args,0,True));
-  n := getArgStr(args,1);
-  v := GetDispatchPropValue(i, n);
-  Result := hi_newStr(v);
-end;
-*)
 
 procedure RegistFunction;
 
@@ -2903,184 +2185,146 @@ begin
 
   //+ファイル(nakofile.dll)
   //-ファイル名パス操作
-  //AddFunc  ('ファイル名抽出', 'Sから|Sの',  20, sys_extractFile,'パスSからファイル名部分を抽出して返す。','ふぁいるめいちゅうしゅつ');
-  //AddFunc  ('パス抽出',       'Sから|Sの',  21, sys_extractFilePath,'ファイル名Sからパス部分を抽出して返す。','ぱすちゅうしゅつ');
-  //AddFunc  ('拡張子抽出',     'Sから|Sの',  22, sys_extractExt,'ファイル名Sから拡張子部分を抽出して返す。','かくちょうしちゅうしゅつ');
-  //AddFunc  ('拡張子変更',     'SをAに|Sの', 23, sys_changeExt,'ファイル名Sの拡張子をAに変更して返す。','かくちょうしへんこう');
-  //AddFunc  ('ユニークファイル名生成','AでBの|Aに', 24, sys_makeoriginalfile,'フォルダAでヘッダBをもつユニークなファイル名を生成して返す。','ゆにーくふぁいるめいせいせい');
-  //AddFunc  ('相対パス展開',   'AをBで',     25, sys_expand_path,'相対パスＡを基本パスＢで展開して返す。','そうたいぱすてんかい');
-  AddFunc  ('終端パス追加','{=?}Sの|Sで|Sに|Sから',525, sys_pathFlagAdd,  'フォルダ名の終端に「\」記号がなければつけて返す','しゅうたんぱすついか');
-  AddFunc  ('終端パス削除','{=?}Sの|Sで|Sに|Sから',526, sys_pathFlagDel,  'フォルダ名の終端に「\」記号があれば削除して返す','しゅうたんぱすさくじょ');
-  AddFunc  ('文字列ファイル名変換','{=?}Sの|Sを|Sで|Sから',527, sys_StrtoFileName,  '文字列をファイル名として使えるように変換して返す。','もじれつふぁいるめいへんかん');
-  AddFunc  ('文字列UNIXファイル名変換','{=?}Sの|Sを|Sで|Sから',528, sys_StrtoFileNameUnix,  '文字列をファイル名として使えるように変換して返す。','もじれつふぁいるめいへんかん');
+  //AddFunc  ('ファイル名抽出', 'Sから|Sの',  20, nakofile_extractFile,'パスSからファイル名部分を抽出して返す。','ふぁいるめいちゅうしゅつ');
+  //AddFunc  ('パス抽出',       'Sから|Sの',  21, nakofile_extractFilePath,'ファイル名Sからパス部分を抽出して返す。','ぱすちゅうしゅつ');
+  //AddFunc  ('拡張子抽出',     'Sから|Sの',  22, nakofile_extractExt,'ファイル名Sから拡張子部分を抽出して返す。','かくちょうしちゅうしゅつ');
+  //AddFunc  ('拡張子変更',     'SをAに|Sの', 23, nakofile_changeExt,'ファイル名Sの拡張子をAに変更して返す。','かくちょうしへんこう');
+  //AddFunc  ('ユニークファイル名生成','AでBの|Aに', 24, nakofile_makeoriginalfile,'フォルダAでヘッダBをもつユニークなファイル名を生成して返す。','ゆにーくふぁいるめいせいせい');
+  //AddFunc  ('相対パス展開',   'AをBで',     25, nakofile_expand_path,'相対パスＡを基本パスＢで展開して返す。','そうたいぱすてんかい');
+  AddFunc  ('終端パス追加','{=?}Sの|Sで|Sに|Sから',525, nakofile_pathFlagAdd,  'フォルダ名の終端に「\」記号がなければつけて返す','しゅうたんぱすついか');
+  AddFunc  ('終端パス削除','{=?}Sの|Sで|Sに|Sから',526, nakofile_pathFlagDel,  'フォルダ名の終端に「\」記号があれば削除して返す','しゅうたんぱすさくじょ');
+  AddFunc  ('文字列ファイル名変換','{=?}Sの|Sを|Sで|Sから',527, nakofile_StrtoFileName,  '文字列をファイル名として使えるように変換して返す。','もじれつふぁいるめいへんかん');
+  AddFunc  ('文字列UNIXファイル名変換','{=?}Sの|Sを|Sで|Sから',528, nakofile_StrtoFileNameUnix,  '文字列をファイル名として使えるように変換して返す。','もじれつふぁいるめいへんかん');
   //-開く保存
-  AddFunc  ('保存','{文字列=?}SをFに|Fへ',             500, sys_saveAll,  '文字列Sの内容をファイル名Fへ保存する。','ほぞん');
-  AddFunc  ('開く','{参照渡し 変数=?}VにFを|VへFから', 501, sys_loadAll,  '変数V(省略した場合は『それ』)にファイル名Fの内容を読み込む。','ひらく');
-  AddFunc  ('読む','{参照渡し 変数=?}VにFを|VへFから', 502, sys_loadAll,  '変数V(省略した場合は『それ』)にファイル名Fの内容を読み込む。','よむ');
-  AddFunc  ('追加保存','{文字列=?}SをFに|Fへ',         504, sys_saveAllAdd,'文字列Sの内容をファイル名Fへ追加保存する。','ついかほぞん');
+  AddFunc  ('保存','{文字列=?}SをFに|Fへ',             500, nakofile_saveAll,  '文字列Sの内容をファイル名Fへ保存する。','ほぞん');
+  AddFunc  ('開く','{参照渡し 変数=?}VにFを|VへFから', 501, nakofile_loadAll,  '変数V(省略した場合は『それ』)にファイル名Fの内容を読み込む。','ひらく');
+  AddFunc  ('読む','{参照渡し 変数=?}VにFを|VへFから', 502, nakofile_loadAll,  '変数V(省略した場合は『それ』)にファイル名Fの内容を読み込む。','よむ');
+  AddFunc  ('追加保存','{文字列=?}SをFに|Fへ',         504, nakofile_saveAllAdd,'文字列Sの内容をファイル名Fへ追加保存する。','ついかほぞん');
   //-一行ずつ読み書き
-  AddFunc  ('毎行読む','{参照渡し 変数=?}VにFを|VへFから', 503, sys_loadEveryLine,  '一行ずつ読むためにファイル名Fを開いてハンドルを返す。反復と組み合わせて使う。','まいぎょうよむ');
-  AddFunc  ('出力先設定','Fに|Fへ', 505, sys_set_outfile,  '『出力』命令の出力先ファイルSを指定する。','しゅつりょくさきせってい');
-  AddFunc  ('出力先取得','', 506, sys_get_outfile,  '『出力』命令の出力先ファイル名を取得する。','しゅつりょくさきしゅとく');
+  AddFunc  ('毎行読む','{参照渡し 変数=?}VにFを|VへFから', 503, nakofile_loadEveryLine,  '一行ずつ読むためにファイル名Fを開いてハンドルを返す。反復と組み合わせて使う。','まいぎょうよむ');
+  AddFunc  ('出力先設定','Fに|Fへ', 505, nakofile_set_outfile,  '『出力』命令の出力先ファイルSを指定する。','しゅつりょくさきせってい');
+  AddFunc  ('出力先取得','', 506, nakofile_get_outfile,  '『出力』命令の出力先ファイル名を取得する。','しゅつりょくさきしゅとく');
   SetSetterGetter('出力先ファイル','出力先設定','出力先取得',507,'『出力』命令の出力先ファイルを指定する。','しゅつりょくさきふぁいる');
-  AddFunc  ('出力','Sを|Sと', 509, sys_outfile_write, '『出力先』で指定したファイルへ文字列S+改行を追記する(指定なしは「なでしこ出力.txt」へ出力)','しゅつりょく');
-  AddFunc  ('一行出力','Sを|Sと', 508, sys_outfile_writeln, '『出力先』で指定したファイルへ文字列S+改行を追記する','いちぎょうしゅつりょく');
-  AddFunc  ('出力先初期化','', 510, sys_outfile_clear, '『出力先』で指定したファイルを初期化する','しゅつりょくさきしょきか');
+  AddFunc  ('出力','Sを|Sと', 509, nakofile_outfile_write, '『出力先』で指定したファイルへ文字列S+改行を追記する(指定なしは「なでしこ出力.txt」へ出力)','しゅつりょく');
+  AddFunc  ('一行出力','Sを|Sと', 508, nakofile_outfile_writeln, '『出力先』で指定したファイルへ文字列S+改行を追記する','いちぎょうしゅつりょく');
+  AddFunc  ('出力先初期化','', 510, nakofile_outfile_clear, '『出力先』で指定したファイルを初期化する','しゅつりょくさきしょきか');
 
   //-起動
-  AddFunc  ('起動','{文字列=?}PATHを',                      520, sys_exec, 'ファイルPATHを起動する。','きどう');
-  AddFunc  ('起動待機','{文字列=?}PATHを',                  521, sys_exec_wait, 'ファイルPATHを起動して終了するまで待機する。','きどうたいき');
-  AddFunc  ('秒間起動待機','{文字列=?}PATHをSEC',           677, sys_exec_wait_sec, 'ファイルPATHを起動してSEC秒間待機する。正常に終了すればはい(=1)を返す。時間内に終了しなければ、いいえ(=0)を返し処理を継続する。(起動したアプリの強制終了は行わない。)','びょうかんきどうたいき');
-  AddFunc  ('エクスプローラー起動','{文字列=?}DIRで|DIRの|DIRを', 522, sys_exec_exp, 'フォルダDIRをエクスプローラーで起動する。','えくすぷろーらーきどう');
-  AddFunc  ('隠し起動','{文字列=?}Sを', 523, sys_exec_open_hide, 'ファイルSを可視オフで起動する。','かくしきどう');
-  AddFunc  ('隠し起動待機','{文字列=?}Sを', 524, sys_exec_wait_hide, 'ファイルSを可視オフで起動して終了まで待機する。','かくしきどうたいき');
-  AddFunc  ('コマンド実行','{文字列=?}Sを', 675, sys_exec_command, 'ファイルSを可視オフで起動して終了まで待機する。起動したプログラムの標準出力の内容を返す。','こまんどじっこう');
-  AddFunc  ('管理者権限実行','{文字列=?}Sを', 676, sys_exec_admin, 'ファイルSを管理者権限で起動する。','かんりしゃけんげんじっこう');
+  AddFunc  ('起動','{文字列=?}PATHを',                      520, nakofile_exec, 'ファイルPATHを起動する。','きどう');
+  AddFunc  ('起動待機','{文字列=?}PATHを',                  521, nakofile_exec_wait, 'ファイルPATHを起動して終了するまで待機する。','きどうたいき');
+  AddFunc  ('秒間起動待機','{文字列=?}PATHをSEC',           677, nakofile_exec_wait_sec, 'ファイルPATHを起動してSEC秒間待機する。正常に終了すればはい(=1)を返す。時間内に終了しなければ、いいえ(=0)を返し処理を継続する。(起動したアプリの強制終了は行わない。)','びょうかんきどうたいき');
+  AddFunc  ('エクスプローラー起動','{文字列=?}DIRで|DIRの|DIRを', 522, nakofile_exec_exp, 'フォルダDIRをエクスプローラーで起動する。','えくすぷろーらーきどう');
+  AddFunc  ('隠し起動','{文字列=?}Sを', 523, nakofile_exec_open_hide, 'ファイルSを可視オフで起動する。','かくしきどう');
+  AddFunc  ('隠し起動待機','{文字列=?}Sを', 524, nakofile_exec_wait_hide, 'ファイルSを可視オフで起動して終了まで待機する。','かくしきどうたいき');
+  AddFunc  ('コマンド実行','{文字列=?}Sを', 675, nakofile_exec_command, 'ファイルSを可視オフで起動して終了まで待機する。起動したプログラムの標準出力の内容を返す。','こまんどじっこう');
+  AddFunc  ('管理者権限実行','{文字列=?}Sを', 676, nakofile_exec_admin, 'ファイルSを管理者権限で起動する。','かんりしゃけんげんじっこう');
   //-フォルダ操作
-  AddFunc  ('作業フォルダ変更','{文字列}Sに|Sへ',      530, sys_setCurDir, 'カレントディレクトリをSに変更する。','さぎょうふぉるだへんこう');
-  AddFunc  ('作業フォルダ取得','',                     531, sys_getCurDir, 'カレントディレクトリを取得して返す。','さぎょうふぉるだしゅとく');
+  AddFunc  ('作業フォルダ変更','{文字列}Sに|Sへ',      530, nakofile_setCurDir, 'カレントディレクトリをSに変更する。','さぎょうふぉるだへんこう');
+  AddFunc  ('作業フォルダ取得','',                     531, nakofile_getCurDir, 'カレントディレクトリを取得して返す。','さぎょうふぉるだしゅとく');
   SetSetterGetter('作業フォルダ', '作業フォルダ変更', '作業フォルダ取得', 537, 'カレントディレクトリの変更を行う。','さぎょうおふぉるだ');
-  AddFunc  ('フォルダ作成','Sに|Sへ|Sの',              532, sys_makeDir,   'パスSにフォルダを作成する。','ふぉるださくせい');
-  AddFunc  ('フォルダ削除','Sの|Sを|Sから',            559, sys_removeDir, 'パスSのフォルダを削除する。(フォルダは空でなくても良い)','ふぉるださくじょ');
+  AddFunc  ('フォルダ作成','Sに|Sへ|Sの',              532, nakofile_makeDir,   'パスSにフォルダを作成する。','ふぉるださくせい');
+  AddFunc  ('フォルダ削除','Sの|Sを|Sから',            559, nakofile_removeDir, 'パスSのフォルダを削除する。(フォルダは空でなくても良い)','ふぉるださくじょ');
   //-列挙・存在
-  AddFunc  ('ファイル列挙','{文字列=?}Sの|Sを|Sで',   533, sys_enumFiles,'パスSにあるファイルを配列形式で返す。「;」で区切って複数の拡張子を指定可能。引数を省略するとカレントディレクトリのファイル一覧を返す。','ふぁいるれっきょ');
-  AddFunc  ('フォルダ列挙','{文字列=?}Sの|Sを|Sで',   534, sys_enumDirs, 'パスSにあるフォルダを配列形式で返す。引数を省略するとカレントディレクトリのフォルダ一覧を返す。','ふぉるだれっきょ');
-  AddFunc  ('存在','Sが|Sの',       535, sys_FileExists, 'パスSにファイルかフォルダが存在するか確認してはい(=1)かいいえ(=0)で返す','そんざい');
-  AddFunc  ('全ファイル列挙','{文字列=?}Sの|Sを|Sで', 536, sys_enumAllFiles,'パスSにあるファイルをサブフォルダも含め配列形式で返す。「;」で区切って複数の拡張子を指定可能。','ぜんふぁいるれっきょ');
-  AddFunc  ('全フォルダ列挙','{文字列=?}Sの|Sを|Sで', 680, sys_enumAllDir,'パスSにあるフォルダも再帰的に検索して配列形式で返す。','ぜんふぉるだれっきょ');
-  AddFunc  ('全ファイル相対パス列挙','{文字列=?}Sの|Sを|Sで', 679, sys_enumAllFilesRelative,'パスSにあるファイルをサブフォルダを含めて（パスSからの相対指定で）配列形式で返す。','ぜんふぁいるそうたいぱすれっきょ');
+  AddFunc  ('ファイル列挙','{文字列=?}Sの|Sを|Sで',   533, nakofile_enumFiles,'パスSにあるファイルを配列形式で返す。「;」で区切って複数の拡張子を指定可能。引数を省略するとカレントディレクトリのファイル一覧を返す。','ふぁいるれっきょ');
+  AddFunc  ('フォルダ列挙','{文字列=?}Sの|Sを|Sで',   534, nakofile_enumDirs, 'パスSにあるフォルダを配列形式で返す。引数を省略するとカレントディレクトリのフォルダ一覧を返す。','ふぉるだれっきょ');
+  AddFunc  ('存在','Sが|Sの',       535, nakofile_FileExists, 'パスSにファイルかフォルダが存在するか確認してはい(=1)かいいえ(=0)で返す','そんざい');
+  AddFunc  ('全ファイル列挙','{文字列=?}Sの|Sを|Sで', 536, nakofile_enumAllFiles,'パスSにあるファイルをサブフォルダも含め配列形式で返す。「;」で区切って複数の拡張子を指定可能。','ぜんふぁいるれっきょ');
+  AddFunc  ('全フォルダ列挙','{文字列=?}Sの|Sを|Sで', 680, nakofile_enumAllDir,'パスSにあるフォルダも再帰的に検索して配列形式で返す。','ぜんふぉるだれっきょ');
+  AddFunc  ('全ファイル相対パス列挙','{文字列=?}Sの|Sを|Sで', 679, nakofile_enumAllFilesRelative,'パスSにあるファイルをサブフォルダを含めて（パスSからの相対指定で）配列形式で返す。','ぜんふぁいるそうたいぱすれっきょ');
   AddStrVar('ファイル列挙オプション','タイトル経過表示', 691, '全が付くファイル列挙のオプション(タイトル経過表示|経過表示なし)','ふぁいるれっきょおぷしょん');
 
 
   //-コピー移動削除
-  AddFunc  ('ファイルコピー','AからBへ|AをBに',540,sys_fileCopy,  'ファイルAからBへコピーする。','ふぁいるこぴー');
-  AddFunc  ('ファイル移動',  'AからBへ|AをBに',541,sys_fileRename,  'ファイルAからBへ移動する。','ふぁいるいどう');
-  AddFunc  ('ファイル削除',  'Aを|Aの',        542,sys_fileDelete,'ファイルAを削除する(ゴミ箱へ移動)。','ふぁいるさくじょ');
-  AddFunc  ('ファイル名変更','AからBへ|AをBに',543,sys_fileRename,'ファイル名AからBへ変更する。','ふぁいるめいへんこう');
-  AddFunc  ('フォルダコピー','AからBへ|AをBに',544,sys_dirCopy,   'フォルダAからBへコピーする。','ふぉるだこぴー');
-  AddFunc  ('ファイル完全削除', 'Aを|Aの',     545,sys_fileDeleteAll,'ファイルAを完全に削除する。(ゴミ箱へ移動しない)','ふぁいるかんぜんさくじょ');
-  AddFunc  ('ファイル抽出コピー', 'AからBへ|AをBに',546,sys_fileCopyEx,'フォルダA(パス+ワイルドカードリスト「;」で区切る)からフォルダBへ任意のファイルのみをコピーする','ふぁいるちゅうしゅつこぴー');
+  AddFunc  ('ファイルコピー','AからBへ|AをBに',540,nakofile_fileCopy,  'ファイルAからBへコピーする。','ふぁいるこぴー');
+  AddFunc  ('ファイル移動',  'AからBへ|AをBに',541,nakofile_fileRename,  'ファイルAからBへ移動する。','ふぁいるいどう');
+  AddFunc  ('ファイル削除',  'Aを|Aの',        542,nakofile_fileDelete,'ファイルAを削除する(ゴミ箱へ移動)。','ふぁいるさくじょ');
+  AddFunc  ('ファイル名変更','AからBへ|AをBに',543,nakofile_fileRename,'ファイル名AからBへ変更する。','ふぁいるめいへんこう');
+  AddFunc  ('フォルダコピー','AからBへ|AをBに',544,nakofile_dirCopy,   'フォルダAからBへコピーする。','ふぉるだこぴー');
+  AddFunc  ('ファイル完全削除', 'Aを|Aの',     545,nakofile_fileDeleteAll,'ファイルAを完全に削除する。(ゴミ箱へ移動しない)','ふぁいるかんぜんさくじょ');
+  AddFunc  ('ファイル抽出コピー', 'AからBへ|AをBに',546,nakofile_fileCopyEx,'フォルダA(パス+ワイルドカードリスト「;」で区切る)からフォルダBへ任意のファイルのみをコピーする','ふぁいるちゅうしゅつこぴー');
   AddStrVar('ファイル抽出コピー除外パターン','Thumbs.db',547,'ファイル抽出コピーで除外するパターンを一行ごとワイルドカードで指定する。','ふぁいるちゅうしゅつこぴーじょがいぱたーん');
   //-ショートカット
-  AddFunc  ('ショートカット作成','AをBへ|AのBに', 555, sys_shortcut,'アプリケーションAのショートカットをBに作る','しょーとかっとさくせい');
-  AddFunc  ('ショートカット詳細作成','AをBへCで|AのBに', 553, sys_shortcut_ex,'アプリケーションAのショートカットをBにハッシュCの設定で作る','しょーとかっとしょうさいさくせい');
-  AddFunc  ('ショートカットリンク先取得','Aの', 554, sys_get_shortcut,'ショートカットAのリンク先を取得する。','しょーとかっとりんくさきしゅとく');
+  AddFunc  ('ショートカット作成','AをBへ|AのBに', 555, nakofile_shortcut,'アプリケーションAのショートカットをBに作る','しょーとかっとさくせい');
+  AddFunc  ('ショートカット詳細作成','AをBへCで|AのBに', 553, nakofile_shortcut_ex,'アプリケーションAのショートカットをBにハッシュCの設定で作る','しょーとかっとしょうさいさくせい');
+  AddFunc  ('ショートカットリンク先取得','Aの', 554, nakofile_get_shortcut,'ショートカットAのリンク先を取得する。','しょーとかっとりんくさきしゅとく');
   //-ファイル情報
-  AddFunc  ('ファイルサイズ','Fの',           556, sys_getFileSize,'ファイルFのサイズを返す','ふぁいるさいず');
-  AddFunc  ('ファイル日付','Fの',             557, sys_getFileDate,'ファイルFの日付を返す','ふぁいるひづけ');
-  AddFunc  ('ファイル作成日時','Fの',         621, sys_getCreateFileDate,'ファイルFの作成日時を返す','ふぁいるさくせいにちじ');
-  AddFunc  ('ファイル更新日時','Fの',         622, sys_getWriteFileDate,'ファイルFの更新日時を返す','ふぁいるこうしんにちじ');
-  AddFunc  ('ファイル最終アクセス日時','Fの', 623, sys_getLastAccessFileDate,'ファイルFの最終アクセス日時を返す','ふぁいるさいしゅうあくせすにちじ');
-  AddFunc  ('ファイル作成日時変更','{=?}FをSに|Sへ',  624, sys_setFileDateCreate,'ファイルFの作成日時をSに設定する','ふぁいるさくせいにちじへんこう');
-  AddFunc  ('ファイル更新日時変更','{=?}FをSに|Sへ',  625, sys_setFileDateWrite,'ファイルFの更新日時をSに設定する','ふぁいるこうしんにちじへんこう');
-  AddFunc  ('ファイル最終アクセス日時変更','{=?}FをSに|Sへ',  626, sys_setFileDateLastAccess,'ファイルFの最終アクセス日時をSに設定する','ふぁいるさいしゅうあくせすにちじへんこう');
-  AddFunc  ('ファイル属性取得','{=?}Fの',         627, sys_getFileAttr,'ファイルFの属性を取得する','ふぁいるぞくせいしゅとく');
-  AddFunc  ('ファイル属性設定','{=?}FをSに|Sへ',  628, sys_setFileAttr,'ファイルFの属性を設定する','ふぁいるぞくせいせってい');
+  AddFunc  ('ファイルサイズ','Fの',           556, nakofile_getFileSize,'ファイルFのサイズを返す','ふぁいるさいず');
+  AddFunc  ('ファイル日付','Fの',             557, nakofile_getFileDate,'ファイルFの日付を返す','ふぁいるひづけ');
+  AddFunc  ('ファイル作成日時','Fの',         621, nakofile_getCreateFileDate,'ファイルFの作成日時を返す','ふぁいるさくせいにちじ');
+  AddFunc  ('ファイル更新日時','Fの',         622, nakofile_getWriteFileDate,'ファイルFの更新日時を返す','ふぁいるこうしんにちじ');
+  AddFunc  ('ファイル最終アクセス日時','Fの', 623, nakofile_getLastAccessFileDate,'ファイルFの最終アクセス日時を返す','ふぁいるさいしゅうあくせすにちじ');
+  AddFunc  ('ファイル作成日時変更','{=?}FをSに|Sへ',  624, nakofile_setFileDateCreate,'ファイルFの作成日時をSに設定する','ふぁいるさくせいにちじへんこう');
+  AddFunc  ('ファイル更新日時変更','{=?}FをSに|Sへ',  625, nakofile_setFileDateWrite,'ファイルFの更新日時をSに設定する','ふぁいるこうしんにちじへんこう');
+  AddFunc  ('ファイル最終アクセス日時変更','{=?}FをSに|Sへ',  626, nakofile_setFileDateLastAccess,'ファイルFの最終アクセス日時をSに設定する','ふぁいるさいしゅうあくせすにちじへんこう');
+  AddFunc  ('ファイル属性取得','{=?}Fの',         627, nakofile_getFileAttr,'ファイルFの属性を取得する','ふぁいるぞくせいしゅとく');
+  AddFunc  ('ファイル属性設定','{=?}FをSに|Sへ',  628, nakofile_setFileAttr,'ファイルFの属性を設定する','ふぁいるぞくせいせってい');
   AddIntVar('アーカイブ属性',   $20,  640, 'ファイル属性','あーかいぶぞくせい');
   AddIntVar('ディレクトリ属性', $10,  641, 'ファイル属性','でぃれくとりぞくせい');
   AddIntVar('隠しファイル属性', $2,   642, 'ファイル属性','かくしふぁいるぞくせい');
   AddIntVar('読み込み専用属性', $1,   643, 'ファイル属性','よみこみせんようぞくせい');
   AddIntVar('システムファイル属性',$4,644, 'ファイル属性','しすてむふぁいるぞくせい');
   AddIntVar('ノーマル属性',     $80,  645, 'ファイル属性','のーまるぞくせい');
-  AddFunc  ('フォルダ存在','{=?}Fの',  639, sys_ExistsDir,'フォルダFが存在するのか調べて、はい(=1)かいいえ(=0)で返す。','ふぉるだそんざい');
-  AddFunc  ('長いファイル名取得','{=?}Fの',  673, sys_getLongFileName,'長いファイル名(ロングファイル)を返す。','ながいふぁいるめいしゅとく');
-  AddFunc  ('短いファイル名取得','{=?}Fの',  674, sys_getShortFileName,'短いファイル名(ショートファイル)を返す。','みじかいふぁいるめいしゅとく');
+  AddFunc  ('フォルダ存在','{=?}Fの',  639, nakofile_ExistsDir,'フォルダFが存在するのか調べて、はい(=1)かいいえ(=0)で返す。','ふぉるだそんざい');
+  AddFunc  ('長いファイル名取得','{=?}Fの',  673, nakofile_getLongFileName,'長いファイル名(ロングファイル)を返す。','ながいふぁいるめいしゅとく');
+  AddFunc  ('短いファイル名取得','{=?}Fの',  674, nakofile_getShortFileName,'短いファイル名(ショートファイル)を返す。','みじかいふぁいるめいしゅとく');
 
   //-ドライブ情報
-  AddFunc  ('使用可能ドライブ取得','',646, sys_getLogicalDrives,'使用可能ドライブの一覧を得る','しようかのうどらいぶしゅとく');
-  AddFunc  ('ドライブ種類','{=?}Aの',647, sys_getDriveType,'ルートドライブＡの種類(不明|存在しない|取り外し可能|固定|ネットワーク|CD-ROM|RAM)を返す。','どらいぶしゅるい');
-  AddFunc  ('ディスクサイズ','{=?}Aの',648, sys_getDiskSize,'ディスクＡの全体のバイト数を返す。','でぃすくさいず');
-  AddFunc  ('ディスク空きサイズ','{=?}Aの',649, sys_getDiskFreeSize,'ディスクＡの利用可能空きバイト数を返す。','でぃすくあきさいず');
-  AddFunc  ('ボリューム名取得','{=?}Aの',665, sys_getVolumeName,'ディスクＡのボリューム名を返す。','ぼりゅーむめいしゅとく');
-  AddFunc  ('ディスクシリアル番号取得','{=?}Aの',666, sys_getSerialNo,'ディスクＡのシリアル番号を返す。','でぃすくしりあるばんごうしゅとく');
-  AddFunc  ('ハードウェア取り外し起動','',672, sys_showHotplugDlg,'ハードウェア取り外しダイアログを表示する','はーどうぇあとりはずしきどう');
+  AddFunc  ('使用可能ドライブ取得','',646, nakofile_getLogicalDrives,'使用可能ドライブの一覧を得る','しようかのうどらいぶしゅとく');
+  AddFunc  ('ドライブ種類','{=?}Aの',647, nakofile_getDriveType,'ルートドライブＡの種類(不明|存在しない|取り外し可能|固定|ネットワーク|CD-ROM|RAM)を返す。','どらいぶしゅるい');
+  AddFunc  ('ディスクサイズ','{=?}Aの',648, nakofile_getDiskSize,'ディスクＡの全体のバイト数を返す。','でぃすくさいず');
+  AddFunc  ('ディスク空きサイズ','{=?}Aの',649, nakofile_getDiskFreeSize,'ディスクＡの利用可能空きバイト数を返す。','でぃすくあきさいず');
+  AddFunc  ('ボリューム名取得','{=?}Aの',665, nakofile_getVolumeName,'ディスクＡのボリューム名を返す。','ぼりゅーむめいしゅとく');
+  AddFunc  ('ディスクシリアル番号取得','{=?}Aの',666, nakofile_getSerialNo,'ディスクＡのシリアル番号を返す。','でぃすくしりあるばんごうしゅとく');
+  AddFunc  ('ハードウェア取り外し起動','',672, nakofile_showHotplugDlg,'ハードウェア取り外しダイアログを表示する','はーどうぇあとりはずしきどう');
 
   //-コンソール
   //AddFunc  ('標準入力取得','CNTの', 558, nil,'CNTバイトの標準入力を取得する(コンソールのみ)','ひょうじゅんにゅうりょくしゅとく');
   //-ストリーム操作
-  AddFunc  ('ファイルストリーム開く',  'AをBで',   561, sys_file_h_open,  'ファイル名AをモードB(作|読|書|排他)でストリームを開きハンドルを返す。','ふぁいるすとりーむひらく');
-  AddFunc  ('ファイルストリーム読む',  'HでCNTを', 562, sys_file_h_read,  'ファイルストリームハンドルHでCNTバイト読んで返す。','ふぁいるすとりーむよむ');
-  AddFunc  ('ファイルストリーム書く',  'HでSを',   563, sys_file_h_write, 'ファイルストリームハンドルHに(Sのバイト数分)文字列Sを書く。何も返さない。','ふぁいるすとりーむかく');
-  AddFunc  ('ファイルストリーム閉じる','Hを',      564, sys_file_h_close, 'ファイルストリームハンドルHを閉じる。','ふぁいるすとりーむとじる');
-  AddFunc  ('ファイルストリーム位置取得','Hの',    565, sys_file_h_getpos,'ファイルストリームハンドルHの位置を取得する','ふぁいるすとりーむいちしゅとく');
-  AddFunc  ('ファイルストリーム位置設定','HでIに', 566, sys_file_h_setpos,'ファイルストリームハンドルHの位置をIに設定する','ふぁいるすとりーむいちせってい');
-  AddFunc  ('ファイルストリームサイズ','Hの',  567, sys_file_h_size,  'ファイルストリームハンドルHで開いたファイルのサイズを返す','ふぁいるすとりーむさいず');
-  AddFunc  ('ファイルストリーム一行読む',  'Hで|Hの', 568, sys_file_h_readLine,  'ファイルストリームハンドルHで一行読んで返す。','ふぁいるすとりーむいちぎょうよむ');
-  AddFunc  ('ファイルストリーム一行書く',  '{=?}SをHに|Hで|Hへ', 569, sys_file_h_writeLine,  'ファイルストリームハンドルHへSを一行書く','ふぁいるすとりーむいちぎょうかく');
+  AddFunc  ('ファイルストリーム開く',  'AをBで',   561, nakofile_file_h_open,  'ファイル名AをモードB(作|読|書|排他)でストリームを開きハンドルを返す。','ふぁいるすとりーむひらく');
+  AddFunc  ('ファイルストリーム読む',  'HでCNTを', 562, nakofile_file_h_read,  'ファイルストリームハンドルHでCNTバイト読んで返す。','ふぁいるすとりーむよむ');
+  AddFunc  ('ファイルストリーム書く',  'HでSを',   563, nakofile_file_h_write, 'ファイルストリームハンドルHに(Sのバイト数分)文字列Sを書く。何も返さない。','ふぁいるすとりーむかく');
+  AddFunc  ('ファイルストリーム閉じる','Hを',      564, nakofile_file_h_close, 'ファイルストリームハンドルHを閉じる。','ふぁいるすとりーむとじる');
+  AddFunc  ('ファイルストリーム位置取得','Hの',    565, nakofile_file_h_getpos,'ファイルストリームハンドルHの位置を取得する','ふぁいるすとりーむいちしゅとく');
+  AddFunc  ('ファイルストリーム位置設定','HでIに', 566, nakofile_file_h_setpos,'ファイルストリームハンドルHの位置をIに設定する','ふぁいるすとりーむいちせってい');
+  AddFunc  ('ファイルストリームサイズ','Hの',  567, nakofile_file_h_size,  'ファイルストリームハンドルHで開いたファイルのサイズを返す','ふぁいるすとりーむさいず');
+  AddFunc  ('ファイルストリーム一行読む',  'Hで|Hの', 568, nakofile_file_h_readLine,  'ファイルストリームハンドルHで一行読んで返す。','ふぁいるすとりーむいちぎょうよむ');
+  AddFunc  ('ファイルストリーム一行書く',  '{=?}SをHに|Hで|Hへ', 569, nakofile_file_h_writeLine,  'ファイルストリームハンドルHへSを一行書く','ふぁいるすとりーむいちぎょうかく');
   //-更新
-  AddFunc  ('関連付け反映','',575, sys_shell_association, '関連付けを変更した時、変更をシェルに伝える。','かんれんづけはんえい');
-  AddFunc  ('フォルダ内容反映','{=?}DIRの',576, sys_shell_updatedir, 'フォルダDIRの内容が変更を反映させる。','ふぉるだないようはんえい');
+  AddFunc  ('関連付け反映','',575, nakofile_shell_association, '関連付けを変更した時、変更をシェルに伝える。','かんれんづけはんえい');
+  AddFunc  ('フォルダ内容反映','{=?}DIRの',576, nakofile_shell_updatedir, 'フォルダDIRの内容が変更を反映させる。','ふぉるだないようはんえい');
 
 
   //+圧縮解凍(nakofile.dll)
   //-圧縮解凍
-  AddFunc('圧縮','AをBへ|AからBに', 570, sys_compress, 'パスAをファイルBへ圧縮する。','あっしゅく','7-zip32.dll,UNLHA32.DLL');
-  AddFunc('解凍','AをBへ|AからBに', 571, sys_extract, 'ファイルAをパスBへ解凍する。','かいとう','7-zip32.dll,UNLHA32.DLL');
-  AddFunc('自己解凍書庫作成','AをBへ|Aから', 572, sys_makesfx, 'パスAをファイルBへ自己解凍書庫を作成する','じこかいとうしょこさくせい','7-zip32.dll,UNLHA32.DLL');
-  AddFunc('圧縮解凍実行','TYPEのCMDを|CMDで', 573, sys_archive_command, 'TYPE(拡張子)でアーカイバDLLへコマンドCMDを直接実行する','あっしゅくかいとうじっこう','7-zip32.dll,UNLHA32.DLL');
-  AddFunc('パスワード付圧縮','PASSでAをBへ|AからBに', 574, sys_compress_pass, 'パスワードPASSを利用してパスAをファイルBへ圧縮する。(ZIP/YZ1ファイルのみ対応)','ぱすわーどつきあっしゅく','');
-  AddFunc('パスワード付解凍','PASSでAをBへ|AからBに', 577, sys_extract_pass, 'パスワードPASSを利用してファイルAをパスBへ解凍する。(ZIP/YZ1ファイルのみ対応)','ぱすわーどつきかいとう','');
-  //+レジストリ/INIファイル(nakofile.dll)
-  //-レジストリ
-  AddFunc  ('レジストリ開く','Sの', 580, sys_registry_open,'レジストリパスSを開いてハンドルを返す','れじすとりひらく');
-  AddFunc  ('レジストリ閉じる','Hの|Hを', 581, sys_registry_close,'レジストリのハンドルHを閉じる','れじすとりとじる');
-  AddFunc  ('レジストリ書く','HでSにAを', 582, sys_registry_write,'レジストリのハンドルHを使ってキーSに文字列Aを書く','れじすとりかく');
-  AddFunc  ('レジストリ整数書く','HでSにAを', 583, sys_registry_writeInt,'レジストリのハンドルHを使ってキーSに整数Aを書く','れじすとりせいすうかく');
-  AddFunc  ('レジストリキー削除','HでSを', 584, sys_registry_deleteKey,'レジストリのハンドルHを使ってキーSを削除する','れじすとりきーさくじょ');
-  AddFunc  ('レジストリ値削除','HでSを', 585, sys_registry_deleteVal,'レジストリのハンドルHを使って値Sを削除する','れじすとりあたいさくじょ');
-  AddFunc  ('レジストリキー列挙','Hで', 586, sys_registry_enumKeys,'レジストリのハンドルHのキー名を列挙する','れじすとりきーれっきょ');
-  AddFunc  ('レジストリ値列挙','Hで', 587, sys_registry_enumValues,'レジストリのハンドルHを使って値を列挙する','れじすとりあたいれっきょ');
-  AddFunc  ('レジストリ読む','HでSを', 588, sys_registry_read,'レジストリのハンドルHを使ってSを読んで返す','れじすとりよむ');
-  AddFunc  ('レジストリ整数読む','HでSを', 589, sys_registry_readInt,'レジストリのハンドルHを使って整数Sを読んで返す','れじすとりせいすうよむ');
-  AddFunc  ('レジストリキー存在','Sが|Sに', 590, sys_registry_KeyExists,'レジストリのキーSが存在するか調べる。','れじすとりきーそんざい');
-  AddFunc  ('レジストリ値設定','KEYのVにSを|VへSの', 657, sys_reg_easy_write,'レジストリキーKEYの値Vに文字列Sを書き込む。ハンドル操作不要版。','れじすとりあたいせってい');
-  AddFunc  ('レジストリ値取得','KEYのVから|Vを', 658, sys_reg_easy_read,'レジストリキーKEYの値Vの値を読む。ハンドル操作不要版。','れじすとりあたいしゅとく');
-  AddFunc  ('レジストリバイナリ読む','{=?}HのSをCNTで', 670, sys_registry_read_bin,'レジストリのハンドルHをつかって値SをCNTバイト読む。','れじすとりばいなりよむ');
-  AddFunc  ('レジストリバイナリ書く','{=?}HのSにVをCNTで', 671, sys_registry_write_bin,'レジストリのハンドルHをつかって値SにデータVをCNTバイト読む。','れじすとりばいなりかく');
-  //-INIファイル
-  AddFunc  ('INI開く','Fの', 591, sys_ini_open,'INIファイルFを開いてハンドルを返す','INIひらく');
-  AddFunc  ('INI閉じる','Hの|Hを', 592, sys_ini_close,'INIファイルのハンドルHを閉じる','INIとじる');
-  AddFunc  ('INI読む','HでAのBを', 593, sys_ini_read,'INIファイルのハンドルHでセクションＡのキーＢを読む。','INIよむ');
-  AddFunc  ('INI書く','HでAのBにSを|', 594, sys_ini_write,'INIファイルのハンドルHでセクションＡのキーＢに値Ｓを書く。','INIかく');
-  //-シェル
-  AddFunc  ('関連付けシステム通知','', 650, sys_SHChangeNotify,'関連付けの更新をシステムに通知する。','かんれんづけしすてむつうち');
-  AddFunc  ('関連付け','SをAに|Aへ', 655, sys_kanrenduke,'拡張子SをアプリケーションAと関連付けする','かんれんづけ');
-  AddFunc  ('関連付け解除','Sを|Sの', 656, sys_kanrendukekaijo,'拡張子Sの関連付けを解除する','かんれんづけかいじょ');
-  //-壁紙
-  AddFunc  ('壁紙設定','{=?}Fに|Fへ', 651, sys_ChangeWallpaper,'画像ファイルFに壁紙を変更する。','かべがみせってい');
-  AddFunc  ('壁紙取得','', 652, sys_getWallpaper,'壁紙のファイル名を取得する。','かべがみしゅとく');
-  AddFunc  ('壁紙スタイル設定','{=?}Aに|Aへ', 653, sys_ChangeWallpaperStyle,'壁紙のスタイルA(中央|拡大|タイル)に変更する','かべがみすたいるせってい');
-  AddFunc  ('壁紙スタイル取得','', 654, sys_getWallpaperStyle,'壁紙のスタイルを取得する。','かべがみすたいるしゅとく');
-  //-スクリーンセーバー
-  AddFunc  ('スクリーンセイバー取得','', 681, sys_getScr,'スクリーンセイバーのファイル名を取得する。','すくりーんせいばーしゅとく');
-  AddFunc  ('スクリーンセイバー設定','{=?}FILEを|FILEに', 682, sys_setScr,'スクリーンセイバーとしてファイル名FILEを設定する。','すくりーんせいばーせってい');
-  AddFunc  ('スクリーンセイバー待ち時間取得','', 683, sys_getScrTime,'スクリーンセイバーの待ち時間を秒で取得する。','すくりーんせいばーまちじかんしゅとく');
-  AddFunc  ('スクリーンセイバー待ち時間設定','{=?}Vを|Vに', 684, sys_setScrTime,'スクリーンセイバーの待ち時間をV秒に設定する。','すくりーんせいばーまちじかんせってい');
-  AddFunc  ('スクリーンセイバー起動','', 685, sys_runScr,'設定されているスクリーンセイバーを起動する','すくりーんせいばーきどう');
-
+  AddFunc('圧縮','AをBへ|AからBに', 570, nakofile_compress, 'パスAをファイルBへ圧縮する。','あっしゅく','7-zip32.dll,UNLHA32.DLL');
+  AddFunc('解凍','AをBへ|AからBに', 571, nakofile_extract, 'ファイルAをパスBへ解凍する。','かいとう','7-zip32.dll,UNLHA32.DLL');
+  AddFunc('自己解凍書庫作成','AをBへ|Aから', 572, nakofile_makesfx, 'パスAをファイルBへ自己解凍書庫を作成する','じこかいとうしょこさくせい','7-zip32.dll,UNLHA32.DLL');
+  AddFunc('圧縮解凍実行','TYPEのCMDを|CMDで', 573, nakofile_archive_command, 'TYPE(拡張子)でアーカイバDLLへコマンドCMDを直接実行する','あっしゅくかいとうじっこう','7-zip32.dll,UNLHA32.DLL');
+  AddFunc('パスワード付圧縮','PASSでAをBへ|AからBに', 574, nakofile_compress_pass, 'パスワードPASSを利用してパスAをファイルBへ圧縮する。(ZIP/YZ1ファイルのみ対応)','ぱすわーどつきあっしゅく','');
+  AddFunc('パスワード付解凍','PASSでAをBへ|AからBに', 577, nakofile_extract_pass, 'パスワードPASSを利用してファイルAをパスBへ解凍する。(ZIP/YZ1ファイルのみ対応)','ぱすわーどつきかいとう','');
 
   //+特殊フォルダ(nakofile.dll)
   //-パス
-  AddFunc  ('WINDOWSパス',  '',                 600, sys_WinDir,'Windowsのインストールパスを返す','WINDOWSぱす');
-  AddFunc  ('SYSTEMパス',   '',                 601, sys_SysDir,'Systemフォルダのパスを返す','SYSTEMぱす');
-  AddFunc  ('テンポラリフォルダ', '',           602, sys_TempDir,'作業用のテンポラリフォルダのパスを得て返す','てんぽらりふぉるだ');
-  AddFunc  ('デスクトップ',       '',           603, sys_DesktopDir,'デスクトップのフォルダのパスを返す','ですくとっぷ');
-  AddFunc  ('SENDTOパス',         '',           604, sys_SendToDir,'「送る」メニューのフォルダのパスを返す','SENDTOぱす');
-  AddFunc  ('スタートアップ',     '',           605, sys_StartUpDir,'Windowsを起動した時に自動的に実行する「スタートアップ」のフォルダパスを返す','すたーとあっぷ');
-  AddFunc  ('RECENTパス',        '',            606, sys_RecentDir,'','RECENTぱす');
-  AddFunc  ('スタートメニュー',  '',            607, sys_ProgramsDir,'スタートメニュー\プログラムのフォルダのパス返す','すたーとめにゅー');//スタートメニュー\プログラム\
-  AddFunc  ('マイドキュメント',  '',            608, sys_MyDocumentDir, 'マイドキュメントのフォルダのパスを返す','まいどきゅめんと');
-  AddFunc  ('FAVORITESパス',     '',            609, sys_FavoritesDir,'','FAVORITESぱす');
-  AddFunc  ('お気入りフォルダ',  '',            610, sys_FavoritesDir,'','おきにいりふぉるだ');
-  AddFunc  ('マイミュージック',  '',            612, sys_MyMusicDir,'','まいみゅーじっく');
-  AddFunc  ('マイピクチャー',    '',            613, sys_MyPictureDir,'','まいぴくちゃー');
-  AddFunc  ('マイピクチャ',      '',            669, sys_MyPictureDir,'','まいぴくちゃ');
-  AddFunc  ('フォントパス',      '',            614, sys_FontsDir,'','ふぉんとぱす');
-  AddFunc  ('PROGRAMFILESパス',  '',            615, sys_ProgramFilesDir,'','PROGRAMFILESぱす');
-  AddFunc  ('OE5メールフォルダ',  '',           618, sys_getOE5,'Outlook Express5/6のメールが保存されているフォルダを取得して返す','OE5めーるふぉるだ');
-  AddFunc  ('BECKY2メールフォルダ','',          619, sys_getBecky2,'Becky!Ver.2のメールが保存されているフォルダを取得して返す','Becky2めーるふぉるだ');
-  AddFunc  ('環境変数展開','{=?}Sの|Sを|Sで',   620, sys_expandEnv,'「%UserProfiel%aaa\bbb」のような環境変数を含むパスを展開して返す','かんきょうへんすうてんかい');
-  AddFunc  ('特殊パス取得','{=?}Aの|Aを',       660, sys_sp_path,'特殊パス(CSIDL_xxx)Aを指定して特殊パスを調べて返す','とくしゅぱすしゅとく');
+  AddFunc  ('WINDOWSパス',  '',                 600, nakofile_WinDir,'Windowsのインストールパスを返す','WINDOWSぱす');
+  AddFunc  ('SYSTEMパス',   '',                 601, nakofile_SysDir,'Systemフォルダのパスを返す','SYSTEMぱす');
+  AddFunc  ('テンポラリフォルダ', '',           602, nakofile_TempDir,'作業用のテンポラリフォルダのパスを得て返す','てんぽらりふぉるだ');
+  AddFunc  ('デスクトップ',       '',           603, nakofile_DesktopDir,'デスクトップのフォルダのパスを返す','ですくとっぷ');
+  AddFunc  ('SENDTOパス',         '',           604, nakofile_SendToDir,'「送る」メニューのフォルダのパスを返す','SENDTOぱす');
+  AddFunc  ('スタートアップ',     '',           605, nakofile_StartUpDir,'Windowsを起動した時に自動的に実行する「スタートアップ」のフォルダパスを返す','すたーとあっぷ');
+  AddFunc  ('RECENTパス',        '',            606, nakofile_RecentDir,'','RECENTぱす');
+  AddFunc  ('スタートメニュー',  '',            607, nakofile_ProgramsDir,'スタートメニュー\プログラムのフォルダのパス返す','すたーとめにゅー');//スタートメニュー\プログラム\
+  AddFunc  ('マイドキュメント',  '',            608, nakofile_MyDocumentDir, 'マイドキュメントのフォルダのパスを返す','まいどきゅめんと');
+  AddFunc  ('FAVORITESパス',     '',            609, nakofile_FavoritesDir,'','FAVORITESぱす');
+  AddFunc  ('お気入りフォルダ',  '',            610, nakofile_FavoritesDir,'','おきにいりふぉるだ');
+  AddFunc  ('マイミュージック',  '',            612, nakofile_MyMusicDir,'','まいみゅーじっく');
+  AddFunc  ('マイピクチャー',    '',            613, nakofile_MyPictureDir,'','まいぴくちゃー');
+  AddFunc  ('マイピクチャ',      '',            669, nakofile_MyPictureDir,'','まいぴくちゃ');
+  AddFunc  ('フォントパス',      '',            614, nakofile_FontsDir,'','ふぉんとぱす');
+  AddFunc  ('PROGRAMFILESパス',  '',            615, nakofile_ProgramFilesDir,'','PROGRAMFILESぱす');
+  AddFunc  ('OE5メールフォルダ',  '',           618, nakofile_getOE5,'Outlook Express5/6のメールが保存されているフォルダを取得して返す','OE5めーるふぉるだ');
+  AddFunc  ('BECKY2メールフォルダ','',          619, nakofile_getBecky2,'Becky!Ver.2のメールが保存されているフォルダを取得して返す','Becky2めーるふぉるだ');
+  AddFunc  ('環境変数展開','{=?}Sの|Sを|Sで',   620, nakofile_expandEnv,'「%UserProfiel%aaa\bbb」のような環境変数を含むパスを展開して返す','かんきょうへんすうてんかい');
+  AddFunc  ('特殊パス取得','{=?}Aの|Aを',       660, nakofile_sp_path,'特殊パス(CSIDL_xxx)Aを指定して特殊パスを調べて返す','とくしゅぱすしゅとく');
   AddFunc  ('共通スタートアップ','',            661, get_CSIDL_COMMON_STARTUP,'','きょうつうすたーとあっぷ');
   AddFunc  ('共通デスクトップ','',              662, get_CSIDL_COMMON_DESKTOPDIRECTORY,'','きょうつうですくとっぷ');
   AddFunc  ('共通マイドキュメント','',          663, get_CSIDL_COMMON_DOCUMENTS,'','きょうつうまいどきゅめんと');
@@ -3096,16 +2340,6 @@ begin
   AddStrVar('ランタイムパス',{''}RuntimeDir, 616, 'なでしこの実行ファイルのパス','らんたいむぱす');
   AddStrVar('母艦パス',{''}'', 617, '実行したプログラムのパス','ぼかんぱす');
 
-  //+LAN(nakofile.dll)
-  //-コンピューター情報
-  AddFunc  ('ユーザー名取得','', 630, sys_getUserName,'ログオンユーザー名を返す。','ゆーざーめいしゅとく');
-  AddFunc  ('コンピューター名取得','', 631, sys_getComputerName,'コンピューターの共有名を返す','こんぴゅーたーめいしゅとく');
-  //-LAN共有コンピューター情報
-  AddFunc  ('ドメイン列挙','', 632, sys_LanEnumDomain,'LAN上のドメインを列挙して返す。','どめいんれっきょ');
-  AddFunc  ('コンピューター列挙','{=?}DOMAINの', 633, sys_LanEnumComputer,'LAN上のDOMAINに属するコンピューターを列挙して返す。','こんぴゅーたーれっきょ');
-  AddFunc  ('共有フォルダ列挙','{=?}COMの', 634, sys_LanEnumCommonDir,'LAN上のCOMの共有フォルダを列挙して返す。','きょうゆうふぉるだれっきょ');
-  AddFunc  ('ネットワークドライブ接続','AにBの{=「」}USERと{=「」}PASSで|AへBを', 635, sys_WNetAddConnection2,'ドライブAにネットワークフォルダBを割り当てる。接続ユーザ名USERとパスワードPASSは省略可能。','ねっとわーくどらいぶせつぞく');
-  AddFunc  ('ネットワークドライブ切断','Aの|Aを', 636, sys_WNetCancelConnection2,'ドライブAに割り当てられたネットワークフォルダを切断する。','ねっとわーくどらいぶせつだん');
   //-nakofile.dll
   AddFunc  ('NAKOFILE_DLLバージョン','', 690, getNakoFileDllVersion,'nakofile.dllのバージョンを得る','NAKOFILE_DLLばーじょん');
   //</ファイル変数関数>

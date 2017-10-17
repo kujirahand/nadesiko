@@ -13,11 +13,9 @@ function WindowsSuspend: Boolean;
 function WindowsShowLogonScreen: Boolean;
 function WindowsPowerOffUpdate: Boolean;
 
-
-function InitiateShutdownA(lpMachineName, lpMessage: PAnsiChar; dwGracePeriode, dwShutdownFlags, dwReason: DWORD): DWORD; stdcall;
-{$EXTERNALSYM InitiateShutdownA}
-function InitiateShutdownW(lpMachineName, lpMessage: PWideChar; dwGracePeriode, dwShutdownFlags, dwReason: DWORD): DWORD; stdcall;
-{$EXTERNALSYM InitiateShutdownW}
+type
+  typeInitiateShutdownA = function (lpMachineName, lpMessage: PAnsiChar; dwGracePeriode, dwShutdownFlags, dwReason: DWORD): DWORD; stdcall;
+  typeInitiateShutdownW = function (lpMachineName, lpMessage: PWideChar; dwGracePeriode, dwShutdownFlags, dwReason: DWORD): DWORD; stdcall;
 
 function WindowsShutDownFunc(Computer: PChar; Msg: PChar; Time: Word; Force: Boolean; Reboot: Boolean): Boolean;
 
@@ -25,8 +23,12 @@ implementation
 
 uses SysUtils;
 
-function InitiateShutdownA; external 'advapi32.dll';
-function InitiateShutdownW; external 'advapi32.dll';
+var
+  InitiateShutdownA: typeInitiateShutdownA = nil;
+  InitiateShutdownW: typeInitiateShutdownW = nil;
+
+// function InitiateShutdownA; external 'advapi32.dll';
+// function InitiateShutdownW; external 'advapi32.dll';
 
 const
   SE_SHUTDOWN_NAME = 'SeShutdownPrivilege';
@@ -97,6 +99,27 @@ begin
 end;
 
 
+var
+ advapi_dll_handle: THandle = 0;
+
+procedure InitAdvapi;
+begin
+  // load
+  advapi_dll_handle := LoadLibrary('advapi32.dll');
+  if advapi_dll_handle = 0 then
+  begin
+    raise Exception.Create('DLLÅuadvapi32.dllÅvÇ™å©ìñÇΩÇËÇ‹ÇπÇÒÅB');
+  end;
+  // import
+  if advapi_dll_handle <> 0 then
+  begin
+    InitiateShutdownA    := GetProcAddress(advapi_dll_handle, 'InitiateShutdownA');
+    InitiateShutdownW := GetProcAddress(advapi_dll_handle, 'InitiateShutdownW');
+  end;
+end;
+
+
+
 function WindowsShutDownFunc(Computer: PChar; Msg: PChar; Time: Word; Force: Boolean; Reboot: Boolean): Boolean;
 const
   SHUTDOWN_FORCE_OTHERS = $00000001;
@@ -138,10 +161,8 @@ begin
             flags := SHUTDOWN_FORCE_SELF or SHUTDOWN_GRACE_OVERRIDE or SHUTDOWN_INSTALL_UPDATES;
 
           //Befehl ausfuhren
-          if InitiateShutdownA(Computer, Msg, Time, flags, 0) = ERROR_SUCCESS then
-            result := True
-          else
-            RaiseLastOSError;
+          InitAdvapi;
+          if InitiateShutdownA(Computer, Msg, Time, flags, 0) = ERROR_SUCCESS then result := True else RaiseLastOSError;
         end
         else
         begin

@@ -1,5 +1,7 @@
 dnako.dll,    1-499, 5000-5999
 nakofile.dll, 500-699
+nakoreg.dll, 500-699
+nakolan.dll, 500-699
 nakostr.dll,  700-899
 --
 cnako.exe, 3000-3099
