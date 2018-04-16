@@ -419,7 +419,7 @@ begin
     CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN,0);
   if f = INVALID_HANDLE_VALUE then
   begin
-    CloseHandle(f); f := 0;
+    CloseHandle(f);
     raise EInOutError.Create(string('ファイル"' + Filename + '"が開けません。') + GetLastErrorStr);
   end;
   try

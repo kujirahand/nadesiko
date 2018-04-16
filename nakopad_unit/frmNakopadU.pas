@@ -17,11 +17,14 @@ const
   NAKO_GNAKO = 1;
   NAKO_CNAKO = 2;
   NAKO_NNAKO = 3;
+  NAKO_CNAKO3 = 4;
   GUI_TXT       = 'tools\gui.txt';
   COMMAND_TXT   = 'tools\command.txt';
   DIR_TOOLS     = 'tools\';
   DIR_TEMPLATE  = 'tools\template\';
   MODE_HINT_STR = '※【なでしこ実行モード】';
+  WEB_NEWS = 'https://nadesi.com/top/index.php?NakopadEntry&simple';
+  NAKOPAD_DEF = 'nakopad_def.txt';
 
 type
   TColorMode = class
@@ -404,6 +407,7 @@ type
     webAction: TUIWebBrowser;
     btnActionOpenBrowser: TButton;
     btnWebBack: TButton;
+    mnuNakoC3: TMenuItem;
     procedure mnuCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure mnuViewLeftPanelClick(Sender: TObject);
@@ -630,6 +634,10 @@ type
     procedure mnuShowNewsClick(Sender: TObject);
     procedure btnActionOpenBrowserClick(Sender: TObject);
     procedure btnWebBackClick(Sender: TObject);
+    procedure webActionBeforeNavigate2(Sender: TObject;
+      const pDisp: IDispatch; var URL, Flags, TargetFrameName, PostData,
+      Headers: OleVariant; var Cancel: WordBool);
+    procedure mnuNakoC3Click(Sender: TObject);
   private
     { Private 宣言 }
     ini: TIniFile;
@@ -725,6 +733,7 @@ type
     procedure DeleteNakopadTempFile;
     function GetReportFile: string;
     procedure clearNakoTypeInMenu;
+    procedure changeNakopadMode(index: Integer);
   public
     { Public 宣言 }
     edtActive     : TEditorEx;
@@ -757,6 +766,9 @@ function DeleteJosi(key: string): string;
 function IsGlobalOffline: boolean;
 
 
+// モード文字列からインデックスへの変更
+function GetNakopadMode(m: string): Integer;
+
 implementation
 
 uses gui_benri, unit_string, unit_windows_api, StrUnit, Math,
@@ -765,6 +777,17 @@ uses gui_benri, unit_string, unit_windows_api, StrUnit, Math,
   nadesiko_version, wininet;
 
 {$R *.dfm}
+
+function GetNakopadMode(m: string): Integer;
+begin
+  Result := NAKO_VNAKO;
+  m := LowerCase(m);
+  if m = 'vnako' then Result := NAKO_VNAKO;
+  if m = 'gnako' then Result := NAKO_GNAKO;
+  if m = 'cnako' then Result := NAKO_CNAKO;
+  if m = 'nnako' then Result := NAKO_NNAKO;
+  if m = 'cnako3' then Result := NAKO_CNAKO3;
+end;
 
 function chk_nakopad_key(key: string): Boolean;
 var
@@ -959,6 +982,21 @@ var
     end;
   end;
 
+  function ReadDefaultFile: Integer;
+  var
+    sl: TStringList;
+    s: String;
+  begin
+    sl := TStringList.Create;
+    try
+      sl.LoadFromFile(AppPath + NAKOPAD_DEF);
+      s := Trim(sl.Values['mode']);
+      Result := GetNakopadMode(s);
+    finally
+      sl.Free;
+    end;
+  end;
+
 begin
   //todo 1: LoadINI(2:Create)
   //----------------------------------------------------------------------------
@@ -978,13 +1016,11 @@ begin
   // ini
   // なでしこ実行方式
   FNakoIndex :=  ini.ReadInteger('nadesiko', 'exe', NAKO_VNAKO);
-  case FNakoIndex of
-    NAKO_VNAKO: mnuNakoVClick(nil);
-    NAKO_GNAKO: mnuNakoVClick(nil);
-    NAKO_CNAKO: mnuNakoVClick(nil);
-    NAKO_NNAKO: mnuNakoVClick(nil);
-    else        mnuNakoVClick(nil);
+  if FileExists(AppPath + NAKOPAD_DEF) then
+  begin
+    FNakoIndex := ReadDefaultFile;
   end;
+  changeNakopadMode(FNakoIndex);
 
   // なでしこのサイズ
   fx := ini.ReadInteger('pad', 'x', -1); if fx >= 0 then Self.Left   := fx;
@@ -1062,9 +1098,6 @@ begin
   mnuViewSheetGroup.Checked  := sheetGroup.TabVisible;
   mnuViewSheetTree.Checked   := sheetTree.TabVisible;
 
-  // 文字コード
-  FOutCode := SJIS_OUT;
-  FRetCode := CRLF_R;
   ViewOutCode;
 
   //
@@ -1074,7 +1107,10 @@ begin
   if False = (ini.ReadBool('frmFirst', 'NoMorePage', False)) then
   begin
     ini.WriteBool('frmFirst', 'NoMorePage', True);
-    edtActive.Lines.LoadFromFile(AppPath + 'tools\FirstTime.nako');
+    if FileExists(AppPath + 'tools\FirstTime.nako') then
+    begin
+      edtActive.Lines.LoadFromFile(AppPath + 'tools\FirstTime.nako');
+    end;
   end;
 
   // show news?
@@ -1160,6 +1196,9 @@ begin
   // Tab
   tabsMain.TabWidth := 130;
   tabsMain.Tabs.Text := '';
+  // 文字コード
+  FOutCode := SJIS_OUT;
+  FRetCode := CRLF_R;
 end;
 
 procedure TfrmNakopad.FreeVar;
@@ -1403,22 +1442,8 @@ var
       begin
         m := Trim(s);
         System.Delete(m, 1, hintlen);
-        m := LowerCase(m);
-        if m = 'cnako' then
-        begin
-          mnuNakoCClick(nil);
-        end else
-        if m = 'gnako' then
-        begin
-          mnuNakoGClick(nil);
-        end else
-        if m = 'vnako' then
-        begin
-          mnuNakoVClick(nil);
-        end else
-        begin
-          // unknown
-        end;
+        FNakoIndex := GetNakopadMode(m);
+        changeNakopadMode(FNakoIndex);
       end;
     end;
   end;
@@ -4104,7 +4129,7 @@ begin
   getToken_s(s, '】');
   s := getToken_s(s, '【');
   s := URLEncode(sjisToUtf8N(s),True);
-  OpenApp('http://nadesi.com/man/page/'+s);
+  OpenApp('https://nadesi.com/man/page/'+s);
 end;
 
 procedure TfrmNakopad.mnuWebWriteLinkClick(Sender: TObject);
@@ -5262,7 +5287,7 @@ end;
 
 procedure TfrmNakopad.labelDesignLimitClick(Sender: TObject);
 begin
-  OpenApp('http://nadesi.com/pro/');
+  OpenApp('https://nadesi.com/pro/');
 end;
 
 procedure TfrmNakopad.AddRecentFile(fname: string);
@@ -5305,7 +5330,7 @@ begin
       'ラインセンスのご購入はお済ですか？') = False then
   begin
     ShowMessage('デラックス版に関するページを表示します。');
-    OpenApp('http://nadesi.com/pro/');
+    OpenApp('https://nadesi.com/pro/');
     Exit;
   end;
 
@@ -5324,7 +5349,7 @@ begin
       if MsgYesNo('ライセンスキーの入力を中止しますか？') then
       begin
         ShowMessage('正規ライセンスの購入をお願いします。');
-        OpenApp('http://nadesi.com/pro/');
+        OpenApp('https://nadesi.com/pro/');
         Exit;
       end;
       Continue;
@@ -5333,18 +5358,17 @@ begin
     _proc_ok;
     Exit;
   end;
-  OpenApp('http://nadesi.com/pro/');
+  OpenApp('https://nadesi.com/pro/');
   ShowWarn('正規ライセンスの購入をお願いします。', 'タイプミス3回以上');
   Close;
 end;
 
 procedure TfrmNakopad.changeProLicense(b: Boolean);
 begin
-  //todo: 商用版のみ
+  //todo: Delux版のみ
   if b then
   begin
-    // PRO
-    // ***
+    // Delux版
     mnuDesignDelete.Enabled  := True; // 削除できる
     mnuRegDelux.Visible := False;
     isDelux := True;
@@ -5353,7 +5377,7 @@ begin
     mnuMakeInstaller.Enabled := True;
   end else
   begin
-    // FREE
+    // FREE版
     // Default では、以下の状態を保つようにする
     // 簡単なクラック対策～あまり意味ないと思うけど。
     mnuRegDelux.Visible := True;
@@ -5670,6 +5694,7 @@ begin
     NAKO_GNAKO : s := s + 'gnako';
     NAKO_CNAKO : s := s + 'cnako';
     NAKO_NNAKO : s := s + 'nnako';
+    NAKO_CNAKO3 : s := s + 'cnako3';
   end;
 
   edtActive.Lines.Insert(
@@ -6015,6 +6040,27 @@ end;
 procedure TfrmNakopad.RunProgram(FlagWait: Boolean);
 var
   report, s, exe, txt, param: string;
+
+  function getCnako3Path: String;
+  var
+    root, node, cnako3: string;
+  begin
+    root := ExtractFilePath(Copy(AppPath, 1, Length(AppPath) - 1));
+    node := root + 'nodejs\node.exe';
+    cnako3 := root + 'src\cnako3.js';
+    Result := Format('"%s" "%s" "%s"', [node, cnako3, FTempFile]);
+    if not FileExists(node) then
+    begin
+      ShowMessage('node.exeを以下のパスに配置してください。'#13#10+node);
+      Exit;
+    end;
+    if not FileExists(cnako3) then
+    begin
+      ShowMessage('cnako3.jsを以下のパスに配置してください。'#13#10+cnako3);
+      Exit;
+    end;
+  end;
+
 begin
   // 実行
   RuntimeLineno := edtActive.Row;
@@ -6030,7 +6076,7 @@ begin
   if (FFileName = '') then
   begin
     if FTempFile = '' then
-      FTempFile := getOriginalFileName(TempDir, 'com.nadesi.exe.nakopad.temp.nako.bak');
+      FTempFile := getOriginalFileName(TempDir, 'com.nadesi.exe.nakopad.temp.bak.nako');
   end else
   begin
     FTempFile := ChangeFileExt(FFileName, '.nako.bak');
@@ -6038,16 +6084,20 @@ begin
 
   // プログラムを得る
   txt := edtActive.Lines.Text;
-  if FSpeed > 0 then
+  if (FSpeed > 0) and (FNakoIndex <= NAKO_CNAKO) then
   begin
     txt := IntToStr(FSpeed)+'に実行速度設定'#13#10+txt;
   end;
-  if mnuTestMode.Checked then
+  if mnuTestMode.Checked and (FNakoIndex <= NAKO_CNAKO) then
   begin
     txt :=  '!テスト対象ファイル＝『'+FTempFile+'』'#13#10+
             '!"'+AppPath+'lib\testlib.nako"を取り込む;'#13#10+
             'テストメイン処理。終わる。'#13#10+
             txt;
+  end;
+  if FNakoIndex = NAKO_CNAKO3 then
+  begin
+    txt := sjisToUtf8N(txt);
   end;
   if not WriteTextFile(FTempFile, txt) then
   begin
@@ -6076,6 +6126,10 @@ begin
     begin
       exe := '"' + AppPath + 'nnako.exe" "' + FTempFile + '" -debug::' + IntToStr(Self.Handle);
       if mnuDebugLineNo.Checked then exe := exe + ' -lineno';
+    end;
+  NAKO_CNAKO3:
+    begin
+      exe := getCnako3Path;
     end;
   end;
 
@@ -6155,7 +6209,7 @@ begin
   // if IsGlobalOffline then Exit;
   //
   timerShowWeb.Enabled := False;
-  webAction.Navigate('http://nadesi.com/top/index.php?NakopadEntry&simple');
+  webAction.Navigate(WEB_NEWS);
 
 end;
 
@@ -6186,6 +6240,8 @@ begin
   mnuNakoG.Checked := False;
   mnuNakoC.Checked := False;
   mnuNakoN.Checked := False;
+  mnuNakoN.Checked := False;
+  mnuNakoC3.Checked := False;
 end;
 
 procedure TfrmNakopad.btnWebBackClick(Sender: TObject);
@@ -6194,6 +6250,37 @@ begin
     webAction.GoBack;
   except
   end;
+end;
+
+procedure TfrmNakopad.webActionBeforeNavigate2(Sender: TObject;
+  const pDisp: IDispatch; var URL, Flags, TargetFrameName, PostData,
+  Headers: OleVariant; var Cancel: WordBool);
+begin
+  if URL = WEB_NEWS then Exit;
+  if Copy(URL, 1, 4) = 'http' then
+  begin
+    OpenApp(URL);
+    Cancel := True;
+  end;
+end;
+
+procedure TfrmNakopad.mnuNakoC3Click(Sender: TObject);
+begin
+  clearNakoTypeInMenu;
+  mnuNakoC3.Checked := True;
+  FNakoIndex := NAKO_CNAKO3;
+  FOutCode := UTF8N_OUT;
+  ViewOutCode;
+end;
+
+procedure TfrmNakopad.changeNakopadMode(index: Integer);
+begin
+  FNakoIndex := index;
+  if index = NAKO_VNAKO then mnuNakoVClick(Self);
+  if index = NAKO_GNAKO then mnuNakoGClick(Self);
+  if index = NAKO_CNAKO then mnuNakoCClick(Self);
+  if index = NAKO_NNAKO then mnuNakoNClick(Self);
+  if index = NAKO_CNAKO3 then mnuNakoC3Click(Self);
 end;
 
 end.

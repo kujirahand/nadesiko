@@ -110,6 +110,7 @@ object frmNakopad: TfrmNakopad
             Height = 138
             Align = alClient
             TabOrder = 1
+            OnBeforeNavigate2 = webActionBeforeNavigate2
             IeNoContext = False
             IeNO3DBORDER = False
             IeSCROLL_hidden = False
@@ -751,14 +752,14 @@ object frmNakopad: TfrmNakopad
       OnClick = mnuOpenClick
     end
     object ToolButton3: TToolButton
-      Left = 71
+      Left = 69
       Top = 0
       Caption = 'ToolButton3'
       ImageIndex = 2
       OnClick = mnuSaveClick
     end
     object ToolButton4: TToolButton
-      Left = 98
+      Left = 96
       Top = 0
       Width = 8
       Caption = 'ToolButton4'
@@ -766,14 +767,14 @@ object frmNakopad: TfrmNakopad
       Style = tbsSeparator
     end
     object ToolButton5: TToolButton
-      Left = 106
+      Left = 104
       Top = 0
       Caption = 'ToolButton5'
       ImageIndex = 3
       OnClick = mnuUndoClick
     end
     object ToolButton13: TToolButton
-      Left = 133
+      Left = 131
       Top = 0
       Width = 8
       Caption = 'ToolButton13'
@@ -781,28 +782,28 @@ object frmNakopad: TfrmNakopad
       Style = tbsSeparator
     end
     object ToolButton6: TToolButton
-      Left = 141
+      Left = 139
       Top = 0
       Caption = 'ToolButton6'
       ImageIndex = 4
       OnClick = mnuCutClick
     end
     object ToolButton7: TToolButton
-      Left = 168
+      Left = 166
       Top = 0
       Caption = 'ToolButton7'
       ImageIndex = 5
       OnClick = mnuCopyClick
     end
     object ToolButton8: TToolButton
-      Left = 195
+      Left = 193
       Top = 0
       Caption = 'ToolButton8'
       ImageIndex = 6
       OnClick = mnuPasteClick
     end
     object ToolButton9: TToolButton
-      Left = 222
+      Left = 220
       Top = 0
       Width = 9
       Caption = 'ToolButton9'
@@ -810,28 +811,28 @@ object frmNakopad: TfrmNakopad
       Style = tbsSeparator
     end
     object toolRun: TToolButton
-      Left = 231
+      Left = 229
       Top = 0
       Caption = 'toolRun'
       ImageIndex = 7
       OnClick = mnuRunClick
     end
     object toolStop: TToolButton
-      Left = 258
+      Left = 256
       Top = 0
       Caption = 'toolStop'
       ImageIndex = 8
       OnClick = mnuStopClick
     end
     object toolPause: TToolButton
-      Left = 285
+      Left = 283
       Top = 0
       Caption = 'toolPause'
       ImageIndex = 9
       OnClick = mnuPauseClick
     end
     object ToolButton14: TToolButton
-      Left = 312
+      Left = 310
       Top = 0
       Width = 8
       Caption = 'ToolButton14'
@@ -927,6 +928,7 @@ object frmNakopad: TfrmNakopad
           Caret.Style = csDefault
           Caret.TabIndent = False
           Caret.TabSpaceCount = 8
+          Caret.TokenEndStop = False
           Font.Charset = SHIFTJIS_CHARSET
           Font.Color = clBlack
           Font.Height = -12
@@ -1104,6 +1106,7 @@ object frmNakopad: TfrmNakopad
           Caret.Style = csDefault
           Caret.TabIndent = False
           Caret.TabSpaceCount = 8
+          Caret.TokenEndStop = False
           Font.Charset = SHIFTJIS_CHARSET
           Font.Color = clBlack
           Font.Height = -12
@@ -1293,6 +1296,7 @@ object frmNakopad: TfrmNakopad
             Caret.Style = csDefault
             Caret.TabIndent = False
             Caret.TabSpaceCount = 8
+            Caret.TokenEndStop = False
             Fountain = NadesikoFountain
             Font.Charset = SHIFTJIS_CHARSET
             Font.Color = clBlack
@@ -1496,6 +1500,7 @@ object frmNakopad: TfrmNakopad
               Caret.Style = csDefault
               Caret.TabIndent = False
               Caret.TabSpaceCount = 8
+              Caret.TokenEndStop = False
               Font.Charset = SHIFTJIS_CHARSET
               Font.Color = clBlack
               Font.Height = -12
@@ -1773,7 +1778,6 @@ object frmNakopad: TfrmNakopad
       object mnuMakeInstaller: TMenuItem
         Caption = #12452#12531#12473#12488#12540#12521#12540#12398#20316#25104'['#12487#12521#12483#12463#12473#29256'](&I)...'
         Enabled = False
-        Visible = False
         OnClick = mnuMakeInstallerClick
       end
       object N5: TMenuItem
@@ -2282,6 +2286,11 @@ object frmNakopad: TfrmNakopad
           RadioItem = True
           OnClick = mnuNakoNClick
         end
+        object mnuNakoC3: TMenuItem
+          Caption = #12467#12531#12477#12540#12523'3 - cnako3'
+          GroupIndex = 23
+          OnClick = mnuNakoC3Click
+        end
         object N59: TMenuItem
           Caption = '-'
           GroupIndex = 23
@@ -2601,6 +2610,7 @@ object frmNakopad: TfrmNakopad
     Caret.Style = csDefault
     Caret.TabIndent = False
     Caret.TabSpaceCount = 4
+    Caret.TokenEndStop = False
     Font.Charset = SHIFTJIS_CHARSET
     Font.Color = clWindowText
     Font.Height = -15
