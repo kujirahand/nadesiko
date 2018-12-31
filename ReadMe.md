@@ -5,7 +5,7 @@
  - 【共同開発】なでしこ友の会 ( https://github.com/kujirahand/nadesiko )
  - 【連 絡 先】http://kujirahand.com/
  - 【公式WEB 】http://nadesi.com/
- - 【対応  OS】Windows 98/Me/2000/XP/2003/Vista/7/8/8.1/10
+ - 【対応  OS】Windows 7/8/8.1/10
 
 # 概要
 
