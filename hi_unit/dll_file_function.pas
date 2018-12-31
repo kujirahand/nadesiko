@@ -1915,6 +1915,7 @@ begin
   if ext = '.cab' then cab_compress(src, des) else
   if ext = '.exe' then lha_makeSFX(src, des) else
   if ext = '.yz1' then yz1_compress(src, des) else
+  if ext = '.7z'  then zip_compress(src, des) else
   raise Exception.Create('"'+ext+'"は未対応の圧縮形式です。');
   nako_reportDLL(PChar(unit_archive.used_dll));
 
@@ -1948,6 +1949,7 @@ begin
   if ext = '.zip' then zip_extract (src, des)  else
   if ext = '.cab' then cab_extract (src, des)  else
   if ext = '.yz1' then yz1_extract (src, des)  else
+  if ext = '.7z'  then zip_extract (src, des)  else
   raise Exception.Create('"'+ext+'"は未対応の圧縮形式です。');
   nako_reportDLL(PChar(unit_archive.used_dll));
 

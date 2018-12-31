@@ -61,9 +61,9 @@ end;
 
 function rs232c_cmd(arg: DWORD): PHiValue; stdcall;
 var
-  cmd, v: string;
+  cmd, v, s: string;
   Frs232c, g: Trs232cN;
-  oid: Integer;
+  oid, flowflag: Integer;
 begin
   Result := nil;
   if rs232c_list = nil then SetLength(rs232c_list, 255);
@@ -100,12 +100,37 @@ begin
     Frs232c.portname    := getPropStr(g, 'ポート');
     Frs232c.packetsize  := getPropInt(g, 'パケットサイズ', 0);
     Frs232c.XonLim      := getPropInt(g, 'XonLim', 17);
-    Frs232c.XoffLim     := getPropInt(g, 'Xoff', 19);
+    Frs232c.XoffLim     := getPropInt(g, 'XoffLim', 19);
     Frs232c.XonChar     := Char((getPropInt(g,'XonChar')));
     Frs232c.XoffChar    := Char((getPropInt(g,'XoffChar')));
     Frs232c.ErrorChar   := Char((getPropInt(g,'ErrorChar')));
     Frs232c.EvtChar     := Char((getPropInt(g,'EvtChar')));
     Frs232c.EofChar     := Char((getPropInt(g,'EofChar')));
+
+    // Frs232c.flowflag    := getPropInt(g,'フロー制御フラグ',$1);
+    flowflag := 0;
+    flowflag := flowflag + $1; // fBinary($1)はWindowsでは必須のため固定で設定。
+    if getPropStr(g, 'パリティチェック') = '有効' then flowflag := flowflag + $02;
+    if getPropStr(g, 'CTSフロー制御') = '有効' then flowflag := flowflag + $04;
+    if getPropStr(g, 'DSRフロー制御') = '有効' then flowflag := flowflag + $08;
+    s := getPropStr(g, 'DTRフロー制御');
+    if s = '有効' then flowflag := flowflag + $20
+    else if s = '常時オン' then flowflag := flowflag + $10
+    else if s = 'トグル' then flowflag := flowflag + $30;
+    if getPropStr(g, 'DSRオフ時受信破棄') = '有効' then flowflag := flowflag + $40;
+    s := getPropStr(g, 'XONXOFFフロー制御');
+    if (s = '有効') or (s = '送受信') or (s = '送信受信') then flowflag := flowflag + $300
+    else if s = '送信' then flowflag := flowflag + $100
+    else if s = '受信' then flowflag := flowflag + $200;
+    if getPropStr(g, 'XOFF送信後データ送信') = '有効' then flowflag := flowflag + $80;
+    if getPropStr(g, 'パリティエラー文字置換') = '有効' then flowflag := flowflag + $400;
+    if getPropStr(g, 'NULL除去') = '有効' then flowflag := flowflag + $800;
+    s := getPropStr(g, 'RTSフロー制御');
+    if s = '有効' then flowflag := flowflag + $2000
+    else if s = '常時オン' then flowflag := flowflag + $1000
+    else if s = 'トグル' then flowflag := flowflag + $3000;
+    // ライブラリ部分の対応可否が不明のためfAborrtOnError($40000)は常にオフとする。
+    Frs232c.flowflag := flowflag;
 
     if not Frs232c.rsopen then raise Exception.Create('RS232Cのポート『'+Frs232c.portname+'』が開けません。');
   end else
@@ -118,6 +143,55 @@ begin
     if v <> '' then
     begin
       Frs232c.rswrite(v[1], Length(v));
+    end;
+  end else
+  if cmd = 'handle取得' then
+  begin
+    Result := hi_var_new;
+    hi_setInt(Result, Frs232c.getcommhandle());
+  end else
+  if cmd = 'cts取得' then
+  begin
+    Result := hi_var_new;
+    hi_setBool(Result, Frs232c.getcts());
+  end else
+  if cmd = 'dsr取得' then
+  begin
+    Result := hi_var_new;
+    hi_setBool(Result, Frs232c.getdsr());
+  end else
+  if cmd = 'ring取得' then
+  begin
+    Result := hi_var_new;
+    hi_setBool(Result, Frs232c.getring());
+  end else
+  if cmd = 'rlsd取得' then
+  begin
+    Result := hi_var_new;
+    hi_setBool(Result, Frs232c.getrlsd());
+  end else
+  if cmd = 'rts設定' then
+  begin
+    if v <> '' then
+    begin
+      if v = '0' then
+      begin
+        Frs232c.set_rts(false);
+      end else begin
+        Frs232c.set_rts(true);
+      end;
+    end;
+  end else
+  if cmd = 'dtr設定' then
+  begin
+    if v <> '' then
+    begin
+      if v = '0' then
+      begin
+        Frs232c.set_dtr(false);
+      end else begin
+        Frs232c.set_dtr(true);
+      end;
     end;
   end else
   ;
