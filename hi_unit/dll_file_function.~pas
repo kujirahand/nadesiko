@@ -1915,6 +1915,7 @@ begin
   if ext = '.cab' then cab_compress(src, des) else
   if ext = '.exe' then lha_makeSFX(src, des) else
   if ext = '.yz1' then yz1_compress(src, des) else
+  if ext = '.7z' then zip_compress(src, des) else
   raise Exception.Create('"'+ext+'"は未対応の圧縮形式です。');
   nako_reportDLL(PChar(unit_archive.used_dll));
 
@@ -1948,6 +1949,7 @@ begin
   if ext = '.zip' then zip_extract (src, des)  else
   if ext = '.cab' then cab_extract (src, des)  else
   if ext = '.yz1' then yz1_extract (src, des)  else
+  if ext = '.7z'  then zip_extract (src, des)  else
   raise Exception.Create('"'+ext+'"は未対応の圧縮形式です。');
   nako_reportDLL(PChar(unit_archive.used_dll));
 
@@ -2050,81 +2052,6 @@ begin
   Result := nil;
 end;
 
-function nakofile_getUserName(args: DWORD): PHiValue; stdcall;
-begin
-  Result := hi_newStr(GetUserName);
-end;
-
-function nakofile_GetComputerName(args: DWORD): PHiValue; stdcall;
-begin
-  Result := hi_newStr(GetComputerName);
-end;
-
-function nakofile_LanEnumDomain(args: DWORD): PHiValue; stdcall;
-begin
-  Result := hi_newStr(LanEnumDomain);
-end;
-
-function nakofile_LanEnumComputer(args: DWORD): PHiValue; stdcall;
-var
-  a: PHiValue;
-begin
-  // (1) 引数の取得
-  a := nako_getFuncArg(args, 0);
-  if a = nil then
-  begin
-    Result := hi_newStr(LanEnumComputer('',True));
-  end else
-  begin
-    Result := hi_newStr(LanEnumComputer(hi_str(a),True));
-  end;
-end;
-
-function nakofile_LanEnumCommonDir(args: DWORD): PHiValue; stdcall;
-var
-  a: PHiValue;
-begin
-  // (1) 引数の取得
-  a := nako_getFuncArg(args, 0);
-  Result := hi_newStr(LanGetCommonResource(hi_str(a)));
-end;
-
-function nakofile_WNetAddConnection2(args: DWORD): PHiValue; stdcall;
-var
-  drv, dir, pass, user: string;
-begin
-  Result := nil;
-  drv := getArgStr(args, 0, True);
-  dir := getArgStr(args, 1);
-  user:= getArgStr(args, 2);
-  pass:= getArgStr(args, 3);
-  //
-  drv := Trim(drv);
-  drv := UpperCase(Copy(drv,1,1)) + ':';
-  dir := ExcludeTrailingPathDelimiter(dir);
-  //
-
-  try
-    if user = '' then
-      AddNetworkDrive(PChar(drv), PChar(dir), nil)
-    else
-      AddNetworkDrive(PChar(drv), PChar(dir), nil,PChar(pass),Pchar(user));
-  except
-    on e: Exception do
-      raise Exception.Create(Format('"%s"へ"%s"を割り当てできませんでした。' + e.Message,[drv,dir]));
-  end;
-end;
-
-function nakofile_WNetCancelConnection2(args: DWORD): PHiValue; stdcall;
-var
-  drv:String;
-begin
-  Result := nil;
-  drv := getArgStr(args, 0, True);
-  drv := UpperCase(Copy(drv,1,1)) + ':';
-  if WNetCancelConnection2(Pchar(drv),0,False) <> NO_ERROR then
-    raise Exception.Create(Format('"%s"の割り当てを解除できませんでした。' + GetLastErrorStr,[drv]));
-end;
 
 // 出力のために
 var outfile: TFileStream = nil;
