@@ -24,7 +24,10 @@ const
   DIR_TEMPLATE  = 'tools\template\';
   MODE_HINT_STR = '※【なでしこ実行モード】';
   WEB_NEWS = 'https://nadesi.com/top/index.php?NakopadEntry&simple';
-  NAKOPAD_DEF = 'nakopad_def.txt';
+  NAKOPAD1_INI = 'nakopad.ini';
+  NAKOPAD3_INI = 'nakopad3.ini';
+  NAKOPAD_VER3_FILE = 'nakopad_detect_ver3.bin';
+  NAKOPAD_USER_DIR = 'nadesiko_lang\';
 
 type
   TColorMode = class
@@ -32,6 +35,8 @@ type
     fountain: TFountain;
     ext: string;
   end;
+
+  TNakopadMajorVer = (NAKO_V1, NAKO_V3);
 
   TfrmNakopad = class(TForm)
     mnusMain: TMainMenu;
@@ -740,6 +745,7 @@ type
     FNakoIndex    : Integer;
     FFindKey      : string;
     isDelux       : Boolean;
+    padMajorVer   : TNakopadMajorVer;
     procedure TangoSelect;
     procedure RunProgram(FlagWait: Boolean);
     procedure appendFileToCsvSheetAppAndUser(fname: string; list:TCsvSheet);
@@ -964,7 +970,7 @@ end;
 procedure TfrmNakopad.LoadIni;
 var
   s: string;
-  fx, fy, fw, fh: Integer;
+  fx, fy, fw, fh, defnako: Integer;
 
   procedure _removeNonExistsFile(files: TStringList);
   var i: Integer; f: string;
@@ -979,21 +985,6 @@ var
         Continue;
       end;
       files.Delete(i);
-    end;
-  end;
-
-  function ReadDefaultFile: Integer;
-  var
-    sl: TStringList;
-    s: String;
-  begin
-    sl := TStringList.Create;
-    try
-      sl.LoadFromFile(AppPath + NAKOPAD_DEF);
-      s := Trim(sl.Values['mode']);
-      Result := GetNakopadMode(s);
-    finally
-      sl.Free;
     end;
   end;
 
@@ -1014,11 +1005,12 @@ begin
   edtA.Lines.Text := '';
   //----------------------------------------------------------------------------
   // ini
-  // なでしこ実行方式
-  FNakoIndex :=  ini.ReadInteger('nadesiko', 'exe', NAKO_VNAKO);
-  if FileExists(AppPath + NAKOPAD_DEF) then
+  // todo: なでしこ実行方式 loadini
+  defnako := NAKO_VNAKO;
+  FNakoIndex :=  ini.ReadInteger('nadesiko', 'exe', defnako);
+  if padMajorVer = NAKO_V3 then
   begin
-    FNakoIndex := ReadDefaultFile;
+    if FileExists(AppPath + 'cnako3.bat') then FNakoIndex := NAKO_CNAKO3;
   end;
   changeNakopadMode(FNakoIndex);
 
@@ -1161,9 +1153,19 @@ end;
 procedure TfrmNakopad.CreateVar;
 begin
   //todo 2: CreateVar(1:Create)
+  FUserDir     := AppData + NAKOPAD_USER_DIR;
+  FIniName    := FUserDir + NAKOPAD1_INI;
 
-  FUserDir     := AppData + 'nadesiko_lang\';
-  FIniName    := FUserDir + 'nakopad.ini';
+  // なでしこエディタのバージョン判定
+  if FileExists(AppPath + NAKOPAD_VER3_FILE) then
+  begin
+    padMajorVer := NAKO_V3;
+    FIniName := FUserDir + NAKOPAD3_INI;
+  end else begin
+    padMajorVer := NAKO_V1;
+  end;
+
+
   ForceDirectories(FUserDir);
   ForceDirectories(FUserDir + DIR_TOOLS);
 
@@ -6097,6 +6099,7 @@ begin
   end;
   if FNakoIndex = NAKO_CNAKO3 then
   begin
+    txt := txt + #13#10'「>>>」と尋ねる。';
     txt := sjisToUtf8N(txt);
   end;
   if not WriteTextFile(FTempFile, txt) then
