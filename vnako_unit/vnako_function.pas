@@ -3482,6 +3482,19 @@ begin
     f.lblCaption.Caption := hi_strU(p);
     GetDialogSetting(title, init, cancel, ime);
     f.Caption := string(title);
+
+    // フォントを調整
+    getFontDialog(f.lblCaption.Font);
+    getFontDialog(f.edtMain.Font);
+    f.edtMain.Top := f.lblCaption.Top + f.lblCaption.Height + 8;
+    f.ClientHeight := f.edtMain.Top + f.edtMain.Height + 8 + + f.Panel1.Height;
+    // フォント調整に関するダイアログサイズの変更
+    if f.lblCaption.Width > f.Width then
+    begin
+      f.ClientWidth := f.lblCaption.Width + f.lblCaption.Left * 2;
+      f.edtMain.Width := f.lblCaption.Width;
+    end;
+
     ShowModalCheck(f, bokan);
     if f.Res then hi_setStrU(Result, (f.edtMain.Text))
              else hi_setStrU(Result, cancel);

@@ -3,7 +3,7 @@ object frmPassword: TfrmPassword
   Top = 256
   BorderStyle = bsDialog
   Caption = #12497#12473#12527#12540#12489#20837#21147
-  ClientHeight = 90
+  ClientHeight = 89
   ClientWidth = 281
   Color = clBtnFace
   Font.Charset = SHIFTJIS_CHARSET
@@ -14,6 +14,7 @@ object frmPassword: TfrmPassword
   OldCreateOrder = False
   Position = poMainFormCenter
   OnCreate = FormCreate
+  OnResize = FormResize
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 12
@@ -34,22 +35,38 @@ object frmPassword: TfrmPassword
     TabOrder = 0
     OnKeyPress = edtMainKeyPress
   end
-  object btnOk: TButton
-    Left = 120
-    Top = 56
-    Width = 83
-    Height = 25
-    Caption = #27770#23450' (&O)'
+  object Panel1: TPanel
+    Left = 0
+    Top = 57
+    Width = 281
+    Height = 32
+    Align = alBottom
+    BevelOuter = bvNone
     TabOrder = 1
-    OnClick = btnOkClick
-  end
-  object btnClose: TButton
-    Left = 208
-    Top = 56
-    Width = 65
-    Height = 25
-    Caption = #21462#28040' (&C)'
-    TabOrder = 2
-    OnClick = btnCloseClick
+    object Panel2: TPanel
+      Left = 72
+      Top = 0
+      Width = 209
+      Height = 32
+      BevelOuter = bvNone
+      TabOrder = 0
+      object btnOk: TButton
+        Left = 6
+        Top = 0
+        Width = 123
+        Height = 25
+        Caption = #27770#23450'(&O)'
+        TabOrder = 0
+        OnClick = btnOkClick
+      end
+      object btnClose: TButton
+        Left = 136
+        Top = 0
+        Width = 65
+        Height = 25
+        Caption = #21462#28040'(&C)'
+        TabOrder = 1
+      end
+    end
   end
 end

@@ -4,12 +4,14 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls;
+  Dialogs, StdCtrls, ExtCtrls;
 
 type
   TfrmPassword = class(TForm)
     edtMain: TEdit;
     lblCaption: TLabel;
+    Panel1: TPanel;
+    Panel2: TPanel;
     btnOk: TButton;
     btnClose: TButton;
     procedure btnOkClick(Sender: TObject);
@@ -17,6 +19,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure edtMainKeyPress(Sender: TObject; var Key: Char);
+    procedure FormResize(Sender: TObject);
   private
     { Private êÈåæ }
   public
@@ -79,6 +82,11 @@ begin
   begin
     btnOkClick(nil);
   end;
+end;
+
+procedure TfrmPassword.FormResize(Sender: TObject);
+begin
+  panel2.Left := panel1.ClientWidth - panel2.Width + 4;
 end;
 
 end.

@@ -4,8 +4,8 @@ interface
 
 const
   //todo 1:ššš‚È‚Å‚µ‚±ƒo[ƒWƒ‡ƒ“
-  NADESIKO_VER  = '1.574';
-  NADESIKO_DATE = '2018/12/31';
+  NADESIKO_VER  = '1.575';
+  NADESIKO_DATE = '2019/04/15';
   NADESIKO_GUID = '8EBAA659-590A-487A-8260-00F32660E014';
 
   // REPORT : LocalAppData

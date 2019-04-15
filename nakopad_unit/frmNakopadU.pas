@@ -1161,6 +1161,9 @@ begin
   begin
     padMajorVer := NAKO_V3;
     FIniName := FUserDir + NAKOPAD3_INI;
+    sheetGroup.TabVisible := False;
+    sheetGui.TabVisible := False;
+    sheetDesignProp.TabVisible := False;
   end else begin
     padMajorVer := NAKO_V1;
   end;
@@ -1407,6 +1410,13 @@ begin
     dlgSave.FileName := FFileName;
   end;
 
+  if padMajorVer = NAKO_V3 then
+  begin
+    dlgSave.DefaultExt := '.nako3';
+    dlgSave.Filter := 'なでしこv3(*.nako3)|*.nako3|なでしこv1(*.nako)|*.nako|テキストファイル(*.txt)|*.txt|すべて(*.*)|*.*';
+  end else begin
+    dlgSave.DefaultExt := '.nako';
+  end;
   if not dlgSave.Execute then Exit;
   // 保存処理
   FFileName := dlgSave.FileName;
@@ -1416,6 +1426,15 @@ end;
 procedure TfrmNakopad.mnuOpenClick(Sender: TObject);
 begin
   if CheckSave then Exit;
+
+  if padMajorVer = NAKO_V3 then
+  begin
+    dlgOpen.DefaultExt := '.nako3';
+    dlgOpen.Filter := 'なでしこv3(*.nako3)|*.nako3|なでしこv1(*.nako)|*.nako|テキストファイル(*.txt)|*.txt|すべて(*.*)|*.*';
+  end else begin
+    dlgSave.DefaultExt := '.nako';
+  end;
+
   if FFileName <> '' then
   begin
     dlgOpen.FileName := FFileName;
@@ -6046,11 +6065,12 @@ var
   function getCnako3Path: String;
   var
     root, node, cnako3: string;
+    batfile, cmd: string;
   begin
     root := ExtractFilePath(Copy(AppPath, 1, Length(AppPath) - 1));
     node := root + 'nodejs\node.exe';
     cnako3 := root + 'src\cnako3.js';
-    Result := Format('"%s" "%s" "%s"', [node, cnako3, FTempFile]);
+    cmd := Format('"%s" "%s" "%s"', [node, cnako3, FFileName]);
     if not FileExists(node) then
     begin
       ShowMessage('node.exeを以下のパスに配置してください。'#13#10+node);
@@ -6061,6 +6081,10 @@ var
       ShowMessage('cnako3.jsを以下のパスに配置してください。'#13#10+cnako3);
       Exit;
     end;
+    cmd := 'REM --- NADESIKO V3 ---'#13#10 + cmd + #13#10 + 'pause' + #13#10;
+    batfile := ChangeFileExt(FFileName, '.bat');
+    WriteTextFile(batfile, cmd);
+    Result := batfile;
   end;
 
 begin
@@ -6099,7 +6123,7 @@ begin
   end;
   if FNakoIndex = NAKO_CNAKO3 then
   begin
-    txt := txt + #13#10'「>>>」と尋ねる。';
+    // txt := txt + #13#10'「>>>」と尋ねる。';
     txt := sjisToUtf8N(txt);
   end;
   if not WriteTextFile(FTempFile, txt) then

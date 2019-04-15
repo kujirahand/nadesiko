@@ -1974,6 +1974,7 @@ begin
   // (2) 処理
   unit_archive.ArchivePassword := pass;
   if ext = '.zip' then zip_compress(src, des) else
+  if ext = '.7z' then zip_compress(src, des) else
   if ext = '.yz1' then yz1_compress(src, des) else
   raise Exception.Create('"'+ext+'"は未対応の圧縮形式です。');
   nako_reportDLL(PChar(unit_archive.used_dll));
@@ -2007,6 +2008,7 @@ begin
   // (2) 処理
   unit_archive.ArchivePassword := pass;
   if ext = '.zip' then zip_extract (src, des)  else
+  if ext = '.7z' then zip_extract (src, des)  else
   if ext = '.yz1' then yz1_extract (src, des)  else
   raise Exception.Create('"'+ext+'"は未対応の圧縮形式です。');
   nako_reportDLL(PChar(unit_archive.used_dll));
@@ -2028,6 +2030,7 @@ begin
   // (2) 処理
   if ext = '.lzh' then UnlhaCommand(cmd)  else
   if ext = '.zip' then SevenZipCommand(cmd)  else
+  if ext = '.7z' then SevenZipCommand(cmd)  else
   if ext = '.cab' then CabCommand(cmd)  else
   if ext = '.yz1' then Yz1Command(cmd)  else
   raise Exception.Create('"'+ext+'"は未対応の圧縮形式です。');

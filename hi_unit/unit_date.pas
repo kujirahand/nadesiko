@@ -125,10 +125,11 @@ end;
 
 
 const
-  MEIJI  = 1868; //* 修正 2003/09/28
+  MEIJI  = 1868; //* 修正 2019/04/15
   TAISYO = 1912;
   SYOWA  = 1926;
   HEISEI = 1989;
+  REIWA  = 2019;
 
 {TDateTimeを、和暦に変換する}
 function DateToWareki(d: TDateTime): AnsiString;
@@ -153,11 +154,17 @@ begin
         if y=1 then sy := '元年' else sy := IntToStrA(y)+'年';
         Result := FormatA('昭和'+sy+'%d月%d日',[mm,dd]);
     end else
-    if (HEISEI<=yy) then
+    if ((HEISEI<=yy)and(yy<REIWA))or((REIWA=yy)and(mm<5)) then
     begin
         y := yy-HEISEI+1;
         if y=1 then sy := '元年' else sy := IntToStrA(y)+'年';
         Result := FormatA('平成'+sy+'%d月%d日',[mm,dd]);
+    end else
+    if (REIWA<=yy) then
+    begin
+        y := yy-REIWA+1;
+        if y=1 then sy := '元年' else sy := IntToStrA(y)+'年';
+        Result := FormatA('令和'+sy+'%d月%d日',[mm,dd]);
     end;
 end;
 
@@ -193,11 +200,17 @@ begin
         if y=1 then sy := '元年' else sy := IntToStrA(y)+'年';
         Result := '昭和'+sy;
     end else
-    if (HEISEI<=yy) then
+    if (HEISEI<=yy)and(yy<REIWA) then
     begin
         y := yy-HEISEI+1;
         if y=1 then sy := '元年' else sy := IntToStrA(y)+'年';
         Result := '平成'+sy;
+    end else
+    if (REIWA<=yy) then
+    begin
+        y := yy-REIWA+1;
+        if y=1 then sy := '元年' else sy := IntToStrA(y)+'年';
+        Result := '令和'+sy;
     end;
 end;
 
