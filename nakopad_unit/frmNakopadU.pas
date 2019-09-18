@@ -1192,7 +1192,8 @@ begin
   FLineTokens := TStringList.Create;
   FLineCurToken := -1;
   FLastTab := nil;
-  isDelux := False;
+  // isDelux := False;
+  isDelux := True; // *** NOW DELUX FOREVER ***
   tmpGroupFilter := nil;
   // GUI
   FGuiList := TNGuiList.Create;
@@ -3567,11 +3568,7 @@ begin
   end;
 
   // todo: è§ópî≈ÇÃÇ›ÇÃì¡ìTÇîΩâf
-  ini_key := ini.ReadString('license', 'key', 'xxx');
-  if chk_nakopad_key(ini_key) then
-  begin
-    changeProLicense(True);
-  end;
+  changeProLicense(True);
 end;
 
 procedure TfrmNakopad.pageLeftChange(Sender: TObject);

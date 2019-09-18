@@ -153,7 +153,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 12
+            ItemHeight = 0
             PopupMenu = popFind
             TabOrder = 0
             OnEnter = cmbFindEnter
@@ -252,7 +252,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 12
+            ItemHeight = 0
             PopupMenu = popFind
             TabOrder = 2
             OnEnter = cmbGroupEnter
@@ -434,7 +434,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 12
+            ItemHeight = 0
             PopupMenu = popFind
             TabOrder = 2
             OnEnter = cmbCmdEnter
@@ -553,7 +553,7 @@ object frmNakopad: TfrmNakopad
           Width = 193
           Height = 20
           AutoComplete = False
-          ItemHeight = 12
+          ItemHeight = 0
           PopupMenu = popFind
           TabOrder = 1
           OnEnter = cmbVarEnter
@@ -1778,6 +1778,7 @@ object frmNakopad: TfrmNakopad
       object mnuMakeInstaller: TMenuItem
         Caption = #12452#12531#12473#12488#12540#12521#12540#12398#20316#25104'['#12487#12521#12483#12463#12473#29256'](&I)...'
         Enabled = False
+        Visible = False
         OnClick = mnuMakeInstallerClick
       end
       object N5: TMenuItem
@@ -2451,9 +2452,11 @@ object frmNakopad: TfrmNakopad
       end
       object N57: TMenuItem
         Caption = '-'
+        Visible = False
       end
       object mnuRegDelux: TMenuItem
         Caption = #12487#12521#12483#12463#12473#29256#12398#30331#37682
+        Visible = False
         OnClick = mnuRegDeluxClick
       end
     end

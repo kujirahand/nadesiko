@@ -17,8 +17,8 @@ object frmMakeExe: TfrmMakeExe
   TextHeight = 12
   object Panel1: TPanel
     Left = 0
-    Top = 234
-    Width = 586
+    Top = 222
+    Width = 578
     Height = 144
     Align = alBottom
     TabOrder = 0
@@ -69,9 +69,10 @@ object frmMakeExe: TfrmMakeExe
         Top = 56
         Width = 289
         Height = 17
-        Caption = #12503#12521#12464#12452#12531#12434#23455#34892#12501#12449#12452#12523#12395#26801#21253'('#12487#12521#12483#12463#12473#29256#12398#12415')'
+        Caption = #12503#12521#12464#12452#12531#12434#23455#34892#12501#12449#12452#12523#12395#26801#21253
         Enabled = False
         TabOrder = 1
+        Visible = False
         OnClick = chkIncludeDLLClick
       end
       object chkAngou3: TCheckBox
@@ -79,7 +80,7 @@ object frmMakeExe: TfrmMakeExe
         Top = 40
         Width = 265
         Height = 17
-        Caption = #24375#21147#12395#38627#35501#21270#12375#12390#26801#21253'('#12487#12521#12483#12463#12473#29256#12398#12415')'
+        Caption = #24375#21147#12395#38627#35501#21270#12375#12390#26801#21253
         Enabled = False
         TabOrder = 2
       end
@@ -89,7 +90,7 @@ object frmMakeExe: TfrmMakeExe
       Top = 8
       Width = 193
       Height = 89
-      Caption = #12450#12452#12467#12531#12398#22793#26356'('#12487#12521#12483#12463#12473#29256#12398#12415')'
+      Caption = #12450#12452#12467#12531#12398#22793#26356
       TabOrder = 4
       object imgIcon: TImage
         Left = 16
@@ -207,7 +208,7 @@ object frmMakeExe: TfrmMakeExe
   object Panel2: TPanel
     Left = 0
     Top = 0
-    Width = 586
+    Width = 578
     Height = 25
     Align = alTop
     BevelOuter = bvNone
@@ -241,8 +242,8 @@ object frmMakeExe: TfrmMakeExe
   object lstFiles: TListBox
     Left = 0
     Top = 25
-    Width = 586
-    Height = 209
+    Width = 578
+    Height = 197
     Align = alClient
     ItemHeight = 12
     TabOrder = 2

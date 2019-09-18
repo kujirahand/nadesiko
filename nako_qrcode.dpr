@@ -145,7 +145,7 @@ begin
   try
     if not bCustomer then
     begin
-      bmp.Width  := 30 * 2 + (bairitu+1) * len;
+      bmp.Width  := 30 * 2 + (bairitu+2) * len;
       bmp.Height := bairitu * 30;
     end else
     begin
