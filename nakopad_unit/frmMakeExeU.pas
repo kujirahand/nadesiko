@@ -44,6 +44,7 @@ type
     procedure addIncludeFile(s: string);
   public
     { Public 宣言 }
+    FPacklistFile: String;
     fdrop: TFileDrop;
   end;
 
@@ -88,6 +89,7 @@ var
   p: TFileMixWriter;
   i: Integer;
   tempExe, temporaryExe, mainfile, packfile: string;
+  dataFile, plugDir: string;
 
   procedure _rewriteicon(exefile: string);
   var
@@ -112,7 +114,7 @@ var
   begin
     if chkIncludeDLL.Checked then Exit;
     desDir := ExtractFilePath(f) + 'plug-ins\';
-
+    if not FileExists(frmNakopad.ReportFile) then Exit;
     ReadTextFile(frmNakopad.ReportFile, txt);
     GetToken('[plug-ins]', txt);
     s := GetToken('[', txt);
@@ -155,7 +157,7 @@ var
 begin
   if not dlgSave.Execute then Exit;
   f := dlgSave.FileName;
-  if f='' then Exit;
+  if f = '' then Exit;
   if
     (UpperCase(ExtractFileName(f)) = 'VNAKO.EXE') or
     (UpperCase(ExtractFileName(f)) = 'GNAKO.EXE') or
@@ -163,6 +165,15 @@ begin
   then begin
     ShowMessage('ランタイムを上書きすることはできません。'); Exit;
   end;
+  // Save Files
+  lstFiles.Items.SaveToFile(FPacklistFile);
+  // packFile Data
+  plugDir := ExtractFilePath(f) + '\plug-ins\';
+  if not FileExists(plugDir) then
+  begin
+    ForceDirectories(plugDir);
+  end;
+  dataFile := plugDir + ExtractFileName(ChangeFileExt(f, '.nakopack'));
 
   // 梱包ファイルを作る
   p := TFileMixWriter.Create;
@@ -189,7 +200,7 @@ begin
     p.FileList.Add(s+'='+ExtractFileName(s)+'='+_angouka);
   end;
   packfile := getOriginalFileName(TempDir, 'nakpac.bin');
-  p.SaveToFile(packfile);
+  p.SaveToFile(dataFile);
   p.Free;
 
   // 保存
@@ -211,12 +222,13 @@ begin
   temporaryExe := TempDir + 'nako' + FormatDateTime('yymmddhhnnsszzz', Now) + '.exe';
   CopyFile(PChar(tempExe),PChar(temporaryExe), False);
   _rewriteIcon(temporaryExe);
-  WritePackExeFile(f, temporaryExe, packfile);
+  // もし実行ファイルEXEにパックファイルをくっつける場合以下を使用（今後利用しない）
+  // WritePackExeFile(f, temporaryExe, packfile);
+  CopyFile(PChar(temporaryExe), PChar(f), False);
 
   // 後始末
   DeleteFile(temporaryExe);
   DeleteFile(mainfile);
-  DeleteFile(packfile);
   
   //=========================
   // 依存ファイルのコピー
@@ -231,7 +243,7 @@ begin
   begin
     ShowMessage(
       '実行ファイルを作成しました。'#13#10+
-      '実行ファイルと "dnako.dll"に加え "plug-ins"フォルダを配布してください。'#13#10+
+      '実行ファイルと"plug-ins"フォルダを配布してください。'#13#10+
       '詳しくはヘルプをご覧ください。');
   end;
 
@@ -266,11 +278,17 @@ end;
 procedure TfrmMakeExe.FormShow(Sender: TObject);
 begin
   // レポートがあるか確認する
-  if not FileExists(frmNakopad.ReportFile) then
+  if (frmNakopad.FNakoIndex = NAKO_VNAKO) and (not FileExists(frmNakopad.ReportFile)) then
   begin
     ShowMessage(
       '実行ファイル作成の前に必ず一度はプログラムを実行させてください。'#13#10+
       '実行によりプラグイン依存レポートが自動生成されます。');
+  end;
+  // 添付ファイルの一覧があれば自動ロードする
+  FPacklistFile := ChangeFileExt(frmNakopad.FileName, '.packlist');
+  if FileExists(FPacklistFile) then
+  begin
+    lstFiles.Items.LoadFromFile(FPacklistFile);
   end;
 end;
 

@@ -83,7 +83,7 @@ procedure RegistFunction;
 begin
   // ＩＤの範囲:::6550-6559
   // <命令>
-  //+スキャナー[デラックス版のみ](nako_twain.dll)
+  //+スキャナー(nako_twain.dll)
   //-スキャナー
   AddFunc('TWAIN機器選択', '', 6550, dll_twain_select, 'TWAIN機器を選択する。選択を行うとはい(=1)を返す。', 'TWAINききせんたく');
   AddFunc('スキャナー読み取り', '{=?}FILEへ|FILEに', 6551, dll_twain_scan, 'スキャナーを読み取りFILEへ保存する。読み取るとはい(=1)を返す。', 'すきゃなーよみとり');

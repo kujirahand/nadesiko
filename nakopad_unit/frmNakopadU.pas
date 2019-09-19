@@ -756,6 +756,7 @@ type
     property StatusMsg : string read FPanel2 write setPanel2;
     property TempFile: string read FTempFile;
     property ReportFile: string read GetReportFile;
+    property FileName: string read FFileName;
     property IniMain: TIniFile read ini;
   end;
 
@@ -3138,14 +3139,17 @@ begin
     Exit;
   end;
   //
-  if (not FileExists(ReportFile)) then
+  if FNakoIndex = NAKO_VNAKO then
   begin
-    if FileExists(ReportFile) then DeleteFile(ReportFile);
-    // --- é©ìÆé¿çsÇ∑ÇÈ ---
-    edtActive.Lines.Insert(0, 'èIÇÌÇÈ');
-    RunProgram(True);
-    edtActive.Lines.Delete(0);
-    edtActive.Modified := False;
+    if (not FileExists(ReportFile)) then
+    begin
+      if FileExists(ReportFile) then DeleteFile(ReportFile);
+      // --- é©ìÆé¿çsÇ∑ÇÈ ---
+      edtActive.Lines.Insert(0, 'èIÇÌÇÈ');
+      RunProgram(True);
+      edtActive.Lines.Delete(0);
+      edtActive.Modified := False;
+    end;
   end;
   if frmMakeExe.dlgSave.FileName = '' then
   begin
@@ -3535,7 +3539,6 @@ var
   i: Integer;
   fname, cmd, sub: string;
   ws: TWindowState;
-  ini_key: string;
 begin
   SetColorMode;
   panelOtehon.Visible := False;
@@ -3567,7 +3570,7 @@ begin
     Inc(i);
   end;
 
-  // todo: è§ópî≈ÇÃÇ›ÇÃì¡ìTÇîΩâf
+  // ì¡ìTÇîΩâf
   changeProLicense(True);
 end;
 

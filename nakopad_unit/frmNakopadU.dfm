@@ -1,6 +1,6 @@
 object frmNakopad: TfrmNakopad
   Left = 198
-  Top = 138
+  Top = 139
   Width = 823
   Height = 574
   Caption = 'frmNakopad'

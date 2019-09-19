@@ -36,11 +36,11 @@ uses mini_file_utils, SysUtils, dnako_import_types, nadesiko_version;
 
 const
   DNAKO_DLL = 'dnako.dll';
-  
+
 { TDnakoLoader }
 
 constructor TDnakoLoader.Create(MainWinHandle: THandle);
-  
+
   // ex) test.nako -debug -pack test.bin
   procedure checkArgs;
   var
@@ -65,6 +65,8 @@ constructor TDnakoLoader.Create(MainWinHandle: THandle);
     end;
   end;
 
+var
+  fpack: string;
 begin
   // [手順]
   // (1) もし自身に packfile があれば分離する
@@ -83,9 +85,20 @@ begin
     FhasPackfile := True;
     reader := unit_pack_files.FileMixReader;
   end else
+  // (2) EXEファイルと一緒に作成したpackfileの場合
   begin
-    FhasPackfile := OpenPackFile(ParamStr(0));
-    reader := unit_pack_files.FileMixReader;
+    fpack := ExtractFilePath(ParamStr(0)) + 'plug-ins\' +
+      ChangeFileExt(ExtractFileName(ParamStr(0)), '.nakopack');
+    if FileExists(fpack) then
+    begin
+      FPackfile := fpack;
+      unit_pack_files.FileMixReader := TFileMixReader.Create(FPackfile);
+      FhasPackfile := True;
+      reader := unit_pack_files.FileMixReader;
+    end;
+    // もしEXEファイルに仕込んである場合(セキュリティの問題のため利用しない)
+    // FhasPackfile := OpenPackFile(ParamStr(0));
+    // reader := unit_pack_files.FileMixReader;
   end;
   // set default plug-ins dir
   FPluginsDir := AppPath + 'plug-ins\';

@@ -1,6 +1,6 @@
 object frmMakeExe: TfrmMakeExe
   Left = 202
-  Top = 160
+  Top = 161
   Width = 594
   Height = 405
   Caption = #23455#34892#12501#12449#12452#12523#12398#20316#25104
@@ -62,6 +62,8 @@ object frmMakeExe: TfrmMakeExe
         Width = 305
         Height = 17
         Caption = #38627#35501#21270#12375#12390#26801#21253
+        Checked = True
+        State = cbChecked
         TabOrder = 0
       end
       object chkIncludeDLL: TCheckBox
