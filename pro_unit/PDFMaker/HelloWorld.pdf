@@ -1,0 +1,104 @@
+%PDF-1.2 
+1 0 obj
+<<
+/Type /Catalog
+/Pages 2 0 R
+>>
+endobj
+2 0 obj
+<<
+/Kids [4 0 R ]
+/Count 1
+/Type /Pages
+/MediaBox [ 0 0 596 842 ]
+>>
+endobj
+3 0 obj
+<<
+/CreationDate (D:20000209140624)
+/Creator (HELLOWORLD.EXE)
+/Producer (PDFMaker 0.4)
+/Author <FEFF001B6A61001B>
+/Title <FEFF001B6A61001B>
+>>
+endobj
+4 0 obj
+<<
+/Type /Page
+/Parent 2 0 R
+/Resources <<
+/Font <<
+/F0 6 0 R
+>>
+/ProcSet [ /PDF /Text ]
+>>
+/Contents 5 0 R
+>>
+endobj
+5 0 obj
+<<
+/Length 69
+>>
+stream
+BT/F0 20 Tf0 0 0 rg 0 TL0 Tc0 Tw200 500 Td(Hello World) TjET
+endstream
+endobj
+6 0 obj
+<<
+/Type /Font
+/Name /F0
+/Subtype /TrueType
+/BaseFont /Century
+/FirstChar 31
+/LastChar 255
+/Widths [ 719 266 283 373 533 533 798 781 196 319 319 479 581 266 319 266 
+266 533 533 533 533 533 533 533 533 533 533 266 266 581 581 581 
+426 706 692 692 692 745 692 639 745 798 390 533 745 639 904 781 
+745 639 745 692 604 639 781 692 940 675 675 585 319 581 319 581 
+479 319 533 533 426 550 479 319 515 585 302 283 568 302 852 585 
+479 550 533 426 443 373 585 515 745 515 515 461 319 581 319 581 
+719 719 719 196 533 373 958 479 479 319 958 604 248 958 719 719 
+719 719 196 196 373 373 581 533 958 319 958 443 248 798 719 719 
+675 275 283 533 533 581 675 581 479 319 706 320 408 581 319 706 
+719 383 526 319 319 319 552 581 266 319 319 288 408 798 798 798 
+426 692 692 692 692 692 692 958 692 692 692 692 692 390 390 390 
+390 745 781 745 745 745 745 745 581 745 781 781 781 781 675 639 
+550 533 533 533 533 533 533 763 426 479 479 479 479 302 302 302 
+302 479 585 479 479 479 479 479 526 479 585 585 585 585 515 550 
+515 ]
+/Encoding /WinAnsiEncoding
+/FontDescriptor 7 0 R
+>>
+endobj
+7 0 obj
+<<
+/Type /FontDescriptor
+/FontName /Century
+/Flags 34
+/FontBBox [ -219 -219 1188 1001 ]
+/StemV 78
+/Ascent 1001
+/CapHeight 1001
+/Descent -219
+/ItalicAngle 0
+>>
+endobj
+xref
+0 8
+0000000000 65535 f
+0000000011 00000 n
+0000000066 00000 n
+0000000158 00000 n
+0000000325 00000 n
+0000000464 00000 n
+0000000590 00000 n
+0000001701 00000 n
+trailer
+<<
+/Size 8
+/Root 1 0 R
+/Info 3 0 R
+>>
+startxref
+1888
+%%EOF
