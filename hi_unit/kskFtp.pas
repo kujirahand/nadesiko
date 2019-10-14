@@ -111,6 +111,7 @@ type
     UserAgent: AnsiString;
     HTTP_VERSION: AnsiString;
     TimeOut: Integer;
+    Header: String;
     constructor Create;
     function Get(const URL, FileName: AnsiString): Boolean;
     function GetAsText(const URL: AnsiString): AnsiString;
@@ -126,12 +127,16 @@ type
     FOnProgress: TkskProgress;
     Stream: TStream;
     FHttpVersion: AnsiString;
+    FMethod: string;
+    FPostBody: string;
   protected
     procedure Execute; override;
   public
     ErrorMsg: AnsiString;
     constructor Create(aUserAgent, aURL, aHeaders, aHttpVersion: AnsiString; aStream: TStream;
-      AOnComplete, AOnError: TNotifyEvent; AOnProgress: TkskProgress);
+      AOnComplete, AOnError: TNotifyEvent; AOnProgress: TkskProgress); overload;
+    constructor Create(aMethod, aPostBody, aUserAgent, aURL, aHeaders, aHttpVersion: AnsiString; aStream: TStream;
+      AOnComplete, AOnError: TNotifyEvent; AOnProgress: TkskProgress); overload;
   end;
 
   TkskHttpDialog = class
@@ -153,6 +158,9 @@ type
     UserAgent: AnsiString;
     httpVersion: AnsiString;
     Referer: AnsiString;
+    Header: AnsiString;
+    Method: AnsiString;
+    PostBody: AnsiString;
     constructor Create;
     destructor Destroy; override;
     function DownloadDialog(const URL: AnsiString): Boolean;
@@ -582,6 +590,7 @@ var
   d: DWORD;
   res: BOOL;
   flagStop: Boolean;
+  pHead: PChar;
 begin
   Result := False;
 
@@ -590,7 +599,9 @@ begin
   if hHttpSession = nil then Exit; // ERROR
   try
     // OpenURL
-    hReqUrl := InternetOpenURLA(hHttpSession, PAnsiChar(URL), nil, 0,0,0);
+    pHead := nil;
+    if Header <> '' then pHead := PChar(Header);
+    hReqUrl := InternetOpenURLA(hHttpSession, PAnsiChar(URL), pHead, 0,0,0);
     if hReqUrl = nil then Exit;
     try
       // Query Head
@@ -748,6 +759,7 @@ begin
   UserAgent := 'kskHttp';
   HTTP_VERSION := 'HTTP/1.1';
   TimeOut := 60;
+  Header := '';
 end;
 
 { THTTPSyncFileDownloader }
@@ -766,6 +778,29 @@ begin
   FHttpVersion := aHttpVersion;
   Stream     := aStream;
   ErrorMsg   := '';
+  FMethod    := 'GET';
+
+  OnTerminate := AOnComplete;
+  FOnError    := AOnError;
+  FOnProgress := AOnProgress;
+end;
+
+constructor THTTPSyncFileDownloader.Create(aMethod, aPostBody, aUserAgent,
+  aURL, aHeaders, aHttpVersion: AnsiString; aStream: TStream; AOnComplete,
+  AOnError: TNotifyEvent; AOnProgress: TkskProgress);
+begin
+  inherited Create(False);
+
+  FreeOnTerminate := False;
+
+  FUserAgent := aUserAgent;
+  FURL       := aURL;
+  FHeaders   := aHeaders;
+  FHttpVersion := aHttpVersion;
+  Stream     := aStream;
+  ErrorMsg   := '';
+  FMethod    := aMethod;
+  FPostBody  := aPostBody;
 
   OnTerminate := AOnComplete;
   FOnError    := AOnError;
@@ -803,55 +838,67 @@ var
   end;
 
   function _httpsDownload: Boolean;
-  var code, port: Integer;
+  var
+    code, port: Integer;
+    flag: Cardinal;
   begin
     Result := False;
     splitURL(FUrl, protocol, domain, path, port);
+
     // connect
-    hcon := InternetConnectA(hSession, PAnsiChar(domain),
+    hcon := InternetConnectA(
+      hSession,
+      PAnsiChar(domain),
       port,
       '',// username
       '',// password
       INTERNET_SERVICE_HTTP, 0, 0);
     if not Assigned(hcon) then begin err('接続エラー'); Exit; end;
+
     // request
+    flag := INTERNET_SERVICE_HTTP;
+    if protocol = 'https' then flag := INTERNET_FLAG_SECURE or INTERNET_FLAG_KEEP_CONNECTION;
     hRequest := HttpOpenRequestA(
       hcon,
-      'GET',
+      PAnsiChar(FMethod),
       PAnsiChar(path),
       PAnsiChar(FHttpVersion),
       nil,
       nil,
-      INTERNET_FLAG_SECURE,
+      flag,
       0);
     if not Assigned(hRequest) then
     begin
       err('リクエスト時のエラー'); Exit;
     end;
+    
     // request option
-    dwFlags := 0;
-    dwBuffLen := sizeof(dwFlags);
-    InternetQueryOption(hRequest, INTERNET_OPTION_SECURITY_FLAGS,
-      @dwFlags, dwBuffLen);
-    dwFlags := dwFlags or SECURITY_FLAG_IGNORE_UNKNOWN_CA;
-    dwFlags := dwFlags or SECURITY_FLAG_IGNORE_CERT_CN_INVALID;
-    dwFlags := dwFlags or SECURITY_FLAG_IGNORE_CERT_DATE_INVALID;
-    dwFlags := dwFlags or SECURITY_FLAG_IGNORE_REDIRECT_TO_HTTP;
-    dwFlags := dwFlags or SECURITY_FLAG_IGNORE_REDIRECT_TO_HTTPS;
-    if not InternetSetOption (hRequest, INTERNET_OPTION_SECURITY_FLAGS,
-      @dwFlags, sizeof(dwFlags)) then
+    if protocol = 'https' then
     begin
-      err('認証に関するエラー'); Exit;
+      dwFlags := 0;
+      dwBuffLen := sizeof(dwFlags);
+      InternetQueryOption(hRequest, INTERNET_OPTION_SECURITY_FLAGS,
+        @dwFlags, dwBuffLen);
+      dwFlags := dwFlags or SECURITY_FLAG_IGNORE_UNKNOWN_CA;
+      dwFlags := dwFlags or SECURITY_FLAG_IGNORE_CERT_CN_INVALID;
+      dwFlags := dwFlags or SECURITY_FLAG_IGNORE_CERT_DATE_INVALID;
+      dwFlags := dwFlags or SECURITY_FLAG_IGNORE_REDIRECT_TO_HTTP;
+      dwFlags := dwFlags or SECURITY_FLAG_IGNORE_REDIRECT_TO_HTTPS;
+      if not InternetSetOption (hRequest, INTERNET_OPTION_SECURITY_FLAGS,
+       @dwFlags, sizeof(dwFlags)) then
+      begin
+        err('認証に関するエラー'); Exit;
+      end;
     end;
-
+    
     if FHeaders <> '' then
     begin
       b := HttpAddRequestHeadersA(hRequest, PAnsiChar(FHeaders), Length(FHeaders),
         HTTP_ADDREQ_FLAG_REPLACE or HTTP_ADDREQ_FLAG_ADD);
-      if not b then begin err('ヘッダの設定に失敗しました。'); exit; end;
+      if not b then begin err('ヘッダの設定に失敗しました。@' + FHeaders + '@'); exit; end;
     end;
 
-    if not HttpSendRequest(hRequest, nil, 0, nil, 0) then
+    if not HttpSendRequest(hRequest, nil, 0, PChar(FPostBody), Length(FPostBody)) then
     begin
       err('リクエスト送信時のエラー'); Exit;
     end;
@@ -869,7 +916,6 @@ begin
   inherited;
 
   flagStop := False;
-
   try
     hSession := InternetOpenA(PAnsiChar(FUserAgent), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0);
     if not Assigned(hSession) then
@@ -877,27 +923,32 @@ begin
       err('セッションが開けません。'); Exit;
     end;
 
-    // InternetOpenUrl
-    szheader := FHeaders;
-    SetLength(szHeader, Length(szHeader));
-    hRequest := InternetOpenUrlA(hSession, PAnsiChar(FUrl),
-                  PAnsiChar(szheader), Length(szheader),
-                  INTERNET_FLAG_RELOAD, 0);
-
-    // CA(認証)エラーの場合、無視オプションをセットする
-    if not Assigned(hRequest) then
+    if UpperCase(FMethod) = 'POST' then
     begin
-      if (GetLastError = ERROR_INTERNET_INVALID_CA) or
-         (GetLastError = ERROR_INTERNET_CLIENT_AUTH_CERT_NEEDED) then
+      if not _httpsDownload then Exit;
+    end else begin
+      // InternetOpenUrl
+      szheader := FHeaders;
+      SetLength(szHeader, Length(szHeader));
+      hRequest := InternetOpenUrlA(hSession, PAnsiChar(FUrl),
+                    PAnsiChar(FHeaders), Length(szheader),
+                    INTERNET_FLAG_RELOAD, 0);
+
+      // CA(認証)エラーの場合、無視オプションをセットする
+      if not Assigned(hRequest) then
       begin
-        if not _httpsDownload then Exit;
+        if (GetLastError = ERROR_INTERNET_INVALID_CA) or
+          (GetLastError = ERROR_INTERNET_CLIENT_AUTH_CERT_NEEDED) then
+        begin
+          if not _httpsDownload then Exit;
+        end;
+      end else begin
+        if not Assigned(hRequest) then
+        begin
+          err('リクエスト時のエラー'); Exit;
+        end;
       end;
     end;
-    if not Assigned(hRequest) then
-    begin
-      err('リクエスト時のエラー'); Exit;
-    end;
-
     // ヘッダの取得
     dwBytesRead := Length(lpBuffer);
     ZeroMemory(@lpBuffer, dwBytesRead);
@@ -922,7 +973,6 @@ begin
         if flagStop then
         begin
           err('ユーザーによる中断');
-          Break;
           Break;
         end;
       end;
@@ -955,6 +1005,9 @@ constructor TkskHttpDialog.Create;
 begin
   UserAgent := '';
   downloader := nil;
+  Header := '';
+  Method := 'GET';
+  PostBody := '';
   FCancel := False;
   Stream := TMemoryStream.Create;
   UseDialog := True;
@@ -991,16 +1044,24 @@ begin
     ShowWindow(hProgress, SW_SHOW);
   end;
 
-  // ダウンロード用のスレッドの作成
+  // ヘッダを準備
+  head := '';
+  if Header <> '' then
+  begin
+    head := head + Header + #13#10;
+  end;
   if UseBasicAuth then
   begin
-    head := 'Authorization: Basic ' + EncodeBase64(id + ':' + password) + #0;
+    head := head + 'Authorization: Basic ' + EncodeBase64(id + ':' + password) + #13#10;
   end;
   if Referer <> '' then
   begin
-    head := 'Referer:' + Referer + #13#10 + head;
+    head := head + 'Referer:' + Referer + #13#10;
   end;
-  downloader := THTTPSyncFileDownloader.Create(UserAgent, url, head, httpVersion,
+  head := Trim(head);
+
+  // ダウンロード用のスレッドの作成
+  downloader := THTTPSyncFileDownloader.Create(Method, PostBody, UserAgent, url, head, httpVersion,
     Stream, OnComplete, OnError, OnProgress);
   try
     // ダウンロードが終了するまでダイアログを表示

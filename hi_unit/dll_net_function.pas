@@ -20,7 +20,7 @@ uses
   IdURI;
 
 const
-  NAKONET_DLL_VERSION = '1.511';
+  NAKONET_DLL_VERSION = '1.512';
 
 type
   TNetDialogStatus = (statWork, statError, statComplete, statCancel);
@@ -76,7 +76,8 @@ implementation
 uses mini_file_utils, unit_file, KPop3, KSmtp, KTcp, KTCPW, unit_string2,
   WSockUtils, Icmp, KHttp, jconvert, md5, nako_dialog_function,
   nadesiko_version, messages, nako_dialog_const, CommCtrl, unit_kabin,
-  hima_types, unit_content_type, IdAttachment, unit_string, unit_date;
+  hima_types, unit_content_type, IdAttachment, unit_string, unit_date,
+  Math;
 
 var pProgDialog: PHiValue = nil;
 var FNetDialog: TNetDialog = nil;
@@ -2551,50 +2552,67 @@ end;
 
 function sys_http_post(args: DWORD): PHiValue; stdcall;
 var
-  http: TKHttpClient;
+  h: TkskHttpDialog;
   url, head,body: AnsiString;
-
+  res: string;
 begin
   head := getArgStr(args, 0, True);
   body := getArgStr(args, 1, False);
   url  := getArgStr(args, 2);
 
-  http := TKHttpClient.Create(nil);
+  // スレッドを使ってアクセス
+  h := TkskHttpDialog.Create;
   try
-    // http セッティングを得る
-    http.GetProxySettingFromRegistry;
-    http.Port := 80;
-    // post
-    Result := hi_newStr(http.Post(url, head, body));
+    kskFtp.MainWindowHandle := nako_getMainWindowHandle;
+    h.Header := head;
+    h.Method := 'POST';
+    h.PostBody := body;
+    h.UseBasicAuth  := http_opt_useBasicAuth;
+    h.id            := AnsiString(http_opt_getId);
+    h.password      := AnsiString(http_opt_getPassword);
+    h.UserAgent     := AnsiString(http_opt_getUA);
+    h.UseDialog     := hi_bool(pProgDialog);
+    h.httpVersion   := AnsiString(http_opt_getHttpVersion);
+    h.Referer       := AnsiString(http_opt_getReferer);
+    res := '';
+    if h.DownloadDialog(url) then
+    begin
+      SetLength(res, h.Stream.Size);
+      h.Stream.Position := 0;
+      h.Stream.Read(res[1], h.Stream.Size);
+    end;
+    Result := hi_newStr(res);
   finally
-    http.Free;
+    h.Free;
   end;
 end;
 
 
 function sys_http_post_easy(args: DWORD): PHiValue; stdcall;
 var
-  http: TKHttpClient;
-  url, body, head: AnsiString;
+  h: TkskHttpDialog;
+  url, head, body, res: AnsiString;
   key, keys: AnsiString;
   value, fname, name, mime: AnsiString;
   hash, pv: PHiValue;
   sl: TStringList;
   i: Integer;
+  rnd: string;
 begin
   Result := nil;
   url  := getArgStr(args, 0, True);
   hash := nako_getFuncArg(args, 1);
   nako_hash_create(hash);
+  rnd := IntToStr(RandomRange(11111, 99999));
 
   SetLength(keys, 65536);
   nako_hash_keys(hash, PAnsiChar(keys), 65535);
 
   sl := TStringList.Create;
-  http := TKHttpClient.Create(nil);
+  h := TkskHttpDialog.Create;
   try
     sl.Text := Trim(keys);
-    head := 'Content-Type: multipart/form-data; boundary=---------------------------1870989367997'#13#10;
+    head := 'Content-Type: multipart/form-data; boundary=---------------------------1870989367997'+rnd+#13#10;
     for i := 0 to sl.Count - 1 do
     begin
       key := sl.Strings[i];
@@ -2618,58 +2636,79 @@ begin
         except
           raise Exception.Create('『HTTP簡易ポスト』でファイルの埋め込みに失敗:' + fname);
         end;
-        body := body + '-----------------------------1870989367997' + #13#10 +
+        body := body + '-----------------------------1870989367997' + rnd + #13#10 +
           'Content-Disposition: form-data; name="' + key + '"; filename="' + name + '"' + #13#10 +
           'Content-Type:' + mime + #13#10#13#10 +
           value + #13#10;
       end else
       begin
-        body := body + '-----------------------------1870989367997' + #13#10 +
+        body := body + '-----------------------------1870989367997' + rnd + #13#10 +
           'Content-Disposition: form-data; name="' + key + '"'#13#10#13#10 +
           value + #13#10;
       end;
     end;
-    body := body + '-----------------------------1870989367997--'#13#10;
+    body := body + '-----------------------------1870989367997' + rnd + '--'#13#10;
     // FileSaveAll(body, DesktopDir + 'test.txt');
-    //
-    // http セッティングを得る
-    http.GetProxySettingFromRegistry;
-    http.Port := 80;
-    if http_opt_useBasicAuth then
+
+    // POSTの準備
+    kskFtp.MainWindowHandle := nako_getMainWindowHandle;
+    h.Header        := head;
+    h.Method        := 'POST';
+    h.PostBody      := body;
+    h.UseBasicAuth  := http_opt_useBasicAuth;
+    h.id            := AnsiString(http_opt_getId);
+    h.password      := AnsiString(http_opt_getPassword);
+    h.UserAgent     := AnsiString(http_opt_getUA);
+    h.UseDialog     := hi_bool(pProgDialog);
+    h.httpVersion   := AnsiString(http_opt_getHttpVersion);
+    h.Referer       := AnsiString(http_opt_getReferer);
+    res := '';
+    if h.DownloadDialog(url) then
     begin
-      http.AuthMode := httpBASIC;
-      http.Username := http_opt_getId;
-      http.Password := http_opt_getPassword;
+      SetLength(res, h.Stream.Size);
+      h.Stream.Position := 0;
+      h.Stream.Read(res[1], h.Stream.Size);
     end;
-    // post
-    Result := hi_newStr(http.Post(url, head, body));
+    Result := hi_newStr(res);
   finally
-    sl.Free;
-    http.Free;
+    h.Free;
   end;
 end;
 
-
 function sys_http_get(args: DWORD): PHiValue; stdcall;
 var
-  http: TKHttpClient;
+  h: TkskHttpDialog;
   url, head: AnsiString;
+  res: string;
+
 begin
   head := getArgStr(args, 0, True);
   url  := getArgStr(args, 1);
 
-  http := TKHttpClient.Create(nil);
+  // スレッドを使ってアクセス
+  h := TkskHttpDialog.Create;
   try
-    // http セッティングを得る
-    http.GetProxySettingFromRegistry;
-    http.Port := 80;
-    // post
-    Result := hi_newStr(http.Get(url, head));
+    kskFtp.MainWindowHandle := nako_getMainWindowHandle;
+    h.Header := head;
+    h.UseBasicAuth  := http_opt_useBasicAuth;
+    h.id            := AnsiString(http_opt_getId);
+    h.password      := AnsiString(http_opt_getPassword);
+    h.UserAgent     := AnsiString(http_opt_getUA);
+    h.UseDialog     := hi_bool(pProgDialog);
+    h.httpVersion   := AnsiString(http_opt_getHttpVersion);
+    h.Referer       := AnsiString(http_opt_getReferer);
+    res := '';
+    if h.DownloadDialog(url) then
+    begin
+      SetLength(res, h.Stream.Size);
+      h.Stream.Position := 0;
+      h.Stream.Read(res[1], h.Stream.Size);
+    end;
+    Result := hi_newStr(res);
   finally
-    http.Free;
+    h.Free;
   end;
 end;
-
 
 function sys_http_delete(args: DWORD): PHiValue; stdcall;
 var

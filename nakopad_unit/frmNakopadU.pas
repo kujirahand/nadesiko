@@ -406,13 +406,13 @@ type
     popGUIFindCopy: TMenuItem;
     popGUIPaste: TMenuItem;
     timerShowWeb: TTimer;
-    mnuShowNews: TMenuItem;
     pnlAction: TPanel;
     Panel2: TPanel;
     webAction: TUIWebBrowser;
     btnActionOpenBrowser: TButton;
     btnWebBack: TButton;
     mnuNakoC3: TMenuItem;
+    mnuShowNewsWakeup: TMenuItem;
     procedure mnuCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure mnuViewLeftPanelClick(Sender: TObject);
@@ -636,13 +636,13 @@ type
     procedure popGUIFindCopyClick(Sender: TObject);
     procedure popGUIPasteClick(Sender: TObject);
     procedure timerShowWebTimer(Sender: TObject);
-    procedure mnuShowNewsClick(Sender: TObject);
     procedure btnActionOpenBrowserClick(Sender: TObject);
     procedure btnWebBackClick(Sender: TObject);
     procedure webActionBeforeNavigate2(Sender: TObject;
       const pDisp: IDispatch; var URL, Flags, TargetFrameName, PostData,
       Headers: OleVariant; var Cancel: WordBool);
     procedure mnuNakoC3Click(Sender: TObject);
+    procedure mnuShowNewsWakeupClick(Sender: TObject);
   private
     { Private êÈåæ }
     ini: TIniFile;
@@ -1106,9 +1106,9 @@ begin
     end;
   end;
 
-  // show news?
-  mnuShowNews.Checked := ini.ReadBool('Edit', 'ShowNews', True);
-  if mnuShowNews.Checked then
+  // News
+  mnuShowNewsWakeup.Checked := ini.ReadBool('Edit', 'mnuShowNewsWakeup', True);
+  if mnuShowNewsWakeup.Checked then
   begin
     timerShowWeb.Enabled := True;
   end;
@@ -6240,12 +6240,6 @@ begin
 
 end;
 
-procedure TfrmNakopad.mnuShowNewsClick(Sender: TObject);
-begin
-  mnuShowNews.Checked := not mnuShowNews.Checked;
-  ini.WriteBool('Edit','ShowNews', mnuShowNews.Checked);
-end;
-
 procedure TfrmNakopad.btnActionOpenBrowserClick(Sender: TObject);
 var
   url: string;
@@ -6308,6 +6302,12 @@ begin
   if index = NAKO_CNAKO then mnuNakoCClick(Self);
   if index = NAKO_NNAKO then mnuNakoNClick(Self);
   if index = NAKO_CNAKO3 then mnuNakoC3Click(Self);
+end;
+
+procedure TfrmNakopad.mnuShowNewsWakeupClick(Sender: TObject);
+begin
+  mnuShowNewsWakeup.Checked := not mnuShowNewsWakeup.Checked;
+  ini.WriteBool('Edit', 'mnuShowNewsWakeup', mnuShowNewsWakeup.Checked);
 end;
 
 end.
