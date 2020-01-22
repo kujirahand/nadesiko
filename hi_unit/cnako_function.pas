@@ -293,16 +293,8 @@ begin
   if len > 0 then
   begin
     SetLength(s, len);
-    //ReadConsole(GetStdHandle(STD_INPUT_HANDLE), @s[1], len, len, nil);
     h := GetStdHandle(STD_INPUT_HANDLE);
     ReadFile(h, s[1], len, len, nil);
-    {for i := 1 to len do
-    begin
-      System.read(c);
-      s[i] := c;
-      //if ((i-1) mod 16) = 0 then write(#13#10);
-      //write(IntToHex(ord(c),2),'-');
-    end;}
   end;
   // (3) åãâ ÇÃê›íË
   Result := nako_var_new(nil);

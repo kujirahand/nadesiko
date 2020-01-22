@@ -6070,7 +6070,7 @@ var
     root := ExtractFilePath(Copy(AppPath, 1, Length(AppPath) - 1));
     node := root + 'nodejs\node.exe';
     cnako3 := root + 'src\cnako3.js';
-    cmd := Format('"%s" "%s" "%s"', [node, cnako3, FFileName]);
+    cmd := Format('"%s" "%s" "%s"', [node, cnako3, FTempFile]);
     if not FileExists(node) then
     begin
       ShowMessage('node.exeを以下のパスに配置してください。'#13#10+node);
@@ -6081,8 +6081,12 @@ var
       ShowMessage('cnako3.jsを以下のパスに配置してください。'#13#10+cnako3);
       Exit;
     end;
-    cmd := 'REM --- NADESIKO V3 ---'#13#10 + cmd + #13#10 + 'pause' + #13#10;
-    batfile := ChangeFileExt(FFileName, '.bat');
+    cmd := '@ ECHO OFF'#13#10 +
+      'REM --- NADESIKO V3 ---'#13#10 +
+      cmd + #13#10 +
+      'ECHO ---'#13#10+
+      'pause' + #13#10;
+    batfile := ChangeFileExt(FTempFile, '.bat');
     WriteTextFile(batfile, cmd);
     Result := batfile;
   end;
