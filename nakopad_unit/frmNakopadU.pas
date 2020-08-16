@@ -2194,10 +2194,10 @@ end;
 procedure TfrmNakopad.lstFindDrawItem(Control: TWinControl; Index: Integer;
   Rect: TRect; State: TOwnerDrawState);
 var
-  s: string;
+  s, no: string;
 begin
   s := TListBox(Control).Items[Index];
-  getToken_s(s, #9);
+  no := getToken_s(s, #9);
   if Copy(s,1,1) = '"' then s := Copy(s,2,Length(s)-2);
 
   with TListBox(Control).Canvas do
@@ -2215,7 +2215,7 @@ begin
       if (Index mod 2) = 0 then
         Brush.Color := RGB(230,230,230)
       else
-        Brush.Color := clWhite;
+        Brush.Color := RGB(240,240,255);
       Font.Color := clBlack;
     end;
     if Pos('”ñŒöŠJ',s)>0 then
@@ -2224,7 +2224,12 @@ begin
     end;
     Pen.Color := Brush.Color;
     Rectangle(Rect);
-    TextOut(Rect.Left + 2, Rect.Top + 2, s);
+    if Control = lstFind then
+    begin
+      TextOut(Rect.Left + 2, Rect.Top + 2, Format('%4s', [no]) + ': ' + s);
+    end else begin
+      TextOut(Rect.Left + 2, Rect.Top + 2, s);
+    end;
   end;
 end;
 
@@ -3878,11 +3883,7 @@ end;
 
 procedure TfrmNakopad.mnuAboutClick(Sender: TObject);
 begin
-  //
-  if isDelux then
-    RunApp('"'+AppPath+'vnako.exe" "'+AppPath+'tools\about.nako" -delux')
-  else
-    RunApp('"'+AppPath+'vnako.exe" "'+AppPath+'tools\about.nako"');
+  RunApp('"'+AppPath+'vnako.exe" "'+AppPath+'tools\about.nako"');
 end;
 
 procedure TfrmNakopad.mnuCol_javaClick(Sender: TObject);

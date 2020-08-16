@@ -188,7 +188,7 @@
 　　BEEP。
 
 ●最新版確認処理
-　　「http://nadesi.com/version.txt」からHTTPデータ取得。
+　　「http://download.nadesi.com/v1/version.txt」からHTTPデータ取得。
 　　最新版はそれ。
 　　最新バージョンは最新版￥0
 　　もし、最新バージョン＝ナデシコバージョンならば
@@ -200,6 +200,6 @@
 --------------------------------
 {最新版}」と二択。
 　　　　もし、それがはいならば
-　　　　　　「http://nadesi.com/download.htm」を起動。
+　　　　　　「https://nadesi.com/top/go.php?6」を起動。
 　　　　　　終わる。
 

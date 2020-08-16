@@ -108,12 +108,48 @@ function getOriginalFileName(dirname, header: AnsiString): AnsiString;
 // 埋め込まれたファイルを取り出して引数のファイル名を書き換える
 function getEmbedFile(var fname: AnsiString):Boolean;
 
+procedure SetFileDate(FileName: string; CrDate, UpDate, AcDate: TDateTime);
+function DateTimeToFIleTime(FileTime:TDateTime):TFileTime;
+
 implementation
 
 uses mini_file_utils, unit_string, EasyMasks,
   nadesiko_version, Math;
 
 var AutoDeletePackFile: string = '';
+
+
+function DateTimeToFIleTime(FileTime:TDateTime):TFileTime;
+var
+  LocalFileTime, Ft: TFileTime;
+  SystemTime:   TSystemTime;
+begin
+  result.dwLowDateTime  := 0;
+  result.dwHighDateTime := 0;
+  DateTimeToSystemTime(FileTime, SystemTime);
+  SystemTimeToFileTime(SystemTime, LocalFileTime);
+  LocalFileTimeToFileTime(LocalFileTime, Ft);
+  result := Ft;
+end;
+
+procedure SetFileDate(FileName: string; CrDate, UpDate, AcDate: TDateTime);
+var
+  Ut, Ct, At: TFileTime;
+  Fs: TFileStream;
+begin
+  Fs := TFileStream.Create(FileName, fmOpenReadWrite);
+  try
+    Ct := DateTimeToFileTIme(CrDate);
+    Ut := DateTimeToFileTime(UpDate);
+    At := DateTimeToFileTime(AcDate);
+    // ファイル日付を変更する
+    // SetFileTimeの詳細はWin32APIのヘルプを参照
+    SetFileTime(Fs.Handle, @Ct, @At, @Ut);
+  finally
+    Fs.Free;
+  end;
+end;
+
 
 {オリジナル一時ファイル名の取得}
 function getOriginalFileName(dirname, header: AnsiString): AnsiString;

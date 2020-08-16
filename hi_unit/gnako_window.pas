@@ -71,12 +71,14 @@ procedure Nadesiko_exec; // 実行
 
 implementation
 
-uses dnako_import, dnako_import_types, unit_string, mini_file_utils;
+uses dnako_import, dnako_import_types, unit_string, mini_file_utils,
+  nadesiko_version;
 
 var
   FlagNoProgram: Boolean = True;
   _dnako_loader: TDnakoLoader;
   debugmode:Boolean = False;
+  NakoTitle: string = 'なでしこ (gnako) ver.' + NADESIKO_VER;
 
 procedure Nadesiko_Load;
 var
@@ -194,7 +196,7 @@ begin
     len := nako_getError(nil, 0);
     SetLength(err, len);
     nako_getError(PAnsiChar(err), len);
-    MessageBoxA(hMainWindow, PAnsiChar(err), '文法エラー', MB_OK or MB_ICONERROR);
+    MessageBoxA(hMainWindow, PAnsiChar(err), PAnsiChar(NakoTitle), MB_OK or MB_ICONERROR);
     Exit;
   end;
 
@@ -210,7 +212,7 @@ begin
   begin
     len := nako_getError(nil, 0); SetLength(str, len+1);
     nako_getError(PAnsiChar(str), len);
-    MessageBoxA(hMainWindow, PAnsiChar(str), '文法エラー', MB_OK or MB_ICONERROR);
+    MessageBoxA(hMainWindow, PAnsiChar(str), PAnsiChar(NakoTitle), MB_OK or MB_ICONERROR);
     Exit;
   end;
 

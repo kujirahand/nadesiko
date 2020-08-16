@@ -41,6 +41,8 @@ function _getEmbedFile(var f: AnsiString): Boolean;
 
 implementation
 
+uses nadesiko_version;
+
 function _getEmbedFile(var f: AnsiString): Boolean;
 var
   path: AnsiString;

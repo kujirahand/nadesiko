@@ -43,7 +43,7 @@ function frmError: TfrmError;
 implementation
 
 uses frmDebugU, dnako_import, frmNakoU, StrUnit, gui_benri, unit_string,
-  dll_plugin_helper, dnako_import_types;
+  dll_plugin_helper, dnako_import_types, nadesiko_version;
 
 function frmError: TfrmError;
 begin
@@ -87,6 +87,10 @@ begin
   allow := hi_bool(v);
   btnDebug.Visible := allow;
   btnOteage.Visible := allow;
+  // バージョン情報を表示
+  edtMain.Text :=
+    '[なでしこ(vnako)] ver.' + NADESIKO_VER + #13#10 +
+    edtMain.Text + #13#10;
 end;
 
 procedure TfrmError.WMMousewheel(var Msg: TMessage);

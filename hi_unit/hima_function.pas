@@ -3686,9 +3686,14 @@ begin
 end;
 
 function sys_timeGettime(args: THiArray): PHiValue;
+var
+  d: DWORD;
+  f: HFloat;
 begin
+  d := timeGetTime;
+  f := d; // 実数に変換(@935 - 数値がマイナスになってしまうことがあるので)
   Result := hi_var_new;
-  hi_setInt(Result, timeGetTime);
+  hi_setFloat(Result, f);
 end;
 
 function sys_EnumVar(args: THiArray): PHiValue;

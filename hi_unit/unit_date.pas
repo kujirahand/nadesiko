@@ -61,7 +61,15 @@ begin
     Result := Now;
     str := convToHalf(str);
     if str='' then Exit;
-    if PosA('.',str)>0 then str := JReplaceA(str,'.','/');
+    if PosA('.',str)>0 then begin
+      // 数値に変換できるかテスト
+      try
+        StrToFloatA(str);
+      except
+        // エラーなら yyyy.mm.dd 形式かも
+        str := JReplaceA(str,'.','/');
+      end;
+    end;
     Result := VarToDateTime(str);
 end;
 

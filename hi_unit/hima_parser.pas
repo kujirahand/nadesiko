@@ -6331,15 +6331,15 @@ end;
 function TSyntaxWhile.getValue: PHiValue;
 var
   p: PHiValue;
-  c: Integer;
-  tmpKaisuu: Integer;
+  c: DWORD;
+  tmpKaisuu: DWORD;
 begin
   c := 1;
-  tmpKaisuu := hi_int(HiSystem.kaisu);
+  tmpKaisuu := DWORD(hi_int(HiSystem.kaisu));
 
   while True do
   begin
-    hi_setInt(HiSystem.kaisu, c); Inc(c);
+    hi_setFloat(HiSystem.kaisu, c); Inc(c);
 
     // 無限ループ対策...少なすぎるかな？
     if (c > MAX_STACK_COUNT) then
@@ -6528,9 +6528,9 @@ end;
 
 function TSyntaxLoop.getValue: PHiValue;
 var
-  i: Integer;
+  i: DWORD;
   v: PHiValue;
-  tmpKaisu: Integer;
+  tmpKaisu: DWORD;
 begin
   Result := nil;
 
@@ -6548,10 +6548,10 @@ begin
     if HiSystem.ReturnLevel < HiSystem.FNestCheck then Exit;
   end;
 
-  tmpKaisu := hi_int(HiSystem.kaisu);
+  tmpKaisu := DWORD(hi_int(HiSystem.kaisu));
   // 何回ループするのか？
   v := kaisu.getValue;
-  for i := 1 to hi_int(v) do
+  for i := 1 to DWORD(hi_int(v)) do
   begin
     hi_setInt(HiSystem.kaisu, i);
     try
@@ -7016,13 +7016,13 @@ end;
 function TSyntaxEach.getValue: PHiValue;
 var
   v, sore: PHiValue;
-  i, cnt: Integer;
+  i, cnt: DWORD;
   p: PAnsiChar;
   str, s: AnsiString;
   mode: Integer;
   ary: THiArray;
   tkFile: TKTextFileE;
-  tmpKaisu: Integer;
+  tmpKaisu: DWORD;
   ptmpTaisyou, ptaisyou: PHiValue;
 
   // 文字列を一行切り取る
@@ -7062,7 +7062,7 @@ var
 
     while True do
     begin
-      hi_setInt(HiSystem.kaisu, (i+1));
+      hi_setFloat(HiSystem.kaisu, (i+1));
 
       //<イテレーターの設定>
       // 終了条件をチェック

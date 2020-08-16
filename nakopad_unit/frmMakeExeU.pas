@@ -225,11 +225,13 @@ begin
   // もし実行ファイルEXEにパックファイルをくっつける場合以下を使用（今後利用しない）
   // WritePackExeFile(f, temporaryExe, packfile);
   CopyFile(PChar(temporaryExe), PChar(f), False);
+  // ファイル作成日時を更新する
+  SetFileDate(f, Now, Now, Now);
 
   // 後始末
   DeleteFile(temporaryExe);
   DeleteFile(mainfile);
-  
+
   //=========================
   // 依存ファイルのコピー
   _copyPlugins;

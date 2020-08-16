@@ -153,7 +153,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 0
+            ItemHeight = 12
             PopupMenu = popFind
             TabOrder = 0
             OnEnter = cmbFindEnter
@@ -201,7 +201,7 @@ object frmNakopad: TfrmNakopad
           Height = 325
           Style = lbOwnerDrawFixed
           Align = alClient
-          ItemHeight = 16
+          ItemHeight = 20
           PopupMenu = popListFind
           TabOrder = 1
           OnDblClick = lstFindDblClick
@@ -252,7 +252,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 0
+            ItemHeight = 12
             PopupMenu = popFind
             TabOrder = 2
             OnEnter = cmbGroupEnter
@@ -434,7 +434,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 0
+            ItemHeight = 12
             PopupMenu = popFind
             TabOrder = 2
             OnEnter = cmbCmdEnter
@@ -457,7 +457,7 @@ object frmNakopad: TfrmNakopad
           Style = lbOwnerDrawVariable
           Align = alClient
           DragMode = dmAutomatic
-          ItemHeight = 16
+          ItemHeight = 20
           PopupMenu = popCmd
           TabOrder = 1
           OnClick = lstCmdClick
@@ -553,7 +553,7 @@ object frmNakopad: TfrmNakopad
           Width = 193
           Height = 20
           AutoComplete = False
-          ItemHeight = 0
+          ItemHeight = 12
           PopupMenu = popFind
           TabOrder = 1
           OnEnter = cmbVarEnter
@@ -2352,9 +2352,10 @@ object frmNakopad: TfrmNakopad
           OnClick = mnuViewSheetTreeClick
         end
       end
-      object mnuShowNews: TMenuItem
+      object mnuShowNewsWakeup: TMenuItem
         Caption = #36215#21205#26178#12395#12491#12517#12540#12473#12434#34920#31034#12377#12427
         Checked = True
+        OnClick = mnuShowNewsWakeupClick
       end
       object mnuImeOn: TMenuItem
         Caption = #36215#21205#26178'IME'#12434#12458#12531#12395
@@ -2381,11 +2382,6 @@ object frmNakopad: TfrmNakopad
       object mnuInsDebug: TMenuItem
         Caption = #24038#12496#12540#12463#12522#12483#12463#12391#12300#12487#12496#12483#12464#12301#12434#25407#20837#12377#12427
         OnClick = mnuInsDebugClick
-      end
-      object mnuShowNewsWakeup: TMenuItem
-        Caption = #36215#21205#26178#12395#12491#12517#12540#12473#12434#34920#31034#12377#12427
-        Checked = True
-        OnClick = mnuShowNewsWakeupClick
       end
       object N60: TMenuItem
         Caption = '-'
