@@ -233,6 +233,7 @@ const
   xlToRight = -4161;
   xlDown = -4121;
   xlFormatFromLeftOrAbove = 0;
+  xlWorkbookDefault = 51;
 
 
 const
@@ -465,7 +466,7 @@ begin
     E_WorkBook.SaveAs(fname, xlExcel8);
   end else
   begin
-    E_WorkBook.SaveAs(fname);
+    E_WorkBook.SaveAs(fname, xlWorkbookDefault);
   end;
   try E_Application.DisplayAlerts := FDisplayAlerts; except end;
 end;
