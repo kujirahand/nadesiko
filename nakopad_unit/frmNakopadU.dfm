@@ -2471,6 +2471,10 @@ object frmNakopad: TfrmNakopad
         ShortCut = 112
         OnClick = mnuWordHelpClick
       end
+      object mnuFindTansakan: TMenuItem
+        Caption = #12510#12491#12517#12450#12523#25506#26619#33382#12391#25506#12377
+        OnClick = mnuFindTansakanClick
+      end
       object N18: TMenuItem
         Caption = '-'
       end

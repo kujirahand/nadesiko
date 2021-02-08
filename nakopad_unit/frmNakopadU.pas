@@ -413,6 +413,7 @@ type
     btnWebBack: TButton;
     mnuNakoC3: TMenuItem;
     mnuShowNewsWakeup: TMenuItem;
+    mnuFindTansakan: TMenuItem;
     procedure mnuCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure mnuViewLeftPanelClick(Sender: TObject);
@@ -643,6 +644,7 @@ type
       Headers: OleVariant; var Cancel: WordBool);
     procedure mnuNakoC3Click(Sender: TObject);
     procedure mnuShowNewsWakeupClick(Sender: TObject);
+    procedure mnuFindTansakanClick(Sender: TObject);
   private
     { Private êÈåæ }
     ini: TIniFile;
@@ -6313,6 +6315,11 @@ procedure TfrmNakopad.mnuShowNewsWakeupClick(Sender: TObject);
 begin
   mnuShowNewsWakeup.Checked := not mnuShowNewsWakeup.Checked;
   ini.WriteBool('Edit', 'mnuShowNewsWakeup', mnuShowNewsWakeup.Checked);
+end;
+
+procedure TfrmNakopad.mnuFindTansakanClick(Sender: TObject);
+begin
+  RunTool('manual_searcher\manual_searcher.nako');
 end;
 
 end.

@@ -6345,7 +6345,6 @@ begin
     if (c > MAX_STACK_COUNT) then
     begin
       HiSystem.Eval2('0.01•b‘Ò‚Â'); // “K“x‚ÈWAIT‚ð“ü‚ê‚ÄŠÉ˜a
-      c := 0;
     end;
 
     //<BREAK>

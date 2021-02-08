@@ -10,7 +10,7 @@ uses
   hima_variable_ex, hima_function, hima_stream, mmsystem, unit_pack_files;
 
 const
-  MAX_STACK_COUNT = 4096; // 再帰スタックの最大数(あまり大きくするとDelphi自体がオーバーフローする)
+  MAX_STACK_COUNT = 65536; // 再帰スタックの最大数(あまり大きくするとDelphi自体がオーバーフローする)
 const
   nako_OK= 1;
   nako_NG = 0;
