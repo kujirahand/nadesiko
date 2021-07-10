@@ -6554,7 +6554,7 @@ begin
   // ‰½‰ñƒ‹[ƒv‚·‚é‚Ì‚©H
   v := kaisu.getValue;
   cnt := hi_int(v);
-  if cnt <= 0 then Exit;
+  if cnt < 1 then Exit;
   for i := 1 to cnt do
   begin
     hi_setInt(HiSystem.kaisu, i);
