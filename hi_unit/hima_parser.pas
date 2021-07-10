@@ -490,7 +490,8 @@ function SyntaxClassToFuncName(name: string): AnsiString;
 
 implementation
 
-uses hima_string, hima_system, unit_string, Math, unit_text_file;
+uses hima_string, hima_system, unit_string, Math, unit_text_file,
+  mini_func;
 
 function SyntaxClassToFuncName(name: string): AnsiString;
 begin
@@ -6527,9 +6528,11 @@ end;
 
 function TSyntaxLoop.getValue: PHiValue;
 var
+  cnt: Integer;
   i: DWORD;
   v: PHiValue;
   tmpKaisu: DWORD;
+
 begin
   Result := nil;
 
@@ -6550,7 +6553,9 @@ begin
   tmpKaisu := DWORD(hi_int(HiSystem.kaisu));
   // 何回ループするのか？
   v := kaisu.getValue;
-  for i := 1 to DWORD(hi_int(v)) do
+  cnt := hi_int(v);
+  if cnt <= 0 then Exit;
+  for i := 1 to cnt do
   begin
     hi_setInt(HiSystem.kaisu, i);
     try
@@ -6559,7 +6564,7 @@ begin
       on e:Exception do
       begin
         raise HException.CreateFmt('%d回目の実行中',[i]);
-      end;  
+      end;
     end;
     if HiSystem.BreakType = btContinue then
     begin
@@ -6583,7 +6588,6 @@ begin
       end;
       if HiSystem.ReturnLevel < HiSystem.FNestCheck then Break;
     end;
-
   end;
   Result := nil;
   hi_setInt(HiSystem.kaisu, tmpKaisu);
