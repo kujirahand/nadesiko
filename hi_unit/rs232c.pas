@@ -260,7 +260,7 @@ begin
 	XoffChar:=#19;
 	ErrorChar:=#0;
 	EofChar:=#0;
-	EofChar:=#0;
+	EvtChar:=#0;
 
 	debug:=false;
 
@@ -526,7 +526,6 @@ begin
 	//スレッドを実行させる
 	if makethread=true then
 		commthd.Resume;
-
 	openflg:=true;
 	rsopen:=true;
 
@@ -943,7 +942,7 @@ begin
 			PostMessage(rshwnd,WM_RS232C_RLSD,0,0);
 	end;
 
-{
+  {
 	//文字受信
 	if (commthd.mask and EV_RXCHAR)=EV_RXCHAR then
 	begin
@@ -966,7 +965,7 @@ begin
 		if Assigned(OnRXFLAG) then
 			PostMessage(rshwnd,WM_RS232C_RXFLAG,0,0);
 	end;
-}
+  }
 
   // これでいいのか、使って見ないとわからない^^;
   // でも、両方のイベント処理で受信データを取り合う
