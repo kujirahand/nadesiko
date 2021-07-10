@@ -6,11 +6,7 @@ unit unit_pack_files;
 interface
 
 uses
-  Windows, SysUtils, Classes, hima_types, hima_stream
-  {$IFDEF DELUX_VERSION}
-  ,unit_pack_files_pro
-  {$ENDIF}
-  ;
+  Windows, SysUtils, Classes, hima_types, hima_stream,unit_pack_files_pro;
 
 {
   TFileMixReader
@@ -89,11 +85,6 @@ procedure DoAngou(var ms: TMemoryStream);
 procedure DoAngou3(var ms: TMemoryStream; enc:Boolean);
 procedure DoAngou4(var ms: TMemoryStream; enc:Boolean);
 procedure DoAngou5(var ms: TMemoryStream; enc:Boolean);
-{$IFDEF DELUX_VERSION}
-// define [unit_pack_files_pro.pas] ---> Delux version
-{$ELSE}
-procedure DoAngou6(var ms: TMemoryStream; enc:Boolean);
-{$ENDIF}
 
 {実行ファイルへリソースの埋め込み／読み込み}
 function WritePackExeFile(outFileName, exeFileName, packFileName: string): Boolean;
@@ -483,16 +474,6 @@ begin
     Inc(p);
   end;
 end;
-
-{$IFDEF DELUX_VERSION}
-  // define [unit_pack_files_pro.pas]
-  // ---> Delux version
-{$ELSE}
-procedure DoAngou6(var ms: TMemoryStream; enc:Boolean);
-begin
-  raise Exception.Create('[ERROR] DELUX VERSION ONLY!!');
-end;
-{$ENDIF}
 
 
 function JPosEx(const sub, str: AnsiString; idx:Integer): Integer;

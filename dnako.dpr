@@ -36,9 +36,7 @@ uses
   CryptUtils in 'hi_unit\CryptUtils.pas',
   unit_file in 'hi_unit\unit_file.pas',
   EasyMasks in 'hi_unit\EasyMasks.pas',
-{$IFDEF DELUX_VERSION}
   unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas',
-{$ENDIF}
   unit_date in 'hi_unit\unit_date.pas';
 
 const
