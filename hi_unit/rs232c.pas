@@ -968,7 +968,6 @@ begin
 	end;
 }
 
-
   // これでいいのか、使って見ないとわからない^^;
   // でも、両方のイベント処理で受信データを取り合う
   // ことはなくなりそう！
@@ -993,6 +992,7 @@ begin
 		if Assigned(OnTXEMPTY) then
 			PostMessage(rshwnd,WM_RS232C_TXEMPTY,0,0);
 	end;
+
 end;
 
 procedure Trs232c.WndProc(var Msg: TMessage);
