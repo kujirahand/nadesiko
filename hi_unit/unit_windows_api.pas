@@ -73,6 +73,10 @@ begin
     AnsiString(
       Format('%d.%d',[Major, Minor]) + ')'
     );
+
+  // 以下のページに詳細なWindowsバージョンが記されている
+  // (参照) https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-osversioninfoexa
+  // それでも現在は直接レジストリのProductNameを拾うので更新は不要
   case major of
       3://NT 3.51
           begin

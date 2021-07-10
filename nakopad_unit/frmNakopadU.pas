@@ -1341,7 +1341,15 @@ begin
     UNILE_OUT :  s := sjisToUniLE2(s);
   end;
   //edtActive.Lines.SaveToFile(FFileName);
-  WriteTextFile(FFileName, s);
+  if not WriteTextFile(FFileName, s) then
+  begin
+    ShowMessage(
+      'すみません。保存できませんでした。書き込み先を確認してください。' + #13#10 +
+      'あるいは別のファイル名を指定してください。' + #13#10 +
+      FFileName
+    );
+    Exit;
+  end;
   //
   FModified := False;
   TitleChange;
