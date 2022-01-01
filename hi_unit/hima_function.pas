@@ -2915,7 +2915,7 @@ function sys_reSplit(args: THiArray): PHiValue; stdcall;
 var
   a, b: PHiValue;
   re: TBRegExp;
-  pat, s: AnsiString;
+  pat, pat2, s: AnsiString;
   i: Integer;
 begin
   Result := hi_var_new;
@@ -2938,7 +2938,9 @@ begin
       s   := hi_str(a);
       pat := hi_str(b);
 
-      if Copy(pat,1,1)<>'m' then
+      // check pattern
+      pat2 := pat + '  ';
+      if (pat2[1] <> 'm')or(not(pat2[2] in ['/', '#', '$','@','~'])) then
       begin
         pat := JReplaceA(pat, '#', '\#');
         pat := 'm#' + pat + '#' + getRegExpOpt;

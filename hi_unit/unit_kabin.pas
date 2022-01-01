@@ -34,6 +34,33 @@ implementation
 uses jconvertex;
 
 
+function escString(s: String): String;
+var
+  i, c:Integer;
+  h: String;
+begin
+  // ˆê”Ê“I‚È•ÏŠ·
+  s := JReplace(s, '\', '\\');
+  s := JReplace(s, '"', '\"');
+  s := JReplace(s, #8,  '\b');
+  s := JReplace(s, #12,  '\f');
+  s := JReplace(s, #9,  '\t');
+  s := JReplace(s, #13, '\r');
+  s := JReplace(s, #10, '\n');
+  // ASCIIˆÈŠO‚Ì•¶Žš—ñ
+  Result := '';
+  for i := 1 to Length(s) do begin
+    c := Ord(s[i]);
+    if (c <= 31) then
+    begin
+      h := '0000' + IntToHex(c, 16);
+      Result := Result + '\u' + Copy(h, Length(h) - 4 + 1, 4);
+      Continue;
+    end;
+    Result := Result + s[i];
+  end;
+end;
+
 function PHiValue2Json(p: PHiValue): AnsiString;
 var
   s, key: AnsiString;
@@ -53,14 +80,7 @@ begin
   if (p.VType = varStr) then
   begin
     s := hi_str(p);
-    s := JReplace(s, '\', '\\');
-    s := JReplace(s, '"', '\"');
-    s := JReplace(s, #8,  '\b');
-    s := JReplace(s, #12,  '\f');
-    s := JReplace(s, #9,  '\t');
-    s := JReplace(s, #13, '\r');
-    s := JReplace(s, #10, '\n');
-    s := JReplace(s, #0,  '\u0000');
+    s := escString(s);
     Result := '"' + s + '"';
     Exit;
   end;
@@ -87,7 +107,7 @@ begin
       key := getToken_s(s, #13#10);
       SetLength(key, StrLen(PAnsiChar(key)));
       p2  := nako_hash_get(p, PAnsiChar(key));
-      Result := Result + '"' + key + '":' + PHiValue2Json(p2) + ',';
+      Result := Result + '"' + escString(key) + '":' + PHiValue2Json(p2) + ',';
     end;
     if Result <> '' then Result := Copy(Result, 1, Length(Result) - 1);
     Result := '{' + Result + '}';

@@ -6343,7 +6343,7 @@ begin
     hi_setFloat(HiSystem.kaisu, c); Inc(c);
 
     // 無限ループ対策...少なすぎるかな？
-    if (c > MAX_STACK_COUNT) then
+    if (c mod MAX_STACK_COUNT) = (MAX_STACK_COUNT - 1) then
     begin
       HiSystem.Eval2('0.01秒待つ'); // 適度なWAITを入れて緩和
     end;
