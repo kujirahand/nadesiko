@@ -236,6 +236,7 @@ const
   xlDown = -4121;
   xlFormatFromLeftOrAbove = 0;
   xlWorkbookDefault = 51;
+  xlOpenXMLWorkbookMacroEnabled = 52;
 
 
 const
@@ -467,6 +468,10 @@ begin
   if ext = '.xls' then
   begin
     E_WorkBook.SaveAs(fname, xlExcel8);
+  end else
+  if ext = '.xlsm' then
+  begin
+    E_WorkBook.SaveAs(fname, xlOpenXMLWorkbookMacroEnabled);
   end else
   begin
     E_WorkBook.SaveAs(fname, xlWorkbookDefault);
