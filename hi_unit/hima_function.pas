@@ -3226,7 +3226,8 @@ begin
     {$IFDEF Win32}
     ZeroMemory(s.ptr, s.Size); // all zero
     {$ELSE}
-    FillByte(s.ptr^, 0, s.Size);
+    FillByte(s.ptr^, s.Size, 0);
+    WriteLn('alloc_mem=' + IntToStr(s.Size));
     {$ENDIF}
   end;
 

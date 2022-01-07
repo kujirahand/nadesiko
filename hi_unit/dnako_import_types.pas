@@ -4,7 +4,7 @@ interface
 
 uses
   {$IFDEF Win32}
-  Windows
+  Windows,
   {$ELSE}
   {$ENDIF}
   SysUtils

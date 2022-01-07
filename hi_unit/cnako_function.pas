@@ -8,7 +8,7 @@ uses
   {$ENDIF}
   {$IFDEF CNAKOEX}
   hima_variable,
-  hima_system,
+  hima_system
   {$ELSE}
   dnako_import,
   dnako_import_types
@@ -35,8 +35,8 @@ uses
   {$IFDEF CNAKOEX}
   SysUtils;
   {$ELSE}
-  dll_plugin_helper
-  ,SysUtils;
+  dll_plugin_helper,
+  SysUtils;
   {$ENDIF}
 
 type

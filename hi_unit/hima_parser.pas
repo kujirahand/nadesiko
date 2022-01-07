@@ -5166,7 +5166,7 @@ begin
   {$IFDEF Win32}
   ZeroMemory(@stack[0], Length(stack));
   {$ELSE}
-  FillByte(stack, 0, Length(stack));
+  FillByte(stack, Length(stack), 0);
   {$ENDIF}
   if Children = nil then Exit;
 

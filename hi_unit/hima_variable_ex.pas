@@ -1232,7 +1232,7 @@ begin
     {$IFDEF Win32}
     ZeroMemory(DataPtr, FTotalByte);
     {$ELSE}
-    FillByte(DataPtr^, 0, FTotalByte);
+    FillByte(DataPtr^, FTotalByte, 0);
     {$ENDIF}
     Exit;
   end;

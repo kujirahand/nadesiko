@@ -108,7 +108,7 @@ begin
   {$IFDEF Win32}
   ZeroMemory(Result, SizeOf(THiValue)); // 一気に zero で初期化
   {$ELSE}
-  FillByte(Result^, 0, SizeOf(THiValue));
+  FillByte(Result^, SizeOf(THiValue), 0);
   {$ENDIF}
   Result.VarID := 0;
 end;
@@ -664,7 +664,8 @@ begin
   {$IFDEF Win32}
   ZeroMemory(v.ptr, v.Size); // 末尾まで全部"0"
   {$ELSE}
-  FillByte(v.ptr^, 0, v.Size);
+  FillByte(v.ptr^, v.Size, 0);
+  WriteLn('hi_setStr');
   {$ENDIF}
 
   // Chr(0) もコピーできるようにメモリをそのままコピー

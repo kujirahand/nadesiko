@@ -260,7 +260,7 @@ begin
   dnako_import_handle := LoadLibrary(PChar(dllfile));
   {$ELSE}
   dnako_import_handle := LoadLibrary(dllfile);
-  {$IFEND}
+  {$ENDIF}
   // --- in APPPATH or WINDOWS or SYSTEM32
   if dnako_import_handle = 0 then
   begin

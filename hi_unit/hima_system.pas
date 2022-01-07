@@ -329,7 +329,7 @@ begin
   {$IFDEF Win32}
   ZeroMemory(@ctag[0], Length(ctag));
   {$ELSE}
-  FillByte(ctag, 0, Length(ctag));
+  FillByte(ctag, Length(ctag), 0);
   {$ENDIF}
 end;
 
@@ -652,13 +652,6 @@ procedure THiSystem.AddSystemCommand;
     hi_setLink(v, Sore);
     v := GetVariable(hi_tango2id('そう'));
     hi_setLink(v, Sore);
-
-    // 自身
-    {
-    v := GetVariable(token_jisin);
-    hi_var_copyGensi(FDummyGroup, v);
-    if v.VType <> varGroup then raise Exception.Create('自身がグループになりません。');
-    }
   end;
 
 begin
@@ -2223,7 +2216,7 @@ var
   bError: Boolean;
   err: AnsiString;
 label
-  lblTop, lblGoto;
+  lblTop;
 begin
   //todo 1: 実行(RunNode)
   Result := nil;
