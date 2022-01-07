@@ -773,7 +773,7 @@ begin
   begin
     Result := nako_OK;
   end;
-  {$IFEND}
+  {$ENDIF}
 end;
 
 function nako_registerLicense(license_name:PAnsiChar; license_code:PAnsiChar): DWORD; stdcall;// ライセンスコードを書き込む
@@ -791,7 +791,7 @@ begin
   except
     Exit;
   end;
-  {$IFEND}
+  {$ENDIF}
 end;
 
 ///<DNAKOAPI:END>

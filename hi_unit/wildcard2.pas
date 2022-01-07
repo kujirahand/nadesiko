@@ -324,7 +324,7 @@ end;
 begin
   raise Exception.Create('Not Supported');
 end;
-{$IFEND}
+{$ENDIF}
 
 function UpperCaseEx(const str: AnsiString): AnsiString;
 begin

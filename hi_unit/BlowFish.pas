@@ -11,7 +11,7 @@ uses
   {$IFDEF Win32}
   Windows,
   {$ELSE}
-  {$IFEND}
+  {$ENDIF}
   SysUtils, 
   CryptUtils;
 

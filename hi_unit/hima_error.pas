@@ -99,7 +99,7 @@ begin
   MessageBoxA(0, PAnsiChar(s), 'debug', MB_OK);
   {$ELSE}
   WriteLn('[DEBUG]', s);
-  {$IFEND}
+  {$ENDIF}
 end;
 
 procedure debugs(s: AnsiString);
@@ -108,7 +108,7 @@ begin
   MessageBoxA(0, PAnsiChar(s), 'debug', MB_OK);
   {$ELSE}
   WriteLn('[DEBUG]', s);
-  {$IFEND}
+  {$ENDIF}
 end;
 
 function setSourceFileName(fname: string): Integer;
@@ -212,7 +212,7 @@ begin
   home := GetEnv('HOME');
   Result := home + '/.temp';
 end;
-{$IFEND}
+{$ENDIF}
 
 procedure errLog(s: AnsiString);
 var

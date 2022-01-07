@@ -109,7 +109,7 @@ begin
   ZeroMemory(Result, SizeOf(THiValue)); // 一気に zero で初期化
   {$ELSE}
   FillByte(Result^, 0, SizeOf(THiValue));
-  {$IFEND}
+  {$ENDIF}
   Result.VarID := 0;
 end;
 
@@ -665,7 +665,7 @@ begin
   ZeroMemory(v.ptr, v.Size); // 末尾まで全部"0"
   {$ELSE}
   FillByte(v.ptr^, 0, v.Size);
-  {$IFEND}
+  {$ENDIF}
 
   // Chr(0) もコピーできるようにメモリをそのままコピー
   Move(s[1], v.ptr^, v.Size - 1);

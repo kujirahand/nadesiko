@@ -1033,7 +1033,7 @@ begin
   ClipbrdSetAsText(hi_str(s));
   {$ELSE}
   raise Exception.Create('Not Supported');
-  {$IFEND}
+  {$ENDIF}
 
   // (3) 戻り値を設定
   Result := nil;
@@ -2918,7 +2918,7 @@ end;
 begin
   raise Exception.Create('Not Supported');
 end;
-{$IFEND}
+{$ENDIF}
 
 function sys_reMatchBool(args: THiArray): PHiValue; stdcall;
 var
@@ -3772,7 +3772,7 @@ begin
   d := timeGetTime;
   {$ELSE}
   d := GetTickCount64();
-  {$IFEND}
+  {$ENDIF}
   f := d; // 実数に変換(@935 - 数値がマイナスになってしまうことがあるので)
   Result := hi_var_new;
   hi_setFloat(Result, f);

@@ -10,7 +10,7 @@ interface
 uses
   {$IFDEF Win32}
   Windows, 
-  ShellApi, comobj, shlobj, activex
+  ShellApi, comobj, shlobj, activex,
   {$ELSE}
   Types,
   {$ENDIF}
@@ -343,7 +343,7 @@ end;
 begin
   raise Exception.Create('Not Supported');
 end;
-{$IFEND}
+{$ENDIF}
 
 // 一括でファイル日時を変更する
 function SetFileTimeEx(fname:string; tCreation, tLastAccess, tLastWrite: TDateTime): Boolean;
@@ -374,7 +374,7 @@ end;
 begin
   raise Exception.Create('Not Supported');
 end;
-{$IFEND}
+{$ENDIF}
 
 {$IFDEF Win32}
 // 文字列にファイルの内容を全部開く
@@ -546,7 +546,7 @@ function SHFileRename(const Source, Dest: AnsiString): Boolean;
 begin
   raise Exception.Create('Not Supported');
 end;
-{$IFEND}
+{$ENDIF}
 
 
 function EnumFiles(path: string): TStringList;

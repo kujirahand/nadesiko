@@ -289,7 +289,7 @@ implementation
 uses
   {$IFDEF Win32}
   BRegExp,
-  {$IFEND}
+  {$ENDIF}
   Math, hima_string, unit_string, hima_system, hima_variable_lib,
   hima_function,wildcard2;
 
@@ -1233,7 +1233,7 @@ begin
     ZeroMemory(DataPtr, FTotalByte);
     {$ELSE}
     FillByte(DataPtr^, 0, FTotalByte);
-    {$IFEND}
+    {$ENDIF}
     Exit;
   end;
 
@@ -2226,7 +2226,7 @@ end;
 begin
   raise Exception.Create('Not Supported');
 end;
-{$IFEND}
+{$ENDIF}
 
 function THiArray.CsvPickupHasKey(s: AnsiString; Index: Integer): THiArray;
 begin
