@@ -3,17 +3,23 @@ unit unit_windows_api;
 interface
 
 uses
-  Windows, SysUtils, messages;
+  {$IFDEF Win32}
+  Windows, SysUtils, messages
+  {$ELSE}
+  SysUtils
+  {$ENDIF};
 
 // エラーメッセージを取得する
 function GetLastErrorStr: string;
 function GetLastErrorMessage(ErrorCode: Integer): string;
 
+{$IFDEF Win32}
 function ClipbrdGetAsText: AnsiString;
 function ClipbrdSetAsText(s: AnsiString): AnsiString;
 procedure ClipbrdSetAsBuffer(Format: Word; var Buffer; Size: Integer);
 
 procedure SendCOPYDATA(hwnd: THandle; str: AnsiString; msgid: DWORD; SelfHandle: THandle);
+{$ENDIF}
 
 function getWinVersion: AnsiString;
 function getWinVersionN: AnsiString;
@@ -24,6 +30,7 @@ uses
   Registry;
 
 function getWinVersionN: AnsiString;
+{$IFDEF Win32}
 var
   i: TOSVersionInfo;
 begin
@@ -39,9 +46,14 @@ begin
         i.dwPlatformId
       ]));
 end;
-
+{$ELSE}
+begin
+  Result := '0.0(0:0)';
+end;
+{$ENDIF}
 
 function getWinVersion: AnsiString;
+{$IFDEF Win32}
 var
   //s: AnsiString;
   major,minor: LongInt;
@@ -121,8 +133,14 @@ begin
       end;
   end;//of case Major
 end;
+{$ELSE}
+begin
+  Result := 'Not Windows';
+end;
+{$ENDIF}
 
 
+{$IFDEF Win32}
 {WM_COPYDATAを簡単に送信する}
 procedure SendCOPYDATA(hwnd: THandle; str: AnsiString; msgid: DWORD; SelfHandle: THandle);
 var
@@ -209,9 +227,10 @@ begin
     ClipbrdClose;
   end;
 end;
-
+{$ENDIF}
 
 function GetLastErrorMessage(ErrorCode: Integer): string;
+{$IFDEF Win32}
 const
   MAX_MES = 512;
 var
@@ -232,10 +251,21 @@ begin
     FreeMem(Buf);
   end;
 end;
+{$ELSE}
+begin
+  Result := 'ERROR-' + IntToStr(ErrorCode);
+end;
+{$ENDIF}
 
 function GetLastErrorStr: string;
+{$IFDEF Win32}
 begin
   Result := GetLastErrorMessage(GetLastError);
 end;
+{$ELSE}
+begin
+  Result := 'LastError';
+end;
+{$ENDIF}
 
 end.

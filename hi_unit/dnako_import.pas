@@ -7,7 +7,15 @@ unit dnako_import;
 interface
 
 uses
-  Windows, SysUtils, dnako_import_types, ShlObj;
+  {$IFDEF Win32}
+  Windows,
+  ShlObj,
+  {$ELSE}
+  unit_fpc,
+  {$ENDIF}
+  SysUtils,
+  dnako_import_types
+  ;
 
 /// DLLÇÃéÊÇËçûÇ›
 function dnako_import_init(dllfile: string): THandle;
@@ -203,6 +211,7 @@ implementation
 
 const CSIDL_COMMON_APPDATA = $0023;
 
+{$IFDEF Win32}
 function GetSpecialFolder(const loc:Word): string;
 var
    PathID: PItemIDList;
@@ -214,7 +223,17 @@ begin
    if Copy(Result, Length(Result),1)<>'\' then
     Result := Result + '\';
 end;
-
+{$ELSE}
+function GetSpecialFolder(const loc:Word): string;
+begin
+    if loc = CSIDL_COMMON_APPDATA then
+    begin
+        Result := '~/';
+    end else begin
+        Result := '';
+    end;
+end;
+{$ENDIF}
 
 function CommonAppData:string;
 begin
@@ -237,7 +256,11 @@ begin
   end;
   // load
   // --- DEFAULT : PACKFILE
+  {$IFDEF Win32}
   dnako_import_handle := LoadLibrary(PChar(dllfile));
+  {$ELSE}
+  dnako_import_handle := LoadLibrary(dllfile);
+  {$IFEND}
   // --- in APPPATH or WINDOWS or SYSTEM32
   if dnako_import_handle = 0 then
   begin

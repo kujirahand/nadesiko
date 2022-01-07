@@ -7,8 +7,14 @@ unit hima_parser;
 interface               
 
 uses
-  Windows, SysUtils, hima_error, hima_types, hima_token,
-  hima_variable, hima_variable_ex, hima_function, mmsystem;
+  {$IFDEF Win32}
+  Windows, 
+  mmsystem,
+  {$ELSE}
+  {$ENDIF}
+  SysUtils, hima_error, hima_types, hima_token,
+  hima_variable, hima_variable_ex, hima_function
+  ;
 
 
 type                                            
@@ -1239,7 +1245,11 @@ var
     cDec: AnsiString;
     ret, funcName, sarg, argName, argType, res: AnsiString;
 
+    {$IFDEF Win32}
     h: HINST;
+    {$ELSE}
+    h: DWORD;
+    {$ENDIF}
     proc: Pointer;
     i: Integer;
 
@@ -5153,7 +5163,11 @@ var
 begin
   hi_var_clear(NodeResult);
   Result := nil;
+  {$IFDEF Win32}
   ZeroMemory(@stack[0], Length(stack));
+  {$ELSE}
+  FillByte(stack, 0, Length(stack));
+  {$ENDIF}
   if Children = nil then Exit;
 
   // 3 5 6 * +
@@ -5514,6 +5528,7 @@ begin
 end;
 
 function TSyntaxFunction.callDllFunc: PHiValue;
+{$IFDEF Win32}
 var
   i: Integer;
   //rec: THimaRecord;
@@ -5630,12 +5645,15 @@ begin
       ERR_S_DLL_FUNCTION_EXEC + AnsiString(e.Message),
       [(hi_id2tango(FuncID))]);
   end;
-  //}
-
   //ary.ClearNotFree;//完全にクリアしてかまわないので。
   ary.Free;
   //rec.Free;
 end;
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
 
 function TSyntaxFunction.callSysFunc: PHiValue;
 var

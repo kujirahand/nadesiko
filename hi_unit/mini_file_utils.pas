@@ -7,8 +7,14 @@ unit mini_file_utils;
 interface
 
 uses
+  {$IFDEF Win32}
   Windows, Messages, SysUtils, Commdlg, shlobj, activex,
   ShellAPI, ComObj;
+  {$ELSE}
+  SysUtils,
+  Process,
+  dos;
+  {$ENDIF}
 
 const
   MAX_PATH = 1024;
@@ -23,10 +29,12 @@ type
 var
   DIR_PLUGINS: string = 'plug-ins\';
 
+{$IFDEF Win32}
 // Open / Save Dialog
 function ShowOpenDialog(hOwner:HWND; Filter, InitDir: AnsiString; InitFile: AnsiString=''): AnsiString;
 function ShowSaveDialog(hOwner:HWND; Filter, InitDir: AnsiString; InitFile: AnsiString=''): AnsiString;
 function OpenFolderDialog(var FolderPath: AnsiString; msg: AnsiString = ''): boolean;
+{$ENDIF}
 
 function GetSpecialFolder(id: DWORD): string;
 
@@ -34,6 +42,7 @@ function WinDir: string;
 function SysDir: string;
 function TempDir: string;
 function DesktopDir: string;
+{$IFDEF Win32}
 function SendToDir: string;
 function StartUpDir: string;
 function RecentDir: string;
@@ -47,6 +56,7 @@ function FontsDir: string;
 function ProgramFilesDir: string;
 function QuickLaunchDir: string;
 function AppDataDir: string;
+{$ENDIF}
 
 function RunAndWait(path: AnsiString; Hide: Boolean=False; sec:Integer = 0): Boolean;
 function OpenApp(path: AnsiString; Hide: Boolean=False): Boolean;
@@ -176,7 +186,6 @@ begin
   begin
     _ok(f); Exit;
   end;
-  // 天に運を任せてエイヤッ
   _ok(fname);
 end;
 
@@ -218,7 +227,7 @@ begin
   {$ENDIF}
 end;
 
-{
+(*
 const
   CSIDL_DESKTOP 		=$0000;//「デスクトップ」（ネームスペースのルートを表す仮想フォルダ）
   CSIDL_INTERNET 		=$0001;//「Internet Explorer」（仮想フォルダ）
@@ -263,9 +272,10 @@ const
   CSIDL_COMMON_DOCUMENTS 		=$002e;//Shfolder.dll： AllUsers のドキュメントテンプレートが格納されるディレクトリ（Windows NT 系および Shfolder.dll がインストールされた Windows 9x）
   CSIDL_COMMON_ADMINTOOLS 		=$002f;//Version 5.0 以降： AllUsers の管理ツールディレクトリ
   CSIDL_ADMINTOOLS 		=$0030;//Version 5.0 以降： 管理ツールディレクトリ
-}
+*)
 
 function SHFileDeleteComplete(const Source: AnsiString): Boolean;
+{$IFDEF Win32}
 var
   foStruct: _SHFILEOPSTRUCTA;
 begin
@@ -282,8 +292,14 @@ begin
   end;
   Result := (SHFileOperationA(foStruct)=0);
 end;
+{$ELSE}
+begin
+    DeleteFile(Source);
+end;
+{$ENDIF}
 
 function GetSpecialFolder(id: DWORD): string;
+{$IFDEF Win32}
 var
   PID: PItemIDList;
   Path: array [0..MAX_PATH-1] of WideChar;
@@ -293,11 +309,17 @@ begin
   Result := Path;
   if Copy(Result, Length(Result),1)<>'\' then Result := Result + '\';
 end;
-
+{$ELSE}
+begin
+  // TODO
+  Result := '';
+end;
+{$ENDIF}
 
 
 {Windowsフォルダを得る}
 function WinDir: string;
+{$IFDEF Win32}
 var
  TempWin:array[0..MAX_PATH] of Char;
 begin
@@ -305,9 +327,15 @@ begin
  Result:=StrPas(TempWin);
  if Copy(Result,Length(Result),1)<>'\' then Result := Result + '\';
 end;
+{$ELSE}
+begin
+  Result := ''; // todo
+end;
+{$ENDIF}
 
 {Systemフォルダを得る}
 function SysDir: string;
+{$IFDEF Win32} 
 var
  TempSys:array[0..MAX_PATH] of Char;
 begin
@@ -315,9 +343,14 @@ begin
  Result:=StrPas(TempSys);
  if Copy(Result,Length(Result),1)<>'\' then Result := Result + '\';
 end;
-
+{$ELSE}
+begin
+  Result := ''; // todo
+end;
+{$ENDIF}
 {Tempフォルダを得る}
 function TempDir: string;
+{$IFDEF Win32}
 var
  TempTmp:array[0..MAX_PATH] of Char;
 begin
@@ -325,6 +358,11 @@ begin
  Result:=StrPas(TempTmp);
  if Copy(Result,Length(Result),1)<>'\' then Result := Result + '\';
 end;
+{$ELSE}
+begin
+  Result := GetEnv('HOME') + '/.temp';
+end;
+{$ENDIF}
 
 function DesktopDir: string;
 begin
@@ -419,6 +457,7 @@ begin
   end;
 end;
 
+{$IFDEF Win32}
 function ShowOpenDialog(hOwner:HWND; Filter, InitDir: AnsiString; InitFile: AnsiString=''): AnsiString;
 var
   OFN: tagOFNA;
@@ -612,8 +651,11 @@ begin
     end;
   end;
 end;
+{$ENDIF}
+
 
 function RunApp(path: AnsiString; Hide: Boolean=False): Boolean;
+{$IFDEF Win32}
 var
     retCode: Integer;
 begin
@@ -633,8 +675,16 @@ begin
         Result :=False;
     end;
 end;
+{$ELSE}
+var
+  s: string;
+begin
+  Result := RunCommand(path, [], s);
+end;
+{$ENDIF}
 
 function OpenApp(path: AnsiString; Hide: Boolean=False): Boolean;
+{$IFDEF Win32}
 var
   i: DWORD;
   res: HINST;
@@ -651,8 +701,16 @@ begin
     i);
   Result := (res > 32);
 end;
+{$ELSE}
+var
+  s: string;
+begin
+  Result := RunCommand(path, [], s);
+end;
+{$ENDIF}
 
 function RunAndWait(path: AnsiString; Hide: Boolean; sec:Integer): Boolean;
+{$IFDEF Win32}
 var
   ret: Boolean;
   ecode: Integer;
@@ -720,8 +778,16 @@ begin
   CloseHandle(ProcessInfo.hProcess);
   CloseHandle(ProcessInfo.hThread);
 end;
+{$ELSE}
+var
+  s: string;
+begin
+  Result := RunCommand(path, [], s);
+end;
+{$ENDIF}
 
 function RunAppWithPipe(path: AnsiString; Hide: Boolean;out ParentPipe,ChildPipe:TPipe): Cardinal;
+{$IFDEF Win32}
 var
   ret: Boolean;
   StartupInfo: _STARTUPINFOA;
@@ -805,7 +871,14 @@ begin
   Result := ProcessInfo.hProcess;
   CloseHandle(ProcessInfo.hThread);
 end;
-
+{$ELSE}
+var
+  s: string;
+begin
+  RunCommand(path, [], s);
+  Result := 0;
+end;
+{$ENDIF}
 
 initialization
 ;

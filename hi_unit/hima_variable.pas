@@ -3,7 +3,11 @@ unit hima_variable;
 interface
 
 uses
-  Windows, SysUtils, hima_types;
+  {$IFDEF Win32}
+  Windows, 
+  {$ELSE}
+  {$ENDIF}
+  SysUtils, hima_types;
 
 //------------------------------------------------------------------------------
 // 変数などで利用される型
@@ -101,7 +105,11 @@ end;
 function hi_var_new: PHiValue; 
 begin
   New(Result);
-  ZeroMemory(Result, sizeOf(THiValue)); // 一気に zero で初期化
+  {$IFDEF Win32}
+  ZeroMemory(Result, SizeOf(THiValue)); // 一気に zero で初期化
+  {$ELSE}
+  FillByte(Result^, 0, SizeOf(THiValue));
+  {$IFEND}
   Result.VarID := 0;
 end;
 
@@ -653,7 +661,11 @@ begin
 
   // 領域を確保
   GetMem(v.ptr, v.Size);
+  {$IFDEF Win32}
   ZeroMemory(v.ptr, v.Size); // 末尾まで全部"0"
+  {$ELSE}
+  FillByte(v.ptr^, 0, v.Size);
+  {$IFEND}
 
   // Chr(0) もコピーできるようにメモリをそのままコピー
   Move(s[1], v.ptr^, v.Size - 1);

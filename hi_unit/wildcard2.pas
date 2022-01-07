@@ -1,5 +1,6 @@
 unit wildcard2;
-{-------------------------------------------------------------------------------
+(*
+-------------------------------------------------------------------------------
 
 ●●●　VB上位互換のワイルドカード　●●●
 
@@ -21,23 +22,25 @@ unit wildcard2;
 ================================================================================
 *** MATCH ***
 ================================================================================
-Filename      pattern         IsMatch pickup        説明
-------------- --------------- ------- ------------- ----------------------------
-abc.txt       *.txt           True
-abc.txt       abc.*           True
-abc-def-ghi   ???-???-???     True                  任意の文字の組み合わせ
-090-0123-4567 ###-####-####   True                  任意の数字の組み合わせ
-abc.txt       (*).txt         True    abc           カッコ中にマッチした部分
-123-4567      (*)-(*)         True    123\n4567     カッコ中にマッチした部分
-abc           [a-z]bc         True                  aからzのいずれかの１文字部分
-abc           [+a-z]          True                  aからzの１文字以上の連続
-abc           [*a-z]          True                  aからzの０文字以上の連続
-123abc        [*0-9][*a-z]    True
-123           [*a-z]123       True
-123           [+a-z]123       False
-abc.txt       [=abc|cde].txt  True                  abcかcdeのどれか
-abc.txt       [*!.].txt       True                  "."以外の連続
-ひらがな.txt  [*あ-ん].txt    True                  "あ"から"ん"の0文字以上の連続
+*)
+// Filename      pattern         IsMatch pickup        説明
+// ------------- --------------- ------- ------------- ----------------------------
+// abc.txt       *.txt           True
+// abc.txt       abc.*           True
+// abc-def-ghi   ???-???-???     True                  任意の文字の組み合わせ
+// 090-0123-4567 ###-####-####   True                  任意の数字の組み合わせ
+// abc.txt       (*).txt         True    abc           カッコ中にマッチした部分
+// 123-4567      (*)-(*)         True    123\n4567     カッコ中にマッチした部分
+// abc           [a-z]bc         True                  aからzのいずれかの１文字部分
+// abc           [+a-z]          True                  aからzの１文字以上の連続
+// abc           [*a-z]          True                  aからzの０文字以上の連続
+// 123abc        [*0-9][*a-z]    True
+// 123           [*a-z]123       True
+// 123           [+a-z]123       False
+// abc.txt       [=abc|cde].txt  True                  abcかcdeのどれか
+// abc.txt       [*!.].txt       True                  "."以外の連続
+// ひらがな.txt  [*あ-ん].txt    True                  "あ"から"ん"の0文字以上の連続
+{
 ================================================================================
 
 *** REPLACE ***
@@ -52,12 +55,17 @@ a[1]b[2]      [(*)]           ($1)                   a(1)b(2)
 a:aaa,b:bbb   (*):[*!,]       $1                     a,b
 ================================================================================
 
--------------------------------------------------------------------------------}
+-------------------------------------------------------------------------------
+}
 
 interface
 
 uses
-  Windows, SysUtils, Classes;
+  {$IFDEF Win32}
+  Windows, 
+  {$ELSE}
+  {$ENDIF}
+  SysUtils, Classes;
 
 type
   TKWPattern = class;
@@ -295,6 +303,7 @@ end;
 
 
 function LCMapStringExHalf(const str: AnsiString; MapFlag: DWORD): AnsiString;
+{$IFDEF Win32}
 var
   pDes: PAnsiChar;
   len,len2: Integer;
@@ -311,6 +320,11 @@ begin
     FreeMem(pDes);
   end;
 end;
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$IFEND}
 
 function UpperCaseEx(const str: AnsiString): AnsiString;
 begin

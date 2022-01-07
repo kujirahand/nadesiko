@@ -1,6 +1,6 @@
 object frmNako: TfrmNako
-  Left = 347
-  Top = 143
+  Left = 262
+  Top = 209
   Width = 606
   Height = 407
   Caption = #12394#12391#12375#12371
@@ -21,7 +21,7 @@ object frmNako: TfrmNako
   OnResize = FormResize
   OnShow = FormShow
   PixelsPerInch = 96
-  TextHeight = 12
+  TextHeight = 17
   object timerRunScript: TTimer
     Enabled = False
     Interval = 1

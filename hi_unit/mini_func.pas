@@ -3,22 +3,26 @@ unit mini_func;
 interface
 
 uses
+  {$IFDEF Win32}
   Windows,
   Messages,
-  SysUtils,
-  imm;
+  imm,
+  {$ELSE}
+  {$ENDIF}
+  SysUtils
+  ;
 
-//{$A8,B-,C+,D+,E-,F-,G+,H+,I+,J-,K-,L+,M-,N+,O+,P+,Q-,R-,S-,T-,U-,V+,W-,X+,Y+,Z1}
 
+// パス操作
+function AppPath: string;
 
+{$IFDEF Win32}
 //==============================================================================
 // 簡単に質問するダイアログ
 function MsgInput(msg: AnsiString; caption: AnsiString = ''; InitValue: AnsiString = '';
   Cancel: AnsiString = ''; ImeMode: DWORD = 0): AnsiString;
 
 //==============================================================================
-// パス操作
-function AppPath: string;
 
 //==============================================================================
 // その他
@@ -26,15 +30,30 @@ procedure WindowMoveCenter(hWnd: HWND);
 // IME on/off
 procedure SetImeOnOff(h: HWND; b: Boolean);
 procedure SetImeMode(h: HWND; mode: Cardinal);
+{$ELSE}
+type
+  HWND = Integer;
+{$ENDIF}
+
 
 var
   DialogTitle: AnsiString;
   DialogParentHandle: HWND;
 
+{$IFDEF Win32}
 {$R mini_func.res}
+{$ENDIF}
 
 implementation
 
+// パスなど
+function AppPath: string;
+begin
+  Result := ExtractFilePath(ParamStr(0));
+end;
+
+
+{$IFDEF Win32}
 type
   TMsgInputOpt = record
     Caption,
@@ -158,12 +177,7 @@ end;
 
 
 //==============================================================================
-// パスなど
-function AppPath: string;
-begin
-  Result := ExtractFilePath(ParamStr(0));
-end;
-
+{$ENDIF}
 
 initialization
   DialogTitle := 'Test';

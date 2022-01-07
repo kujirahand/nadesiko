@@ -3,11 +3,22 @@ unit dnako_import_types;
 interface
 
 uses
-  Windows;
+  {$IFDEF Win32}
+  Windows
+  {$ELSE}
+  {$ENDIF}
+  SysUtils
+  ;
 
 //------------------------------------------------------------------------------
 // ïœêîÇ»Ç«Ç≈óòópÇ≥ÇÍÇÈå^
 //------------------------------------------------------------------------------
+{$IFDEF FPC}
+type
+  Bool = Boolean;
+{$ELSE}
+{$ENDIF}
+
 type
   HFloat  = Extended;
   PHFloat = ^HFloat;
@@ -67,7 +78,7 @@ function hi_hashKeys(p: PHiValue): AnsiString;
 implementation
 
 uses
-  dnako_import, SysUtils, unit_string;
+  dnako_import, unit_string;
 
 
 function var2str(p: PHiValue): AnsiString;

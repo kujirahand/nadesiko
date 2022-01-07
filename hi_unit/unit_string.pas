@@ -10,13 +10,38 @@ unit unit_string;
 interface
 
 uses
-  Windows, SysUtils, Classes, hima_types;
+  {$IFDEF Win32}
+    Windows,
+  {$ENDIF}
+  SysUtils, Classes, hima_types;
 
 type
   TChars = set of AnsiChar;
   {$IFDEF VER150}
   RawByteString = string;
   {$ENDIF}
+
+{$IFDEF fpc}
+const NORM_IGNORECASE = $00000001;           
+const NORM_IGNORENONSPACE = $00000002;       
+const NORM_IGNORESYMBOLS = $00000004;        
+const LCMAP_LOWERCASE = $00000100;           
+const LCMAP_UPPERCASE = $00000200;           
+const LCMAP_SORTKEY = $00000400;             
+const LCMAP_BYTEREV = $00000800;             
+const SORT_STRINGSORT = $00001000;           
+const NORM_IGNOREKANATYPE = $00010000;       
+const NORM_IGNOREWIDTH = $00020000;          
+const LCMAP_HIRAGANA = $00100000;            
+const LCMAP_KATAKANA = $00200000;            
+const LCMAP_HALFWIDTH = $00400000;           
+const LCMAP_FULLWIDTH = $00800000;           
+const LCMAP_LINGUISTIC_CASING = $01000000;   
+const LCMAP_SIMPLIFIED_CHINESE = $02000000;  
+const LCMAP_TRADITIONAL_CHINESE = $04000000; 
+function GetLastError(): Integer;
+{$ENDIF}
+
 
 //------------------------------------------------------------------------------
 // PAnsiChar 関連
@@ -41,6 +66,7 @@ function getTokenStrU(var p: PChar; splitter: string): string;
 // 特定の区切り文字までを取得する（区切り文字は削除する）
 function getToken_s(var s: AnsiString; splitter: AnsiString): AnsiString;
 function getToken_sU(var s: string; splitter: string): string;
+
 
 // 特定の区切り文字までを取得する（区切り文字は削除する）
 function getTokenChW(var p: PAnsiChar; ch: TChars): AnsiString;
@@ -135,7 +161,18 @@ function IntToHexA(Value: Integer; Digits: Integer): AnsiString;
 
 implementation
 
+{$IFDEF Win32}
 uses Masks;
+{$ELSE}
+uses wildcard;
+{$ENDIF}
+
+{$IFDEF fpc}
+function GetLastError(): Integer;
+begin
+  Result := 0;
+end;
+{$ENDIF}
 
 function IntToHexA(Value: Integer; Digits: Integer): AnsiString;
 begin
@@ -152,8 +189,16 @@ var
   Buffer: array[0..63] of Char;
   r: string;
 begin
+  {$IFDEF Win32}
   SetString(r, Buffer, FloatToText(Buffer, Value, fvExtended,
     ffGeneral, 15, 0));
+  {$ELSE}
+  SetString(r, Buffer,
+      FloatToText(
+        Buffer,
+        Value, 
+        ffGeneral, 15, 0));
+  {$ENDIF}
   Result := AnsiString(r);
 end;
 
@@ -248,7 +293,11 @@ begin
   list := SplitChar(';', Masks);
   for i := 0 to list.Count - 1 do
   begin
+    {$IFDEF Win32}
     if MatchesMask(String(Filename), String(list.Strings[i])) then
+    {$ELSE}
+    if WildMatchFilename(String(Filename), String(list.Strings[i])) then
+    {$ENDIF}
     begin
       Result := True;
     end;
@@ -647,7 +696,7 @@ begin
   end;
 end;
 
-function getToken_sU(var s: string; splitter: string): string; overload;
+function getToken_sU(var s: string; splitter: string): string;
 var
   ps, pSplitter: PChar;
   lenS, len, lenSplitter: Integer;
@@ -966,7 +1015,7 @@ begin
   end;
 end;
 
-function SplitCharU(delimiter: Char; str: string): TStringList; overload;
+function SplitCharU(delimiter: Char; str: string): TStringList;
 var
   p: PChar; s: string;
 begin
@@ -1138,6 +1187,7 @@ end;
 // 文字種類変換 関連
 //------------------------------------------------------------------------------
 function LCMapStringEx(const str: AnsiString; MapFlag: DWORD): AnsiString;
+{$IFDEF Win32}
 var
   pDes: PAnsiChar;
   len,len2: Integer;
@@ -1154,8 +1204,15 @@ begin
     FreeMem(pDes);
   end;
 end;
+{$ELSE}
+begin
+  //todo: 文字種類変換
+  Result := str;
+end;
+{$ENDIF}
 
 function LCMapStringExHalf(const str: AnsiString; MapFlag: DWORD): AnsiString;
+{$IFDEF Win32}
 var
   pDes: PAnsiChar;
   len,len2: Integer;
@@ -1172,6 +1229,12 @@ begin
     FreeMem(pDes);
   end;
 end;
+{$ELSE}
+begin
+  // todo: 変換
+  Result := str;
+end;
+{$ENDIF}
 function convToFull(const str: AnsiString): AnsiString;
 begin
   Result := LCMapStringEx( str, LCMAP_FULLWIDTH );
@@ -1189,7 +1252,7 @@ function convToKatakana(const str: AnsiString): AnsiString;
 begin
   Result := LCMapStringEx( str, LCMAP_KATAKANA );
 end;
-{マルチバイトを考慮した大文字、小文字化}
+// {マルチバイトを考慮した大文字、小文字化}
 function LowerCaseEx(const str: AnsiString): AnsiString;
 begin
   Result := LCMapStringExHalf( str, LCMAP_LOWERCASE );

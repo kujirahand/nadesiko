@@ -68,11 +68,17 @@ implementation
 
 // for singleton
 uses
-  Windows;
+{$IFDEF Win32}
+  Windows
+{$ELSE}
+  sysutils
+{$ENDIF}
+;
 
 var Fmt19937: Tmt19937 = nil;
 
 function MT19937RandomizeValue: Cardinal;
+{$IFDEF Win32}
 var
   Counter: Int64;
 begin
@@ -81,6 +87,11 @@ begin
   else
     Result := GetTickCount;
 end;
+{$ELSE}
+begin
+  Result := GetTickCount64();
+end;
+{$ENDIF}
 
 function RandomMT: Tmt19937;
 begin

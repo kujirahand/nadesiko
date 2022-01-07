@@ -3,8 +3,15 @@ library dnako;
 {$DEFINE DNAKO}
 
 uses
+  {$IFDEF Win32}
   FastMM4 in 'FastMM4.pas',
   Windows,
+  BRegExp in 'hi_unit\BRegExp.pas',
+  nako_dialog_function2 in 'hi_unit\nako_dialog_function2.pas',
+  {$ELSE}
+  unit_fpc in 'hi_unit/unit_fpc.pas',
+  wildcard in 'hi_unit/wildcard.pas',
+  {$ENDIF}
   SysUtils,
   nadesiko_version in 'nadesiko_version.pas',
   hima_system in 'hi_unit\hima_system.pas',
@@ -20,13 +27,11 @@ uses
   hima_variable_lib in 'hi_unit\hima_variable_lib.pas',
   unit_file_dnako in 'hi_unit\unit_file_dnako.pas',
   unit_string in 'hi_unit\unit_string.pas',
-  BRegExp in 'hi_unit\BRegExp.pas',
   mini_func in 'hi_unit\mini_func.pas',
   mini_file_utils in 'hi_unit\mini_file_utils.pas',
   hima_stream in 'hi_unit\hima_stream.pas',
   unit_pack_files in 'hi_unit\unit_pack_files.pas',
   nako_dialog_const in 'hi_unit\nako_dialog_const.pas',
-  nako_dialog_function2 in 'hi_unit\nako_dialog_function2.pas',
   common_function in 'hi_unit\common_function.pas',
   unit_text_file in 'hi_unit\unit_text_file.pas',
   mt19937 in 'hi_unit\mt19937.pas',
@@ -759,6 +764,7 @@ var
   code: AnsiString;
 begin
   Result := nako_NG;
+  {$IFDEF Win32}
   path := AnsiString(AppDataDir) + 'com.nadesi.dll.dnako\license\';
   path := path + AnsiString(license_name);
   if not FileExists(string(path)) then Exit;
@@ -767,6 +773,7 @@ begin
   begin
     Result := nako_OK;
   end;
+  {$IFEND}
 end;
 
 function nako_registerLicense(license_name:PAnsiChar; license_code:PAnsiChar): DWORD; stdcall;// ライセンスコードを書き込む
@@ -774,6 +781,7 @@ var
   path: AnsiString;
 begin
   Result := nako_NG;
+  {$IFDEF Win32}
   try
     path := AnsiString(AppDataDir) + 'com.nadesi.dll.dnako\license\';
     ForceDirectories(string(path));
@@ -783,6 +791,7 @@ begin
   except
     Exit;
   end;
+  {$IFEND}
 end;
 
 ///<DNAKOAPI:END>

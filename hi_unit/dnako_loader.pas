@@ -1,10 +1,13 @@
 unit dnako_loader;
 
-// DNAKO ‚ÌƒCƒ“ƒ|[ƒg‚ğs‚¤
+// DNAKO ï¿½ÌƒCï¿½ï¿½ï¿½|ï¿½[ï¿½gï¿½ï¿½ï¿½sï¿½ï¿½
 
 interface
 uses
-  Windows, Classes, unit_pack_files, dnako_import;
+  {$IFDEF Win32}
+  Windows, 
+  {$ENDIF}
+  Classes, unit_pack_files, dnako_import;
 
 type
   TDnakoLoader = class
@@ -68,24 +71,24 @@ constructor TDnakoLoader.Create(MainWinHandle: THandle);
 var
   fpack: string;
 begin
-  // [è‡]
-  // (1) ‚à‚µ©g‚É packfile ‚ª‚ ‚ê‚Î•ª—£‚·‚é
-  // (2) packfile ‚©‚ç dnako.dll ‚¾‚¯‚ğæ‚èo‚µ‚Äƒeƒ“ƒ|ƒ‰ƒŠƒtƒ@ƒCƒ‹‚É“WŠJ‚·‚é
-  // (3) dnako.dll ‚ğƒ[ƒh‚·‚é
-  // (4) dnako.dll ‚Å‰ü‚ß‚ÄƒpƒbƒNƒtƒ@ƒCƒ‹‚ğŠJ‚­
-  // (5) ƒvƒ‰ƒOƒCƒ“‚Ìƒ[ƒh‚È‚Ç
+  // [ï¿½è‡]
+  // (1) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ packfile ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î•ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+  // (2) packfile ï¿½ï¿½ï¿½ï¿½ dnako.dll ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½Äƒeï¿½ï¿½ï¿½|ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½É“Wï¿½Jï¿½ï¿½ï¿½ï¿½
+  // (3) dnako.dll ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½
+  // (4) dnako.dll ï¿½Å‰ï¿½ï¿½ß‚Äƒpï¿½bï¿½Nï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½
+  // (5) ï¿½vï¿½ï¿½ï¿½Oï¿½Cï¿½ï¿½ï¿½Ìƒï¿½ï¿½[ï¿½hï¿½È‚ï¿½
 
   FMainWinHandle := MainWinHandle;
   checkArgs;
 
-  // (1) packfile ‚Ì•ª—£
+  // (1) packfile ï¿½Ì•ï¿½ï¿½ï¿½
   if (FPackfile <> '') then
   begin
     unit_pack_files.FileMixReader := TFileMixReader.Create(FPackfile);
     FhasPackfile := True;
     reader := unit_pack_files.FileMixReader;
   end else
-  // (2) EXEƒtƒ@ƒCƒ‹‚Æˆê‚Éì¬‚µ‚½packfile‚Ìê‡
+  // (2) EXEï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Æˆêï¿½Éì¬ï¿½ï¿½ï¿½ï¿½packfileï¿½Ìê‡
   begin
     fpack := ExtractFilePath(ParamStr(0)) + 'plug-ins\' +
       ChangeFileExt(ExtractFileName(ParamStr(0)), '.nakopack');
@@ -96,7 +99,7 @@ begin
       FhasPackfile := True;
       reader := unit_pack_files.FileMixReader;
     end;
-    // ‚à‚µEXEƒtƒ@ƒCƒ‹‚Éd‚ñ‚Å‚ ‚éê‡(ƒZƒLƒ…ƒŠƒeƒB‚Ì–â‘è‚Ì‚½‚ß—˜—p‚µ‚È‚¢)
+    // ï¿½ï¿½ï¿½ï¿½EXEï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Édï¿½ï¿½ï¿½ï¿½Å‚ï¿½ï¿½ï¿½ê‡(ï¿½Zï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½eï¿½Bï¿½Ì–ï¿½ï¿½Ì‚ï¿½ï¿½ß—ï¿½ï¿½pï¿½ï¿½ï¿½È‚ï¿½)
     // FhasPackfile := OpenPackFile(ParamStr(0));
     // reader := unit_pack_files.FileMixReader;
   end;
@@ -117,12 +120,12 @@ begin
     FreeAndNil(reader);
   end;
   // load "dnako.dll"
-  if not load_DNAKO_DLL then raise Exception.Create('DNAKO.DLL ‚Ìƒ[ƒh‚É¸”s');
+  if not load_DNAKO_DLL then raise Exception.Create('DNAKO.DLL ï¿½Ìƒï¿½ï¿½[ï¿½hï¿½Éï¿½ï¿½s');
 end;
 
 destructor TDnakoLoader.Destroy;
 begin
-  // dnako.dll ‚Å‰ğ•ú‚³‚ê‚é
+  // dnako.dll ï¿½Å‰ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
   FileMixReader := nil;
   reader := nil;
   inherited;
@@ -147,9 +150,9 @@ var
 begin
   if FhasPackfile then
   begin
-    // •êŠÍƒpƒX‚ğæ“¾‚·‚é
-    p := nako_getVariable('•êŠÍƒpƒX');
-    if p = nil then p := hi_var_new('•êŠÍƒpƒX');
+    // ï¿½ï¿½Íƒpï¿½Xï¿½ï¿½ï¿½æ“¾ï¿½ï¿½ï¿½ï¿½
+    p := nako_getVariable('ï¿½ï¿½Íƒpï¿½X');
+    if p = nil then p := hi_var_new('ï¿½ï¿½Íƒpï¿½X');
     path := AppPath;
     hi_setStr(p, AnsiString(path));
     chdir(path);
@@ -158,8 +161,8 @@ end;
 
 procedure TDnakoLoader.includeLib(nakofile: AnsiString);
 begin
-  eval('!"'+nakofile+'"‚ğæ‚è‚ŞB'#13#10+
-       '!•Ï”éŒ¾‚ª•s—v'#13#10);
+  eval('!"'+nakofile+'"ï¿½ï¿½ï¿½ï¿½èï¿½ŞB'#13#10+
+       '!ï¿½Ïï¿½ï¿½éŒ¾ï¿½ï¿½ï¿½sï¿½v'#13#10);
 end;
 
 procedure TDnakoLoader.eval(src: AnsiString);
@@ -187,7 +190,7 @@ begin
   (*
   if ver <> NADESIKO_VER then
   begin
-    raise Exception.Create('ng ŠJ”­”Å:‚È‚Å‚µ‚±‚Ìƒo[ƒWƒ‡ƒ“‚ªˆê’v‚µ‚Ü‚¹‚ñB');
+    raise Exception.Create('ng ï¿½Jï¿½ï¿½ï¿½ï¿½:ï¿½È‚Å‚ï¿½ï¿½ï¿½ï¿½Ìƒoï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½B');
   end;
   *)
   // set Handle

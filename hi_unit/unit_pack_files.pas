@@ -6,7 +6,13 @@ unit unit_pack_files;
 interface
 
 uses
-  Windows, SysUtils, Classes, hima_types, hima_stream,unit_pack_files_pro;
+  {$IFDEF Win32}
+  Windows, 
+  {$ELSE}
+  Dos,
+  Types,
+  {$ENDIF}
+  SysUtils, Classes, hima_types, hima_stream,unit_pack_files_pro;
 
 {
   TFileMixReader
@@ -100,7 +106,9 @@ function getOriginalFileName(dirname, header: AnsiString): AnsiString;
 function getEmbedFile(var fname: AnsiString):Boolean;
 
 procedure SetFileDate(FileName: string; CrDate, UpDate, AcDate: TDateTime);
+{$IFDEF Win32}
 function DateTimeToFIleTime(FileTime:TDateTime):TFileTime;
+{$ENDIF}
 
 implementation
 
@@ -109,7 +117,7 @@ uses mini_file_utils, unit_string, EasyMasks,
 
 var AutoDeletePackFile: string = '';
 
-
+{$IFDEF Win32}
 function DateTimeToFIleTime(FileTime:TDateTime):TFileTime;
 var
   LocalFileTime, Ft: TFileTime;
@@ -122,8 +130,10 @@ begin
   LocalFileTimeToFileTime(LocalFileTime, Ft);
   result := Ft;
 end;
+{$ENDIF}
 
 procedure SetFileDate(FileName: string; CrDate, UpDate, AcDate: TDateTime);
+{$IFDEF Win32}
 var
   Ut, Ct, At: TFileTime;
   Fs: TFileStream;
@@ -140,17 +150,40 @@ begin
     Fs.Free;
   end;
 end;
+{$ELSE}
+begin
+  //todo
+end;
+{$ENDIF}
 
 
 {オリジナル一時ファイル名の取得}
 function getOriginalFileName(dirname, header: AnsiString): AnsiString;
+{$IFDEF Win32}
 begin
   if dirname='' then dirname := AnsiString(TempDir);
   SetLength(Result, MAX_PATH);
   GetTempFileNameA(PAnsiChar(dirname), PAnsiChar(header), 0, PAnsiChar(Result));
   SetLength(Result,StrLen(PAnsiChar(Result)));
 end;
-
+{$ELSE}
+var
+  i: Integer;
+  temp, timestr, s: string;
+  t: TDateTime;
+begin
+  t := Time();
+  timestr := FormatDateTime('yyyymmhhiinnsszzz', Now);
+  temp := GetEnv('HOME') + '/.temp/' + timestr;
+  Result := temp;
+  for i := 1 to 1000 do begin
+    s := temp + '/tmp' + IntToStr(i);
+    if not FileExists(s) then begin
+      Result := s; Break;
+    end;
+  end;
+end;
+{$ENDIF}
 
 function OpenPackFile(packExeFile: string): Boolean;
 var

@@ -5,7 +5,10 @@ unit hima_stream;
 interface
 
 uses
-  Windows, SysUtils, Classes;
+  {$IFDEF Win32}
+  Windows, 
+  {$ENDIF}
+  SysUtils, Classes;
 
 
 {$WARN SYMBOL_PLATFORM OFF}

@@ -2,12 +2,26 @@ unit hima_system;
 //------------------------------------------------------------------------------
 // 構文木を実行する
 //------------------------------------------------------------------------------
+{$IFDEF FPC}
+  {$DEFINE CNAKOEX}
+{$ELSE}
+  {$DEFINE DELPHI}
+{$ENDIF}
+
+{$IFDEF Win32}
+{$ENDIF}
+
 
 interface
 
 uses
-  Windows, SysUtils, Classes, hima_types, hima_parser, hima_token, hima_variable,
-  hima_variable_ex, hima_function, hima_stream, mmsystem, unit_pack_files;
+  {$IFDEF Win32}
+  Windows, 
+  mmsystem, 
+  {$ENDIF}
+  SysUtils, Classes, hima_types, hima_parser, hima_token,
+  hima_variable, hima_variable_ex, hima_function, hima_stream, 
+  unit_pack_files;
 
 const
   MAX_STACK_COUNT = 65536; // 再帰スタックの最大数(あまり大きくするとDelphi自体がオーバーフローする)
@@ -311,10 +325,12 @@ end;
 var ctag: array [0..1000] of Byte; // 1 byte = 8 個のチェック(1000 * 8) = 8000 個の命令を管理できる
 
 procedure _initTag;
-//var i: Integer;
 begin
+  {$IFDEF Win32}
   ZeroMemory(@ctag[0], Length(ctag));
-  //for i := low(ctag) to high(ctag) do ctag[i] := 0;
+  {$ELSE}
+  FillByte(ctag, 0, Length(ctag));
+  {$ENDIF}
 end;
 
 procedure _checkTag(tag:Integer; name: DWORD);
@@ -1250,8 +1266,11 @@ begin
   //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   // 命令タグの初期化
   _initTag;
+  {$IFDEF Win32}
   FTime      := timeGetTime;
-
+  {$ELSE}
+  FTime := gettickcount64();
+  {$ENDIF}
   //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   // 単語の一括登録
   setTokenList(Self);
@@ -1899,7 +1918,11 @@ begin
     s := (dllpath.Strings[i]);
     // ヘッダを見てLoadLibraryできるかどうかチェックする
     if chk_header(s) = False then Continue;
+    {$IFDEF Win32}
     h := LoadLibraryEx(PChar(s), 0, 0);
+    {$ELSE}
+    h := LoadLibrary(s);
+    {$ENDIF}
     if h = 0 then
     begin
       errLog('err.load.plugin=' + AnsiString(s));
@@ -2241,7 +2264,9 @@ lblTop:
       // デバッグ用エディタへ現在実行中の行番号を通知
       if DebugLineNo and (DebugEditorHandle <> 0) then begin
         if (node.DebugInfo.FileNo = MainFileNo)and(node.DebugInfo.LineNo > 0) then begin
+          {$IFDEF Win32}
           SendCOPYDATA(DebugEditorHandle, 'row ' + IntToStrA(node.DebugInfo.LineNo), 0, MainWindowHandle);
+          {$ENDIF}
         end;
       end;
 

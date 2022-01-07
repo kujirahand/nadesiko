@@ -5,7 +5,14 @@ interface
 
 
 uses
-  Windows, SysUtils, Classes, hima_types, mmsystem;
+  {$IFDEF Win32}
+  Windows,
+  mmsystem,
+  {$ELSE}
+  unit_fpc,
+  dos,
+  {$ENDIF}
+  SysUtils, Classes, hima_types;
 
 type
   // デバッグ.ソースコード情報 32 bit
@@ -88,11 +95,20 @@ procedure debugi(i:Integer);
 var s: AnsiString;
 begin
   s := IntToStrA(i);
+  {$IFDEF Win32}
   MessageBoxA(0, PAnsiChar(s), 'debug', MB_OK);
+  {$ELSE}
+  WriteLn('[DEBUG]', s);
+  {$IFEND}
 end;
+
 procedure debugs(s: AnsiString);
 begin
+  {$IFDEF Win32}
   MessageBoxA(0, PAnsiChar(s), 'debug', MB_OK);
+  {$ELSE}
+  WriteLn('[DEBUG]', s);
+  {$IFEND}
 end;
 
 function setSourceFileName(fname: string): Integer;
@@ -182,6 +198,7 @@ var
   fOpen: Boolean = False;
 
 function TempDir: string;
+{$IFDEF Win32}
 var
  TempTmp: Array [0..MAX_PATH] of Char;
 begin
@@ -189,6 +206,13 @@ begin
  Result:= string(TempTmp);
  if Copy(Result,Length(Result),1)<>'\' then Result := Result + '\';
 end;
+{$ELSE}
+var home: string;
+begin
+  home := GetEnv('HOME');
+  Result := home + '/.temp';
+end;
+{$IFEND}
 
 procedure errLog(s: AnsiString);
 var

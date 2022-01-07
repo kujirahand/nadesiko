@@ -63,7 +63,13 @@ unit hima_function;
 interface
 
 uses
-  Windows, SysUtils, Classes, hima_variable, hima_variable_ex, hima_types, shellapi,
+  {$IFDEF Win32}
+  Windows, shellapi,
+  {$ELSE}
+  Dos,
+  {$ENDIF}
+  SysUtils, Classes, hima_variable, hima_variable_ex, 
+  hima_types,
   Variants, Math, DateUtils;
 
 
@@ -482,14 +488,27 @@ function getArgFloat(h: THiArray; Index: Integer; UseHokan: Boolean = False): HF
 
 var MainWindowHandle: Integer = 0;
 
+{$IFDEF fpc}
+type
+  Short = Word;
+  BOOL = Boolean;
+  LPARAM = Integer;
+function GetForegroundWindow(): Integer;
+{$ENDIF}
+
 implementation
 
 uses
-  mmsystem,hima_system, unit_string, hima_string, hima_token, unit_file_dnako,
-  hima_variable_lib, unit_windows_api, hima_error, BRegExp,
+  {$IFDEF Win32}
+  mmsystem,
+  BRegExp,
+  nako_dialog_function2,
+  {$ENDIF}
+  hima_system, unit_string, hima_string, hima_token, unit_file_dnako,
+  hima_variable_lib, unit_windows_api, hima_error, 
   mini_func, mini_file_utils,
   hima_parser, unit_date, unit_pack_files, hima_stream,
-  nako_dialog_function2, common_function, mt19937, unit_text_file;
+  common_function, mt19937, unit_text_file;
 
 
 // 引数を簡単に取得する
@@ -527,6 +546,7 @@ begin
 end;
 
 function GetMainWindowCaption: AnsiString;
+{$IFDEF Win32}
 var
   len: Integer;
   s: AnsiString;
@@ -544,6 +564,11 @@ begin
   s := AnsiString(Trim(string(s)));
   if s = '' then Result := 'なでしこ' else Result := s;
 end;
+{$ELSE}
+begin
+  Result := 'Nadesiko';
+end;
+{$ENDIF}
 
 procedure replace_dll_types(var arg: AnsiString);
 var p:PAnsiChar;i:integer;
@@ -1004,7 +1029,11 @@ begin
   if s = nil then s := HiSystem.Sore;
 
   // (2) データの処理
+  {$IFDEF Win32}
   ClipbrdSetAsText(hi_str(s));
+  {$ELSE}
+  raise Exception.Create('Not Supported');
+  {$IFEND}
 
   // (3) 戻り値を設定
   Result := nil;
@@ -1017,7 +1046,11 @@ begin
 
   // (3) 戻り値を設定
   Result := hi_var_new;
+  {$IFDEF Win32}
   hi_setStr(Result, ClipbrdGetAsText);
+  {$ELSE}
+  raise Exception.Create('Not Supported');
+  {$ENDIF}
 end;
 
 function sys_now(args: THiArray): PHiValue; stdcall;
@@ -2851,6 +2884,7 @@ begin
 end;
 
 function __reMatch(s, pat: AnsiString; var res: AnsiString): Boolean;
+{$IFDEF Win32}
 var
   v: PHiValue;
   m: TStringList;
@@ -2880,7 +2914,11 @@ begin
     FreeAndNil(m);
   end;
 end;
-
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$IFEND}
 
 function sys_reMatchBool(args: THiArray): PHiValue; stdcall;
 var
@@ -2912,6 +2950,7 @@ begin
 end;
 
 function sys_reSplit(args: THiArray): PHiValue; stdcall;
+{$IFDEF Win32}
 var
   a, b: PHiValue;
   re: TBRegExp;
@@ -2965,8 +3004,14 @@ begin
   end;
 
 end;
+{$ELSE}
+begin
+    raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
 
 function sys_reTR(args: THiArray): PHiValue; stdcall;
+{$IFDEF Win32}
 var
   re: TBRegExp;
   s, a, b, pat: AnsiString;
@@ -3004,8 +3049,15 @@ begin
   end;
 
 end;
+{$ELSE}
+begin
+    raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
+
 
 function __reSub(s, a, b: AnsiString; IsGlobal: Boolean): AnsiString;
+{$IFDEF Win32}
 var
   re: TBRegExp;
   pat, ss: AnsiString;
@@ -3051,6 +3103,13 @@ begin
   end;
 
 end;
+{$ELSE}
+begin
+    raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
+
+
 
 function sys_reSubOne(args: THiArray): PHiValue; stdcall;
 var
@@ -3162,7 +3221,11 @@ begin
   if s.Size > 0 then
   begin
     GetMem(s.ptr, s.Size);
+    {$IFDEF Win32}
     ZeroMemory(s.ptr, s.Size); // all zero
+    {$ELSE}
+    FillByte(s.ptr^, 0, s.Size);
+    {$ENDIF}
   end;
 
   // (3) 戻り値を設定
@@ -3453,6 +3516,7 @@ end;
 
 
 function EnumWindowsProc( hwnd:HWND; lParam:LPARAM ):BOOL; stdcall;
+{$IFDEF Win32}
 var
   p: PHiValue;
   c: AnsiString; len: Integer;
@@ -3479,9 +3543,15 @@ begin
   // 次の窓も探す
   Result := True;
 end;
+{$ELSE}
+begin
+  Result := False;
+end;
+{$ENDIF}
 
 function sys_enumwindows(args: THiArray): PHiValue;
 begin
+  {$IFDEF Win32}
   Result := hi_var_new;
 
   // (1) 引数の取得
@@ -3489,7 +3559,9 @@ begin
   // (3) 戻り値を設定
   hi_ary_create(Result);
   EnumWindows(@EnumWindowsProc, Integer(Result));
-
+  {$ELSE}
+  Result := nil;
+  {$ENDIF}
 end;
 
 function sys_rightM(args: THiArray): PHiValue;
@@ -3637,14 +3709,18 @@ begin
   p := HiSystem.Eval('変数列挙');
   s := AnsiString(AppPath) + 'debug.txt';
   FileSaveAll((hi_str(p)), string(s));
-  //ShellExecute(mainWindowHandle, 'open', PAnsiChar(s), '', '', SW_SHOW);
-
+  {$IFDEF Win32}
   i := MessageBox(MainWindowHandle, 'debug.txtへ変数の一覧を保存しました。'#13#10+
         '実行を継続しますか？', 'デバッグ', MB_ICONQUESTION or MB_YESNO);
   if i = IDNO then
   begin
     Halt;
   end;
+  {$ELSE}
+  WriteLn('Quit? --- Yes/No');
+  ReadLn(s);
+  if (s = 'Yes') or (s = 'y') then begin Halt; end;
+  {$ENDIF}
 end;
 
 function sys_assert(args: THiArray): PHiValue; stdcall;
@@ -3690,7 +3766,11 @@ var
   d: DWORD;
   f: HFloat;
 begin
+  {$IFDEF Win32}
   d := timeGetTime;
+  {$ELSE}
+  d := GetTickCount64();
+  {$IFEND}
   f := d; // 実数に変換(@935 - 数値がマイナスになってしまうことがあるので)
   Result := hi_var_new;
   hi_setFloat(Result, f);
@@ -3772,6 +3852,7 @@ begin
 end;
 
 function EasyExecPointer(args: THiArray): PHiValue; stdcall; // by しらたまさん
+{$IFDEF Win32}
 type
   // 引数のない関数型を宣言（新しいＤＬＬインポート命令）
   //[0]
@@ -3887,6 +3968,11 @@ begin
    raise Exception.Create(e.Message);
   end;
 end;
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
 
 function sys_groupCopyVal(args: THiArray): PHiValue; stdcall;
 var
@@ -4066,7 +4152,11 @@ var a,s: PHiValue;
 begin
   a := args.Items[0];
   s := args.Items[1];
+  {$IFDEF Win32}
   SendCOPYDATA(hi_int(a), hi_str(s), 0, MainWindowHandle);
+  {$ELSE}
+  raise Exception.Create('Not Supported');
+  {$ENDIF}
   Result := nil;
 end;
 
@@ -4076,7 +4166,11 @@ begin
   a := args.Items[0];
   s := args.Items[1];
   id := args.Items[2];
+  {$IFDEF Win32}
   SendCOPYDATA(hi_int(a), hi_str(s), hi_int(id), MainWindowHandle);
+  {$ELSE}
+  raise Exception.Create('Not Supported');
+  {$ENDIF}
   Result := nil;
 end;
 
@@ -4139,8 +4233,12 @@ begin
   begin
     h := GetForegroundWindow;
   end;
+  {$IFDEF Win32}
   cap := GetMainWindowCaption;
   MessageBoxA(h, PAnsiChar(str), PAnsiChar(cap), MB_OK);
+  {$ELSE}
+  WriteLn(str);
+  {$ENDIF}
 end;
 
 function sys_yesno(args: THiArray): PHiValue; stdcall;
@@ -4156,14 +4254,19 @@ begin
   // (2) 処理
   str := hi_str(s);
   cap := GetMainWindowCaption;
+  {$IFDEF Win32}
   ret := MessageBoxA(MainWindowHandle, PAnsiChar(str), PAnsiChar(cap), MB_YESNO);
 
   // (3) 結果の代入
   Result := hi_var_new;
   hi_setBool(Result, (ret = IDYES));
+  {$ELSE}
+  raise Exception.Create('Not Supported');
+  {$ENDIF}
 end;
 
 function sys_yesnocancel(args: THiArray): PHiValue; stdcall;
+{$IFDEF Win32}
 var
   s: PHiValue;
   cap, str: AnsiString;
@@ -4175,6 +4278,7 @@ begin
 
   // (2) 処理
   str := hi_str(s);
+  {$IFDEF Win32}
   cap := GetMainWindowCaption;
   ret := MessageBoxA(MainWindowHandle, PAnsiChar(str), PAnsiChar(cap), MB_YESNOCANCEL or MB_ICONQUESTION);
   case ret of
@@ -4183,13 +4287,22 @@ begin
   IDCANCEL: res := 2;
   else      res := 2;
   end;
+  {$ELSE}
+  raise Exception.Create('Not Supported');
+  {$ENDIF}
 
   // (3) 結果の代入
   Result := hi_var_new;
   hi_setInt(Result, res);
 end;
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
 
 function sys_msg_list(args: THiArray): PHiValue; stdcall;
+{$IFDEF Win32}
 var
   s: PHiValue;
   t: AnsiString;
@@ -4201,7 +4314,12 @@ begin
 
   // (2) 処理
   GetDialogSetting(init, cancel, ime, title);
+  {$IFDEF Win32}
   showListDialog(MainWindowHandle, t, init, cancel, title, ImeStr2ImeMode(ime));
+  {$ELSE}
+  WriteLn(title);
+  ReadLn(t);
+  {$ENDIF}
 
   // (3) 結果の代入
   Result := hi_var_new;
@@ -4216,6 +4334,11 @@ begin
     hi_setStr(Result, t);
   end;
 end;
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
 
 function sys_version_dialog(args: THiArray): PHiValue; stdcall;
 var
@@ -4225,7 +4348,12 @@ begin
   title := getArgStr(args, 0, True);
   memo  := getArgStr(args, 1);
   h := MainWindowHandle;
+  {$IFDEF Win32}
   ShellAboutA(h, PAnsiChar(title), PAnsiChar(memo), 0);
+  {$ELSE}
+  WriteLn(title);
+  WriteLn(memo);
+  {$ENDIF}
   Result := nil;
 end;
 
@@ -4242,8 +4370,12 @@ begin
 
   // (2) 処理
   GetDialogSetting(init, cancel, ime, title);
+  {$IFDEF Win32}
   showMemoDialog(MainWindowHandle, t, init, cancel, title, ImeStr2ImeMode(ime));
-
+  {$ELSE}
+  WriteLn(title);
+  ReadLn(t);
+  {$ENDIF}
   // (3) 結果の代入
   Result := hi_var_new;
   hi_setStr(Result, t);
@@ -4258,6 +4390,13 @@ begin
   title   := hi_str(HiSystem.GetVariableS('ダイアログタイトル'));
   if title = '' then GetMainWindowCaption;
 end;
+
+{$IFDEF fpc}
+function GetForegroundWindow(): Integer;
+begin
+  Result := 0;
+end;
+{$ENDIF}
 
 function sys_input(args: THiArray): PHiValue; stdcall;
 var
@@ -4276,10 +4415,15 @@ begin
     DialogParentHandle := GetForegroundWindow;
   end;
 
+  {$IFDEF Win32}
   GetDialogSetting(init, cancel, ime, title);
   //
   ret := MsgInput(str, title,
     init, cancel, ImeStr2ImeMode(ime));
+  {$ELSE}
+  WriteLn(title);
+  ReadLn(ret);
+  {$ENDIF}
 
   // (3) 結果の代入
   Result := hi_var_new;
@@ -4307,14 +4451,18 @@ begin
 
   // (2) 処理
   getEmbedFile(fname);
+  {$IFDEF Win32}
   sndPlaySoundA(PAnsiChar(fname), SND_ASYNC);
-
+  {$ELSE}
+  raise Exception.Create('Not Supported');
+  {$ENDIF}
   // (3) 結果の代入
   Result := nil;
 end;
 
 
 function nako_mciSend(cmd: AnsiString): AnsiString;
+{$IFDEF Win32}
 begin
   SetLength(Result, 4096);
   if mciSendStringA(PAnsiChar(cmd), PAnsiChar(Result), Length(Result), 0) <> 0 then
@@ -4328,6 +4476,11 @@ begin
     Result := AnsiString(PAnsiChar(Result));
   end;
 end;
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
 
 function sys_musRec(args: THiArray): PHiValue; stdcall;
 var
@@ -4501,6 +4654,7 @@ begin
 end;
 
 function sys_selDir(args: THiArray): PHiValue; stdcall;
+{$IFDEF Win32}
 var
   s: PHiValue;
   str: AnsiString;
@@ -4526,8 +4680,14 @@ begin
   // (3) 結果の代入
   Result := hi_newStr(ret);
 end;
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
 
 function sys_selFile(args: THiArray): PHiValue; stdcall;
+{$IFDEF Win32}
 var
   s,a: PHiValue;
   str: AnsiString;
@@ -4557,8 +4717,14 @@ begin
   Result := hi_var_new;
   hi_setStr(Result, ret);
 end;
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
 
 function sys_selFileAsSave(args: THiArray): PHiValue; stdcall;
+{$IFDEF Win32}
 var
   s,a: PHiValue;
   str: AnsiString;
@@ -4586,6 +4752,13 @@ begin
   Result := hi_var_new;
   hi_setStr(Result, ret);
 end;
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
+
+
 
 { // コンソールプログラムで追加すべき命令
 function sys_print(args: THiArray): PHiValue;
@@ -5578,7 +5751,11 @@ begin
   if a = nil then a := HiSystem.Sore;
   // (2) データの処理 / (3) 戻り値を設定
   Result := hi_var_new;
+  {$IFDEF DELPHI}
   hi_setFloat(Result, arccsc(hi_float(a)));
+  {$ELSE}
+  raise Exception.Create('Not Supported');
+  {$ENDIF}
 end;
 function sys_arcsec(args: THiArray): PHiValue;
 var
@@ -5589,7 +5766,11 @@ begin
   if a = nil then a := HiSystem.Sore;
   // (2) データの処理 / (3) 戻り値を設定
   Result := hi_var_new;
+  {$IFDEF DELPHI}
   hi_setFloat(Result, arcsec(hi_float(a)));
+  {$ELSE}
+  raise Exception.Create('Not Supported');
+  {$ENDIF}
 end;
 function sys_arccot(args: THiArray): PHiValue;
 var
@@ -5600,12 +5781,17 @@ begin
   if a = nil then a := HiSystem.Sore;
   // (2) データの処理 / (3) 戻り値を設定
   Result := hi_var_new;
+  {$IFDEF DELPHI}
   hi_setFloat(Result, arccot(hi_float(a)));
+  {$ELSE}
+  raise Exception.Create('Not Supported');
+  {$ENDIF}
 end;
 
 
 // SysUtils を改良したもの(WINDOWS用)
 function GetEnvVar(const Name: AnsiString): AnsiString;
+{$IFDEF Win32}
 var // 環境変数の取得
   Len: Integer;
 begin
@@ -5625,6 +5811,11 @@ begin
     Result := ''; // エラーが出たら空
   end;
 end;
+{$ELSE}
+begin
+    Result := GetEnv(Name);
+end;
+{$ENDIF}
 
 function sys_getEnv(args: THiArray): PHiValue; stdcall;
 var
@@ -5761,12 +5952,7 @@ begin
   Result := hi_newStr(DateToWarekiS(hi_str(s)));
 end;
 
-{$IFDEF DELPHI6}
-function sys_date_format(args: THiArray): PHiValue; stdcall;
-begin
-  Result := nil;// ごめんなさい
-end;
-{$ELSE}
+{$IFDEF DELPHI}
 function sys_date_format(args: THiArray): PHiValue; stdcall;
 var
   date_s: AnsiString;
@@ -5802,6 +5988,11 @@ begin
     fmt := 'yyyy-mm-dd hh:nn:ss';
   end;
   Result := hi_newStr(AnsiString(FormatDateTime(string(fmt), dt, fs)));
+end;
+{$ELSE}
+function sys_date_format(args: THiArray): PHiValue; stdcall;
+begin
+  Result := nil;// ごめんなさい
 end;
 {$ENDIF}
 

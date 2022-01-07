@@ -2,7 +2,11 @@ unit dll_plugin_helper;
 
 interface
 uses
-  windows, SysUtils, dnako_import, dnako_import_types;
+  {$IFDEF Win32}
+  windows,
+  {$ELSE}
+  {$ENDIF}
+  SysUtils, dnako_import, dnako_import_types;
 
 
 // 関数が正しく登録できるかチェックする

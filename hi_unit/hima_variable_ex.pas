@@ -3,7 +3,11 @@ unit hima_variable_ex;
 interface
 
 uses
-  Windows, SysUtils, Classes, hima_types, hima_variable;
+  {$IFDEF Win32}
+  Windows, 
+  {$ELSE}
+  {$ENDIF}
+  SysUtils, Classes, hima_types, hima_variable;
 
 
 //------------------------------------------------------------------------------
@@ -283,8 +287,11 @@ function conv2float(p: PHiValue): HFloat;
 implementation
 
 uses
+  {$IFDEF Win32}
+  BRegExp,
+  {$IFEND}
   Math, hima_string, unit_string, hima_system, hima_variable_lib,
-  hima_function,wildcard2, BRegExp;
+  hima_function,wildcard2;
 
 function conv2float(p: PHiValue): HFloat;
 var
@@ -1222,7 +1229,11 @@ begin
   // 既に生成されていたら作成しない(0で初期化するけど)
   if DataPtr <> nil then
   begin
+    {$IFDEF Win32}
     ZeroMemory(DataPtr, FTotalByte);
+    {$ELSE}
+    FillByte(DataPtr^, 0, FTotalByte);
+    {$IFEND}
     Exit;
   end;
 
@@ -2185,6 +2196,7 @@ begin
 end;
 
 function pickup_regexp(v: PHiValue; param: Integer): Boolean; // ピックアップする場合は TRUE を返す
+{$IFDEF Win32}
 var
   i: Integer;
   opt: AnsiString;
@@ -2210,6 +2222,11 @@ begin
     end;
   end;
 end;
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$IFEND}
 
 function THiArray.CsvPickupHasKey(s: AnsiString; Index: Integer): THiArray;
 begin

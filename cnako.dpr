@@ -1,9 +1,22 @@
 program cnako;
 
-{$APPTYPE CONSOLE}
+{$IFDEF FPC}
+  {$DEFINE CNAKOEX}
+{$ELSE}
+  {$DEFINE DELPHI}
+{$ENDIF}
+
+{$IFDEF Win32}
+  {$APPTYPE CONSOLE}
+{$ENDIF}
 
 uses
+  {$IFDEF Win32}
   FastMM4 in 'FastMM4.pas',
+  {$ELSE}
+  unit_fpc in 'hi_unit/unit_fpc.pas',
+  wildcard in 'hi_unit/wildcard.pas',
+  {$ENDIF}
   SysUtils,
   dnako_import in 'hi_unit\dnako_import.pas',
   dnako_import_types in 'hi_unit\dnako_import_types.pas',

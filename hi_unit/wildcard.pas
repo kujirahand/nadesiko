@@ -2,9 +2,9 @@ unit wildcard;
 (*------------------------------------------------------------------------------
 ワイルドカードによるマッチ (VB の "Like"上位互換)
 
-Mineaki Yamamoto (mine@text2music.com) http://www.text2music.com
 2002/02/15 ver.1.00 初期作成
 2004/10/06 ver.1.10 なでしこ版に変換
+2022/01/06 ver.1.11 微修正
 --------------------------------------------------------------------------------
 *** WildCard ***
 
@@ -32,7 +32,7 @@ no.##-####       no.12-3456         True
 [!A-Z]eer        Beer               False
 ([*あ-ん])い     たい               True      た
 [+あ-ん]s        s                  False
-([=あけまして|誕生日])おめでとう 誕生日おめでとう True 誕生日
+([=新しい|古い])人格 新しい人格 True 新しい
 ================================================================================
 *** FUNCTION ***
 
@@ -57,8 +57,8 @@ TWString が、このワイルドカードを使ったマッチのメイン関数です。
 var
     pattern, s: TWString;
 begin
-    pattern := TWString.Create('([*あ-ん])おめでとう') ;
-    s := TWString.Create('あけましておめでとうございます。');
+    pattern := TWString.Create('([*あ-ん])食べる') ;
+    s := TWString.Create('おもち食べる');
     if pattern.Match(s) then
     begin
         ShowMessage('TRUE:'+pattern.PickupStr.Text);

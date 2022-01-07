@@ -3,13 +3,15 @@ unit cnako_function;
 interface
 
 uses
-  Windows
+  {$IFDEF Win32}
+  Windows,
+  {$ENDIF}
   {$IFDEF CNAKOEX}
-  ,hima_variable
-  ,hima_system
+  hima_variable,
+  hima_system,
   {$ELSE}
-  ,dnako_import
-  ,dnako_import_types
+  dnako_import,
+  dnako_import_types
   {$ENDIF}
   ;
 
@@ -286,6 +288,11 @@ var
   len: DWORD;
   s: AnsiString;
   h: THandle;
+  {$IFDEF Win32}
+  {$ELSE}
+  i: Integer;
+  c: Char;
+  {$ENDIF}
 begin
   // (1) à¯êîÇÃéÊìæ
   len := getArgInt(arg, 0);
@@ -293,8 +300,15 @@ begin
   if len > 0 then
   begin
     SetLength(s, len);
+    {$IFDEF Win32}
     h := GetStdHandle(STD_INPUT_HANDLE);
     ReadFile(h, s[1], len, len, nil);
+    {$ELSE}
+    for i := 1 to len do begin
+      read(c);
+      s[i] := c;
+    end;
+    {$ENDIF}
   end;
   // (3) åãâ ÇÃê›íË
   Result := nako_var_new(nil);

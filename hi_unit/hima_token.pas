@@ -5,7 +5,10 @@ unit hima_token;
 interface
 
 uses
-  Windows, SysUtils, hima_string, hima_types, hima_error, unit_string;
+  {$IFDEF Win32}
+  Windows, 
+  {$ENDIF}
+  SysUtils, hima_string, hima_types, hima_error, unit_string;
 
 const
   IndentChars:    TChars   = [' ',#9];

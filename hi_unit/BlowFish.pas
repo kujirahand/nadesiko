@@ -8,7 +8,12 @@ unit BlowFish;
 interface
 
 uses
-  SysUtils, Windows, CryptUtils;
+  {$IFDEF Win32}
+  Windows,
+  {$ELSE}
+  {$IFEND}
+  SysUtils, 
+  CryptUtils;
 
 type
   TBFWord = DWORD;

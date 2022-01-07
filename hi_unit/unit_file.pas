@@ -1,73 +1,3 @@
-{$A8,B-,C+,D+,E-,F-,G+,H+,I+,J-,K-,L+,M-,N+,O+,P+,Q-,R-,S-,T-,U-,V+,W-,X+,Y+,Z1}
-{$MINSTACKSIZE $00004000}
-{$MAXSTACKSIZE $00100000}
-{$IMAGEBASE $00400000}
-{$APPTYPE GUI}
-{$WARN SYMBOL_DEPRECATED ON}
-{$WARN SYMBOL_LIBRARY ON}
-{$WARN SYMBOL_PLATFORM ON}
-{$IFDEF VER150}
-{$ELSE}
-{WARN SYMBOL_EXPERIMENTAL ON}
-{$WARN UNIT_LIBRARY ON}
-{$WARN UNIT_PLATFORM ON}
-{$WARN UNIT_DEPRECATED ON}
-{WARN UNIT_EXPERIMENTAL ON}
-{$ENDIF}
-(*{$WARN HRESULT_COMPAT ON}
-{$WARN HIDING_MEMBER ON}
-{$WARN HIDDEN_VIRTUAL ON}
-{$WARN GARBAGE ON}
-{$WARN BOUNDS_ERROR ON}
-{$WARN ZERO_NIL_COMPAT ON}
-{$WARN STRING_CONST_TRUNCED ON}
-{$WARN FOR_LOOP_VAR_VARPAR ON}
-{$WARN TYPED_CONST_VARPAR ON}
-{$WARN ASG_TO_TYPED_CONST ON}
-{$WARN CASE_LABEL_RANGE ON}
-{$WARN FOR_VARIABLE ON}
-{$WARN CONSTRUCTING_ABSTRACT ON}
-{$WARN COMPARISON_FALSE ON}
-{$WARN COMPARISON_TRUE ON}
-{$WARN COMPARING_SIGNED_UNSIGNED ON}
-{$WARN COMBINING_SIGNED_UNSIGNED ON}
-{$WARN UNSUPPORTED_CONSTRUCT ON}
-{$WARN FILE_OPEN ON}
-{$WARN FILE_OPEN_UNITSRC ON}
-{$WARN BAD_GLOBAL_SYMBOL ON}
-{$WARN DUPLICATE_CTOR_DTOR ON}
-{$WARN INVALID_DIRECTIVE ON}
-{$WARN PACKAGE_NO_LINK ON}
-{$WARN PACKAGED_THREADVAR ON}
-{$WARN IMPLICIT_IMPORT ON}
-{$WARN HPPEMIT_IGNORED ON}
-{$WARN NO_RETVAL ON}
-{$WARN USE_BEFORE_DEF ON}
-{$WARN FOR_LOOP_VAR_UNDEF ON}
-{$WARN UNIT_NAME_MISMATCH ON}
-{$WARN NO_CFG_FILE_FOUND ON}
-{$WARN IMPLICIT_VARIANTS ON}
-{$WARN UNICODE_TO_LOCALE ON}
-{$WARN LOCALE_TO_UNICODE ON}
-{$WARN IMAGEBASE_MULTIPLE ON}
-{$WARN SUSPICIOUS_TYPECAST ON}
-{$WARN PRIVATE_PROPACCESSOR ON}
-{$WARN UNSAFE_TYPE OFF}
-{$WARN UNSAFE_CODE OFF}
-{$WARN UNSAFE_CAST OFF}
-{$IFDEF VER150}
-{$ELSE}
-{$WARN OPTION_TRUNCATED ON}
-{$WARN WIDECHAR_REDUCED ON}
-{$WARN DUPLICATES_IGNORED ON}
-{$WARN UNIT_INIT_SEQ ON}
-{$WARN LOCAL_PINVOKE ON}
-{$ENDIF}
-{$WARN MESSAGE_DIRECTIVE ON}
-*)
-
-
-
 unit unit_file;
 //------------------------------------------------------------------------------
 // ファイル入出力に関する汎用的なユニット
@@ -78,19 +8,26 @@ unit unit_file;
 interface
 
 uses
-  Windows, SysUtils, Classes, hima_types, ShellApi, comobj, shlobj, activex;
+  {$IFDEF Win32}
+  Windows, 
+  ShellApi, comobj, shlobj, activex
+  {$ELSE}
+  Types,
+  {$ENDIF}
+  SysUtils, Classes, hima_types;
 
 type
   TWindowState2 = (ws2Normal, ws2Minimized, ws2Maximized);
 
 
 
-
+{$IFDEF Win32}
 // 文字列にファイルの内容を全部開く
 function FileLoadAll(Filename: AnsiString): AnsiString;
 
 // 文字列にファイルの内容を全部書き込む
 procedure FileSaveAll(s, Filename: AnsiString);
+{$ENDIF}
 
 //COPY
 function SHFileCopy(const Source, Dest, Title: AnsiString): Boolean;
@@ -105,10 +42,12 @@ function EnumAllFiles(path: string; out basePath: string): TStringList; overload
 function EnumAllFiles(path: string): TStringList; overload;
 function EnumAllDirs(path: string): TStringList;
 function EnumDirs(const path: string): TStringList;
+{$IFDEF Win32}
 function CreateShortCut(SavePath, TargetApp, Arg, WorkDir: AnsiString; State: TWindowState2): Boolean;
 function CreateShortCutEx(SavePath, TargetApp, Arg, WorkDir, IconPath: AnsiString;
     IconNo:Integer;Comment: AnsiString;Hotkey:Word; State: TWindowState2): Boolean;
 function GetShortCutLink(Path : AnsiString): AnsiString;
+{$ENDIF}
 
 //ファイルの作成・更新・最終書込日時を得る
 function GetFileTimeEx(fname:string; var tCreation, tLastAccess, tLastWrite:TDateTime):Boolean;
@@ -150,6 +89,7 @@ uses
 
 
 procedure RunAsAdmin(hWnd: THandle; aFile: AnsiString; aParameters: AnsiString);
+{$IFDEF Win32}
 var
   sei: TShellExecuteInfoW;
   afile2: WideString;
@@ -168,6 +108,11 @@ begin
   if not ShellExecuteExW(@sei) then
     raise Exception.Create('起動に失敗しました。(' + string(aFile) + ')');
 end;
+{$ELSE}
+begin
+    raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
 
 function ShortToLongFileName(ShortName: string):string;
 var
@@ -195,6 +140,7 @@ begin
 end;
 
 function LongToShortFileName(LongName: string):string;
+{$IFDEF Win32}
 var
   tmp: string;
 begin
@@ -207,8 +153,14 @@ begin
   Result := string(PChar(tmp));
   {$ENDIF}
 end;
+{$ELSE}
+begin
+    raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
 
 function getVolumeName(drive: string): string;
+{$IFDEF Win32}
 var
   {$IFDEF UNICODE}
   fi: SHFILEINFOW;
@@ -236,8 +188,14 @@ begin
   Result := string(fi.szDisplayName);
   {$ENDIF}
 end;
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
 
 function getFileSystemName(drive: string): string;
+{$IFDEF Win32}
 {$IFDEF UNICODE}
 var
 	SystemName: array [0..1000] of WideChar;
@@ -281,8 +239,14 @@ begin
   Result := string(PAnsiChar(@SystemName[0]));
 end;
 {$ENDIF}
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
 
 function getSerialNo(drive: AnsiString): DWORD;
+{$IFDEF Win32}
 var
 	SerialNumber: DWORD;
 	FileNameLength: DWORD;
@@ -302,8 +266,14 @@ begin
   //
   Result := SerialNumber
 end;
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
 
 function getMainWindowHandle: THandle;
+{$IFDEF Win32}
 begin
   if MainWindowHandle = 0 then
   begin
@@ -312,10 +282,17 @@ begin
 
   Result := MainWindowHandle;
 end;
+{$ELSE}
+begin
+  // raise Exception.Create('Not Supported');
+  Result := 0;
+end;
+{$ENDIF}
 
 
 // ファイルタイムをローカルなTTimeDateに変換する
 function FileTimeToDateTimeEx(const ft:TFileTime):TDateTime;
+{$IFDEF Win32}
 var lt:TFileTime; st:TSystemTime;
 begin
   // 2ちゃんの「こんな関数作ったよ。 」スレより。27 ：デフォルトの名無しさん ：02/10/15 19:24 より
@@ -323,19 +300,30 @@ begin
   FileTimeToSystemTime(lt,st);
   Result:=SystemTimeToDateTime(st);
 end;
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
 
 //TDateTimeからファイル日時を得る
 function DateTimeToFileTimeEx(dt: TDateTime):TFileTime;
+{$IFDEF Win32}
 var ft:TFileTime; st:TSystemTime;
 begin
   DateTimeToSystemTime(dt, st);
   SystemTimeToFileTime(st, ft);
   LocalFileTimeToFileTime(ft, Result);
 end;
-
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
 
 //ファイルの作成・更新・最終書込日時を得る
 function GetFileTimeEx(fname:string; var tCreation, tLastAccess, tLastWrite:TDateTime):boolean;
+{$IFDEF Win32}
 var
   F: TWin32FindData;
   h:THandle;
@@ -351,9 +339,15 @@ begin
     Result := True;
   end;
 end;
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$IFEND}
 
 // 一括でファイル日時を変更する
 function SetFileTimeEx(fname:string; tCreation, tLastAccess, tLastWrite: TDateTime): Boolean;
+{$IFDEF Win32}
 var
   fCreation, fLastAccess, fLastWrite: TFileTime;
   hFile: THandle;
@@ -376,8 +370,13 @@ begin
     Result := False;
   end;
 end;
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$IFEND}
 
-
+{$IFDEF Win32}
 // 文字列にファイルの内容を全部開く
 function FileLoadAll(Filename: AnsiString): AnsiString;
 var
@@ -441,8 +440,10 @@ begin
     CloseHandle(f);
   end;
 end;
+{$ENDIF}
 
 
+{$IFDEF Win32}
 function SHFileCopy(const Source, Dest, Title: AnsiString): Boolean;
 var
   foStruct: TSHFileOpStructA;
@@ -524,6 +525,30 @@ begin
   Result := SHFileMove(Source, Dest);
 end;
 
+{$ELSE}
+function SHFileCopy(const Source, Dest, Title: AnsiString): Boolean;
+begin
+  raise Exception.Create('Not Supported');
+end;
+function SHFileDelete(const Source: AnsiString): Boolean;
+begin
+  raise Exception.Create('Not Supported');
+end;
+function SHFileDeleteComplete(const Source: AnsiString): Boolean;
+begin
+  raise Exception.Create('Not Supported');
+end;
+function SHFileMove(const Source, Dest: AnsiString): Boolean;
+begin
+  raise Exception.Create('Not Supported');
+end;
+function SHFileRename(const Source, Dest: AnsiString): Boolean;
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$IFEND}
+
+
 function EnumFiles(path: string): TStringList;
 var
   rec: TSearchRec;
@@ -588,6 +613,7 @@ end;
 
 /// 全ファイル列挙、引数 path には、基本となるパスを返す
 function EnumAllFiles(path: string; out basePath: string): TStringList; overload;
+{$IFDEF Win32}
 var
   s: string;
   hmain: THandle;
@@ -680,8 +706,15 @@ begin
   end;
 
 end;
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
+
 
 function EnumAllDirs(path: string): TStringList;
+{$IFDEF Win32}
 var
   hmain: THandle;
   smain: string;
@@ -740,9 +773,15 @@ begin
   end;
 
 end;
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
 
 
 function EnumDirs(const path: string): TStringList;
+{$IFDEF Win32}
 var
   rec: TSearchRec;
   s: string;
@@ -767,8 +806,15 @@ begin
     FindClose(rec);
   end;
 end;
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
+
 
 function CreateShortCut(SavePath, TargetApp, Arg, WorkDir: AnsiString; State: TWindowState2): Boolean;
+{$IFDEF Win32}
 var
   IU: IUnknown;
   W: PWideChar;
@@ -791,7 +837,13 @@ begin
   except
   end
 end;
+{$ELSE}
+begin
+  raise Exception.Create('Not Supported');
+end;
+{$ENDIF}
 
+{$IFDEF Win32}
 function CreateShortCutEx(SavePath, TargetApp, Arg, WorkDir, IconPath: AnsiString;
     IconNo:Integer;Comment: AnsiString;Hotkey:Word; State: TWindowState2): Boolean;
 var
@@ -840,5 +892,6 @@ begin
   except
   end
 end;
+{$ENDIF}
 
 end.

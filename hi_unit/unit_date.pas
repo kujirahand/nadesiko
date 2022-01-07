@@ -2,7 +2,11 @@ unit unit_date;
 
 interface
 uses
-  WIndows, SysUtils, DateUtils, unit_string, Variants;
+  {$IFDEF Win32}
+  Windows,
+  {$ELSE}
+  {$ENDIF}
+  SysUtils, DateUtils, unit_string, Variants;
 
 
 
@@ -24,6 +28,7 @@ function DelphiDateTimeToUNIXTime(DelphiTime : TDateTime): LongWord;
 implementation
 
 function UNIXTimeToDelphiDateTime(UnixTime: LongWord): TDateTime;
+{$IFDEF Win32}
 var
   TimeZoneInformation: TTimeZoneInformation;
 begin
@@ -32,8 +37,14 @@ begin
     (UnixTime/(24*3600)) -
     ((TimeZoneInformation.Bias) / (24 * 60));
 end;
+{$ELSE}
+begin
+  Result := UnixToDateTime(UnixTime);
+end;
+{$ENDIF}
 
 function DelphiDateTimeToUNIXTime(DelphiTime : TDateTime): LongWord;
+{$IFDEF Win32}
 var
   TimeZoneInformation: TTimeZoneInformation;
 begin
@@ -43,7 +54,11 @@ begin
     Round((DelphiTime - UnixDateDelta +
       (TimeZoneInformation.Bias / (24*60))) * SecsPerDay);
 end;
-
+{$ELSE}
+begin
+  Result := DateTimeToUnix(DelphiTime);
+end;
+{$ENDIF}
 
 {êºóÔÅAòaóÔÇ…ëŒâûÇµÇΩì˙ïtïœä∑ópä÷êî}
 function StrToDateStr(str: AnsiString): AnsiString;

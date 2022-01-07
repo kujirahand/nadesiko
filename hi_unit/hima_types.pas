@@ -5,7 +5,10 @@ unit hima_types;
 interface
 
 uses
-  Windows, SysUtils;
+    {$IFDEF Win32}
+    Windows, 
+    {$ENDIF}
+    SysUtils;
 
 type
   //----------------------------------------------------------------------------

@@ -8,7 +8,12 @@ unit unit_file_dnako;
 interface
 
 uses
-  Windows, SysUtils, hima_types;
+  {$IFDEF Win32}
+  Windows,
+  {$ELSE}
+  Classes,
+  {$ENDIF}
+  SysUtils, hima_types;
 
 type
   TWindowState = (wsNormal, wsMinimized, wsMaximized);
@@ -26,6 +31,7 @@ uses
 
 // 文字列にファイルの内容を全部開く
 function FileLoadAll(Filename: string): AnsiString;
+{$IFDEF Win32}
 var
   f: THandle;
   size, rsize: DWORD;
@@ -60,9 +66,20 @@ begin
     CloseHandle(f);
   end;
 end;
+{$ELSE}
+var
+  s: TStringList;
+begin
+  s := TStringList.Create;
+  s.LoadFromFile(Filename);
+  Result := s.Text;
+  s.Free;
+end;
+{$ENDIF}
 
 // 文字列にファイルの内容を全部書き込む
 procedure FileSaveAll(s:AnsiString; Filename: string);
+{$IFDEF Win32}
 var
   f: THandle;
   size, rsize: DWORD;
@@ -96,5 +113,15 @@ begin
     CloseHandle(f);
   end;
 end;
+{$ELSE}
+var
+  sl: TStringList;
+begin
+  sl := TStringList.Create;
+  sl.Text := s;
+  sl.SaveToFile(Filename);
+  sl.Free;
+end;
+{$ENDIF}
 
 end.

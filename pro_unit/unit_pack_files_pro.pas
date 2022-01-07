@@ -5,7 +5,10 @@ unit unit_pack_files_pro;
 interface
 
 uses
-  Windows, SysUtils, Classes, hima_types, hima_stream;
+  {$IFDEF Win32}
+  Windows,
+  {$ENDIF}
+  SysUtils, Classes, hima_types, hima_stream;
 
 procedure DoAngou6(var ms: TMemoryStream; enc:Boolean);
 
