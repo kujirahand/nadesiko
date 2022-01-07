@@ -2939,9 +2939,7 @@ begin
 end;
 
 initialization
-  WriteLn('hima_system::checkinitsystem::start');
   HiSystem.CheckInitSystem; // ‹N“®
-  WriteLn('hima_system::checkinitsystem::end');
 
 finalization
   try

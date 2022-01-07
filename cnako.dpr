@@ -1,8 +1,6 @@
 program cnako;
 
-{$IFDEF FPC}
-  {$DEFINE CNAKOEX}
-{$ELSE}
+{$IFNDEF FPC}
   {$DEFINE DELPHI}
 {$ENDIF}
 

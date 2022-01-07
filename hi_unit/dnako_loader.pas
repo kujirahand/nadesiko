@@ -40,7 +40,11 @@ implementation
 uses mini_file_utils, SysUtils, dnako_import_types, nadesiko_version;
 
 const
+  {$IFDEF Win32}
   DNAKO_DLL = 'dnako.dll';
+  {$ELSE}
+  DNAKO_DLL = 'libdnako.dylib';
+  {$ENDIF}
 
 { TDnakoLoader }
 
