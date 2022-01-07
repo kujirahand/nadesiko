@@ -265,7 +265,7 @@ end;
 
 constructor TWChar.Create(var p: PChar);
 begin
-    if p^ in LeadBytes then
+    if p^ in SJISLeadBytes then
     begin
         ch[0] := p^; Inc(p);
         ch[1] := p^; Inc(p);
@@ -438,7 +438,7 @@ begin
     p := PChar(s);
     while p^ <> #0 do
     begin
-        if p^ in LeadBytes then
+        if p^ in SJISLeadBytes then
         begin
             FStr[idx] := TWChar.Create(p) ;
         end else
@@ -596,7 +596,7 @@ constructor TWKakko.Create(var p: PChar);
         while not(p^ in [#0, ']']) do
         begin
             cFrom := Ord(p^);
-            if p^ in LeadBytes then//２バイトチェック
+            if p^ in SJISLeadBytes then//２バイトチェック
             begin
                 Inc(p);
                 cFrom := (cFrom shl 8) + Ord(p^);
@@ -609,7 +609,7 @@ constructor TWKakko.Create(var p: PChar);
             begin
                 Inc(p); // skip '-'
                 cTo := Ord(p^);
-                if p^ in LeadBytes then
+                if p^ in SJISLeadBytes then
                 begin
                     Inc(p);
                     cTo := (cTo shl 8) + Ord(p^);

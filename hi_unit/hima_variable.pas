@@ -665,7 +665,7 @@ begin
   ZeroMemory(v.ptr, v.Size); // 末尾まで全部"0"
   {$ELSE}
   FillByte(v.ptr^, v.Size, 0);
-  WriteLn('hi_setStr');
+  //WriteLn('hi_setStr');
   {$ENDIF}
 
   // Chr(0) もコピーできるようにメモリをそのままコピー

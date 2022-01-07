@@ -2,16 +2,6 @@ unit hima_system;
 //------------------------------------------------------------------------------
 // 構文木を実行する
 //------------------------------------------------------------------------------
-{$IFDEF FPC}
-  {$DEFINE CNAKOEX}
-{$ELSE}
-  {$DEFINE DELPHI}
-{$ENDIF}
-
-{$IFDEF Win32}
-{$ENDIF}
-
-
 interface
 
 uses
@@ -218,7 +208,7 @@ type
     procedure PushScope; // ローカルスコープの作成
     procedure PopScope;  // ローカルスコープの破棄
     procedure SetSetterGetter(VarName, SetterName, GetterName: AnsiString; tag: Integer; Description, yomi: AnsiString); // セッターゲッターの設定
-    function AddFunction(name, argStr: AnsiString; func: THimaSysFunction; tag: Integer; FIzonFiles: AnsiString): Boolean;
+    function AddFunction(name, argStr: AnsiString; func: THimaSysFunction; tag: Integer; FIzonFiles: AnsiString = ''): Boolean;
     function DebugProgram(n: TSyntaxNode; lang: THiOutLangType = langNako): AnsiString;
     function DebugProgramNadesiko: AnsiString;
     function RunGroupEvent(group: PHiValue; memberId: DWORD): PHiValue;
@@ -546,7 +536,7 @@ begin
 end;
 
 function THiSystem.AddFunction(name, argStr: AnsiString;
-  func: THimaSysFunction; tag: Integer; FIzonFiles: AnsiString): Boolean;
+  func: THimaSysFunction; tag: Integer; FIzonFiles: AnsiString = ''): Boolean;
 var item: PHiValue; id: Integer;
 begin
   // 外部/内部からのコマンド追加
@@ -1530,7 +1520,7 @@ var
                 end;
                 else begin
                   // 埋め込み文字
-                  if p^ in SysUtils.LeadBytes then
+                  if p^ in SJISLeadBytes then
                   begin
                     s := s + p^ + (p+1)^;
                     Inc(p, 2);
@@ -2949,7 +2939,9 @@ begin
 end;
 
 initialization
+  WriteLn('hima_system::checkinitsystem::start');
   HiSystem.CheckInitSystem; // 起動
+  WriteLn('hima_system::checkinitsystem::end');
 
 finalization
   try

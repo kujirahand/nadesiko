@@ -446,7 +446,7 @@ begin
   i := 1;
   while i <= Length(s) do
   begin
-    if Result[i] in LeadBytes then
+    if Result[i] in SJISLeadBytes then
     begin
       Inc(i, 2);
     end else

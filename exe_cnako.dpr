@@ -3,8 +3,10 @@ program exe_cnako;
 {$APPTYPE CONSOLE}
 
 uses
-  MemCheck in 'MemCheck.pas',
+  // MemCheck in 'MemCheck.pas',
+  {$IFDEF Win32}
   Windows,
+  {$ENDIF}
   SysUtils,
   hima_system in 'hi_unit\hima_system.pas',
   hima_types in 'hi_unit\hima_types.pas',
@@ -30,7 +32,10 @@ uses
   common_function in 'hi_unit\common_function.pas',
   unit_text_file in 'hi_unit\unit_text_file.pas',
   mt19937 in 'hi_unit\mt19937.pas',
-  nako_dialog_function2 in 'hi_unit\nako_dialog_function2.pas';
+  nako_dialog_function2 in 'hi_unit\nako_dialog_function2.pas',
+  unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas',
+  EasyMasks in 'hi_unit\EasyMasks.pas',
+  wildcard2 in 'hi_unit\wildcard2.pas';
 
 function cmd_print(args: THiArray): PHiValue; stdcall;
 var
@@ -47,10 +52,9 @@ end;
 
 function cmd_test(args: THiArray): PHiValue; stdcall;
 var
-  a,f: PHiValue;
+  a: PHiValue;
 begin
   a := args.Items[0];
-  f := args.Items[1];
   Result := hi_newStr('test');
   if a <> nil then hi_setStr(a,'test');
 end;
@@ -88,9 +92,9 @@ end;
 //------------------------------------------------------------------------------
 begin
   // run
-  HiSystem.AddFunction('表示','{=?}Sを|Sと|Sで', cmd_print, 880000);
-  HiSystem.AddFunction('言う','{=?}Sを|Sと|Sで', cmd_print, 880001);
-  HiSystem.AddFunction('毎行読む','{参照渡し 変数=?}AにFを', sys_loadEveryLine, 880002);
+  HiSystem.AddFunction('表示','{=?}Sを|Sと|Sで', cmd_print, 880000, '');
+  HiSystem.AddFunction('言う','{=?}Sを|Sと|Sで', cmd_print, 880001, '');
+  HiSystem.AddFunction('毎行読む','{参照渡し 変数=?}AにFを', sys_loadEveryLine, 880002, '');
   HiSystem.AddSystemFileCommand;
   //HiSystem.LoadPlugins;
 

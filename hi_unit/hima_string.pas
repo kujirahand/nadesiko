@@ -64,7 +64,7 @@ begin
   Result := '';
   while p^ <> #0 do
   begin
-    if p^ in LeadBytes then
+    if p^ in SJISLeadBytes then
     begin
       if not CharInRange(p, 'ぁ','ん') then Result := Result + p^ + (p+1)^;
       Inc(p, 2);
@@ -87,7 +87,7 @@ begin
 
   // ひらがな以外が最後に現れた位置(+1文字の所)を記録
   while p^ <> #0 do begin
-    if p^ in LeadBytes then
+    if p^ in SJISLeadBytes then
     begin
       if False = CharInRange(p, 'ぁ','ん') then // ひらがな以外
       begin
@@ -128,7 +128,7 @@ var
   fromCode, toCode: Integer;
 begin
   // 判別対象のコードを得る
-  if p^ in LeadBytes then code := (Ord(p^) shl 8) + Ord((p+1)^) else code := Ord(p^);
+  if p^ in SJISLeadBytes then code := (Ord(p^) shl 8) + Ord((p+1)^) else code := Ord(p^);
 
   // 範囲初め
   if fromCH = '' then
@@ -136,7 +136,7 @@ begin
     fromCode := 0;
   end else
   begin
-    if fromCH[1] in LeadBytes then
+    if fromCH[1] in SJISLeadBytes then
       fromCode := (Ord(fromCH[1]) shl 8) + Ord(fromCH[2])
     else
       fromCode := Ord(fromCH[1]);
@@ -148,7 +148,7 @@ begin
     toCode := $FCFC;
   end else
   begin
-    if toCH[1] in LeadBytes then
+    if toCH[1] in SJISLeadBytes then
       toCode := (Ord(toCH[1]) shl 8) + Ord(toCH[2])
     else
       toCode := Ord(toCH[1]);
@@ -474,7 +474,7 @@ var
 begin
   if p^ = #0 then begin ch := ''; nch := ''; Exit; end; //
 
-  if p^ in SysUtils.LeadBytes then
+  if p^ in SJISLeadBytes then
   begin
     ch   := p^ + (p+1)^; nch := '';
     code := Ord( p^ ) shl 8 + Ord( (p+1)^ );

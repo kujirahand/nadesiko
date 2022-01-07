@@ -80,7 +80,11 @@ end;
 
 interface
 
-uses Windows,SysUtils, Classes;
+uses
+  {$IFDEF Win32}
+  Windows,
+  {$ENDIF}
+  SysUtils, Classes;
 
 //=====================================================================
 // 本家 BREGEXP.H と、サポートホームページのドキュメントより
@@ -187,7 +191,7 @@ function bregMatch(s, pat, opt: AnsiString; matches: TStringList = nil): Boolean
 
 implementation
 
-uses Masks, unit_string, mini_file_utils;
+uses EasyMasks, unit_string, mini_file_utils;
 
 const CBOOL_FALSE = 0;
 

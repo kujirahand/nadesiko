@@ -1,61 +1,3 @@
-
-{$IFDEF RTLVersion >= 15}
-{$A8,B-,C+,D+,E-,F-,G+,H+,I+,J-,K-,L+,M-,N+,O+,P+,Q-,R-,S-,T-,U-,V+,W-,X+,Y+,Z1}
-{$MINSTACKSIZE $00004000}
-{$MAXSTACKSIZE $00100000}
-{$IMAGEBASE $00400000}
-{$APPTYPE GUI}
-{$WARN SYMBOL_DEPRECATED ON}
-{$WARN SYMBOL_LIBRARY ON}
-{$WARN SYMBOL_PLATFORM ON}
-{$WARN UNIT_LIBRARY ON}
-{$WARN UNIT_PLATFORM ON}
-{$WARN UNIT_DEPRECATED ON}
-{$WARN HRESULT_COMPAT ON}
-{$WARN HIDING_MEMBER ON}
-{$WARN HIDDEN_VIRTUAL ON}
-{$WARN GARBAGE ON}
-{$WARN BOUNDS_ERROR ON}
-{$WARN ZERO_NIL_COMPAT ON}
-{$WARN STRING_CONST_TRUNCED ON}
-{$WARN FOR_LOOP_VAR_VARPAR ON}
-{$WARN TYPED_CONST_VARPAR ON}
-{$WARN ASG_TO_TYPED_CONST ON}
-{$WARN CASE_LABEL_RANGE ON}
-{$WARN FOR_VARIABLE ON}
-{$WARN CONSTRUCTING_ABSTRACT ON}
-{$WARN COMPARISON_FALSE ON}
-{$WARN COMPARISON_TRUE ON}
-{$WARN COMPARING_SIGNED_UNSIGNED ON}
-{$WARN COMBINING_SIGNED_UNSIGNED ON}
-{$WARN UNSUPPORTED_CONSTRUCT ON}
-{$WARN FILE_OPEN ON}
-{$WARN FILE_OPEN_UNITSRC ON}
-{$WARN BAD_GLOBAL_SYMBOL ON}
-{$WARN DUPLICATE_CTOR_DTOR ON}
-{$WARN INVALID_DIRECTIVE ON}
-{$WARN PACKAGE_NO_LINK ON}
-{$WARN PACKAGED_THREADVAR ON}
-{$WARN IMPLICIT_IMPORT ON}
-{$WARN HPPEMIT_IGNORED ON}
-{$WARN NO_RETVAL ON}
-{$WARN USE_BEFORE_DEF ON}
-{$WARN FOR_LOOP_VAR_UNDEF ON}
-{$WARN UNIT_NAME_MISMATCH ON}
-{$WARN NO_CFG_FILE_FOUND ON}
-{$WARN MESSAGE_DIRECTIVE ON}
-{$WARN IMPLICIT_VARIANTS ON}
-{$WARN UNICODE_TO_LOCALE ON}
-{$WARN LOCALE_TO_UNICODE ON}
-{$WARN IMAGEBASE_MULTIPLE ON}
-{$WARN SUSPICIOUS_TYPECAST ON}
-{$WARN PRIVATE_PROPACCESSOR ON}
-{$WARN UNSAFE_TYPE OFF}
-{$WARN UNSAFE_CODE OFF}
-{$WARN UNSAFE_CAST OFF}
-{$ENDIF}
-{$I heverdef.inc}
-
 unit hima_function;
 
 // 組み込みの命令など
@@ -5379,7 +5321,7 @@ begin
   // (2) データの処理 / (3) 戻り値を設定
   Result := hi_var_new;
   str := hi_str(a) + #0;
-  if (str[1] in LeadBytes) and (Length(str) > 2) then
+  if (str[1] in SJISLeadBytes) and (Length(str) > 2) then
   begin
     hi_setInt(Result, ord(str[1]) shl 8 + ord(str[2]));
   end else
@@ -6092,7 +6034,7 @@ function sys_zen_kana(args: THiArray): PHiValue; stdcall;
 var s: AnsiString;
 begin
   s := CopyA(getArgStr(args,0,True),1,1) + ' ';
-  Result := hi_newBool(s[1] in SysUtils.LeadBytes);
+  Result := hi_newBool(s[1] in SJISLeadBytes);
 end;
 function sys_hira_kana(args: THiArray): PHiValue; stdcall;
 begin
@@ -6520,7 +6462,7 @@ end;
 
 procedure THimaArgs.DefineArgs(s: AnsiString);
 var
-  p: PAnsiChar;
+  p, last_p: PAnsiChar;
   m, kata, value, name, josi, ss: AnsiString;
   arg: THimaArg;
 begin
@@ -6528,11 +6470,13 @@ begin
   p := PAnsiChar(s);
   while p^ <> #0 do
   begin
+    if p^ = '|' then begin Inc(p); Continue; end;
+    if p^ = ',' then begin Inc(p); Continue; end;
     // 修飾
     if p^ = '{' then
     begin
       Inc(p);
-      m := getTokenStr(p,'}');
+      m := getTokenStr(p, '}');
       arg := THimaArg.Create;
       if PosA('=', m) > 0 then
       begin
@@ -6569,7 +6513,7 @@ begin
         begin
           hi_setStr(arg.Value, Copy(value,2,Length(value)-2));
         end else
-        if value[1] in SysUtils.LeadBytes then
+        if value[1] in SJISLeadBytes then
         begin
           if (Copy(value, 1, 2) = '「')or(Copy(value, 1, 2) = '『') then
           begin
@@ -6587,23 +6531,26 @@ begin
           else
             hi_setStr(arg.Value, Copy(value,2,Length(value)-2));
         end;
-
       end;
-      //
+      josi := '';
       name := HimaGetWord(p, josi);
       arg.Name := HiSystem.TangoList.GetID(name);
       arg.JosiList.AddNum(DWORD(HiSystem.JosiList.GetID(josi)));
       Self.Add_JosiCheck(arg);
     end else
     begin
+      last_p := p;
+      josi := '';
       name := HimaGetWord(p, josi);
+      if last_p = p then
+      begin
+        Writeln('Error****=',p^,'==',Ord(p^));
+      end;
       arg := THimaArg.Create;
       arg.Name := HiSystem.TangoList.GetID(name);
       arg.JosiList.AddNum(DWORD(HiSystem.JosiList.GetID(josi)));
       Self.Add_JosiCheck(arg);
     end;
-    if p^ = '|' then Inc(p);
-    if p^ = ',' then Inc(p);
   end;
 end;
 

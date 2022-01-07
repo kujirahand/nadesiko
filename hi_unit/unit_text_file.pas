@@ -34,6 +34,8 @@ type
 
 implementation
 
+uses unit_string;
+
 { TKTextFileStream }
 
 constructor TKTextFileStream.Create(const FileName: AnsiString; Mode: Word);
@@ -98,7 +100,7 @@ var
     i := 1;
     while (i <= Length(s)) do
     begin
-      if s[i] in LeadBytes then
+      if s[i] in SJISLeadBytes then
       begin
         Inc(i,2); Continue;
       end else

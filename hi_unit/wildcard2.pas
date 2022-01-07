@@ -414,7 +414,7 @@ begin
     p := PAnsiChar(Src);
     while p^ <> #0 do
     begin
-      if p^ in LeadBytes then
+      if p^ in SJISLeadBytes then
       begin
         s := p^ + (p+1)^;
         Result.Add(string(s));
@@ -466,7 +466,7 @@ end;
 function getOneChar(var p: PAnsiChar): AnsiString;
 begin
   if (p = nil)or(p^ = #0) then begin Result := ''; Exit; end;
-  if p^ in LeadBytes then
+  if p^ in SJISLeadBytes then
   begin
     Result := p^ + (p+1)^;
     Inc(p, 2);
@@ -480,7 +480,7 @@ end;
 function getOneChar(var p: PAnsiChar;const p_last:PAnsiChar): AnsiString;
 begin
   if (p = nil)or(p >= p_last) then begin Result := ''; Exit; end;
-  if p^ in LeadBytes then
+  if p^ in SJISLeadBytes then
   begin
     Result := p^ + (p+1)^;
     Inc(p, 2);
@@ -1039,7 +1039,7 @@ var
   function getCharCode(s: AnsiString): Integer;
   begin
     if s = '' then begin Result := 0; Exit; end;
-    if s[1] in LeadBytes then
+    if s[1] in SJISLeadBytes then
     begin
       Result := Ord(s[1]) shl 8 + Ord(s[2]);
     end else
@@ -1108,7 +1108,7 @@ var
         begin
           Break;
         end;
-        if p^ in LeadBytes then
+        if p^ in SJISLeadBytes then
         begin
           s := s + p^;
           Inc(p);
@@ -1185,7 +1185,7 @@ var
   function getChar: AnsiString;
   begin
     if (p = nil)or(p^ = #0) then begin Result := ''; Exit; end;
-    if p^ in LeadBytes then
+    if p^ in SJISLeadBytes then
       Result := p^ + (p+1)^
     else
       Result := p^;

@@ -526,7 +526,7 @@ begin
           Result := (p - temp) + 1;
           Exit;
         end;
-      if p^ in SysUtils.LeadBytes then Inc(p,2) else Inc(p);
+      if p^ in SJISLeadBytes then Inc(p,2) else Inc(p);
     end;
 end;
 

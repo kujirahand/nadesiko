@@ -20,6 +20,7 @@ type
   {$IFDEF VER150}
   RawByteString = string;
   {$ENDIF}
+const SJISLeadBytes: TChars = [#$81..#$9F,#$E0..#$EF];
 
 {$IFDEF fpc}
 const NORM_IGNORECASE = $00000001;           
@@ -161,11 +162,7 @@ function IntToHexA(Value: Integer; Digits: Integer): AnsiString;
 
 implementation
 
-{$IFDEF Win32}
-uses Masks;
-{$ELSE}
-uses wildcard;
-{$ENDIF}
+uses EasyMasks;
 
 {$IFDEF fpc}
 function GetLastError(): Integer;
@@ -216,6 +213,7 @@ function FormatA(const Format: AnsiString; const Args: array of const): AnsiStri
 var
   r: string;
 begin
+  r := '';
   FmtStr(r, string(Format), Args);
   Result := AnsiString(r);
 end;
@@ -234,6 +232,7 @@ const
   TO_UPPER = Ord('A') - Ord('a');
 begin
   len := Length(s);
+  Result := '';
   SetLength(Result, len);
   i := 1;
   while (i <= len) do
@@ -293,11 +292,7 @@ begin
   list := SplitChar(';', Masks);
   for i := 0 to list.Count - 1 do
   begin
-    {$IFDEF Win32}
     if MatchesMask(String(Filename), String(list.Strings[i])) then
-    {$ELSE}
-    if WildMatchFilename(String(Filename), String(list.Strings[i])) then
-    {$ENDIF}
     begin
       Result := True;
     end;
@@ -427,7 +422,7 @@ end;
 // PAnsiChar から 1文字取り出す
 function getOneChar(var p: PAnsiChar): AnsiString;
 begin
-  if p^ in SysUtils.LeadBytes then
+  if p^ in SJISLeadBytes then
   begin
     Result := p^ + (p+1)^;
     Inc(p, 2);
@@ -441,7 +436,7 @@ end;
 // PAnsiChar から 1文字取り出し文字コードで返す
 function getOneCharCode(var p: PAnsiChar): Integer;
 begin
-  if p^ in SysUtils.LeadBytes then
+  if p^ in SJISLeadBytes then
   begin
     Result := Ord(p^) shl 8 + Ord((p+1)^);
     Inc(p, 2);
@@ -484,6 +479,7 @@ var
   p: PAnsiChar; flg: Boolean;
 begin
   p := PAnsiChar(s);
+  flg := False;
   Result := getToSplitter(p, splitter, flg);
   s := p;
 end;
@@ -511,7 +507,7 @@ begin
   Result := '';
   while p^ <> #0 do
   begin
-    if p^ in SysUtils.LeadBytes then
+    if p^ in SJISLeadBytes then
     begin
       Result := Result + p^ + (p+1)^;
       Inc(p, 2); Continue;
@@ -613,7 +609,7 @@ begin
   begin
     if p^ <> #0 then
     begin
-      if p^ in SysUtils.LeadBytes then
+      if p^ in SJISLeadBytes then
       begin
         Result := p^ + (p+1)^;
         Inc(p, 2);
@@ -634,7 +630,7 @@ begin
       Break;
     end;
 
-    if p^ in SysUtils.LeadBytes then
+    if p^ in SJISLeadBytes then
     begin
       Result := Result + p^ + (p+1)^;
       Inc(p, 2);
@@ -677,7 +673,7 @@ begin
       Break;
     end;
 
-    if ps^ in LeadBytes then
+    if ps^ in SJISLeadBytes then
     begin
       Inc(ps, 2); Inc(len, 2);
     end else
@@ -771,7 +767,7 @@ begin
     end;
     // 一致しないならば一文字ずらして検索続行
     Inc(i);
-    if ps^ in LeadBytes then
+    if ps^ in SJISLeadBytes then
     begin
       Inc(ps, 2);
     end else
@@ -1130,7 +1126,7 @@ begin
   i := 0;
   while p^ <> #0 do
   begin
-    if p^ in SysUtils.LeadBytes then
+    if p^ in SJISLeadBytes then
     begin
       if (i+2) > count then Break; // バイト数を飛び出すなら抜ける
       Result := Result + p^ + (p+1)^;
@@ -1175,7 +1171,7 @@ begin
         Exit;
     end;
 
-    if ch[1] in LeadBytes then
+    if ch[1] in SJISLeadBytes then
     begin
         Result := (Ord(ch[1]) shl 8) + Ord(ch[2]);
     end else
@@ -1268,7 +1264,7 @@ begin
   Result := True;
   for i := 1 to Length(s) do
   begin
-    if s[i] in SysUtils.LeadBytes then
+    if s[i] in SJISLeadBytes then
     begin
       Result := False; Exit;
     end;
@@ -1389,7 +1385,7 @@ begin
   cnt := 0;
   while (p^ <> #0) do
   begin
-    if p^ in SysUtils.LeadBytes then
+    if p^ in SJISLeadBytes then
     begin
       Result := Result + p^ + (p+1)^;
       Inc(cnt, 2);

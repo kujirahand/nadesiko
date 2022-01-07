@@ -396,7 +396,7 @@ function HimaGetWord(var p: PAnsiChar; var tokenJosi: AnsiString): AnsiString;
   begin
     while p^ <> #0 do
     begin
-      if p^ in LeadBytes then
+      if p^ in SJISLeadBytes then
       // ÇQÉoÉCÉgï∂éöÇÃèàóù
       begin
         if CharInRange(p, 'Çü', 'ÇÒ') then
@@ -570,7 +570,7 @@ var
     s: AnsiString;
   begin
     //---------------------
-    if (p^ in LeadBytes) or (p^ in ['A'..'Z','a'..'z']) then
+    if (p^ in SJISLeadBytes) or (p^ in ['A'..'Z','a'..'z']) then
     begin
       for i := Low(HimaJosuusi) to High(HimaJosuusi) do
       begin
