@@ -86,6 +86,8 @@ type
     function DeleteSheet(sheetname: string):Boolean;
     procedure InsertRow(i:string);
     procedure InsertCol(col:string);
+    procedure DeleteRow(s:string);
+    procedure DeleteCol(col:string);
     property Active: Boolean read FActive;
     property Visible: Boolean read FVisible write SetVisible;
     property Version: Integer read GetVersion;
@@ -234,6 +236,7 @@ const
   xlDown = -4121;
   xlFormatFromLeftOrAbove = 0;
   xlWorkbookDefault = 51;
+  xlOpenXMLWorkbookMacroEnabled = 52;
 
 
 const
@@ -276,7 +279,8 @@ begin
   MessageBox(0, PChar(s), 'debug', MB_OK);
 end;
 
-(*--- WEB‚æ‚èˆø‚Á’£‚Á‚Ä‚«‚½Žg‚¢•û
+(*---
+//[Žg‚¢•û]
 //***** Excel‚Ì‹N“® *****//
 procedure TForm1.Button1Click(Sender: TObject);
 begin
@@ -464,6 +468,10 @@ begin
   if ext = '.xls' then
   begin
     E_WorkBook.SaveAs(fname, xlExcel8);
+  end else
+  if ext = '.xlsm' then
+  begin
+    E_WorkBook.SaveAs(fname, xlOpenXMLWorkbookMacroEnabled);
   end else
   begin
     E_WorkBook.SaveAs(fname, xlWorkbookDefault);
@@ -889,6 +897,18 @@ procedure TKExcel.InsertCol(col:string);
 begin
   E_WorkSheet := GetActiveSheet;
   E_WorkSheet.Range[col+':'+col].Columns.Insert(xlToRight, xlFormatFromLeftOrAbove);
+end;
+
+procedure TKExcel.DeleteRow(s:string);
+begin
+  E_WorkSheet := GetActiveSheet;
+  E_WorkSheet.Rows[s].Delete();
+end;
+
+procedure TKExcel.DeleteCol(col:string);
+begin
+  E_WorkSheet := GetActiveSheet;
+  E_WorkSheet.Range[col+':'+col].Columns.Delete();
 end;
 
 procedure TKExcel.SheetRename(sh1, sh2: string);

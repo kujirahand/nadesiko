@@ -416,6 +416,24 @@ begin
   Result := nil;
 end;
 
+function excel_deleteRow(h: DWORD): PHiValue; stdcall;
+var
+  no: string;
+begin
+  no := getArgStr(h, 0, True);
+  excel.DeleteRow(no);
+  Result := nil;
+end;
+function excel_deleteCol(h: DWORD): PHiValue; stdcall;
+var
+  sname: string;
+begin
+  sname := getArgStr(h, 0, True);
+  excel.DeleteCol(sname);
+  Result := nil;
+end;
+
+
 function excel_displayAlertsOff(h: DWORD): PHiValue; stdcall;
 begin
   excel.DisplayAlerts := False;
@@ -2064,6 +2082,8 @@ begin
   AddFunc  ('エクセル選択シェイプ移動','X,Yに|Yへ', 4735, excel_shapeMove,'Excelの選択中シェイプの位置をX,Yに変更する。','えくせるせんたくしぇいぷいどう');
   AddFunc  ('エクセルシェイプ選択','{=?}Sの', 4737, excel_selectShape,'Excelで名前Sのシェイプを選択する。','えくせるしぇいぷせんたく');
   AddFunc  ('エクセル画像リンク挿入','Fの', -1, excel_insertPicLink,'Excelの選択中セルの場所に画像Fをリンクで挿入する。','えくせるがぞうりんくそうにゅう');
+  AddFunc  ('エクセル行削除','{=?}ROWの|ROWから', 4738, excel_deleteRow,'ExcelでROW(例えば3)番目の行を削除する。','えくせるぎょうさくじょ');
+  AddFunc  ('エクセル列削除','{=?}COLNAMEの|COLNAMEから', 4739, excel_deleteCol,'ExcelでCOLNAME(例えばF)を削除する。','えくせるれつさくじょ');
 
   //-ワード(Word)
   AddFunc  ('ワード起動','{=1}Aで', 4330, word_open,'可視A(オンかオフ)でワードを起動する','わーどきどう');

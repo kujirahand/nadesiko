@@ -196,6 +196,15 @@ function bregMatch(s, pat, opt: AnsiString; matches: TStringList = nil): Boolean
 var
   re: TBRegExp;
   i: Integer;
+  pat2: String;
+
+  function escPat(pat, opt: string): string;
+  begin
+      pat := JReplaceA(pat, '#', '\#');
+      pat := 'm#' + pat + '#' + opt;
+      Result := pat;
+  end;
+
 begin
   re := TBRegExp.Create;
 
@@ -205,7 +214,17 @@ begin
 
   // match
   try
-    if Copy(pat,1,1) <> 'm' then
+    // movie対策
+    if Copy(pat,1,1) = 'm' then
+    begin
+      pat2 := pat + ' ';
+      if pat2[2] in ['/','#','$','%','~','@'] then
+      begin
+        // pass
+      end else begin
+        pat := escPat(pat, opt);
+      end;
+    end else if Copy(pat,1,1) <> 'm' then
     begin
       pat := JReplaceA(pat, '#', '\#');
       if s =''then //空文字マッチのゴミ対策
