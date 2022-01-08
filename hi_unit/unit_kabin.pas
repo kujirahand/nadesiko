@@ -131,6 +131,8 @@ var
   ite: TJsonObjectIter;
   i: Integer;
   s: AnsiString;
+  key: AnsiString;
+  val: TJsonObject;
 begin
   if obj = nil then
   begin
@@ -165,7 +167,9 @@ begin
         if JsonFindFirst(obj, ite) then
         begin
           repeat
-            nako_hash_set(Result, ite.key, JsonObject2PHiValue(ite.val));
+            key := UTF8toAnsi(ite.key);
+            val := ite.val;
+            nako_hash_set(Result, PAnsiChar(key), JsonObject2PHiValue(val));
           until not JsonFindNext(ite);
         end;
         JsonFindClose(ite);

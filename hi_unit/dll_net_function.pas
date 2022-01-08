@@ -73,11 +73,11 @@ procedure RegistFunction;
 
 implementation
 
-uses mini_file_utils, unit_file, KPop3, KSmtp, KTcp, KTCPW, unit_string2,
+uses mini_file_utils, unit_file, KPop3, KSmtp, KTcp, KTCPW, unit_string,
   WSockUtils, Icmp, KHttp, jconvert, md5, nako_dialog_function,
   nadesiko_version, messages, nako_dialog_const, CommCtrl, unit_kabin,
-  hima_types, unit_content_type, IdAttachment, unit_string, unit_date,
-  Math;
+  hima_types, unit_content_type, IdAttachment, unit_date,
+  Math, EasyMasks;
 
 var pProgDialog: PHiValue = nil;
 var FNetDialog: TNetDialog = nil;
@@ -2813,7 +2813,6 @@ function sys_json_decode(args: DWORD): PHiValue; stdcall;
 begin
   Result := Json2PHiValue(getArgStr(args,0,True));
 end;
-
 
 function get_nakonet_dll_version(args: DWORD): PHiValue; stdcall;
 begin

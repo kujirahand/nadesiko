@@ -125,7 +125,7 @@ type
 
 implementation
 
-uses unit_string2, nako_dialog_function, nako_dialog_const, md5;
+uses unit_string, nako_dialog_function, nako_dialog_const, md5;
 
 { TKPop3 }
 

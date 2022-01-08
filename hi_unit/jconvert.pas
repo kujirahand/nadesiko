@@ -151,7 +151,7 @@ function EntityDecode(s: string): string;
 
 implementation
 
-uses unit_string2, jconvertex;
+uses unit_string, jconvertex;
 
 function EntityEncode(s: string): string; // in: sjis
 var

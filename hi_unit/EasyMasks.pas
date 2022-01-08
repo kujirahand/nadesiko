@@ -18,7 +18,7 @@ unit EasyMasks;
 
 interface
 uses
-  SysUtils;
+  SysUtils, Classes;
 
 type
   TEasyMask = class
@@ -37,8 +37,12 @@ type
 function MatchesMask(const FileName, Masks: string) : Boolean;
 //(大文字小文字を区別する)
 function MatchesMask2(const FileName, Masks: string) : Boolean;
+// ";"で区切った複数のワイルドカードのパターンにマッチさせる
+function MatchesMaskEx(Filename, Masks: AnsiString): Boolean;
 
 implementation
+
+uses unit_string;
 
 function MatchesMask2(const FileName, Masks: string) : Boolean;
 var
@@ -160,6 +164,23 @@ begin
   finally
       m.Free ;
   end;
+end;
+
+function MatchesMaskEx(Filename, Masks: AnsiString): Boolean;
+var
+  i: Integer;
+  list: TStringList;
+begin
+  Result := False;
+  list := SplitChar(';', Masks);
+  for i := 0 to list.Count - 1 do
+  begin
+    if MatchesMask(String(Filename), String(list.Strings[i])) then
+    begin
+      Result := True;
+    end;
+  end;
+  list.Free;
 end;
 
 end.

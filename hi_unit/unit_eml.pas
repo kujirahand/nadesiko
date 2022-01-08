@@ -109,7 +109,7 @@ function CreateMessageID(from: string): string;
 
 implementation
 
-uses unit_string2, jconvert, jconvertex, DateUtils,
+uses unit_string, jconvert, jconvertex, DateUtils,
   md5, nadesiko_version;
 
 var

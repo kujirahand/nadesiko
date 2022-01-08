@@ -1,10 +1,11 @@
 #!/bin/sh
+
 echo "=== clear cache"
-rm hi_unit/*.ppu
-rm hi_unit/*.o
-rm *.ppu
+#rm hi_unit/*.ppu
+#rm hi_unit/*.o
+#rm *.ppu
 echo "=== compile"
-fpc -Mdelphi -g -gv -dFPC -dCNAKOEX -vewh cnako1.dpr
+fpc -Mdelphi -g -gv -dFPC -dCNAKOEX -vewh cnako1fpc.dpr
 
 echo "========"
 #fpc -Mdelphi -g -gv -dFPC -vewh dnako.dpr

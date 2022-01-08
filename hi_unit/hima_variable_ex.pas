@@ -2964,7 +2964,7 @@ begin
   l := Length(Value);
   while l > 0 do
   begin
-    v := getTokenChB(p, l, [#13,#10]);
+    v := getTokenChB2(p, l, [#13,#10]);
     if p^ = #13 then begin Inc(p);Dec(l); end;
     if p^ = #10 then begin Inc(p);Dec(l); end;
     n := getToken_s(v, '=');

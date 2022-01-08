@@ -11,38 +11,16 @@ interface
 
 uses
   {$IFDEF Win32}
-    Windows,
+  Windows,
   {$ENDIF}
-  SysUtils, Classes, hima_types;
+  SysUtils,
+  Classes,
+  //EasyMasks,
+  hima_types;
 
-type
-  TChars = set of AnsiChar;
-  {$IFDEF VER150}
-  RawByteString = string;
-  {$ENDIF}
+// SJIS Support
+type TChars = set of AnsiChar;
 const SJISLeadBytes: TChars = [#$81..#$9F,#$E0..#$EF];
-
-{$IFDEF fpc}
-const NORM_IGNORECASE = $00000001;           
-const NORM_IGNORENONSPACE = $00000002;       
-const NORM_IGNORESYMBOLS = $00000004;        
-const LCMAP_LOWERCASE = $00000100;           
-const LCMAP_UPPERCASE = $00000200;           
-const LCMAP_SORTKEY = $00000400;             
-const LCMAP_BYTEREV = $00000800;             
-const SORT_STRINGSORT = $00001000;           
-const NORM_IGNOREKANATYPE = $00010000;       
-const NORM_IGNOREWIDTH = $00020000;          
-const LCMAP_HIRAGANA = $00100000;            
-const LCMAP_KATAKANA = $00200000;            
-const LCMAP_HALFWIDTH = $00400000;           
-const LCMAP_FULLWIDTH = $00800000;           
-const LCMAP_LINGUISTIC_CASING = $01000000;   
-const LCMAP_SIMPLIFIED_CHINESE = $02000000;  
-const LCMAP_TRADITIONAL_CHINESE = $04000000; 
-function GetLastError(): Integer;
-{$ENDIF}
-
 
 //------------------------------------------------------------------------------
 // PAnsiChar 関連
@@ -68,13 +46,15 @@ function getTokenStrU(var p: PChar; splitter: string): string;
 function getToken_s(var s: AnsiString; splitter: AnsiString): AnsiString;
 function getToken_sU(var s: string; splitter: string): string;
 
-
 // 特定の区切り文字までを取得する（区切り文字は削除する）
 function getTokenChW(var p: PAnsiChar; ch: TChars): AnsiString;
 
 // 特定の区切り文字までを取得する（区切り文字は削除する）対バイナリ用
-function getTokenChB(var p: PAnsiChar; var l: integer;ch: TChars): AnsiString;
+function getTokenChB2(var p: PAnsiChar; var l: integer;ch: TChars): AnsiString;
+function getTokenChB(var p: PChar; ch: TSysCharSet): string;
 
+function getChars_s(var s: string; ch: TSysCharSet): string;
+function getChars(var p: PChar; ch: TSysCharSet): string;
 
 //------------------------------------------------------------------------------
 // 検索取り出し
@@ -83,6 +63,7 @@ function getTokenChB(var p: PAnsiChar; var l: integer;ch: TChars): AnsiString;
 function PosA(sub, s: AnsiString): Integer;
 function PosExA(sub, s: AnsiString; FromI: Integer): Integer;
 function PosExA2(sub, s: AnsiString; FromI: Integer): Integer;
+function JPos(sub, s: string): Integer;
 
 // コピー
 function CopyA (s: AnsiString; i, count: Integer): AnsiString;
@@ -98,6 +79,7 @@ function JReplaceA(str, sFind, sNew: AnsiString): AnsiString;
 function JReplace(str, sFind, sNew: AnsiString): AnsiString;
 function JReplaceU(str, sFind, sNew: string): string;
 function JReplaceOne(str, sFind, sNew: AnsiString): AnsiString;
+function JReplace_(str, sFind, sNew: string): string;
 // 繰り返し
 function RepeatStr(s: AnsiString; count: Integer): AnsiString;
 
@@ -148,9 +130,6 @@ function ExpandTab(const s: AnsiString; tabCnt: Integer): AnsiString;
 // パスの終端に\をつける
 function CheckPathYen(s: string): string;
 
-// ";"で区切った複数のワイルドカードのパターンにマッチさせる
-function MatchesMaskEx(Filename, Masks: AnsiString): Boolean;
-
 function TrimA(const S: AnsiString): AnsiString;
 function UpperCaseA(s: AnsiString): AnsiString;
 function IntToStrA(i: Integer): AnsiString;
@@ -160,16 +139,117 @@ function FloatToStrA(Value: Extended): AnsiString;
 function StrToFloatA(const S: AnsiString): Extended;
 function IntToHexA(Value: Integer; Digits: Integer): AnsiString;
 
+function CharInSet(c: Char; chars: TChars): Boolean;
+function PosEx(sub, s: string; FromI: Integer): Integer;
+function TrimCoupleFlag(s: string): string;
+
+{$IFDEF FPC}
+const NORM_IGNORECASE = $00000001;           
+const NORM_IGNORENONSPACE = $00000002;       
+const NORM_IGNORESYMBOLS = $00000004;        
+const LCMAP_LOWERCASE = $00000100;           
+const LCMAP_UPPERCASE = $00000200;           
+const LCMAP_SORTKEY = $00000400;             
+const LCMAP_BYTEREV = $00000800;             
+const SORT_STRINGSORT = $00001000;           
+const NORM_IGNOREKANATYPE = $00010000;       
+const NORM_IGNOREWIDTH = $00020000;          
+const LCMAP_HIRAGANA = $00100000;            
+const LCMAP_KATAKANA = $00200000;            
+const LCMAP_HALFWIDTH = $00400000;           
+const LCMAP_FULLWIDTH = $00800000;           
+const LCMAP_LINGUISTIC_CASING = $01000000;   
+const LCMAP_SIMPLIFIED_CHINESE = $02000000;  
+const LCMAP_TRADITIONAL_CHINESE = $04000000; 
+{$ENDIF}
+
 implementation
 
-uses EasyMasks;
-
-{$IFDEF fpc}
-function GetLastError(): Integer;
+function TrimCoupleFlag(s: string): string;
+var
+  mae, usiro: WideString;
+  flg: Boolean;
+  ws: WideString;
 begin
-  Result := 0;
+  s := Trim(s); // ***
+  if s = '' then
+  begin
+    Result := s; Exit;
+  end;
+  ws := s;
+  flg := False;
+  begin
+    mae   := Copy(ws,1,1);
+    usiro := Copy(ws,Length(ws),1);
+    if mae = usiro then flg := True
+    else begin
+      // 対応する記号をチェック
+      if (mae='(')and(usiro=')') then flg := True else
+      if (mae='[')and(usiro=']') then flg := True else
+      if (mae='{')and(usiro='}') then flg := True else
+      if (mae='`')and(usiro='''') then flg := True else
+      if (mae='<')and(usiro='>') then flg := True else
+      if (mae='「')and(usiro='」') then flg := True else
+      if (mae='『')and(usiro='』') then flg := True else
+      if (mae='｛')and(usiro='｝') then flg := True else
+      if (mae='【')and(usiro='】') then flg := True else
+      if (mae='（')and(usiro='）') then flg := True else
+      if (mae='〔')and(usiro='〕') then flg := True else
+      if (mae='“')and(usiro='”') then flg := True else
+      if (mae='‘')and(usiro='’') then flg := True else
+      if (mae='＜')and(usiro='＞') then flg := True else
+      ;
+    end;
+  end;
+  //
+  if flg then
+  begin
+    ws := Copy(ws, Length(mae)+1, Length(ws) - Length(usiro)*2);
+    Result := AnsiString(ws);
+  end else
+  begin
+    Result := s;
+  end;
 end;
-{$ENDIF}
+
+
+// 特定のCharsを取得する
+function getChars(var p: PChar; ch: TSysCharSet): string;
+begin
+  Result := '';
+  while CharInSet(p^ , ch) do
+  begin
+    Result := Result + p^;
+    Inc(p);
+  end;
+end;
+
+function getChars_s(var s: string; ch: TSysCharSet): string;
+var
+  p: PChar;
+begin
+  p := PChar(s);
+  Result := getChars(p, ch);
+  s := string(p);
+end;
+
+// 置換
+function JReplace_(str, sFind, sNew: string): string;
+begin
+  Result := JReplace(str, sFind, sNew);
+end;
+
+function PosEx(sub, s: string; FromI: Integer): Integer;
+begin
+  s := Copy(s, FromI, Length(s));
+  Result := Pos(sub, s);
+  if Result > 0 then Result := Result + (FromI-1);
+end;
+
+function CharInSet(c: Char; chars: TChars): Boolean;
+begin
+  if c in chars then Result := True else Result := False;
+end;
 
 function IntToHexA(Value: Integer; Digits: Integer): AnsiString;
 begin
@@ -258,6 +338,31 @@ begin
   end;
 end;
 
+function JPos(sub, s: string): Integer;
+var
+  psub, ps: PChar;
+  i, len: Integer;
+begin
+  psub := PChar(sub);
+  ps   := PChar(s);
+  len  := Length(sub);
+  Result := 0; i := 0;
+  while ps^ <> #0 do
+  begin
+    // 一致したか？
+    if StrLComp(ps, psub, len) = 0 then
+    begin
+      Result := i + 1; Break;
+    end;
+    // 一致しないならば一文字ずらして検索続行
+    Inc(i);
+    begin
+      Inc(ps);
+    end;
+  end;
+end;
+
+
 function PosA(sub, s:AnsiString):Integer;
 begin
   Result := AnsiPos(sub, s);
@@ -282,23 +387,6 @@ begin
   Result := Trim(S);
 end;
 {$ENDIF}
-
-function MatchesMaskEx(Filename, Masks: AnsiString): Boolean;
-var
-  i: Integer;
-  list: TStringList;
-begin
-  Result := False;
-  list := SplitChar(';', Masks);
-  for i := 0 to list.Count - 1 do
-  begin
-    if MatchesMask(String(Filename), String(list.Strings[i])) then
-    begin
-      Result := True;
-    end;
-  end;
-  list.Free;
-end;
 
 function URLDecode(s: AnsiString):AnsiString;
 var
@@ -524,7 +612,7 @@ begin
 end;
 
 // 特定の区切り文字までを取得する（区切り文字は削除する）
-function getTokenChB(var p: PAnsiChar; var l: Integer;ch: TChars): AnsiString;
+function getTokenChB2(var p: PAnsiChar; var l: Integer;ch: TChars): AnsiString;
 begin
   Result := '';
   while l > 0 do
@@ -558,7 +646,6 @@ end;
 
 // 特定の区切り文字までを取得する（区切り文字は削除する）
 // 区切り文字が空文字列の時は1文字だけ返す
-
 function getTokenStrU(var p: PChar; splitter: string): string;
 var
   sp: PChar;
@@ -735,6 +822,22 @@ begin
     s := '';
   end;
 end;
+
+// 特定の区切り文字までを取得する（区切り文字は残す）
+function getTokenChB(var p: PChar; ch: TSysCharSet): string;
+begin
+  Result := '';
+  while p^ <> #0 do
+  begin
+    if CharInSet(p^, ch) then
+    begin
+      Break;
+    end;
+
+    Result := Result + p^; Inc(p);
+  end;
+end;
+
 
 //------------------------------------------------------------------------------
 // 検索取り出し
@@ -1231,6 +1334,7 @@ begin
   Result := str;
 end;
 {$ENDIF}
+
 function convToFull(const str: AnsiString): AnsiString;
 begin
   Result := LCMapStringEx( str, LCMAP_FULLWIDTH );

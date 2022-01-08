@@ -10,7 +10,9 @@ uses
   {$IFDEF Win32}
   Windows, 
   mmsystem,
-  {$ELSE}
+  {$ENDIF}
+  {$IFDEF FPC}
+  unit_fpc,
   {$ENDIF}
   SysUtils, hima_error, hima_types, hima_token,
   hima_variable, hima_variable_ex, hima_function

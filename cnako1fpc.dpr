@@ -1,4 +1,4 @@
-program cnako1;
+program cnako1fpc;
 
 {$IFDEF Win32}
 {$APPTYPE CONSOLE}

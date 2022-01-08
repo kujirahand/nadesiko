@@ -9,8 +9,8 @@ procedure RegistFunction;
 
 implementation
 
-uses jconvert, jconvertex, StrUnit, hima_types, unit_string, wildcard, md5,
-  CrcUtils, unit_string2, SysUtils, Classes, wildcard2,
+uses jconvert, jconvertex, StrUnit, hima_types, wildcard, md5,
+  CrcUtils, unit_string, SysUtils, Classes, wildcard2,
   nkf, unit_blowfish, SHA1, crypt, mini_file_utils, aeslib, EftGlobal,
   unit_sha256;
 

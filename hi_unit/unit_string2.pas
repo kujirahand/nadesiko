@@ -10,10 +10,7 @@ unit unit_string2;
 interface
 
 uses
-  Windows, SysUtils, Classes;
-
-type
-  TChars = set of char;
+  Windows, SysUtils, Classes, unit_sjis;
 
 //------------------------------------------------------------------------------
 // PChar ŠÖ˜A
@@ -120,7 +117,7 @@ end;
 // PChar ‚©‚ç 1•¶ŽšŽæ‚èo‚·
 function getOneChar(var p: PChar): string;
 begin
-  if p^ in LeadBytes then
+  if p^ in SJISLeadBytes then
   begin
     Result := p^ + (p+1)^;
     Inc(p, 2);
@@ -524,7 +521,7 @@ begin
   begin
     if (i+1) > count then Break;
 
-    if p^ in LeadBytes then
+    if p^ in SJISLeadBytes then
     begin
       Result := Result + p^;
       Inc(i); Inc(p);

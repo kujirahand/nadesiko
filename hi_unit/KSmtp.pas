@@ -119,7 +119,7 @@ type
 
 implementation
 
-uses unit_string2, jconvert, jconvertex, DateUtils, nako_dialog_const,
+uses unit_string, jconvert, jconvertex, DateUtils, nako_dialog_const,
   nako_dialog_function, md5, nadesiko_version;
 
 var

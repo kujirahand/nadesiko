@@ -22,7 +22,6 @@ uses
   KPop3 in 'hi_unit\KPop3.pas',
   KSmtp in 'hi_unit\KSmtp.pas',
   mini_func in 'hi_unit\mini_func.pas',
-  unit_string2 in 'hi_unit\unit_string2.pas',
   jconvertex in 'hi_unit\jconvertex.pas',
   jconvert in 'hi_unit\jconvert.pas',
   md5 in 'hi_unit\md5.pas',
@@ -37,7 +36,8 @@ uses
   json in 'hi_unit\json.pas',
   unit_content_type in 'hi_unit\unit_content_type.pas',
   unit_date in 'hi_unit\unit_date.pas',
-  openssl in 'hi_unit\openssl.pas';
+  openssl in 'hi_unit\openssl.pas',
+  EasyMasks in 'hi_unit\EasyMasks.pas';
 
 //------------------------------------------------------------------------------
 // Plug-in import function

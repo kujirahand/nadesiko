@@ -6,6 +6,7 @@ type
   HWND = Integer;
 
 function timeGetTime: DWORD;
+function GetLastError(): Integer;
 
 implementation
 
@@ -16,6 +17,13 @@ function timeGetTime: DWORD;
 begin
   Result := GetTickCount64;
 end;
+
+function GetLastError(): Integer;
+begin
+  Result := 0;
+end;
+
+
 
 end.
 

@@ -7,14 +7,13 @@ unit mini_file_utils;
 interface
 
 uses
-  {$IFDEF Win32}
-  Windows, Messages, SysUtils, Commdlg, shlobj, activex,
-  ShellAPI, ComObj;
-  {$ELSE}
   SysUtils,
-  Process,
-  dos;
+  {$IFDEF Win32}
+  Windows, Messages, Commdlg, shlobj, activex, ShellAPI, ComObj
+  {$ELSE}
+  Process, dos
   {$ENDIF}
+  ;
 
 const
   MAX_PATH = 1024;
