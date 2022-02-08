@@ -12,7 +12,7 @@ uses
   Windows, 
   ShellApi, comobj, shlobj, activex,
   {$ELSE}
-  Types,
+  Types, dylibs,
   {$ENDIF}
   SysUtils, Classes, hima_types;
 
@@ -82,11 +82,39 @@ const
   DAY=86400000;
   SECONDSPERDAY=86400;
 
+{$IFNDEF FPC}
+type
+  TLibHandle = THandle;
+{$ENDIF}
+
+// function LoadLibrary(fname: String): TLibHandle;
+{
+function GetProcAddress(Lib: TLibHandle, ProcName: String): Pointer;
+}
+
 implementation
 
 uses
   unit_windows_api, unit_string;
 
+(*
+function GetProcAddress(Lib: TLibHandle, ProcName: String): Pointer;
+begin
+    {$IFDEF FPC}
+    Result := GetProcedureAddress(Lib, ProcName);
+    {$ELSE}
+    {$ENDIF}
+end;
+
+function LoadLibrary(fname: String): TLibHandle;
+begin
+    {$IFDEF FPC}
+    Result := SafeLoadLibrary(fname);
+    {$ELSE}
+    Result := LoadLibraryEx(PChar(fname), 0, 0);
+    {$ENDIF}
+end;
+*)
 
 procedure RunAsAdmin(hWnd: THandle; aFile: AnsiString; aParameters: AnsiString);
 {$IFDEF Win32}

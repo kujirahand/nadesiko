@@ -7,7 +7,9 @@ interface
 uses
   {$IFDEF Win32}
   Windows, 
-  mmsystem, 
+  mmsystem,
+  {$ELSE}
+  dynlibs,
   {$ENDIF}
   SysUtils, Classes, hima_types, hima_parser, hima_token,
   hima_variable, hima_variable_ex, hima_function, hima_stream, 
