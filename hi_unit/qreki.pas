@@ -275,30 +275,26 @@ begin
 
   //-----------------------------------------------------------------------
   // 朔日行列から旧暦を求める。
+  // (ref) https://nadesi.com/cgi/bug/?m=thread&threadid=955
+  // 雪乃☆雫さんの修正パッチを適用 
   //-----------------------------------------------------------------------
-	_state := 0; j := 4;
-	for i := 0 to 4 do
+  j := 4;
+  for i := 0 to 4 do
   begin
-		if(Trunc(_tm0) < Trunc(_m[i, 2]))then
+	if(Trunc(_tm0) < Trunc(_m[i, 2]))then
     begin
-			_state := 1;
-      j := i;
-			Break;
-		end else
+        j := i - 1;
+		Break;
+	end else
     if(Trunc(_tm0) = Trunc(_m[i, 2])) then
     begin
-			_state := 2;
-      j := i;
-			Break;
-		end;
-	end;
-  if (_state=0) or (_state=1) then
-  begin
-		Dec(j);
-	end;
-	Result.uruu  := Trunc(_m[j, 1]);
-	Result.q_mon := Trunc(_m[j, 0]);
-	Result.q_day := Trunc(_tm0) - Trunc(_m[j, 2]) + 1;
+        j := i;
+		Break;
+    end;
+  end;
+  Result.uruu  := Trunc(_m[j, 1]);
+  Result.q_mon := Trunc(_m[j, 0]);
+  Result.q_day := Trunc(_tm0) - Trunc(_m[j, 2]) + 1;
   //writeln('debug>', Trunc(_tm0),'-',Trunc(_m[j, 2]));
 
   // 旧暦年の計算
