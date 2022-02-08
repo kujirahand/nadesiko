@@ -10,7 +10,7 @@ unit unit_string2;
 interface
 
 uses
-  Windows, SysUtils, Classes, unit_sjis;
+  Windows, SysUtils, Classes;
 
 //------------------------------------------------------------------------------
 // PChar ŠÖ˜A
@@ -98,11 +98,14 @@ function ExpandTab(s: string; tabCnt: Integer): string;
 function TrimCoupleFlag(s: string): string;
 
 {$IF RTLVersion < 20}
+type TChars = set of AnsiChar;
 function CharInSet(c: Char; chars: TChars): Boolean;
 {$IFEND}
 
 
 implementation
+uses
+  unit_string;
 
 {$IF RTLVersion < 20}
 function CharInSet(c: Char; chars: TChars): Boolean;

@@ -12,7 +12,7 @@ uses
   Windows, 
   ShellApi, comobj, shlobj, activex,
   {$ELSE}
-  Types, dylibs,
+  Types, dynlibs,
   {$ENDIF}
   SysUtils, Classes, hima_types;
 
