@@ -101,7 +101,7 @@ begin
   HiSystem.AddFunction('Œ¾‚¤','{=?}S‚ğ|S‚Æ|S‚Å', cmd_print, 880001);
   HiSystem.AddFunction('–ˆs“Ç‚Ş','{QÆ“n‚µ •Ï”=?}A‚ÉF‚ğ', sys_loadEveryLine, 880002);
   HiSystem.AddSystemFileCommand;
-  //HiSystem.LoadPlugins;
+  HiSystem.LoadPlugins;
 
   if ParamCount > 0 then
   begin
