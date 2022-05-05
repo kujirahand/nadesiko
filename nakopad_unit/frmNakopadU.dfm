@@ -22,13 +22,13 @@ object frmNakopad: TfrmNakopad
   object splitPanel: TSplitter
     Left = 217
     Top = 29
-    Height = 467
+    Height = 475
   end
   object pageLeft: TPageControl
     Left = 0
     Top = 29
     Width = 217
-    Height = 467
+    Height = 475
     ActivePage = sheetAction
     Align = alLeft
     MultiLine = True
@@ -41,7 +41,7 @@ object frmNakopad: TfrmNakopad
         Left = 0
         Top = 0
         Width = 209
-        Height = 423
+        Height = 431
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
@@ -70,12 +70,12 @@ object frmNakopad: TfrmNakopad
           Left = 0
           Top = 267
           Width = 209
-          Height = 156
+          Height = 164
           Align = alClient
           TabOrder = 1
           object Panel2: TPanel
             Left = 1
-            Top = 139
+            Top = 147
             Width = 207
             Height = 16
             Align = alBottom
@@ -107,7 +107,7 @@ object frmNakopad: TfrmNakopad
             Left = 1
             Top = 1
             Width = 207
-            Height = 138
+            Height = 146
             Align = alClient
             TabOrder = 1
             OnBeforeNavigate2 = webActionBeforeNavigate2
@@ -120,7 +120,7 @@ object frmNakopad: TfrmNakopad
             IeAutoComplete = False
             DownLoadControl = [CS_Images, CS_NoScripts, CS_NoJava, CS_NoActiveXRun, cs_NoActiveXDownLoad, CS_Silent]
             ControlData = {
-              4C00000065150000430E00000000000000000000000000000000000000000000
+              4C00000065150000170F00000000000000000000000000000000000000000000
               000000004C000000000000000000000001000000E0D057007335CF11AE690800
               2B2E126202000000000000004C0000000114020000000000C000000000000046
               8000000000000000000000000000000000000000000000000000000000000000
@@ -136,7 +136,7 @@ object frmNakopad: TfrmNakopad
         Left = 0
         Top = 0
         Width = 209
-        Height = 423
+        Height = 431
         Align = alClient
         BevelOuter = bvLowered
         TabOrder = 0
@@ -153,7 +153,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 0
+            ItemHeight = 12
             PopupMenu = popFind
             TabOrder = 0
             OnEnter = cmbFindEnter
@@ -198,7 +198,7 @@ object frmNakopad: TfrmNakopad
           Left = 1
           Top = 97
           Width = 207
-          Height = 325
+          Height = 333
           Style = lbOwnerDrawFixed
           Align = alClient
           ItemHeight = 20
@@ -216,7 +216,7 @@ object frmNakopad: TfrmNakopad
         Left = 0
         Top = 0
         Width = 209
-        Height = 423
+        Height = 431
         Align = alClient
         BevelOuter = bvLowered
         TabOrder = 0
@@ -252,7 +252,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 0
+            ItemHeight = 12
             PopupMenu = popFind
             TabOrder = 2
             OnEnter = cmbGroupEnter
@@ -272,7 +272,7 @@ object frmNakopad: TfrmNakopad
           Left = 1
           Top = 81
           Width = 207
-          Height = 341
+          Height = 349
           Align = alClient
           TabOrder = 1
           object Splitter1: TSplitter
@@ -303,7 +303,7 @@ object frmNakopad: TfrmNakopad
             Left = 1
             Top = 92
             Width = 205
-            Height = 219
+            Height = 227
             Style = lbOwnerDrawVariable
             Align = alClient
             DragMode = dmAutomatic
@@ -316,7 +316,7 @@ object frmNakopad: TfrmNakopad
           end
           object pnlGroupFilter: TPanel
             Left = 1
-            Top = 311
+            Top = 319
             Width = 205
             Height = 29
             Align = alBottom
@@ -372,7 +372,7 @@ object frmNakopad: TfrmNakopad
         Left = 0
         Top = 204
         Width = 209
-        Height = 219
+        Height = 227
         Align = alClient
         Columns = <>
         DragMode = dmAutomatic
@@ -392,13 +392,13 @@ object frmNakopad: TfrmNakopad
         Left = 0
         Top = 0
         Width = 209
-        Height = 423
+        Height = 431
         Align = alClient
         BevelOuter = bvLowered
         TabOrder = 0
         object Splitter6: TSplitter
           Left = 1
-          Top = 348
+          Top = 356
           Width = 207
           Height = 3
           Cursor = crVSplit
@@ -434,7 +434,7 @@ object frmNakopad: TfrmNakopad
             Width = 193
             Height = 20
             AutoComplete = False
-            ItemHeight = 0
+            ItemHeight = 12
             PopupMenu = popFind
             TabOrder = 2
             OnEnter = cmbCmdEnter
@@ -453,7 +453,7 @@ object frmNakopad: TfrmNakopad
           Left = 1
           Top = 68
           Width = 207
-          Height = 280
+          Height = 288
           Style = lbOwnerDrawVariable
           Align = alClient
           DragMode = dmAutomatic
@@ -467,7 +467,7 @@ object frmNakopad: TfrmNakopad
         end
         object Panel13: TPanel
           Left = 1
-          Top = 351
+          Top = 359
           Width = 207
           Height = 71
           Align = alBottom
@@ -553,7 +553,7 @@ object frmNakopad: TfrmNakopad
           Width = 193
           Height = 20
           AutoComplete = False
-          ItemHeight = 0
+          ItemHeight = 12
           PopupMenu = popFind
           TabOrder = 1
           OnEnter = cmbVarEnter
@@ -600,7 +600,7 @@ object frmNakopad: TfrmNakopad
         Left = 0
         Top = 81
         Width = 209
-        Height = 342
+        Height = 350
         Style = lbOwnerDrawFixed
         Align = alClient
         DragMode = dmAutomatic
@@ -618,7 +618,7 @@ object frmNakopad: TfrmNakopad
         Left = 0
         Top = 33
         Width = 209
-        Height = 390
+        Height = 398
         Align = alClient
         TabOrder = 0
         object Splitter4: TSplitter
@@ -643,7 +643,7 @@ object frmNakopad: TfrmNakopad
           Left = 1
           Top = 108
           Width = 207
-          Height = 281
+          Height = 289
           Style = lbOwnerDrawFixed
           Align = alClient
           DragMode = dmAutomatic
@@ -681,7 +681,7 @@ object frmNakopad: TfrmNakopad
         Left = 0
         Top = 0
         Width = 209
-        Height = 423
+        Height = 431
         Align = alClient
         BevelOuter = bvLowered
         TabOrder = 0
@@ -709,7 +709,7 @@ object frmNakopad: TfrmNakopad
           Left = 1
           Top = 33
           Width = 207
-          Height = 389
+          Height = 397
           Align = alClient
           TabOrder = 1
           OnEditButtonClick = propGuiEditButtonClick
@@ -726,7 +726,7 @@ object frmNakopad: TfrmNakopad
   object ToolBar1: TToolBar
     Left = 0
     Top = 0
-    Width = 807
+    Width = 815
     Height = 29
     ButtonHeight = 26
     ButtonWidth = 27
@@ -842,8 +842,8 @@ object frmNakopad: TfrmNakopad
   end
   object Status: TStatusBar
     Left = 0
-    Top = 496
-    Width = 807
+    Top = 504
+    Width = 815
     Height = 19
     Panels = <
       item
@@ -862,8 +862,8 @@ object frmNakopad: TfrmNakopad
   object tabsMain: TTabControl
     Left = 220
     Top = 29
-    Width = 587
-    Height = 467
+    Width = 595
+    Height = 475
     Align = alClient
     Style = tsFlatButtons
     TabOrder = 3
@@ -876,8 +876,8 @@ object frmNakopad: TfrmNakopad
     object pageMain: TPageControl
       Left = 4
       Top = 26
-      Width = 579
-      Height = 437
+      Width = 587
+      Height = 445
       ActivePage = tabSource
       Align = alClient
       TabOrder = 0
@@ -888,7 +888,7 @@ object frmNakopad: TfrmNakopad
         object splitEdit: TSplitter
           Left = 0
           Top = 0
-          Width = 571
+          Width = 579
           Height = 2
           Cursor = crVSplit
           Align = alTop
@@ -896,12 +896,12 @@ object frmNakopad: TfrmNakopad
         object splitLR: TSplitter
           Left = 3
           Top = 2
-          Height = 410
+          Height = 418
         end
         object edtA: TEditorEx
           Left = 0
           Top = 2
-          Width = 571
+          Width = 579
           Height = 0
           Cursor = crIBeam
           Align = alTop
@@ -1079,8 +1079,8 @@ object frmNakopad: TfrmNakopad
         object edtB: TEditorEx
           Left = 6
           Top = 2
-          Width = 565
-          Height = 410
+          Width = 573
+          Height = 418
           Cursor = crIBeam
           Align = alClient
           Caret.AutoCursor = True
@@ -1261,7 +1261,7 @@ object frmNakopad: TfrmNakopad
           Left = 0
           Top = 2
           Width = 3
-          Height = 410
+          Height = 418
           Align = alLeft
           BevelOuter = bvNone
           Caption = 'panelOtehon'
@@ -1270,7 +1270,7 @@ object frmNakopad: TfrmNakopad
             Left = 0
             Top = 0
             Width = 3
-            Height = 275
+            Height = 283
             Cursor = crIBeam
             Align = alClient
             Caret.AutoCursor = True
@@ -1446,7 +1446,7 @@ object frmNakopad: TfrmNakopad
           end
           object panelOtehonBottom: TPanel
             Left = 0
-            Top = 275
+            Top = 283
             Width = 3
             Height = 135
             Align = alBottom
@@ -1653,16 +1653,16 @@ object frmNakopad: TfrmNakopad
         Caption = #12487#12470#12452#12531
         ImageIndex = 1
         object Splitter5: TSplitter
-          Left = 442
+          Left = 450
           Top = 0
-          Height = 412
+          Height = 420
           Align = alRight
         end
         object panelDesign: TPanel
           Left = 0
           Top = 0
-          Width = 442
-          Height = 412
+          Width = 450
+          Height = 420
           Align = alClient
           BevelInner = bvRaised
           BevelOuter = bvLowered
@@ -1698,10 +1698,10 @@ object frmNakopad: TfrmNakopad
           end
         end
         object panelTools: TPanel
-          Left = 445
+          Left = 453
           Top = 0
           Width = 126
-          Height = 412
+          Height = 420
           Align = alRight
           TabOrder = 1
           object Panel11: TPanel
@@ -1718,7 +1718,7 @@ object frmNakopad: TfrmNakopad
             Left = 1
             Top = 33
             Width = 124
-            Height = 378
+            Height = 386
             Align = alClient
             ItemHeight = 12
             TabOrder = 1

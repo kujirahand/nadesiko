@@ -7549,9 +7549,9 @@ end;
   角１バイト目を受け取った場合、メッセージキューから次の２バイト目を取
   り出して処理している。こうすることで、WM_IME_CHAR メッセージの処理を
   キャンセルしている。
-  
-*)
 
+*)
+(*
 procedure TEditor.WMImeComposition(var Msg: TMessage);
 var
   Imc: HIMC;
@@ -7573,7 +7573,6 @@ begin
     PutStringToLine(S);
   end;
 end;
-
 procedure TEditor.WMImeNotify(var Msg: TMessage);
 begin
   inherited;
@@ -7583,6 +7582,46 @@ begin
     if Msg.WParam = IMN_CLOSECANDIDATE then
       CaretEndUpdate;
 end;
+*)
+
+// Windows 10でカーソルが消える問題
+// https://nadesi.com/cgi/bug/?m=thread&threadid=976
+// https://www.petitmonte.com/bbs/answers?question_id=29860
+procedure TEditor.WMImeComposition(var Msg: TMessage);
+var
+  Imc: HIMC;
+  L: Integer;
+  S: String;
+begin
+  inherited;
+  // WM_IME_CHAR メッセージが発行され、IME 文字列長分の WM_CHAR が
+  // Windows の DefWindowsProc によってポストされる。
+  if (Msg.LParam and GCS_RESULTSTR <> 0) then begin
+    if not FReadOnly then begin
+      Imc := ImmGetContext(Handle);
+      L := ImmGetCompositionString(Imc, GCS_RESULTSTR, nil, 0);
+      SetLength(S, L + 1);
+      ImmGetCompositionString(Imc, GCS_RESULTSTR, PChar(S), L + 1);
+      ImmReleaseContext(Handle, Imc);
+      SetLength(S, L);
+      FImeCount := L;
+      PutStringToLine(S);
+    end;
+    SendMessage(Handle, WM_IME_NOTIFY, IMN_CLOSECANDIDATE, 0);
+  end else if Msg.LParam = 0 then begin
+    SendMessage(Handle, WM_IME_NOTIFY, IMN_CLOSECANDIDATE, 0);
+  end;
+end;
+procedure TEditor.WMImeNotify(var Msg: TMessage);
+begin
+  inherited;
+  if Msg.WParam = IMN_OPENCANDIDATE then begin
+    if FCaretUpdateCount = 0 then CaretBeginUpdate;
+  end else if Msg.WParam = IMN_CLOSECANDIDATE then begin
+    if FCaretUpdateCount = 1 then CaretEndUpdate;
+  end;
+end;
+
 
 procedure TEditor.WMKeyDown(var Message: TWMKeyDown);
 var

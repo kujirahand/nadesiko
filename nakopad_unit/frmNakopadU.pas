@@ -6080,7 +6080,7 @@ var
   begin
     root := ExtractFilePath(Copy(AppPath, 1, Length(AppPath) - 1));
     node := root + 'nodejs\node.exe';
-    cnako3 := root + 'src\cnako3.js';
+    cnako3 := root + 'src\cnako3.mjs';
     cmd := Format('"%s" "%s" "%s"', [node, cnako3, FTempFile]);
     if not FileExists(node) then
     begin
