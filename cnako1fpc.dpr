@@ -6,14 +6,13 @@ program cnako1fpc;
 
 uses
   // MemCheck in 'MemCheck.pas',
+  SysUtils,
   {$IFDEF Win32}
   Windows,
-  BRegExp in 'hi_unit\BRegExp.pas',
-  nako_dialog_function2 in 'hi_unit\nako_dialog_function2.pas',
   {$ELSE}
   unit_fpc in 'hi_unit\unit_fpc.pas',
   {$ENDIF}
-  SysUtils,
+  hima_token in 'hi_unit\hima_token.pas',
   hima_system in 'hi_unit\hima_system.pas',
   hima_types in 'hi_unit\hima_types.pas',
   unit_string in 'hi_unit\unit_string.pas',
@@ -21,7 +20,6 @@ uses
   hima_error in 'hi_unit\hima_error.pas',
   hima_string in 'hi_unit\hima_string.pas',
   hima_variable in 'hi_unit\hima_variable.pas',
-  hima_token in 'hi_unit\hima_token.pas',
   unit_file in 'hi_unit\unit_file.pas',
   unit_windows_api in 'hi_unit\unit_windows_api.pas',
   hima_variable_ex in 'hi_unit\hima_variable_ex.pas',
@@ -38,9 +36,14 @@ uses
   unit_text_file in 'hi_unit\unit_text_file.pas',
   mt19937 in 'hi_unit\mt19937.pas',
   unit_pack_files_pro in 'pro_unit\unit_pack_files_pro.pas',
+  {$IFDEF Win32}
+  BRegExp in 'hi_unit\BRegExp.pas',
+  nako_dialog_function2 in 'hi_unit\nako_dialog_function2.pas',
+  {$ENDIF}
   EasyMasks in 'hi_unit\EasyMasks.pas',
   wildcard in 'hi_unit\wildcard.pas',
   wildcard2 in 'hi_unit\wildcard2.pas';
+
 
 function cmd_print(args: THiArray): PHiValue; stdcall;
 var

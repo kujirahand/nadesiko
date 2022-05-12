@@ -784,7 +784,7 @@ begin
     ms := TMemoryStream.Create ;
     fs.Seek(pf.FilePos, soBeginning);
     ms.Seek(0, soBeginning);
-    ms.CopyFrom(fs, pf.FileLen);
+    if pf.FileLen > 0 then ms.CopyFrom(fs, pf.FileLen);
     if pf.Comp = 0 then begin
       // nothing to do
     end else if pf.Comp = 1 then DoXor(ms) else

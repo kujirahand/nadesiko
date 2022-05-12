@@ -2,12 +2,16 @@ library dnako;
 
 {$DEFINE DNAKO}
 
+{$IFNDEF FPC}
+  {$DEFINE DELPHI}
+{$ENDIF}
+
 uses
   {$IFDEF Win32}
   FastMM4 in 'FastMM4.pas',
   Windows,
-  BRegExp in 'hi_unit\BRegExp.pas',
   nako_dialog_function2 in 'hi_unit\nako_dialog_function2.pas',
+  BRegExp in 'hi_unit\BRegExp.pas',
   {$ELSE}
   unit_fpc in 'hi_unit/unit_fpc.pas',
   wildcard in 'hi_unit/wildcard.pas',

@@ -1,8 +1,12 @@
 unit hima_function;
 
 // ëgÇ›çûÇ›ÇÃñΩóﬂÇ»Ç«
-
 interface
+
+{$IFNDEF FPC}
+  {$DEFINE DELPHI}
+{$ENDIF}
+
 
 uses
   {$IFDEF Win32}
@@ -5897,7 +5901,12 @@ begin
   Result := hi_newStr(DateToWarekiS(hi_str(s)));
 end;
 
-{$IFDEF DELPHI}
+{$IFDEF FPC}
+function sys_date_format(args: THiArray): PHiValue; stdcall;
+begin
+  Result := nil;// Ç≤ÇﬂÇÒÇ»Ç≥Ç¢
+end;
+{$ELSE}
 function sys_date_format(args: THiArray): PHiValue; stdcall;
 var
   date_s: AnsiString;
@@ -5933,11 +5942,6 @@ begin
     fmt := 'yyyy-mm-dd hh:nn:ss';
   end;
   Result := hi_newStr(AnsiString(FormatDateTime(string(fmt), dt, fs)));
-end;
-{$ELSE}
-function sys_date_format(args: THiArray): PHiValue; stdcall;
-begin
-  Result := nil;// Ç≤ÇﬂÇÒÇ»Ç≥Ç¢
 end;
 {$ENDIF}
 

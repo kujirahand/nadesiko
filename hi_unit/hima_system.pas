@@ -2941,7 +2941,9 @@ begin
 end;
 
 initialization
+begin
   HiSystem.CheckInitSystem; // ‹N“®
+end;
 
 finalization
   try

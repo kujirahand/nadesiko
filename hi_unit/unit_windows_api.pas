@@ -27,7 +27,7 @@ function getWinVersionN: AnsiString;
 implementation
 
 uses
-  Registry;
+  Registry, unit_string;
 
 function getWinVersionN: AnsiString;
 {$IFDEF Win32}
@@ -62,6 +62,8 @@ var
   function getFromRegistry(def:string): string;
   var
     reg: TRegistry;
+    name, ver, currentBuild: string;
+    build: Integer;
   begin
     Result := def;
     reg := TRegistry.Create;
@@ -69,7 +71,15 @@ var
       reg.RootKey := HKEY_LOCAL_MACHINE;
       if reg.OpenKeyReadOnly('SOFTWARE\Microsoft\Windows NT\CurrentVersion') then
       begin
-        Result := reg.ReadString('ProductName');
+        name := reg.ReadString('ProductName');
+        CurrentBuild := reg.ReadString('CurrentBuild');
+        build := StrToIntDef(currentBuild, 0);
+        Result := name;
+        if build >= 22000 then
+        begin
+          ver := reg.ReadString('DisplayVersion');
+          Result := 'Windows 11 (' + ver + ')';
+        end;
       end;
     finally
       reg.Free;
@@ -119,13 +129,15 @@ begin
           end;
       6://Vista
           begin
+              (*
               case Minor of
                 0: Result := 'Windows Vista';
                 1: Result := 'Windows 7';
                 2: Result := 'Windows 8';
                 3: Result := 'Windows 8.1';
               end;
-              // 詳細な値を得る
+              *)
+              // レジストリから値を得る
               Result := getFromRegistry(Result);
           end;
       else begin

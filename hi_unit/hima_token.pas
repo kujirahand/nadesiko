@@ -178,6 +178,9 @@ function HiFindFile(var fname: string): Boolean;
 // 文字列を#0で埋めてから削除する
 procedure HiResetString(var source:string);
 
+// 位取りリストを作成
+function KuraidoriList: THiKuraidoriList;
+
 
 const
 //------------------------------------------------------------------------------
@@ -309,9 +312,6 @@ const
 implementation
 
 uses unit_file_dnako, hima_system, unit_pack_files, mini_file_utils;
-
-var
-  KuraidoriList: THiKuraidoriList;
 
 function HiFindFile(var fname: string): Boolean;
 var
@@ -1245,6 +1245,12 @@ end;
 
 function THimaToken.DebugInfo: TDebugInfo;
 begin
+  if FileNo < 0 then
+  begin
+    Result.FileNo := 0;
+    Result.LineNo := 0;
+    Exit;
+  end;
   Result.FileNo := FileNo;
   Result.LineNo := LineNo;
 end;
@@ -1805,13 +1811,20 @@ begin
 
 end;
 
+var FKuraidoriList: THiKuraidoriList = nil;
+
+function KuraidoriList: THiKuraidoriList;
+begin
+  if FKuraidoriList = nil then begin
+    FKuraidoriList :=  THiKuraidoriList.Create;
+    setKuraidoriList;
+  end;
+  Result := FKuraidoriList;
+end;
 
 initialization
-  // 位取り ... このリストは不変
-  KuraidoriList := THiKuraidoriList.Create;
-  setKuraidoriList;
 
 finalization
-  FreeAndNil(KuraidoriList);
+  FreeAndNil(FKuraidoriList);
 
 end.
