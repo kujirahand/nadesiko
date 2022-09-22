@@ -6080,7 +6080,7 @@ var
   begin
     root := ExtractFilePath(Copy(AppPath, 1, Length(AppPath) - 1));
     node := root + 'nodejs\node.exe';
-    cnako3 := root + 'src\cnako3.mjs';
+    cnako3 := root + 'node_modules\nadesiko3\src\cnako3.mjs';
     cmd := Format('"%s" "%s" "%s"', [node, cnako3, FTempFile]);
     if not FileExists(node) then
     begin
@@ -6089,7 +6089,7 @@ var
     end;
     if not FileExists(cnako3) then
     begin
-      ShowMessage('cnako3.jsを以下のパスに配置してください。'#13#10+cnako3);
+      ShowMessage('cnako3.mjsを以下のパスに配置してください。'#13#10+cnako3);
       Exit;
     end;
     cmd := '@ ECHO OFF'#13#10 +
