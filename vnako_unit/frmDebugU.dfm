@@ -21,15 +21,15 @@ object frmDebug: TfrmDebug
   object Splitter1: TSplitter
     Left = 0
     Top = 185
-    Width = 450
+    Width = 458
     Height = 3
     Cursor = crVSplit
     Align = alTop
   end
   object panelBottom: TPanel
     Left = 0
-    Top = 278
-    Width = 450
+    Top = 286
+    Width = 458
     Height = 41
     Align = alBottom
     TabOrder = 0
@@ -65,7 +65,7 @@ object frmDebug: TfrmDebug
   object grdVar: TStringGrid
     Left = 0
     Top = 33
-    Width = 450
+    Width = 458
     Height = 152
     Align = alTop
     ColCount = 3
@@ -84,7 +84,7 @@ object frmDebug: TfrmDebug
   object Panel2: TPanel
     Left = 0
     Top = 0
-    Width = 450
+    Width = 458
     Height = 33
     Align = alTop
     TabOrder = 2
@@ -124,14 +124,14 @@ object frmDebug: TfrmDebug
   object panelSrc: TPanel
     Left = 0
     Top = 188
-    Width = 450
-    Height = 90
+    Width = 458
+    Height = 98
     Align = alClient
     TabOrder = 3
     object Panel4: TPanel
       Left = 1
       Top = 1
-      Width = 448
+      Width = 456
       Height = 19
       Align = alTop
       BevelOuter = bvLowered
@@ -157,8 +157,8 @@ object frmDebug: TfrmDebug
     object panelSrcEdit: TPanel
       Left = 1
       Top = 20
-      Width = 448
-      Height = 69
+      Width = 456
+      Height = 77
       Align = alClient
       BevelOuter = bvNone
       Caption = 's'

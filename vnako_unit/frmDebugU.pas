@@ -167,6 +167,7 @@ begin
   edtMain.Fountain := TNadesikoFountain.Create(Self);
   edtMain.ExMarks.CurrentLine.Visible := True;
   edtMain.ExMarks.CurrentLine.Color := RGB(255,200,200);
+  edtMain.ScrollBars := ssBoth;
 end;
 
 procedure TfrmDebug.FormDestroy(Sender: TObject);

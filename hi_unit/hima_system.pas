@@ -71,9 +71,11 @@ type
     constructor Create;
     destructor Destroy; override;
     function FindMember(NameID: DWORD): PHiValue;
-    procedure PushGroupScope(FScope: THiGroup);
+    function FindMemberAllScope(NameID: DWORD): PHiValue;
+    function PushGroupScope(FScope: THiGroup): THiGroup;
     procedure PopGroupScope;
     function TopItem: THiGroup;
+    function NextItem: THiGroup;
   end;
 
   THiVarScope = class(THObjectList) // ローカルスコープの生成破棄を行う
@@ -2106,24 +2108,37 @@ function THiSystem.RunGroupMethod(group, method: PHiValue;
 var
   node : TSyntaxFunction;
   pRes : PHiValue;
+  i : Integer;
+  selfGroup: THiGroup;
+  curGroup: THiGroup;
+  jisin: PHiValue;
 begin
   PushRunFlag;
+  selfGroup := hi_group(group);
+  curGroup := GroupScope.PushGroupScope(selfGroup);
   try
     Result := hi_var_new;
     // --- group を stack に push
-    GroupScope.PushGroupScope(hi_group(group));
     node := TSyntaxFunction.Create(nil);
     try
       node.FDebugFuncName := hi_id2tango(method.VarID);
       node.FuncID := method.VarID;
       node.HiFunc := hi_func(method);
       node.Link.LinkType  := sfLinkDirect;
-      if node.Stack <> nil then node.Stack.Free; 
+      if node.Stack <> nil then node.Stack.Free;
       node.Stack := args;
+      // debug
+      // writeln('@@RunGroupMethod:' + selfGroup.HiClassDebug + '→' + node.FDebugFuncName);
       // 実行
       HiSystem.FlagEnd := False;
       node.SyntaxLevel := 0;
-      pRes := node.getValue;
+      if curGroup <> nil then begin
+        GroupScope.PushGroupScope(curGroup);
+        pRes := node.getValue;
+        GroupScope.PopGroupScope;
+      end else begin
+        pRes := node.getValue;
+      end;
       // 戻り値をコピー
       hi_var_copyGensi(pRes, Result);
       if (pRes <> nil)and(pRes.Registered = 0) then hi_var_free(pRes);
@@ -2261,8 +2276,11 @@ lblTop:
       begin
         if LastLineNo <> node.DebugInfo.LineNo then
         begin
-          LastLineNo := node.DebugInfo.LineNo;
-          LastFileNo := node.DebugInfo.FileNo;
+          if Self.MainFileNo = node.DebugInfo.FileNo then
+          begin
+            Self.LastLineNo := node.DebugInfo.LineNo;
+            Self.LastFileNo := node.DebugInfo.FileNo;
+          end;
           if DebugNextStop then
           begin
             DebugNextStop := False;
@@ -2586,8 +2604,9 @@ begin
 end;
 
 
-procedure THiGroupScope.PushGroupScope(FScope: THiGroup);
+function THiGroupScope.PushGroupScope(FScope: THiGroup): THiGroup;
 begin
+  Result := self.TopItem;
   // グループ『自身』をコピーする
   if jisin = nil then
   begin
@@ -2623,6 +2642,25 @@ function THiGroupScope.TopItem: THiGroup;
 begin
   if Count = 0 then begin Result := nil; Exit; end;
   Result := Items[Count-1];
+end;
+
+function THiGroupScope.NextItem: THiGroup;
+begin
+  if Count < 2 then begin Result := nil; Exit; end;
+  Result := Items[Count-2];
+end;
+
+function THiGroupScope.FindMemberAllScope(NameID: DWORD): PHiValue;
+var
+  i: Integer;
+  group: THiGroup;
+begin
+  Result := nil;
+  for i := 0 to Count-1 do begin
+    group := THiGroup(Self.Items[Self.Count - i - 1]);
+    Result := group.FindMember(NameId);
+    if Result <> nil then Exit;
+  end;
 end;
 
 { THiVarScope }

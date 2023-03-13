@@ -1,0 +1,32 @@
+!テスト対象ファイル＝『C:\Users\kujir\winrepos\nadesiko\test\dnako\グループ3.nako.bak』
+!"C:\Users\kujir\winrepos\nadesiko\lib\testlib.nako"を取り込む;
+テストメイン処理。終わる。
+### BUG
+### https://nadesi.com/cgi/bug/index.php?m=thread&threadid=983
+●PrintFoo(x)～
+　　xと表示
+■Fooとは
+　　・Print(S)～ // メンバ変数は表示できない?
+　　　　それはS
+■Barとは
+　　・x_
+　　・foo_
+　　・作る()～
+　　　　foo_をFooとして作成
+　　　　x_ = "1234"　　　　
+　　・Print()～
+　　　　それはfoo_→Print(x_) // かつてのバグ：グループメンバx_がFoo側のメソッドPrintでは空文字となる
+　　・Print2()～
+　　　　それはfoo_→Print(自身→x_) // かつてのバグ：グループメンバx_がFoo側のメソッドPrintでは空文字となる
+
+●テスト_DNAKO_グループ3_メソッド引数1
+   barをBarとして作成
+   S=bar→Print()
+   Sと「1234」でテスト実行。
+
+●テスト_DNAKO_グループ3_メソッド引数2
+   barをBarとして作成
+   S=bar→Print2()
+   Sと「1234」でテスト実行。
+
+テスト_DNAKO_グループ3_メソッド引数

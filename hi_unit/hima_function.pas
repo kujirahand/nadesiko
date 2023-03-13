@@ -26,6 +26,7 @@ type
   THimaArg = class
   public
     Name     : DWORD;
+    NameDesc : String;
     VType    : THiVType; // 変数の型を定義
     Value    : PHiValue; // デフォルト値 ... 今のところ必ずしも変数の型と合致してないこともある...
     JosiList : THList;   // 助詞のリスト
@@ -6404,6 +6405,7 @@ procedure THimaArg.Assign(a: THimaArg);
 begin
   // (1)
   Name := a.Name;
+  NameDesc := a.NameDesc;
   // (2)
   hi_var_copy(a.Value, Value);
   // (3)
@@ -6551,6 +6553,7 @@ begin
         Writeln('Error****=',p^,'==',Ord(p^));
       end;
       arg := THimaArg.Create;
+      arg.NameDesc := name;
       arg.Name := HiSystem.TangoList.GetID(name);
       arg.JosiList.AddNum(DWORD(HiSystem.JosiList.GetID(josi)));
       Self.Add_JosiCheck(arg);

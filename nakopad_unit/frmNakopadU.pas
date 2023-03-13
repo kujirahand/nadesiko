@@ -23,7 +23,7 @@ const
   DIR_TOOLS     = 'tools\';
   DIR_TEMPLATE  = 'tools\template\';
   MODE_HINT_STR = 'Å¶ÅyÇ»Ç≈ÇµÇ±é¿çsÉÇÅ[ÉhÅz';
-  WEB_NEWS = 'https://nadesi.com/top/index.php?NakopadEntry&simple';
+  WEB_NEWS = 'https://nadesi.com/index.php?NakopadEntry&simple';
   NAKOPAD1_INI = 'nakopad.ini';
   NAKOPAD3_INI = 'nakopad3.ini';
   NAKOPAD_VER3_FILE = 'nakopad_detect_ver3.bin';

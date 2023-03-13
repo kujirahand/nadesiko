@@ -177,11 +177,11 @@
 
 ●WEB処理
 　　母艦の最前面表示はオフ。
-　　「http://nadesi.com/」を起動。
+　　「https://nadesi.com/」を起動。
 
 ●BUG処理
 　　母艦の最前面表示はオフ。
-　　「http://aoikujira.com/nadesiko/bugbbs/mbbs.php」を起動。
+　　「https://nadesi.com/cgi/bug/index.php」を起動。
 
 ●バージョンコピー処理
 　　ナデシコバージョンをコピー。
@@ -200,6 +200,6 @@
 --------------------------------
 {最新版}」と二択。
 　　　　もし、それがはいならば
-　　　　　　「https://nadesi.com/top/go.php?6」を起動。
+　　　　　　「https://nadesi.com/go.php?6」を起動。
 　　　　　　終わる。
 

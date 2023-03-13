@@ -142,6 +142,7 @@ type
     VarLink     : PHiValue;
     aryIndex    : TSyntaxNode;
     groupMember : DWORD;
+    groupMemberDesc: string;
     constructor Create;
     destructor Destroy; override;
   end;
@@ -3289,6 +3290,8 @@ begin
         pe := NewPe; //New(pe);
         pe.LinkType := svLinkGroup;
         pe.groupMember := token.TokenID;
+        pe.groupMemberDesc := token.Token;
+        // Writeln('@@@強制グループ::' + token.Token);
         node.JosiId := token.JosiId;
         NextElementLink(pe);
         token := token.NextToken; // skip "メンバ"
@@ -3781,6 +3784,7 @@ procedure THiParser.getDefArgs(var token: THimaToken; args: THimaArgs);
     end;
     // 変数名
     arg.Name := token.TokenID;
+    arg.NameDesc := token.Token;
     arg.JosiList.AddNum( token.JosiID );
     token := token.NextToken;
     Args.Add_JosiCheck(arg);
@@ -4944,6 +4948,7 @@ begin
     svLinkGlobal:             Result := Element.VarLink;
     svLinkLocal:
       begin
+        // writeln('@@GetValueNoGetter@@' + hi_id2tango(VarId));
         Result := HiSystem.Local.GetVar(VarID);
         if Result = nil then
         begin
@@ -4954,6 +4959,13 @@ begin
       begin
         FGroupScope := HiSystem.GroupScope.TopItem;
         Result := HiSystem.GroupScope.FindMember(VarID);
+        if Result = nil then
+        begin
+          // FGroupScope := HiSystem.GroupScope.NextItem;
+          // if FGroupScope <> nil then Result := FGroupScope.FindMember(VarID);
+          Result := HiSystem.GroupScope.FindMemberAllScope(VarId);
+        end;
+        // writeln('@@GetValueNoGetter.svLinkVirtualGroupMember@@' + hi_id2tango(VarId));
         if Result = nil then Result := FGroupScope.FindMember(VarID);
       end;
     else raise HException.CreateFmt(ERR_S_RUN_VALUE,[hi_id2tango(VarID)]);
@@ -5494,6 +5506,7 @@ begin
   begin
     n := Stack.Items[i];
     arg := HiFunc.Args.Items[i];
+    // writeln('@ArgStackToLocalVar@' + arg.NameDesc + '=' + n.DebugStr);
 
     // 引数が省略されているときの処理
     if n = nil then
@@ -5523,9 +5536,10 @@ begin
     hi_var_ChangeType(v, arg.VType);
 
     // 変数に名前をつけて登録
-    if v <> nil then v.VarID := arg.Name;
+    if v <> nil then begin
+      v.VarID := arg.Name;
+    end;
     HiSystem.Local.RegistVar(v);
-
   end;
 end;
 
@@ -5684,7 +5698,6 @@ begin
   try
     // 登録
     ArgStackToLocalVar;
-
     // 関数の実行
     tmp := HiSystem.FFuncBreakLevel;
     HiSystem.FFuncBreakLevel := HiSystem.FNestCheck;

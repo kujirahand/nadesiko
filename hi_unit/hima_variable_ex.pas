@@ -3102,6 +3102,7 @@ begin
   DefaultValue := nil;
   FInstanceVar := InstanceVar;
   IsDestructorRunned := False;
+  HiClassDebug := '';
 end;
 
 procedure THiGroup.Delete(Index: Integer);
