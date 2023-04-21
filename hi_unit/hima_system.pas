@@ -2040,55 +2040,6 @@ begin
   if (p <> nil)and(p.Registered = 0) then hi_var_free(p);
 end;
 
-{
-function THiSystem.RunGroupEvent(group: PHiValue;
-  memberId: DWORD): PHiValue;
-var
-  pEvent, pRes: PHiValue;
-  node: TSyntaxFunction;
-  sv: TSyntaxValue;
-begin
-  Result := nil;
-  if group = nil then Exit;
-
-  // イベントを特定
-  group := hi_getLink(group);
-  pEvent := hi_group(group).FindMember(memberId);
-  if pEvent = nil then Exit; // メンバがない
-  if pEvent.VType <> varFunc then Exit;
-
-  //debugs( hi_group(group).HiClassDebug );
-
-  Result := hi_var_new;
-
-  node := TSyntaxFunction.Create(nil);
-  sv   := TSyntaxValue.Create(nil);
-  try
-    sv.VarID := group.VarID;
-    sv.Element.LinkType := svLinkGlobal;
-    sv.Element.VarLink  := group;
-    New(sv.Element.NextElement);
-    sv.Element.NextElement.LinkType := svLinkGroup;
-    sv.Element.NextElement.groupMember := memberId;
-    sv.Element.NextElement.NextElement := nil;
-    //
-    node.FDebugFuncName := hi_id2tango(memberID);
-    node.FuncID := memberId;
-    node.HiFunc := hi_func(pEvent);
-    node.Link.LinkType  := sfLinkGroupMember;
-    node.Link.LinkValue := sv;
-    // 実行
-    HiSystem.FlagEnd := False;
-    pRes := node.getValue;
-    // 戻り値をコピー
-    hi_var_copyGensi(pRes, Result);
-    if (pRes <> nil)and(pRes.Registered = 0) then hi_var_free(pRes);
-  finally
-    //sv.Free; 自動的に解放
-    node.Free;
-  end;
-end;
-}
 function THiSystem.RunGroupEvent(group: PHiValue;
   memberId: DWORD): PHiValue;
 var
@@ -2108,10 +2059,8 @@ function THiSystem.RunGroupMethod(group, method: PHiValue;
 var
   node : TSyntaxFunction;
   pRes : PHiValue;
-  i : Integer;
   selfGroup: THiGroup;
   curGroup: THiGroup;
-  jisin: PHiValue;
 begin
   PushRunFlag;
   selfGroup := hi_group(group);
@@ -2614,8 +2563,6 @@ begin
   end;
   // 新しい自身をコピーする
   hi_var_copyGensi(FScope.InstanceVar, jisin);
-  //hi_setLink(jisin, FScope.InstanceVar);
-
   Self.Push(FScope);
 end;
 
@@ -2631,10 +2578,8 @@ begin
 
   if g <> nil then begin
     hi_var_copyGensi(g.InstanceVar, jisin);
-    //hi_setLink(g.InstanceVar, jisin);
   end else begin
     hi_var_copyGensi(HiSystem.FDummyGroup, jisin);
-    //hi_setLink(FHiSystem.FDummyGroup, jisin);
   end;
 end;
 

@@ -3989,9 +3989,9 @@ var
 begin
   Result := nil;
   pa := args.Items[0]; pa := hi_getLink(pa);
-  pb := args.Items[1]; pb := hi_getLink(pb);
+  pb := args.Items[1]; pb := hi_getLink(pb); // 必ずグループであるべき
 
-  if pb.VType <> varGroup then
+  if (pb.VType <> varGroup) then
   begin
     // グループでなければただのコピー。
     hi_var_copyData(pb, pa);
@@ -4028,9 +4028,11 @@ begin
   end else
   begin
     // paがID持ちだけど登録の無しの可能性(例：グループメンバ)
-    if HiSystem.Local.GetVar(pa.VarID) = nil then //MessageBox(0,'local','',0);
-      if HiSystem.Global.GetVar(pa.VarID) = nil then //MessageBox(0,'global','',0);
+    if HiSystem.Local.GetVar(pa.VarID) = nil then begin
+      if HiSystem.Global.GetVar(pa.VarID) = nil then begin
         HiSystem.Global.RegistVar(pa);
+      end;
+    end;
     Inc(pa.RefCount);//スコープから参照されているので
   end;
 
@@ -4041,9 +4043,12 @@ begin
   // グループ名をセット（重要）
   pName := hi_group(pa).FindMember(hi_tango2id('名前'));
   hi_setStr(pName, hi_id2tango(pa.VarID));
-
+  // 作るイベントを自動的に呼び出す  
   pp := HiSystem.RunGroupEvent(pa, hi_tango2id('作'));
-  if (pp <> nil)and(pp.Registered = 0) then hi_var_free(pp);
+  if (pp <> nil)and(pp.Registered = 0) then
+  begin
+    hi_var_free(pp);
+  end;
 end;
 
 function sys_EnumMember(args: THiArray): PHiValue; stdcall;
