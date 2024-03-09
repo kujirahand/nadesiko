@@ -10,7 +10,7 @@ uses
   XPMan, NadesikoFountain, PerlFountain, JavaFountain, CppFountain, HTMLFountain,
   DelphiFountain, HimawariFountain, HViewEdt, AppEvnts, TrackBox,
   unit_guiParts, Grids, ValEdit, OleCtrls, SHDocVw,
-  Buttons, UIWebBrowser;
+  Buttons;
 
 const
   NAKO_VNAKO = 0;
@@ -23,7 +23,7 @@ const
   DIR_TOOLS     = 'tools\';
   DIR_TEMPLATE  = 'tools\template\';
   MODE_HINT_STR = '※【なでしこ実行モード】';
-  WEB_NEWS = 'https://nadesi.com/index.php?NakopadEntry&simple';
+  WEB_NEWS = 'https://nadesi.com/index.php?NakopadEntry';
   NAKOPAD1_INI = 'nakopad.ini';
   NAKOPAD3_INI = 'nakopad3.ini';
   NAKOPAD_VER3_FILE = 'nakopad_detect_ver3.bin';
@@ -408,12 +408,11 @@ type
     timerShowWeb: TTimer;
     pnlAction: TPanel;
     Panel2: TPanel;
-    webAction: TUIWebBrowser;
     btnActionOpenBrowser: TButton;
-    btnWebBack: TButton;
     mnuNakoC3: TMenuItem;
     mnuShowNewsWakeup: TMenuItem;
     mnuFindTansakan: TMenuItem;
+    webAction: TMemo;
     procedure mnuCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure mnuViewLeftPanelClick(Sender: TObject);
@@ -638,7 +637,6 @@ type
     procedure popGUIPasteClick(Sender: TObject);
     procedure timerShowWebTimer(Sender: TObject);
     procedure btnActionOpenBrowserClick(Sender: TObject);
-    procedure btnWebBackClick(Sender: TObject);
     procedure webActionBeforeNavigate2(Sender: TObject;
       const pDisp: IDispatch; var URL, Flags, TargetFrameName, PostData,
       Headers: OleVariant; var Cancel: WordBool);
@@ -3220,8 +3218,6 @@ var
   cap, fname: string;
 
   function showDescript(path: string): Boolean;
-  var
-    tempPath: string;
   begin
     Result := False;
     fname := path + 'tools\action\' + fname;
@@ -3234,15 +3230,11 @@ var
     if (Copy(s, 1, 4) = 'WEB=') then
     begin
       System.Delete(s, 1, 4);
-      webAction.Navigate(s);
+      webAction.Text := s + #13#10 + '---'#13#10'上記URLを開きます。ダブルクリックするか、↓の「ブラウザ」を開くをクリックしてください。';
       Result := True;
       Exit;
     end;
-    s := JReplace(Trim(s), #13#10, '<br>', True);
-    tempPath := TempDir + 'tmp_nakopad_action.html';
-    FileSaveAll('<html><meata chrset="Shift_JIS"><body>' + s + '</body></html>', tempPath);
-    //edtAction.Lines.Text := Trim(s) + #13#10#13#10 + '→リストをダブルクリックすると実行できます。';
-    webAction.Navigate('file://' + tempPath);
+    webAction.Text := s;
     Result := True;
   end;
 
@@ -6251,7 +6243,7 @@ begin
   // if IsGlobalOffline then Exit;
   //
   timerShowWeb.Enabled := False;
-  webAction.Navigate(WEB_NEWS);
+  webAction.Text := (WEB_NEWS);
 
 end;
 
@@ -6259,7 +6251,7 @@ procedure TfrmNakopad.btnActionOpenBrowserClick(Sender: TObject);
 var
   url: string;
 begin
-  url := webAction.LocationURL;
+  url := webAction.Text;
   if (Copy(url, 1, 4) = 'http') then
   begin
     OpenApp(url);
@@ -6278,14 +6270,6 @@ begin
   mnuNakoN.Checked := False;
   mnuNakoN.Checked := False;
   mnuNakoC3.Checked := False;
-end;
-
-procedure TfrmNakopad.btnWebBackClick(Sender: TObject);
-begin
-  try
-    webAction.GoBack;
-  except
-  end;
 end;
 
 procedure TfrmNakopad.webActionBeforeNavigate2(Sender: TObject;

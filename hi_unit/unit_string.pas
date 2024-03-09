@@ -20,7 +20,7 @@ uses
 
 // SJIS Support
 type TChars = set of AnsiChar;
-const SJISLeadBytes: TChars = [#$81..#$9F,#$E0..#$EF];
+const SJISLeadBytes: TChars = [#$81..#$9F,#$E0..#$FC];
 
 //------------------------------------------------------------------------------
 // PAnsiChar ŠÖ˜A

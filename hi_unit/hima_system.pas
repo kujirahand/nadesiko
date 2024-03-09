@@ -273,6 +273,10 @@ const
 
 
 
+function GetUserDefaultLocaleName(
+    lpLocaleName : LPWSTR;
+    cchLocaleName : Integer) : Integer; stdcall; external 'Kernel32.dll';
+
 var FHiSystem: THiSystem = nil;// private にすべし
 var dnako_dll_handle: THandle = 0;
 
@@ -2923,9 +2927,33 @@ begin
   Exception(Self).Create(string(msg));
 end;
 
+
+function GetUserLocale(): string;
+var
+  p: array of WideChar;
+begin
+  SetLength(p, 256);
+  GetUserDefaultLocaleName(@p[0], Length(p));
+  Result := trim(string(PWideChar(p)));
+end;
+
+var
+  loc, s: string;
+  i: Integer;
 initialization
 begin
-  HiSystem.CheckInitSystem; // 起動
+  // 日本語環境以外では動作しない旨を報告(@401)
+  loc := GetUserLocale();
+  if loc <> 'ja-JP' then
+  begin
+    s := 'This app only works in Japanese locale.'#13#10'Do you want to quit?';
+    i := MessageBox(0, PChar(s), 'Information', MB_YESNO);
+    if i = IDYES then begin
+      System.Exit;
+    end;
+  end;
+  // 起動
+  HiSystem.CheckInitSystem;
 end;
 
 finalization
