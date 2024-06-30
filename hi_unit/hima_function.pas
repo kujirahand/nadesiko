@@ -5073,13 +5073,18 @@ end;
 function sys_sisyagonyu(args: THiArray): PHiValue; stdcall;
 var
   a: PHiValue;
+  af: HFloat;
 begin
   // (1) 引数の取得
   a := args.FindKey(token_a); // 値
   if a = nil then a := HiSystem.Sore;
+  af := hi_float(a);
   // (2) データの処理 / (3) 戻り値を設定
   Result := hi_var_new;
-  hi_setIntOrFloat(Result, Trunc(0.5 + hi_float(a)));
+  if af >= 0 then
+    hi_setIntOrFloat(Result, Trunc(af + 0.5))
+  else
+    hi_setIntOrFloat(Result, Trunc(af - 0.5));
 end;
 
 function sys_ceil(args: THiArray): PHiValue; stdcall;
